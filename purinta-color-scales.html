@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purinta — Color Scales System</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest: #1a3a2a;
+  --cream: #faf6f1;
+  --text-dark: #2a2a2a;
+  --text-mid: #5a5a5a;
+  --text-light: #8a8a8a;
+  --sand: #f0ebe3;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Quicksand', 'Nunito', sans-serif;
+  background: var(--cream);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  padding: 60px 80px 40px;
+  border-bottom: 1px solid var(--sand);
+}
+.header-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: white; padding: 6px 16px; border-radius: 30px;
+  font-weight: 700; font-size: 11px; color: var(--forest);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  box-shadow: 0 2px 12px rgba(26,58,42,0.06);
+  margin-bottom: 20px;
+}
+.header-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: #e8a0a0; }
+.header h1 {
+  font-family: 'Nunito'; font-weight: 900; font-size: 42px;
+  color: var(--forest); line-height: 1.2; margin-bottom: 12px;
+}
+.header p { font-size: 15px; color: var(--text-mid); line-height: 1.7; max-width: 700px; }
+
+/* Section */
+.section {
+  padding: 60px 80px;
+  border-bottom: 1px solid var(--sand);
+}
+.section:last-child { border-bottom: none; }
+.section-label {
+  font-family: 'Nunito'; font-weight: 800; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-light); margin-bottom: 8px;
+}
+
+/* Gradient Source Table */
+.source-table {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  margin-top: 24px; margin-bottom: 48px;
+}
+.source-card {
+  background: white; border-radius: 20px; overflow: hidden;
+  box-shadow: 0 2px 16px rgba(26,58,42,0.04);
+}
+.source-swatch {
+  height: 100px; position: relative; display: flex;
+  align-items: center; justify-content: center;
+}
+.source-swatch .hex-overlay {
+  display: flex; gap: 6px; align-items: center;
+}
+.hex-pill {
+  background: rgba(255,255,255,0.25); backdrop-filter: blur(4px);
+  padding: 4px 10px; border-radius: 8px;
+  font-size: 11px; font-weight: 700; color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+.hex-pill.dark { color: rgba(0,0,0,0.5); text-shadow: none; }
+.hex-arrow { color: rgba(255,255,255,0.5); font-size: 14px; }
+.hex-arrow.dark { color: rgba(0,0,0,0.3); }
+.source-info { padding: 14px 16px; }
+.source-info h4 { font-family: 'Nunito'; font-weight: 700; font-size: 13px; color: var(--forest); }
+.source-info span { font-size: 11px; color: var(--text-light); font-weight: 600; }
+
+/* Scale Row */
+.scale-group { margin-bottom: 48px; }
+.scale-group:last-child { margin-bottom: 0; }
+.scale-title {
+  font-family: 'Nunito'; font-weight: 800; font-size: 18px;
+  color: var(--forest); margin-bottom: 6px;
+}
+.scale-subtitle {
+  font-size: 12px; color: var(--text-light); margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.scale-row {
+  display: flex; gap: 0; border-radius: 20px; overflow: hidden;
+  box-shadow: 0 4px 24px rgba(26,58,42,0.06);
+}
+.scale-step {
+  flex: 1; padding: 24px 12px 14px; min-height: 120px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative;
+}
+.scale-step .step-num {
+  font-family: 'Nunito'; font-weight: 900; font-size: 11px;
+  letter-spacing: 1px; opacity: 0.5; margin-bottom: 4px;
+}
+.scale-step .step-hex {
+  font-family: 'Quicksand'; font-weight: 700; font-size: 11px;
+  opacity: 0.7;
+}
+.scale-step .step-name {
+  font-family: 'Nunito'; font-weight: 700; font-size: 10px;
+  opacity: 0.5; margin-top: 2px;
+}
+.scale-step.light-text { color: white; }
+.scale-step.dark-text { color: rgba(0,0,0,0.6); }
+
+/* Marker for gradient-sourced colors */
+.scale-step.from-gradient::before {
+  content: '';
+  position: absolute; top: 8px; right: 8px;
+  width: 8px; height: 8px; border-radius: 50%;
+  border: 2px solid currentColor; opacity: 0.4;
+}
+
+/* Legend */
+.legend {
+  display: flex; align-items: center; gap: 16px;
+  margin-top: 16px; padding: 12px 16px;
+  background: white; border-radius: 12px;
+  font-size: 11px; color: var(--text-light); font-weight: 600;
+}
+.legend-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  border: 2px solid var(--text-light);
+}
+
+/* Full Palette Overview */
+.palette-overview {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-top: 24px;
+}
+.palette-col {
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 2px 16px rgba(26,58,42,0.05);
+}
+.palette-col-header {
+  padding: 16px; text-align: center;
+  font-family: 'Nunito'; font-weight: 800; font-size: 13px;
+}
+.palette-col-header.light { color: white; }
+.palette-col-header.dark { color: rgba(0,0,0,0.6); }
+.palette-swatch-mini {
+  height: 36px; display: flex; align-items: center;
+  justify-content: space-between; padding: 0 12px;
+  font-size: 9px; font-weight: 700;
+}
+.palette-swatch-mini.light { color: rgba(255,255,255,0.7); }
+.palette-swatch-mini.dark { color: rgba(0,0,0,0.4); }
+
+/* Accent scales */
+.accent-scales {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  margin-top: 24px;
+}
+.accent-col {
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 2px 16px rgba(26,58,42,0.05);
+}
+.accent-header {
+  padding: 14px 16px; font-family: 'Nunito'; font-weight: 700;
+  font-size: 12px;
+}
+.accent-step {
+  height: 40px; display: flex; align-items: center;
+  justify-content: space-between; padding: 0 14px;
+  font-size: 10px; font-weight: 700;
+}
+.accent-step.light { color: rgba(255,255,255,0.7); }
+.accent-step.dark { color: rgba(0,0,0,0.4); }
+
+/* Footer */
+.footer-note {
+  padding: 40px 80px; text-align: center;
+  font-size: 12px; color: var(--text-light);
+  border-top: 1px solid var(--sand);
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tag"><span class="dot"></span> Purinta Color System</div>
+  <h1>Color Scales</h1>
+  <p>Escalas completas de color derivadas de los hexadecimales usados en los gradientes de la V1. Cada escala de 10 pasos incluye como tonalidades medias los colores exactos del gradient original.</p>
+</div>
+
+<!-- ================================= -->
+<!-- SECTION 1: GRADIENT HEX SOURCES -->
+<!-- ================================= -->
+<div class="section">
+  <div class="section-label">Hexadecimales usados en gradientes V1</div>
+
+  <div class="source-table">
+    <!-- Green Mid -->
+    <div class="source-card">
+      <div class="source-swatch" style="background: linear-gradient(135deg, #2d5a3f, #5a9e6f);">
+        <div class="hex-overlay">
+          <span class="hex-pill">#2D5A3F</span>
+          <span class="hex-arrow">&rarr;</span>
+          <span class="hex-pill">#5A9E6F</span>
+        </div>
+      </div>
+      <div class="source-info">
+        <h4>Green Mid</h4>
+        <span>Gradient: forest-soft &rarr; green-mid</span>
+      </div>
+    </div>
+    <!-- Mint -->
+    <div class="source-card">
+      <div class="source-swatch" style="background: linear-gradient(135deg, #8dc8a0, #c8e6d0);">
+        <div class="hex-overlay">
+          <span class="hex-pill">#8DC8A0</span>
+          <span class="hex-arrow">&rarr;</span>
+          <span class="hex-pill">#C8E6D0</span>
+        </div>
+      </div>
+      <div class="source-info">
+        <h4>Mint</h4>
+        <span>Gradient: green-light &rarr; mint</span>
+      </div>
+    </div>
+    <!-- Blush -->
+    <div class="source-card">
+      <div class="source-swatch" style="background: linear-gradient(135deg, #f2c4c4, #f7dada);">
+        <div class="hex-overlay">
+          <span class="hex-pill dark">#F2C4C4</span>
+          <span class="hex-arrow dark">&rarr;</span>
+          <span class="hex-pill dark">#F7DADA</span>
+        </div>
+      </div>
+      <div class="source-info">
+        <h4>Blush</h4>
+        <span>Gradient: blush &rarr; blush-soft</span>
+      </div>
+    </div>
+    <!-- Cream -->
+    <div class="source-card">
+      <div class="source-swatch" style="background: linear-gradient(135deg, #faf6f1, #f0ebe3);">
+        <div class="hex-overlay">
+          <span class="hex-pill dark">#FAF6F1</span>
+          <span class="hex-arrow dark">&rarr;</span>
+          <span class="hex-pill dark">#F0EBE3</span>
+        </div>
+      </div>
+      <div class="source-info">
+        <h4>Cream</h4>
+        <span>Gradient: cream &rarr; sand</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================= -->
+<!-- SECTION 2: GREEN SCALE -->
+<!-- ================================= -->
+<div class="section">
+  <div class="section-label">Escalas principales</div>
+
+  <div class="scale-group">
+    <div class="scale-title">Green Scale</div>
+    <div class="scale-subtitle">Forest &rarr; Green Mid &rarr; Mint &rarr; Mint Pale &middot; Incluye #2D5A3F, #5A9E6F, #8DC8A0, #C8E6D0</div>
+    <div class="scale-row">
+      <div class="scale-step light-text" style="background:#0F2419;">
+        <div class="step-num">900</div>
+        <div class="step-hex">#0F2419</div>
+        <div class="step-name">Deepest</div>
+      </div>
+      <div class="scale-step light-text" style="background:#1D3F2C;">
+        <div class="step-num">800</div>
+        <div class="step-hex">#1D3F2C</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step light-text from-gradient" style="background:#2D5A3F;">
+        <div class="step-num">700</div>
+        <div class="step-hex">#2D5A3F</div>
+        <div class="step-name">Forest Soft</div>
+      </div>
+      <div class="scale-step light-text" style="background:#427C57;">
+        <div class="step-num">600</div>
+        <div class="step-hex">#427C57</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step light-text from-gradient" style="background:#5A9E6F;">
+        <div class="step-num">500</div>
+        <div class="step-hex">#5A9E6F</div>
+        <div class="step-name">Green Mid</div>
+      </div>
+      <div class="scale-step dark-text" style="background:#71B486;">
+        <div class="step-num">400</div>
+        <div class="step-hex">#71B486</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text from-gradient" style="background:#8DC8A0;">
+        <div class="step-num">300</div>
+        <div class="step-hex">#8DC8A0</div>
+        <div class="step-name">Green Light</div>
+      </div>
+      <div class="scale-step dark-text" style="background:#AAD7B7;">
+        <div class="step-num">200</div>
+        <div class="step-hex">#AAD7B7</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text from-gradient" style="background:#C8E6D0;">
+        <div class="step-num">100</div>
+        <div class="step-hex">#C8E6D0</div>
+        <div class="step-name">Mint</div>
+      </div>
+      <div class="scale-step dark-text" style="background:#E4F2E8;">
+        <div class="step-num">50</div>
+        <div class="step-hex">#E4F2E8</div>
+        <div class="step-name">Mint Pale</div>
+      </div>
+    </div>
+    <div class="legend"><div class="legend-dot"></div> Indica color tomado directamente del gradiente V1</div>
+  </div>
+
+  <!-- ================================= -->
+  <!-- BLUSH / PINK SCALE -->
+  <!-- ================================= -->
+  <div class="scale-group">
+    <div class="scale-title">Blush / Pink Scale</div>
+    <div class="scale-subtitle">Pink Deep &rarr; Pink Accent &rarr; Blush &rarr; Blush Pale &middot; Incluye #E8A0A0, #F2C4C4, #F7DADA</div>
+    <div class="scale-row">
+      <div class="scale-step light-text" style="background:#8A3A3A;">
+        <div class="step-num">900</div>
+        <div class="step-hex">#8A3A3A</div>
+        <div class="step-name">Deepest</div>
+      </div>
+      <div class="scale-step light-text" style="background:#B24242;">
+        <div class="step-num">800</div>
+        <div class="step-hex">#B24242</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step light-text" style="background:#C95C5C;">
+        <div class="step-num">700</div>
+        <div class="step-hex">#C95C5C</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text" style="background:#DA7C7C;">
+        <div class="step-num">600</div>
+        <div class="step-hex">#DA7C7C</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text from-gradient" style="background:#E8A0A0;">
+        <div class="step-num">500</div>
+        <div class="step-hex">#E8A0A0</div>
+        <div class="step-name">Pink Accent</div>
+      </div>
+      <div class="scale-step dark-text" style="background:#EDB1B1;">
+        <div class="step-num">400</div>
+        <div class="step-hex">#EDB1B1</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text from-gradient" style="background:#F2C4C4;">
+        <div class="step-num">300</div>
+        <div class="step-hex">#F2C4C4</div>
+        <div class="step-name">Blush</div>
+      </div>
+      <div class="scale-step dark-text" style="background:#F4CECE;">
+        <div class="step-num">200</div>
+        <div class="step-hex">#F4CECE</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text from-gradient" style="background:#F7DADA;">
+        <div class="step-num">100</div>
+        <div class="step-hex">#F7DADA</div>
+        <div class="step-name">Blush Soft</div>
+      </div>
+      <div class="scale-step dark-text" style="background:#FDF0F0;">
+        <div class="step-num">50</div>
+        <div class="step-hex">#FDF0F0</div>
+        <div class="step-name">Blush Pale</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================= -->
+  <!-- CREAM / NEUTRAL SCALE -->
+  <!-- ================================= -->
+  <div class="scale-group">
+    <div class="scale-title">Cream / Neutral Scale</div>
+    <div class="scale-subtitle">Dark Warm &rarr; Sand &rarr; Cream &rarr; Warm White &middot; Incluye #F0EBE3, #FAF6F1</div>
+    <div class="scale-row">
+      <div class="scale-step light-text" style="background:#5A5248;">
+        <div class="step-num">900</div>
+        <div class="step-hex">#5A5248</div>
+        <div class="step-name">Deepest</div>
+      </div>
+      <div class="scale-step light-text" style="background:#756858;">
+        <div class="step-num">800</div>
+        <div class="step-hex">#756858</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step light-text" style="background:#917F67;">
+        <div class="step-num">700</div>
+        <div class="step-hex">#917F67</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text" style="background:#A7957D;">
+        <div class="step-num">600</div>
+        <div class="step-hex">#A7957D</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text" style="background:#BBAB95;">
+        <div class="step-num">500</div>
+        <div class="step-hex">#BBAB95</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text" style="background:#CEC1AD;">
+        <div class="step-num">400</div>
+        <div class="step-hex">#CEC1AD</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text" style="background:#DFD6C7;">
+        <div class="step-num">300</div>
+        <div class="step-hex">#DFD6C7</div>
+        <div class="step-name"></div>
+      </div>
+      <div class="scale-step dark-text from-gradient" style="background:#F0EBE3;">
+        <div class="step-num">200</div>
+        <div class="step-hex">#F0EBE3</div>
+        <div class="step-name">Sand</div>
+      </div>
+      <div class="scale-step dark-text from-gradient" style="background:#FAF6F1;">
+        <div class="step-num">100</div>
+        <div class="step-hex">#FAF6F1</div>
+        <div class="step-name">Cream</div>
+      </div>
+      <div class="scale-step dark-text" style="background:#FEFCF9;">
+        <div class="step-num">50</div>
+        <div class="step-hex">#FEFCF9</div>
+        <div class="step-name">Warm White</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================= -->
+<!-- SECTION 3: ACCENT SCALES -->
+<!-- ================================= -->
+<div class="section">
+  <div class="section-label">Accent Scales</div>
+
+  <div class="accent-scales">
+    <!-- Lavender -->
+    <div class="accent-col">
+      <div class="accent-header dark" style="background:#D8CFE8; color: #3E3058;">Lavender Scale</div>
+      <div class="accent-step light" style="background:#3E3058;"><span>900</span><span>#3E3058</span></div>
+      <div class="accent-step light" style="background:#544079;"><span>800</span><span>#544079</span></div>
+      <div class="accent-step light" style="background:#6B519B;"><span>700</span><span>#6B519B</span></div>
+      <div class="accent-step light" style="background:#856BB3;"><span>600</span><span>#856BB3</span></div>
+      <div class="accent-step dark" style="background:#A08CC5;"><span>500</span><span>#A08CC5</span></div>
+      <div class="accent-step dark" style="background:#BCADD7;"><span>400</span><span>#BCADD7</span></div>
+      <div class="accent-step dark" style="background:#D8CFE8;"><span>300</span><span>#D8CFE8</span></div>
+      <div class="accent-step dark" style="background:#E1DBEE;"><span>200</span><span>#E1DBEE</span></div>
+      <div class="accent-step dark" style="background:#ECE8F4;"><span>100</span><span>#ECE8F4</span></div>
+      <div class="accent-step dark" style="background:#F5F3FA;"><span>50</span><span>#F5F3FA</span></div>
+    </div>
+    <!-- Peach -->
+    <div class="accent-col">
+      <div class="accent-header dark" style="background:#F5D5C0; color: #5C4430;">Peach Scale</div>
+      <div class="accent-step light" style="background:#5C4430;"><span>900</span><span>#5C4430</span></div>
+      <div class="accent-step light" style="background:#835A3A;"><span>800</span><span>#835A3A</span></div>
+      <div class="accent-step light" style="background:#AD7041;"><span>700</span><span>#AD7041</span></div>
+      <div class="accent-step dark" style="background:#C98756;"><span>600</span><span>#C98756</span></div>
+      <div class="accent-step dark" style="background:#DBA076;"><span>500</span><span>#DBA076</span></div>
+      <div class="accent-step dark" style="background:#EABA99;"><span>400</span><span>#EABA99</span></div>
+      <div class="accent-step dark" style="background:#F5D5C0;"><span>300</span><span>#F5D5C0</span></div>
+      <div class="accent-step dark" style="background:#F8DECE;"><span>200</span><span>#F8DECE</span></div>
+      <div class="accent-step dark" style="background:#FAE8DD;"><span>100</span><span>#FAE8DD</span></div>
+      <div class="accent-step dark" style="background:#FDF3ED;"><span>50</span><span>#FDF3ED</span></div>
+    </div>
+    <!-- Soft Yellow -->
+    <div class="accent-col">
+      <div class="accent-header dark" style="background:#FDF0D5; color: #5C5028;">Soft Yellow Scale</div>
+      <div class="accent-step light" style="background:#5C5028;"><span>900</span><span>#5C5028</span></div>
+      <div class="accent-step light" style="background:#836F2F;"><span>800</span><span>#836F2F</span></div>
+      <div class="accent-step light" style="background:#AF8F34;"><span>700</span><span>#AF8F34</span></div>
+      <div class="accent-step dark" style="background:#D1AA41;"><span>600</span><span>#D1AA41</span></div>
+      <div class="accent-step dark" style="background:#E1BD61;"><span>500</span><span>#E1BD61</span></div>
+      <div class="accent-step dark" style="background:#EECE84;"><span>400</span><span>#EECE84</span></div>
+      <div class="accent-step dark" style="background:#F7DFAA;"><span>300</span><span>#F7DFAA</span></div>
+      <div class="accent-step dark" style="background:#FDF0D5;"><span>200</span><span>#FDF0D5</span></div>
+      <div class="accent-step dark" style="background:#FEF5E3;"><span>100</span><span>#FEF5E3</span></div>
+      <div class="accent-step dark" style="background:#FFFBF2;"><span>50</span><span>#FFFBF2</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================= -->
+<!-- SECTION 4: COMPLETE PALETTE GRID -->
+<!-- ================================= -->
+<div class="section">
+  <div class="section-label">Vista completa de paleta</div>
+
+  <div class="palette-overview">
+    <!-- Green -->
+    <div class="palette-col">
+      <div class="palette-col-header light" style="background:#0F2419;">Green</div>
+      <div class="palette-swatch-mini light" style="background:#0F2419;"><span>900</span><span>#0F2419</span></div>
+      <div class="palette-swatch-mini light" style="background:#1D3F2C;"><span>800</span><span>#1D3F2C</span></div>
+      <div class="palette-swatch-mini light" style="background:#2D5A3F;"><span>700</span><span>#2D5A3F</span></div>
+      <div class="palette-swatch-mini light" style="background:#427C57;"><span>600</span><span>#427C57</span></div>
+      <div class="palette-swatch-mini light" style="background:#5A9E6F;"><span>500</span><span>#5A9E6F</span></div>
+      <div class="palette-swatch-mini dark" style="background:#71B486;"><span>400</span><span>#71B486</span></div>
+      <div class="palette-swatch-mini dark" style="background:#8DC8A0;"><span>300</span><span>#8DC8A0</span></div>
+      <div class="palette-swatch-mini dark" style="background:#AAD7B7;"><span>200</span><span>#AAD7B7</span></div>
+      <div class="palette-swatch-mini dark" style="background:#C8E6D0;"><span>100</span><span>#C8E6D0</span></div>
+      <div class="palette-swatch-mini dark" style="background:#E4F2E8;"><span>50</span><span>#E4F2E8</span></div>
+    </div>
+    <!-- Blush -->
+    <div class="palette-col">
+      <div class="palette-col-header light" style="background:#8A3A3A;">Blush</div>
+      <div class="palette-swatch-mini light" style="background:#8A3A3A;"><span>900</span><span>#8A3A3A</span></div>
+      <div class="palette-swatch-mini light" style="background:#B24242;"><span>800</span><span>#B24242</span></div>
+      <div class="palette-swatch-mini light" style="background:#C95C5C;"><span>700</span><span>#C95C5C</span></div>
+      <div class="palette-swatch-mini dark" style="background:#DA7C7C;"><span>600</span><span>#DA7C7C</span></div>
+      <div class="palette-swatch-mini dark" style="background:#E8A0A0;"><span>500</span><span>#E8A0A0</span></div>
+      <div class="palette-swatch-mini dark" style="background:#EDB1B1;"><span>400</span><span>#EDB1B1</span></div>
+      <div class="palette-swatch-mini dark" style="background:#F2C4C4;"><span>300</span><span>#F2C4C4</span></div>
+      <div class="palette-swatch-mini dark" style="background:#F4CECE;"><span>200</span><span>#F4CECE</span></div>
+      <div class="palette-swatch-mini dark" style="background:#F7DADA;"><span>100</span><span>#F7DADA</span></div>
+      <div class="palette-swatch-mini dark" style="background:#FDF0F0;"><span>50</span><span>#FDF0F0</span></div>
+    </div>
+    <!-- Cream -->
+    <div class="palette-col">
+      <div class="palette-col-header dark" style="background:#F0EBE3; border: 1px solid #ddd;">Cream</div>
+      <div class="palette-swatch-mini light" style="background:#5A5248;"><span>900</span><span>#5A5248</span></div>
+      <div class="palette-swatch-mini light" style="background:#756858;"><span>800</span><span>#756858</span></div>
+      <div class="palette-swatch-mini light" style="background:#917F67;"><span>700</span><span>#917F67</span></div>
+      <div class="palette-swatch-mini dark" style="background:#A7957D;"><span>600</span><span>#A7957D</span></div>
+      <div class="palette-swatch-mini dark" style="background:#BBAB95;"><span>500</span><span>#BBAB95</span></div>
+      <div class="palette-swatch-mini dark" style="background:#CEC1AD;"><span>400</span><span>#CEC1AD</span></div>
+      <div class="palette-swatch-mini dark" style="background:#DFD6C7;"><span>300</span><span>#DFD6C7</span></div>
+      <div class="palette-swatch-mini dark" style="background:#F0EBE3;"><span>200</span><span>#F0EBE3</span></div>
+      <div class="palette-swatch-mini dark" style="background:#FAF6F1;"><span>100</span><span>#FAF6F1</span></div>
+      <div class="palette-swatch-mini dark" style="background:#FEFCF9;"><span>50</span><span>#FEFCF9</span></div>
+    </div>
+    <!-- Lavender -->
+    <div class="palette-col">
+      <div class="palette-col-header light" style="background:#3E3058;">Lavender</div>
+      <div class="palette-swatch-mini light" style="background:#3E3058;"><span>900</span><span>#3E3058</span></div>
+      <div class="palette-swatch-mini light" style="background:#544079;"><span>800</span><span>#544079</span></div>
+      <div class="palette-swatch-mini light" style="background:#6B519B;"><span>700</span><span>#6B519B</span></div>
+      <div class="palette-swatch-mini light" style="background:#856BB3;"><span>600</span><span>#856BB3</span></div>
+      <div class="palette-swatch-mini dark" style="background:#A08CC5;"><span>500</span><span>#A08CC5</span></div>
+      <div class="palette-swatch-mini dark" style="background:#BCADD7;"><span>400</span><span>#BCADD7</span></div>
+      <div class="palette-swatch-mini dark" style="background:#D8CFE8;"><span>300</span><span>#D8CFE8</span></div>
+      <div class="palette-swatch-mini dark" style="background:#E1DBEE;"><span>200</span><span>#E1DBEE</span></div>
+      <div class="palette-swatch-mini dark" style="background:#ECE8F4;"><span>100</span><span>#ECE8F4</span></div>
+      <div class="palette-swatch-mini dark" style="background:#F5F3FA;"><span>50</span><span>#F5F3FA</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================= -->
+<!-- SECTION 5: REFERENCE TABLE -->
+<!-- ================================= -->
+<div class="section">
+  <div class="section-label">Referencia rápida &mdash; Hexadecimales del gradiente</div>
+
+  <div style="background: white; border-radius: 20px; padding: 32px; box-shadow: 0 2px 16px rgba(26,58,42,0.04); max-width: 800px;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+      <thead>
+        <tr style="border-bottom: 2px solid #e4f2e8;">
+          <th style="text-align: left; padding: 12px; font-family: 'Nunito'; font-weight: 800; color: #1a3a2a;">Color</th>
+          <th style="text-align: left; padding: 12px; font-family: 'Nunito'; font-weight: 800; color: #1a3a2a;">Hex Inicio</th>
+          <th style="text-align: left; padding: 12px; font-family: 'Nunito'; font-weight: 800; color: #1a3a2a;">Hex Final</th>
+          <th style="text-align: left; padding: 12px; font-family: 'Nunito'; font-weight: 800; color: #1a3a2a;">Variable CSS</th>
+          <th style="text-align: left; padding: 12px; font-family: 'Nunito'; font-weight: 800; color: #1a3a2a;">Preview</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid #f0ebe3;">
+          <td style="padding: 12px; font-weight: 700; color: #1a3a2a;">Green Mid</td>
+          <td style="padding: 12px; font-family: 'Quicksand'; font-weight: 700; color: #5a5a5a;">#2D5A3F</td>
+          <td style="padding: 12px; font-family: 'Quicksand'; font-weight: 700; color: #5a5a5a;">#5A9E6F</td>
+          <td style="padding: 12px; font-size: 11px; color: #8a8a8a;">--forest-soft &rarr; --green-mid</td>
+          <td style="padding: 12px;"><div style="width: 80px; height: 24px; border-radius: 6px; background: linear-gradient(90deg, #2d5a3f, #5a9e6f);"></div></td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f0ebe3;">
+          <td style="padding: 12px; font-weight: 700; color: #1a3a2a;">Mint</td>
+          <td style="padding: 12px; font-family: 'Quicksand'; font-weight: 700; color: #5a5a5a;">#8DC8A0</td>
+          <td style="padding: 12px; font-family: 'Quicksand'; font-weight: 700; color: #5a5a5a;">#C8E6D0</td>
+          <td style="padding: 12px; font-size: 11px; color: #8a8a8a;">--green-light &rarr; --mint</td>
+          <td style="padding: 12px;"><div style="width: 80px; height: 24px; border-radius: 6px; background: linear-gradient(90deg, #8dc8a0, #c8e6d0);"></div></td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f0ebe3;">
+          <td style="padding: 12px; font-weight: 700; color: #1a3a2a;">Blush</td>
+          <td style="padding: 12px; font-family: 'Quicksand'; font-weight: 700; color: #5a5a5a;">#F2C4C4</td>
+          <td style="padding: 12px; font-family: 'Quicksand'; font-weight: 700; color: #5a5a5a;">#F7DADA</td>
+          <td style="padding: 12px; font-size: 11px; color: #8a8a8a;">--blush &rarr; --blush-soft</td>
+          <td style="padding: 12px;"><div style="width: 80px; height: 24px; border-radius: 6px; background: linear-gradient(90deg, #f2c4c4, #f7dada);"></div></td>
+        </tr>
+        <tr>
+          <td style="padding: 12px; font-weight: 700; color: #1a3a2a;">Cream</td>
+          <td style="padding: 12px; font-family: 'Quicksand'; font-weight: 700; color: #5a5a5a;">#FAF6F1</td>
+          <td style="padding: 12px; font-family: 'Quicksand'; font-weight: 700; color: #5a5a5a;">#F0EBE3</td>
+          <td style="padding: 12px; font-size: 11px; color: #8a8a8a;">--cream &rarr; --sand</td>
+          <td style="padding: 12px;"><div style="width: 80px; height: 24px; border-radius: 6px; background: linear-gradient(90deg, #faf6f1, #f0ebe3); border: 1px solid #e0d8cc;"></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer-note">
+  Purinta Color Scales System &middot; Derivado de Brand Guidelines V1 &middot; Todos los hexadecimales verificados contra el CSS original
+</div>
+
+</body>
+</html>

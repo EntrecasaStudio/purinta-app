@@ -1,0 +1,122 @@
+/*
+ * ═══════════════════════════════════════════════════════════
+ * PURINTA — shadcn/ui CSS Variables Override
+ * Palette from Figma Landing Page (node 841:2028)
+ * ═══════════════════════════════════════════════════════════
+ */
+
+@layer base {
+  :root {
+    /* ── shadcn/ui base overrides ── */
+    --background: 40 30% 98%;              /* #FAF8F5 (warm white) */
+    --foreground: 0 0% 20%;                /* #333333 (body text) */
+
+    --card: 0 0% 100%;                     /* white */
+    --card-foreground: 0 0% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+
+    /* Primary = Purinta Green-500 from Figma */
+    --primary: 151 44% 35%;                /* #318159 */
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary = Pastel Green */
+    --secondary: 107 95% 90%;              /* #E4FECD */
+    --secondary-foreground: 147 57% 21%;   /* #185229 */
+
+    /* Muted = Warm gray */
+    --muted: 36 15% 95%;                   /* #F3F1ED */
+    --muted-foreground: 220 10% 46%;       /* #6B7380 (AA-safe) */
+
+    /* Accent = Pastel Peach (kawaii) */
+    --accent: 18 100% 88%;                 /* #FFD9C4 */
+    --accent-foreground: 0 0% 20%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border & Input — warm neutral tones */
+    --border: 36 15% 95%;                  /* #F3F1ED */
+    --input: 34 14% 87%;                   /* #E5E1DA */
+    --ring: 151 44% 35%;                   /* Green-500 — focus ring */
+
+    /* Radius */
+    --radius: 0.75rem;
+
+    /* ── Purinta custom HSL vars (from Figma landing) ── */
+    /* Green scale */
+    --purinta-green-50: 76 100% 96%;       /* #FBFFEA */
+    --purinta-green-100: 107 95% 90%;      /* #E4FECD */
+    --purinta-green-200: 95 90% 83%;       /* #DDFAAF */
+    --purinta-green-300: 102 46% 66%;      /* #9DD081 */
+    --purinta-green-400: 134 22% 56%;      /* #70AD75 */
+    --purinta-green-500: 151 44% 35%;      /* #318159 */
+    --purinta-green-600: 148 48% 25%;      /* #215E39 */
+    --purinta-green-700: 147 57% 21%;      /* #185229 */
+    --purinta-green-800: 153 76% 13%;      /* #083C20 */
+
+    /* Pastel card backgrounds */
+    --purinta-pastel-green: 107 95% 90%;   /* #E4FECD */
+    --purinta-pastel-lime: 66 75% 91%;     /* #F7FAD8 */
+    --purinta-pastel-peach: 18 100% 88%;   /* #FFD9C4 */
+    --purinta-pastel-salmon: 7 100% 95%;   /* #FFE6E3 */
+    --purinta-pastel-yellow: 48 83% 92%;   /* #FDF8DB */
+    --purinta-pastel-mint: 76 100% 96%;    /* #FBFFEA */
+
+    /* Pink / blush (kawaii accents) */
+    --purinta-pink-50: 7 100% 95%;         /* #FFE6E3 */
+    --purinta-pink-100: 18 100% 88%;       /* #FFD9C4 */
+    --purinta-pink-200: 0 55% 85%;         /* #F2C4C4 */
+    --purinta-pink-300: 0 55% 81%;         /* #EDB1B1 */
+    --purinta-pink-400: 0 56% 77%;         /* #E8A0A0 */
+    --purinta-pink-500: 0 50% 67%;         /* #DA7C7C */
+
+    /* Shadow tokens */
+    --shadow-cute: 0 4px 16px rgba(232, 160, 160, 0.15);
+    --shadow-green: 0 4px 12px rgba(26, 58, 42, 0.08);
+    --shadow-card: 0 2px 8px rgba(26, 58, 42, 0.04), 0 8px 24px rgba(26, 58, 42, 0.06);
+  }
+
+  .dark {
+    --background: 153 76% 10%;             /* near #0F2419 */
+    --foreground: 40 30% 98%;              /* #FAF8F5 */
+
+    --card: 153 60% 12%;
+    --card-foreground: 40 30% 98%;
+
+    --primary: 134 22% 56%;                /* Green-400: #70AD75 */
+    --primary-foreground: 153 76% 10%;
+
+    --secondary: 153 76% 13%;              /* Green-800 */
+    --secondary-foreground: 107 95% 90%;
+
+    --muted: 153 60% 12%;
+    --muted-foreground: 30 14% 72%;
+
+    --accent: 0 56% 77%;                   /* Pink-400 */
+    --accent-foreground: 0 0% 100%;
+
+    --border: 148 30% 18%;
+    --input: 148 30% 18%;
+    --ring: 134 22% 56%;
+  }
+}
+
+/* ── FONT IMPORTS ── */
+/* Add to <head> of your layout:
+   <link rel="stylesheet" href="https://use.typekit.net/rne3qwz.css">
+   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+*/
+
+@layer base {
+  body {
+    font-family: "Rubik", sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2 {
+    font-family: "ohno-softie-variable", "Fredoka", "Nunito", sans-serif;
+  }
+}
