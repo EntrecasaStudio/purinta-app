@@ -1,0 +1,187 @@
+{
+  "version": "1.0",
+  "collections": [
+    {
+      "name": "Typography Scale",
+      "modes": ["Default"],
+      "variables": [
+        { "name": "Scale/Base", "type": "FLOAT", "values": { "Default": 16 }, "description": "Base size — ratio 1.25 (Major Third)" },
+        { "name": "Scale/Ratio", "type": "FLOAT", "values": { "Default": 1.25 } },
+
+        { "name": "Size/3xs", "type": "FLOAT", "values": { "Default": 8 }, "description": "Step -3 — micro labels" },
+        { "name": "Size/2xs", "type": "FLOAT", "values": { "Default": 10 }, "description": "Step -2 — risk tags, small caps" },
+        { "name": "Size/xs", "type": "FLOAT", "values": { "Default": 13 }, "description": "Step -1 — labels, captions, slider info" },
+        { "name": "Size/sm", "type": "FLOAT", "values": { "Default": 16 }, "description": "Step 0 — body, buttons, UI base" },
+        { "name": "Size/md", "type": "FLOAT", "values": { "Default": 20 }, "description": "Step +1 — Supply/Borrow subtitles" },
+        { "name": "Size/lg", "type": "FLOAT", "values": { "Default": 25 }, "description": "Step +2 — section titles, Borrow against" },
+        { "name": "Size/xl", "type": "FLOAT", "values": { "Default": 31 }, "description": "Step +3 — hero title, page titles" },
+        { "name": "Size/2xl", "type": "FLOAT", "values": { "Default": 39 }, "description": "Step +4 — display amounts" },
+        { "name": "Size/3xl", "type": "FLOAT", "values": { "Default": 49 }, "description": "Step +5 — hero display" },
+
+        { "name": "Line Height/3xs", "type": "FLOAT", "values": { "Default": 11 } },
+        { "name": "Line Height/2xs", "type": "FLOAT", "values": { "Default": 14 } },
+        { "name": "Line Height/xs", "type": "FLOAT", "values": { "Default": 18 } },
+        { "name": "Line Height/sm", "type": "FLOAT", "values": { "Default": 22 } },
+        { "name": "Line Height/md", "type": "FLOAT", "values": { "Default": 28 } },
+        { "name": "Line Height/lg", "type": "FLOAT", "values": { "Default": 30 } },
+        { "name": "Line Height/xl", "type": "FLOAT", "values": { "Default": 37 } },
+        { "name": "Line Height/2xl", "type": "FLOAT", "values": { "Default": 47 } },
+        { "name": "Line Height/3xl", "type": "FLOAT", "values": { "Default": 59 } },
+
+        { "name": "Font/Display", "type": "STRING", "values": { "Default": "ohno-softie-variable" }, "description": "Titles, amounts, buttons" },
+        { "name": "Font/UI", "type": "STRING", "values": { "Default": "Rubik" }, "description": "Body, labels, secondary text" },
+
+        { "name": "Weight/Display Light", "type": "FLOAT", "values": { "Default": 300 } },
+        { "name": "Weight/Display Regular", "type": "FLOAT", "values": { "Default": 400 }, "description": "Default for Ohno Softie" },
+        { "name": "Weight/Display Medium", "type": "FLOAT", "values": { "Default": 500 } },
+        { "name": "Weight/Display SemiBold", "type": "FLOAT", "values": { "Default": 600 }, "description": "Hero title emphasis" },
+        { "name": "Weight/UI Regular", "type": "FLOAT", "values": { "Default": 400 } },
+        { "name": "Weight/UI Medium", "type": "FLOAT", "values": { "Default": 500 } },
+        { "name": "Weight/UI SemiBold", "type": "FLOAT", "values": { "Default": 600 }, "description": "Risk tags, emphasis" },
+
+        { "name": "Letter Spacing/Display", "type": "FLOAT", "values": { "Default": 0.5 }, "description": "Ohno Softie global" },
+        { "name": "Letter Spacing/Button", "type": "FLOAT", "values": { "Default": 0.8 }, "description": "Buttons need more air" },
+        { "name": "Letter Spacing/Caps", "type": "FLOAT", "values": { "Default": 1.0 }, "description": "Uppercase labels (risk tags, prev)" },
+        { "name": "Letter Spacing/None", "type": "FLOAT", "values": { "Default": 0 }, "description": "Body text Rubik" }
+      ]
+    }
+  ],
+  "textStyles": [
+    {
+      "name": "Display/Hero",
+      "font": "ohno-softie-variable",
+      "size": 31,
+      "weight": 600,
+      "lineHeight": 37,
+      "letterSpacing": 0.5,
+      "usage": "Hero title, main headings"
+    },
+    {
+      "name": "Display/Section",
+      "font": "ohno-softie-variable",
+      "size": 25,
+      "weight": 400,
+      "lineHeight": 30,
+      "letterSpacing": 0.5,
+      "usage": "Borrow against, My Positions, section titles"
+    },
+    {
+      "name": "Display/Subsection",
+      "font": "ohno-softie-variable",
+      "size": 20,
+      "weight": 400,
+      "lineHeight": 28,
+      "letterSpacing": 0.5,
+      "usage": "Supply, Borrow, token names in sliders"
+    },
+    {
+      "name": "Display/Token",
+      "font": "ohno-softie-variable",
+      "size": 20,
+      "weight": 400,
+      "lineHeight": 28,
+      "letterSpacing": 0.5,
+      "usage": "Token names in pills and badges"
+    },
+    {
+      "name": "Display/Amount",
+      "font": "ohno-softie-variable",
+      "size": 39,
+      "weight": 400,
+      "lineHeight": 47,
+      "letterSpacing": 0.3,
+      "usage": "Dollar amounts, big numbers"
+    },
+    {
+      "name": "Display/Stat",
+      "font": "ohno-softie-variable",
+      "size": 25,
+      "weight": 400,
+      "lineHeight": 30,
+      "letterSpacing": 0.3,
+      "usage": "Stats, totals, position values"
+    },
+    {
+      "name": "Button/Primary",
+      "font": "ohno-softie-variable",
+      "size": 16,
+      "weight": 400,
+      "lineHeight": 22,
+      "letterSpacing": 0.8,
+      "usage": "All buttons"
+    },
+    {
+      "name": "Button/Large",
+      "font": "ohno-softie-variable",
+      "size": 20,
+      "weight": 400,
+      "lineHeight": 28,
+      "letterSpacing": 0.8,
+      "usage": "CTA buttons (Borrow Now, Connect Wallet)"
+    },
+    {
+      "name": "UI/Body",
+      "font": "Rubik",
+      "size": 16,
+      "weight": 400,
+      "lineHeight": 22,
+      "letterSpacing": 0,
+      "usage": "Body text, summary labels"
+    },
+    {
+      "name": "UI/Value",
+      "font": "Rubik",
+      "size": 16,
+      "weight": 500,
+      "lineHeight": 22,
+      "letterSpacing": 0,
+      "usage": "Summary values, slider info values"
+    },
+    {
+      "name": "UI/Label",
+      "font": "Rubik",
+      "size": 13,
+      "weight": 400,
+      "lineHeight": 18,
+      "letterSpacing": 0,
+      "usage": "Supplying, Borrowing, detail labels"
+    },
+    {
+      "name": "UI/Caption",
+      "font": "Rubik",
+      "size": 13,
+      "weight": 500,
+      "lineHeight": 18,
+      "letterSpacing": 0,
+      "usage": "Slider info, detail item values"
+    },
+    {
+      "name": "UI/Small",
+      "font": "Rubik",
+      "size": 10,
+      "weight": 600,
+      "lineHeight": 14,
+      "letterSpacing": 1.0,
+      "textTransform": "uppercase",
+      "usage": "Risk tags, prev labels, badges"
+    },
+    {
+      "name": "UI/Micro",
+      "font": "Rubik",
+      "size": 10,
+      "weight": 400,
+      "lineHeight": 14,
+      "letterSpacing": 0.5,
+      "usage": "Prev marker, footnotes"
+    },
+    {
+      "name": "UI/Wallet",
+      "font": "Rubik",
+      "size": 13,
+      "weight": 500,
+      "lineHeight": 18,
+      "letterSpacing": 0,
+      "usage": "Wallet address badge"
+    }
+  ]
+}
