@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Purinta — App UI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Baloo+2:wght@400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/rne3qwz.css">
   <style>
     :root {
       /* Green — aligned to mascot SVG palette */
@@ -48,6 +49,19 @@
 
     /* PHONE FRAME */
     .phone { width: 375px; background: var(--gray-50); border-radius: 32px; overflow: hidden; box-shadow: 0 24px 64px rgba(0,0,0,0.15); position: relative; }
+
+    /* FONT TOGGLE */
+    .font-toggle {
+      display: flex; background: #1a1a2e; padding: 6px 8px; gap: 4px;
+      justify-content: center; border-bottom: 1px solid var(--gray-700);
+    }
+    .font-btn {
+      font-family: var(--font-ui); font-size: 12px; font-weight: 500;
+      padding: 6px 16px; border-radius: var(--r-full); border: 1.5px solid var(--gray-500);
+      cursor: pointer; background: transparent; color: var(--gray-400); transition: all 0.2s;
+    }
+    .font-btn.active { background: white; color: var(--gray-900); border-color: white; }
+    .font-btn:hover:not(.active) { color: white; border-color: var(--gray-300); }
 
     /* NAV TABS (screen switcher) */
     .screen-nav { display: flex; background: var(--gray-900); padding: 8px; gap: 4px; flex-wrap: wrap; }
@@ -626,11 +640,68 @@
     .update-arrow .old { color: var(--text-secondary); text-decoration: line-through; }
     .update-arrow .arr { color: var(--green-500); }
     .update-arrow .new { color: var(--green-700); font-weight: 500; }
+    /* Fredoka optical adjustments — slightly larger */
+    body.font-fredoka .btn { font-size: 15px; font-weight: 400; }
+    body.font-fredoka .btn-lg { font-size: 17px; }
+    body.font-fredoka .borrow-title { font-size: 24px; }
+    body.font-fredoka .slider-label-text { font-size: 20px; }
+    body.font-fredoka .token-select { font-size: 20px; }
+    body.font-fredoka .slider-token-badge { font-size: 20px; }
+    body.font-fredoka .token-pair-name { font-size: 18px; }
+    body.font-fredoka .hero-title { font-size: 28px; }
+    body.font-fredoka .summary-amount { font-size: 34px; }
+    body.font-fredoka .modal-amount { font-size: 34px; }
+    body.font-fredoka .positions-title { font-size: 26px; }
+    body.font-fredoka .total-value { font-size: 24px; }
+    body.font-fredoka .stat-big { font-size: 24px; }
+    body.font-fredoka .position-name { font-size: 18px; }
+    body.font-fredoka .token-action .btn { font-size: 15px; }
+
+    /* Ohno Softie optical adjustments — larger size, lighter weight */
+    body.font-ohno { letter-spacing: 0.5px; }
+    body.font-ohno .btn { font-size: 16px; font-weight: 400; letter-spacing: 0.5px; }
+    body.font-ohno .btn-lg { font-size: 18px; }
+    body.font-ohno .borrow-title { font-size: 24px; font-weight: 400; }
+    body.font-ohno .slider-label-text { font-size: 20px; font-weight: 400; }
+    body.font-ohno .token-select { font-size: 20px; font-weight: 400; }
+    body.font-ohno .slider-token-badge { font-size: 20px; font-weight: 400; }
+    body.font-ohno .token-pair-name { font-size: 18px; font-weight: 400; }
+    body.font-ohno .hero-title { font-size: 28px; font-weight: 400; }
+    body.font-ohno .summary-amount { font-size: 34px; font-weight: 400; }
+    body.font-ohno .modal-amount { font-size: 34px; font-weight: 400; }
+    body.font-ohno .positions-title { font-size: 26px; font-weight: 400; }
+    body.font-ohno .total-value { font-size: 24px; font-weight: 400; }
+    body.font-ohno .stat-big { font-size: 24px; font-weight: 400; }
+    body.font-ohno .position-name { font-size: 18px; font-weight: 400; }
+    body.font-ohno .token-action .btn { font-size: 16px; }
+
+    /* Baloo 2 optical adjustments — similar to Fredoka */
+    body.font-baloo .btn { font-size: 15px; }
+    body.font-baloo .btn-lg { font-size: 17px; }
+    body.font-baloo .borrow-title { font-size: 24px; }
+    body.font-baloo .slider-label-text { font-size: 20px; }
+    body.font-baloo .token-select { font-size: 20px; }
+    body.font-baloo .slider-token-badge { font-size: 20px; }
+    body.font-baloo .token-pair-name { font-size: 18px; }
+    body.font-baloo .hero-title { font-size: 28px; }
+    body.font-baloo .summary-amount { font-size: 34px; }
+    body.font-baloo .modal-amount { font-size: 34px; }
+    body.font-baloo .positions-title { font-size: 26px; }
+    body.font-baloo .total-value { font-size: 24px; }
+    body.font-baloo .stat-big { font-size: 24px; }
+    body.font-baloo .position-name { font-size: 18px; }
+    body.font-baloo .token-action .btn { font-size: 15px; }
   </style>
 </head>
-<body>
+<body class="font-fredoka">
 
 <div class="phone">
+  <!-- FONT TOGGLE -->
+  <div class="font-toggle">
+    <button class="font-btn active" data-font="'Fredoka', 'Nunito', sans-serif" data-adjust="fredoka">Fredoka</button>
+    <button class="font-btn" data-font="'ohno-softie-variable', 'Fredoka', sans-serif" data-adjust="ohno">Ohno Softie</button>
+    <button class="font-btn" data-font="'Baloo 2', 'Nunito', sans-serif" data-adjust="baloo">Baloo 2</button>
+  </div>
   <!-- SCREEN NAVIGATOR -->
   <div class="screen-nav">
     <button class="active" onclick="showScreen('homepage')">Homepage</button>
@@ -1136,6 +1207,19 @@ function showScreen(id) {
   var hash = location.hash.replace('#', '');
   if (hash && document.getElementById(hash)) showScreen(hash);
 })();
+
+// Font toggle
+document.querySelectorAll('.font-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    var fontVal = btn.getAttribute('data-font');
+    var adj = btn.getAttribute('data-adjust');
+    document.documentElement.style.setProperty('--font-display', fontVal);
+    document.body.classList.remove('font-fredoka', 'font-ohno', 'font-baloo');
+    document.body.classList.add('font-' + adj);
+  });
+});
 
 // Make percentage buttons interactive
 document.querySelectorAll('.pct-buttons').forEach(group => {
