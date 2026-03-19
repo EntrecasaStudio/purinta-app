@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Purinta — App UI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/rne3qwz.css">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       /* Green — aligned to mascot SVG palette */
@@ -31,7 +32,7 @@
       --text-secondary: #6B7380;  /* Figma Raven darkened, 4.78:1 — AA pass */
       --text-heading: #185229;    /* Figma heading green, 9.22:1 */
       --text-muted: #B0B0B0;     /* Figma muted — decorative only */
-      --font-display: 'Fredoka', 'Nunito', sans-serif;
+      --font-display: 'ohno-softie-variable', 'Fredoka', 'Nunito', sans-serif;
       --font-ui: 'Rubik', sans-serif;
       --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-full: 9999px;
       --shadow-sm: 0 1px 3px rgba(26,58,42,0.06);
@@ -48,6 +49,9 @@
 
     /* PHONE FRAME */
     .phone { width: 390px; background: var(--gray-50); border-radius: 32px; overflow: hidden; box-shadow: 0 24px 64px rgba(0,0,0,0.15); position: relative; }
+
+    /* FONT TOGGLE (hidden in v2) */
+    .font-toggle { display: none; }
 
     /* NAV TABS (screen switcher) */
     .screen-nav { display: none; background: var(--gray-900); padding: 8px; gap: 4px; flex-wrap: wrap; }
@@ -153,13 +157,13 @@
     .hero-mascot {
       width: 100%; aspect-ratio: 857 / 933; position: relative;
       transform: scaleX(-1);
-      animation: hero-float 4s ease-in-out infinite;
+      
     }
     .hero-mascot-shadow {
       display: block; width: 100px; height: 14px; margin: 4px auto 0;
       background: radial-gradient(ellipse, rgba(24,82,41,0.18) 0%, rgba(24,82,41,0.06) 50%, transparent 80%);
       border-radius: 50%;
-      animation: hero-shadow 4s ease-in-out infinite;
+      
     }
     @keyframes hero-float {
       0%, 100% { transform: scaleX(-1) translateY(0); }
@@ -183,10 +187,10 @@
     }
     .hero-blob svg {
       width: 100%; height: 100%;
-      animation: blob-drift 18s ease-in-out infinite;
+      
     }
     .hero-blob svg path {
-      animation: blob-morph 12s ease-in-out infinite;
+      
       transform-origin: center;
     }
     @keyframes blob-drift {
@@ -406,7 +410,7 @@
       transform: translate(-50%, -55%);
       z-index: 0;
       opacity: 0.4;
-      animation: mascot-blob-morph 6s ease-in-out infinite;
+      
     }
     .mascot-blob svg { width: 100%; height: 100%; }
     @keyframes mascot-blob-morph {
@@ -420,7 +424,7 @@
     .mascot-illustration {
       width: 90px; max-width: 80%; height: auto; position: relative; z-index: 1;
       filter: drop-shadow(0 3px 8px rgba(8, 60, 32, 0.12));
-      animation: mascot-bob 3s ease-in-out infinite;
+      
       object-fit: contain;
     }
     @keyframes mascot-bob {
@@ -470,7 +474,7 @@
       position: absolute; width: 150px; height: 150px; border-radius: 50%;
       background: var(--green-100);
       top: 50%; left: 50%; transform: translate(-50%, -50%);
-      animation: confirm-pulse 3s ease-in-out infinite;
+      
     }
     @keyframes confirm-pulse {
       0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
@@ -479,11 +483,11 @@
     .confirm-img {
       width: 100%; height: auto; display: block; position: relative; z-index: 1;
       filter: drop-shadow(0 4px 12px rgba(8, 60, 32, 0.15));
-      animation: mascot-bob 3s ease-in-out infinite;
+      
     }
     .confirm-star {
       position: absolute; z-index: 2; opacity: 0;
-      animation: star-twinkle 2s ease-in-out infinite;
+      
     }
     .confirm-star svg { width: 100%; height: 100%; }
     .confirm-star:nth-child(2) { top: 5px; right: 10px; width: 18px; height: 18px; animation-delay: 0s; }
@@ -515,7 +519,7 @@
       margin: 20px 0 0; text-align: left;
     }
     .modal-message-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-    .modal-message-icon svg { animation: clock-tick 2s linear infinite; transform-origin: center; }
+    .modal-message-icon svg {  transform-origin: center; }
     @keyframes clock-tick {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -528,7 +532,7 @@
     .modal-progress-bar {
       height: 100%; border-radius: 0;
       background: linear-gradient(90deg, var(--green-300), var(--green-400));
-      animation: progress-slide 2.5s ease-in-out infinite;
+      
     }
     @keyframes progress-slide {
       0% { width: 0%; margin-left: 0; }
@@ -540,7 +544,7 @@
     }
     .modal-dots span {
       width: 4px; height: 4px; border-radius: 50%;
-      background: var(--green-400); animation: dot-pulse 1.4s ease-in-out infinite;
+      background: var(--green-400); 
     }
     .modal-dots span:nth-child(2) { animation-delay: 0.2s; }
     .modal-dots span:nth-child(3) { animation-delay: 0.4s; }
@@ -626,12 +630,42 @@
     .update-arrow .old { color: var(--text-secondary); text-decoration: line-through; }
     .update-arrow .arr { color: var(--green-500); }
     .update-arrow .new { color: var(--green-700); font-weight: 500; }
+    /* Ohno Softie — v2 default display font */
+    .btn { font-size: 16px; font-weight: 400; letter-spacing: 0.8px; }
+    .btn-lg { font-size: 18px; }
+    .borrow-title { font-size: 24px; font-weight: 400; }
+    .slider-label-text { font-size: 20px; font-weight: 400; }
+    .token-select { font-size: 20px; font-weight: 400; }
+    .slider-token-badge { font-size: 20px; font-weight: 400; }
+    .token-pair-name { font-size: 18px; font-weight: 400; }
+    .hero-title { font-size: 32px; font-weight: 600; }
+    .summary-amount { font-size: 34px; font-weight: 400; }
+    .modal-amount { font-size: 34px; font-weight: 400; }
+    .positions-title { font-size: 26px; font-weight: 400; }
+    .total-value { font-size: 24px; font-weight: 400; }
+    .stat-big { font-size: 24px; font-weight: 400; }
+    .position-name { font-size: 18px; font-weight: 400; }
+    .token-action .btn { font-size: 16px; }
   </style>
 </head>
-<body>
+<body style="letter-spacing: 0.5px;">
 
 <div class="phone">
-  
+  <!-- FONT TOGGLE -->
+  <div class="font-toggle">
+    <button class="font-btn active" data-font="'Fredoka', 'Nunito', sans-serif" data-adjust="fredoka">Fredoka</button>
+    <button class="font-btn" data-font="'ohno-softie-variable', 'Fredoka', sans-serif" data-adjust="ohno">Ohno Softie</button>
+    <button class="font-btn" data-font="'Baloo 2', 'Nunito', sans-serif" data-adjust="baloo">Baloo 2</button>
+  </div>
+  <!-- SCREEN NAVIGATOR -->
+  <div class="screen-nav">
+    <button class="active" onclick="showScreen('homepage')">Homepage</button>
+    <button onclick="showScreen('borrow')">Borrow</button>
+    <button onclick="showScreen('borrow-connected')">Borrow (wallet)</button>
+    <button onclick="showScreen('confirm')">Confirmation</button>
+    <button onclick="showScreen('positions')">My Positions</button>
+    <button onclick="showScreen('update')">Modify Position</button>
+  </div>
 
   <!-- ═══ SCREEN 1: HOMEPAGE ═══ -->
   <div id="homepage" class="screen">
@@ -708,7 +742,7 @@
           <div class="token-pair-name">WIF / USDC</div>
         </div>
         <div class="token-action"><button class="btn btn-secondary"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Invest</button></div>
-      </div>
+      </div></div>
     </div>
     <div class="app-footer">
       <a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a>
@@ -949,63 +983,70 @@
         <span class="total-value">$2.3K</span>
       </div>
 
-      <!-- Position 1 -->
+      <!-- Position 1 — with heart health system -->
       <div class="position-card">
         <div class="position-header">
-          <span class="position-name"><span class="mini-icon pepe" style="width: 36px; height: 36px;"></span> PEPE</span>
+          <span class="position-name"><span class="mini-icon pepe" style="width: 36px; height: 36px;"></span> tkcollateral</span>
         </div>
         <div class="position-stats">
-          <div><div class="stat-big">$25,240K</div><div class="stat-label">Loan</div></div>
-          <div style="text-align: right;"><div class="stat-big accent">12.5%</div><div class="stat-label">Interest Rate</div></div>
+          <div><div class="stat-big">$25,240K</div><div class="stat-label">Borrowing</div></div>
+          <div style="text-align: right;"><div class="stat-big accent">12.5%<span style="font-size: 14px; color: var(--text-secondary);"> /yr</span></div><div class="stat-label">Borrow Rate</div></div>
         </div>
         <div class="position-divider"></div>
         <div class="detail-row">
-          <div class="detail-item"><div class="detail-item-label">(Token) Price</div><div class="detail-item-value">$0.041200</div></div>
-          <div class="detail-item"><div class="detail-item-label">LIQ Price</div><div class="detail-item-value">$0.05714%</div></div>
-          <div class="detail-item"><div class="detail-item-label">Risk</div><div><span class="risk-tag low">Low</span></div></div>
+          <div class="detail-item"><div class="detail-item-label">(Token) Price</div><div class="detail-item-value">$0,0<span style="font-size: 9px; vertical-align: baseline;">4</span>1200</div></div>
+          <div class="detail-item" style="text-align: right;"><div class="detail-item-label">Liquidation Price (USDC)</div><div class="detail-item-value">0.098 (-61.8%)</div></div>
         </div>
-        <div class="risk-section">
-          <div class="risk-header">
-            <span class="risk-label">Risk</span>
-            <div><span style="font-size: 11px; color: var(--text-secondary);">Distance to LIQ</span> <span class="risk-value low">52.4%</span></div>
+        <div class="position-divider"></div>
+        <div style="margin-bottom: 16px;">
+          <div class="detail-item-label" style="margin-bottom: 8px;">Health</div>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" stroke="var(--green-600)" stroke-width="1.5"><defs><linearGradient id="half"><stop offset="50%" stop-color="var(--green-400)"/><stop offset="50%" stop-color="var(--gray-200)"/></linearGradient></defs><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" fill="url(#half)"/></svg>
           </div>
-          <div class="risk-bar-track"><div class="risk-bar-fill low" style="width: 47.6%"></div></div>
         </div>
         <div class="position-divider"></div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg> Update Loan</button>
-          <button class="btn btn-ghost">Repay</button>
+          <button class="btn btn-secondary" onclick="showScreen('update')"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Modify Position</button>
+          <button class="btn btn-ghost"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 100-6.68L1 10"/></svg> Quick Repay</button>
         </div>
       </div>
 
       <!-- Position 2 -->
+      <!-- Position 2 hidden for Figma --><div style="display:none;">
       <div class="position-card">
         <div class="position-header">
-          <span class="position-name"><span class="mini-icon eth" style="width: 36px; height: 36px;"></span> ETH</span>
+          <span class="position-name"><span class="mini-icon eth" style="width: 36px; height: 36px;"></span> tkcollateral</span>
         </div>
         <div class="position-stats">
-          <div><div class="stat-big">$25,240K</div><div class="stat-label">Loan</div></div>
-          <div style="text-align: right;"><div class="stat-big accent">12.5%</div><div class="stat-label">Interest Rate</div></div>
+          <div><div class="stat-big">$25,240K</div><div class="stat-label">Borrowing</div></div>
+          <div style="text-align: right;"><div class="stat-big accent">12.5%<span style="font-size: 14px; color: var(--text-secondary);"> /yr</span></div><div class="stat-label">Borrow Rate</div></div>
         </div>
         <div class="position-divider"></div>
         <div class="detail-row">
-          <div class="detail-item"><div class="detail-item-label">(Token) Price</div><div class="detail-item-value">$0.041200</div></div>
-          <div class="detail-item"><div class="detail-item-label">LIQ Price</div><div class="detail-item-value">$0.05714%</div></div>
-          <div class="detail-item"><div class="detail-item-label">Risk</div><div><span class="risk-tag none">None</span></div></div>
+          <div class="detail-item"><div class="detail-item-label">(Token) Price</div><div class="detail-item-value">$0,0<span style="font-size: 9px; vertical-align: baseline;">4</span>1200</div></div>
+          <div class="detail-item" style="text-align: right;"><div class="detail-item-label">Liquidation Price (USDC)</div><div class="detail-item-value">0.098 (-61.8%)</div></div>
         </div>
-        <div class="risk-section">
-          <div class="risk-header">
-            <span class="risk-label">Risk</span>
-            <div><span style="font-size: 11px; color: var(--text-secondary);">Distance to LIQ</span> <span class="risk-value low">100%</span></div>
+        <div class="position-divider"></div>
+        <div style="margin-bottom: 16px;">
+          <div class="detail-item-label" style="margin-bottom: 8px;">Health</div>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--gray-200)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
           </div>
-          <div class="risk-bar-track"><div class="risk-bar-fill low" style="width: 0%"></div></div>
         </div>
         <div class="position-divider"></div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg> Update Loan</button>
-          <button class="btn btn-ghost">Repay</button>
+          <button class="btn btn-secondary" onclick="showScreen('update')"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Modify Position</button>
+          <button class="btn btn-ghost"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 100-6.68L1 10"/></svg> Quick Repay</button>
         </div>
-      </div>
+      </div></div>
     </div>
     <div class="app-footer">
       <a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a>
@@ -1025,12 +1066,7 @@
     <div class="borrow-content">
       <div class="borrow-header">
         <div class="borrow-title">
-          Update Loan
-          <span class="token-select">
-            <span class="mini-icon pepe"></span>
-            PEPE
-            <span class="chevron">▼</span>
-          </span>
+          Modify Position
         </div>
         <button class="close-btn" aria-label="Close" onclick="showScreen('positions')">✕</button>
       </div>
@@ -1108,7 +1144,7 @@
       </div>
     </div>
     <div class="borrow-cta">
-      <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('confirm')"><svg class="btn-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg> Update Loan</button>
+      <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('confirm')"><svg class="btn-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg> Modify Position</button>
     </div>
   </div>
 </div>
@@ -1128,6 +1164,7 @@ function showScreen(id) {
   var hash = location.hash.replace('#', '');
   if (hash && document.getElementById(hash)) showScreen(hash);
 })();
+
 
 // Make percentage buttons interactive
 document.querySelectorAll('.pct-buttons').forEach(group => {
@@ -1308,8 +1345,6 @@ document.querySelectorAll('.pct-buttons').forEach(group => {
   });
 })();
 </script>
-
-
 
 <script>showScreen('positions');</script>
 </body>

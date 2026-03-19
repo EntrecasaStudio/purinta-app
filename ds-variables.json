@@ -1,0 +1,87 @@
+{
+  "version": "1.0",
+  "collections": [
+    {
+      "name": "Purinta DS",
+      "modes": ["Default"],
+      "variables": [
+        { "name": "Color/Green/200", "type": "COLOR", "values": { "Default": "#9ECF84" } },
+        { "name": "Color/Green/300", "type": "COLOR", "values": { "Default": "#78BA68" } },
+        { "name": "Color/Green/400", "type": "COLOR", "values": { "Default": "#57A053" } },
+        { "name": "Color/Green/500", "type": "COLOR", "values": { "Default": "#498746" } },
+        { "name": "Color/Green/600", "type": "COLOR", "values": { "Default": "#39763D" } },
+        { "name": "Color/Green/700", "type": "COLOR", "values": { "Default": "#185229" } },
+        { "name": "Color/Green/800", "type": "COLOR", "values": { "Default": "#144D26" } },
+
+        { "name": "Color/Cream/200", "type": "COLOR", "values": { "Default": "#FFFDEA" } },
+        { "name": "Color/Cream/300", "type": "COLOR", "values": { "Default": "#F0EDD4" } },
+        { "name": "Color/Cream/400", "type": "COLOR", "values": { "Default": "#E5E1BE" } },
+        { "name": "Color/Cream/500", "type": "COLOR", "values": { "Default": "#D6D2B2" } },
+        { "name": "Color/Cream/600", "type": "COLOR", "values": { "Default": "#CAC5A0" } },
+
+        { "name": "Color/Blush/500", "type": "COLOR", "values": { "Default": "#FEAAA4" } },
+        { "name": "Color/Blush/400", "type": "COLOR", "values": { "Default": "#FFD9C4" } },
+        { "name": "Color/Blush/300", "type": "COLOR", "values": { "Default": "#FFE6E3" } },
+
+        { "name": "Color/White", "type": "COLOR", "values": { "Default": "#FEFEFE" } },
+
+        { "name": "Color/Neutral/Background", "type": "COLOR", "values": { "Default": "#FAF8F5" } },
+        { "name": "Color/Neutral/Card", "type": "COLOR", "values": { "Default": "#FFFFFF" } },
+        { "name": "Color/Neutral/Border Light", "type": "COLOR", "values": { "Default": "#F3F1ED" } },
+        { "name": "Color/Neutral/Border", "type": "COLOR", "values": { "Default": "#E5E1DA" } },
+        { "name": "Color/Neutral/Border Dark", "type": "COLOR", "values": { "Default": "#D4D0C8" } },
+
+        { "name": "Color/Text/Primary", "type": "COLOR", "values": { "Default": "#333333" } },
+        { "name": "Color/Text/Secondary", "type": "COLOR", "values": { "Default": "#6B7380" } },
+        { "name": "Color/Text/Muted", "type": "COLOR", "values": { "Default": "#B0B0B0" } },
+
+        { "name": "Color/Semantic/Slider Track", "type": "COLOR", "values": { "Default": "#E4F3E9" } },
+        { "name": "Color/Semantic/Button Secondary BG", "type": "COLOR", "values": { "Default": "#F7F8F4" } },
+        { "name": "Color/Semantic/Positive Light", "type": "COLOR", "values": { "Default": "#DAF0E2" } },
+        { "name": "Color/Semantic/Worried Light", "type": "COLOR", "values": { "Default": "#FEECE8" } },
+
+        { "name": "Radius/sm", "type": "FLOAT", "values": { "Default": 8 } },
+        { "name": "Radius/md", "type": "FLOAT", "values": { "Default": 12 } },
+        { "name": "Radius/lg", "type": "FLOAT", "values": { "Default": 16 } },
+        { "name": "Radius/xl", "type": "FLOAT", "values": { "Default": 24 } },
+        { "name": "Radius/card", "type": "FLOAT", "values": { "Default": 28 } },
+        { "name": "Radius/full", "type": "FLOAT", "values": { "Default": 9999 } },
+
+        { "name": "Spacing/4", "type": "FLOAT", "values": { "Default": 4 } },
+        { "name": "Spacing/8", "type": "FLOAT", "values": { "Default": 8 } },
+        { "name": "Spacing/12", "type": "FLOAT", "values": { "Default": 12 } },
+        { "name": "Spacing/16", "type": "FLOAT", "values": { "Default": 16 } },
+        { "name": "Spacing/20", "type": "FLOAT", "values": { "Default": 20 } },
+        { "name": "Spacing/24", "type": "FLOAT", "values": { "Default": 24 } },
+        { "name": "Spacing/32", "type": "FLOAT", "values": { "Default": 32 } },
+
+        { "name": "Size/Slider Track Height", "type": "FLOAT", "values": { "Default": 12 } },
+        { "name": "Size/Slider Thumb", "type": "FLOAT", "values": { "Default": 32 } },
+        { "name": "Size/Pct Button W", "type": "FLOAT", "values": { "Default": 64 } },
+        { "name": "Size/Pct Button H", "type": "FLOAT", "values": { "Default": 42 } },
+        { "name": "Size/Token Icon Home", "type": "FLOAT", "values": { "Default": 40 } },
+        { "name": "Size/Token Icon Position", "type": "FLOAT", "values": { "Default": 36 } },
+        { "name": "Size/Mini Icon", "type": "FLOAT", "values": { "Default": 25 } },
+
+        { "name": "Typography/Font Display", "type": "STRING", "values": { "Default": "ohno-softie-variable" } },
+        { "name": "Typography/Font UI", "type": "STRING", "values": { "Default": "Rubik" } },
+        { "name": "Typography/Size/Hero Title", "type": "FLOAT", "values": { "Default": 32 } },
+        { "name": "Typography/Size/Section Title", "type": "FLOAT", "values": { "Default": 24 } },
+        { "name": "Typography/Size/Subsection", "type": "FLOAT", "values": { "Default": 20 } },
+        { "name": "Typography/Size/Token Name", "type": "FLOAT", "values": { "Default": 18 } },
+        { "name": "Typography/Size/Button", "type": "FLOAT", "values": { "Default": 16 } },
+        { "name": "Typography/Size/Button LG", "type": "FLOAT", "values": { "Default": 18 } },
+        { "name": "Typography/Size/Body", "type": "FLOAT", "values": { "Default": 14 } },
+        { "name": "Typography/Size/Label", "type": "FLOAT", "values": { "Default": 12 } },
+        { "name": "Typography/Size/Caption", "type": "FLOAT", "values": { "Default": 11 } },
+        { "name": "Typography/Size/Amount", "type": "FLOAT", "values": { "Default": 34 } },
+        { "name": "Typography/Weight/Display", "type": "FLOAT", "values": { "Default": 400 } },
+        { "name": "Typography/Weight/Display Bold", "type": "FLOAT", "values": { "Default": 600 } },
+        { "name": "Typography/Weight/UI", "type": "FLOAT", "values": { "Default": 400 } },
+        { "name": "Typography/Weight/UI Medium", "type": "FLOAT", "values": { "Default": 500 } },
+        { "name": "Typography/Letter Spacing/Display", "type": "FLOAT", "values": { "Default": 0.5 } },
+        { "name": "Typography/Letter Spacing/Button", "type": "FLOAT", "values": { "Default": 0.8 } }
+      ]
+    }
+  ]
+}
