@@ -1,0 +1,71 @@
+{
+  "version": "2.0",
+  "collections": [
+    {
+      "name": "Purinta/Primitives",
+      "modes": ["Default"],
+      "description": "Raw values — the 1.25 scale, font names, spacing, radius. No design decisions.",
+      "variables": [
+        { "name": "Font/Display", "type": "STRING", "values": { "Default": "ohno-softie-variable" } },
+        { "name": "Font/UI", "type": "STRING", "values": { "Default": "Rubik" } },
+
+        { "name": "Scale/Ratio", "type": "FLOAT", "values": { "Default": 1.25 } },
+        { "name": "Scale/Base", "type": "FLOAT", "values": { "Default": 16 } },
+
+        { "name": "Size/3xs", "type": "FLOAT", "values": { "Default": 8 } },
+        { "name": "Size/2xs", "type": "FLOAT", "values": { "Default": 10 } },
+        { "name": "Size/xs", "type": "FLOAT", "values": { "Default": 13 } },
+        { "name": "Size/sm", "type": "FLOAT", "values": { "Default": 16 } },
+        { "name": "Size/md", "type": "FLOAT", "values": { "Default": 20 } },
+        { "name": "Size/lg", "type": "FLOAT", "values": { "Default": 25 } },
+        { "name": "Size/xl", "type": "FLOAT", "values": { "Default": 31 } },
+        { "name": "Size/2xl", "type": "FLOAT", "values": { "Default": 39 } },
+        { "name": "Size/3xl", "type": "FLOAT", "values": { "Default": 49 } },
+        { "name": "Size/4xl", "type": "FLOAT", "values": { "Default": 61 } },
+        { "name": "Size/5xl", "type": "FLOAT", "values": { "Default": 76 } },
+        { "name": "Size/6xl", "type": "FLOAT", "values": { "Default": 95 } },
+        { "name": "Size/7xl", "type": "FLOAT", "values": { "Default": 119 } },
+
+        { "name": "Weight/300", "type": "FLOAT", "values": { "Default": 300 } },
+        { "name": "Weight/400", "type": "FLOAT", "values": { "Default": 400 } },
+        { "name": "Weight/500", "type": "FLOAT", "values": { "Default": 500 } },
+        { "name": "Weight/600", "type": "FLOAT", "values": { "Default": 600 } },
+        { "name": "Weight/700", "type": "FLOAT", "values": { "Default": 700 } },
+
+        { "name": "Letter Spacing/Tight", "type": "FLOAT", "values": { "Default": -0.5 } },
+        { "name": "Letter Spacing/Slightly Tight", "type": "FLOAT", "values": { "Default": -0.3 } },
+        { "name": "Letter Spacing/None", "type": "FLOAT", "values": { "Default": 0 } },
+        { "name": "Letter Spacing/Normal", "type": "FLOAT", "values": { "Default": 0.3 } },
+        { "name": "Letter Spacing/Wide", "type": "FLOAT", "values": { "Default": 0.5 } },
+        { "name": "Letter Spacing/Wider", "type": "FLOAT", "values": { "Default": 0.8 } },
+        { "name": "Letter Spacing/Widest", "type": "FLOAT", "values": { "Default": 1.0 } },
+
+        { "name": "Radius/8", "type": "FLOAT", "values": { "Default": 8 } },
+        { "name": "Radius/12", "type": "FLOAT", "values": { "Default": 12 } },
+        { "name": "Radius/16", "type": "FLOAT", "values": { "Default": 16 } },
+        { "name": "Radius/24", "type": "FLOAT", "values": { "Default": 24 } },
+        { "name": "Radius/28", "type": "FLOAT", "values": { "Default": 28 } },
+        { "name": "Radius/32", "type": "FLOAT", "values": { "Default": 32 } },
+        { "name": "Radius/Full", "type": "FLOAT", "values": { "Default": 9999 } },
+
+        { "name": "Space/2", "type": "FLOAT", "values": { "Default": 2 } },
+        { "name": "Space/4", "type": "FLOAT", "values": { "Default": 4 } },
+        { "name": "Space/6", "type": "FLOAT", "values": { "Default": 6 } },
+        { "name": "Space/8", "type": "FLOAT", "values": { "Default": 8 } },
+        { "name": "Space/10", "type": "FLOAT", "values": { "Default": 10 } },
+        { "name": "Space/12", "type": "FLOAT", "values": { "Default": 12 } },
+        { "name": "Space/14", "type": "FLOAT", "values": { "Default": 14 } },
+        { "name": "Space/16", "type": "FLOAT", "values": { "Default": 16 } },
+        { "name": "Space/20", "type": "FLOAT", "values": { "Default": 20 } },
+        { "name": "Space/24", "type": "FLOAT", "values": { "Default": 24 } },
+        { "name": "Space/32", "type": "FLOAT", "values": { "Default": 32 } },
+        { "name": "Space/40", "type": "FLOAT", "values": { "Default": 40 } },
+        { "name": "Space/48", "type": "FLOAT", "values": { "Default": 48 } },
+
+        { "name": "Border/1", "type": "FLOAT", "values": { "Default": 1 } },
+        { "name": "Border/1.5", "type": "FLOAT", "values": { "Default": 1.5 } },
+        { "name": "Border/2", "type": "FLOAT", "values": { "Default": 2 } }
+      ]
+    }
+  ]
+}

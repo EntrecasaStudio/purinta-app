@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purinta — Type Scale v2 (Ohno Softie + Rubik)</title>
+<link rel="stylesheet" href="https://use.typekit.net/rne3qwz.css">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green-200: #9ECF84; --green-300: #78BA68; --green-400: #57A053;
+  --green-500: #498746; --green-600: #39763D; --green-700: #185229; --green-800: #144D26;
+  --cream-400: #E5E1BE; --blush-500: #FEAAA4;
+  --bg: #FAF8F5; --card: #FFFFFF; --border: #E5E1DA;
+  --text-dark: #333333; --text-mid: #6B7380; --text-light: #B0B0B0;
+  --font-display: 'ohno-softie-variable', 'Nunito', sans-serif;
+  --font-ui: 'Rubik', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--text-dark); -webkit-font-smoothing: antialiased; max-width: 1440px; margin: 0 auto; letter-spacing: 0.3px; }
+
+.header { padding: 60px 80px 48px; border-bottom: 1px solid var(--border); }
+.header-tag { display: inline-flex; align-items: center; gap: 8px; background: white; padding: 6px 16px; border-radius: 30px; font-weight: 700; font-size: 10px; color: var(--green-600); letter-spacing: 1.5px; text-transform: uppercase; box-shadow: 0 2px 12px rgba(26,58,42,0.06); margin-bottom: 20px; }
+.header-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blush-500); }
+.header h1 { font-family: var(--font-display); font-weight: 600; font-size: 42px; color: var(--green-700); line-height: 1.2; margin-bottom: 12px; letter-spacing: 0.5px; }
+.header p { font-size: 16px; color: var(--text-mid); line-height: 1.7; max-width: 780px; }
+
+.section { padding: 56px 80px; border-bottom: 1px solid var(--border); }
+.section:last-of-type { border-bottom: none; }
+.section-label { font-family: var(--font-ui); font-weight: 700; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); margin-bottom: 8px; }
+.section-title { font-family: var(--font-display); font-weight: 500; font-size: 25px; color: var(--green-700); margin-bottom: 6px; letter-spacing: 0.5px; }
+.section-desc { font-size: 13px; color: var(--text-mid); line-height: 1.7; max-width: 700px; margin-bottom: 32px; }
+
+.info-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+.info-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(26,58,42,0.04); }
+.info-card h4 { font-family: var(--font-display); font-weight: 500; font-size: 13px; color: var(--green-600); margin-bottom: 8px; letter-spacing: 0.5px; }
+.info-card p { font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+.info-card .scale-ratio { font-family: var(--font-display); font-weight: 400; font-size: 31px; color: var(--green-700); margin-bottom: 4px; }
+.info-card .scale-name { font-size: 10px; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+.type-table-wrap { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(26,58,42,0.05); margin-bottom: 32px; }
+.type-table-header { padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f0ede8; }
+.type-table-header h3 { font-family: var(--font-display); font-weight: 500; font-size: 16px; color: var(--green-700); }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; }
+.badge.display { background: #e4f3e9; color: var(--green-600); }
+.badge.ui { background: #f0ede8; color: var(--text-mid); }
+
+table { width: 100%; border-collapse: collapse; }
+thead th { text-align: left; padding: 14px 28px; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-light); border-bottom: 2px solid #f0ede8; background: #faf8f5; }
+thead th:first-child { width: 100px; }
+thead th:nth-child(2) { width: 60px; }
+thead th:nth-child(3) { width: 50px; }
+thead th:nth-child(4) { width: 70px; }
+thead th:nth-child(5) { width: 60px; }
+tbody tr { border-bottom: 1px solid #f5f2ee; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(120,186,104,0.06); }
+tbody td { padding: 16px 28px; vertical-align: middle; }
+.td-token { font-family: var(--font-ui); font-weight: 600; font-size: 13px; color: var(--green-600); letter-spacing: 0.3px; }
+.td-size { font-family: var(--font-ui); font-weight: 700; font-size: 13px; color: var(--text-dark); }
+.td-lh { font-family: var(--font-ui); font-weight: 500; font-size: 13px; color: var(--text-mid); }
+.td-weight { font-family: var(--font-ui); font-weight: 500; font-size: 10px; color: var(--text-light); }
+.td-ls { font-family: var(--font-ui); font-weight: 500; font-size: 10px; color: var(--text-light); }
+.td-preview { color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
+.td-use { font-size: 10px; font-weight: 600; color: var(--text-light); letter-spacing: 0.3px; line-height: 1.5; }
+tr.hl-green { background: rgba(120,186,104,0.08); }
+
+.compare-strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 32px; }
+.compare-card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 16px rgba(26,58,42,0.04); text-align: center; }
+.compare-card .font-name { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); margin-bottom: 12px; }
+.compare-card .font-sample { font-size: 39px; color: var(--green-700); line-height: 1.2; margin-bottom: 4px; }
+.compare-card .font-chars { font-size: 16px; color: var(--text-mid); line-height: 1.5; margin-bottom: 12px; }
+.compare-card .font-weights { font-size: 10px; color: var(--text-light); font-weight: 600; }
+
+.pairing-preview { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 4px 24px rgba(26,58,42,0.05); margin-bottom: 32px; }
+.pairing-preview h3 { font-family: var(--font-display); font-weight: 500; font-size: 16px; color: var(--green-700); margin-bottom: 24px; }
+.preview-block { padding: 32px; background: var(--bg); border-radius: 16px; margin-bottom: 16px; }
+.preview-block:last-child { margin-bottom: 0; }
+.preview-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); margin-bottom: 16px; }
+
+.min-sizes { background: linear-gradient(135deg, var(--green-700), var(--green-600)); border-radius: 20px; padding: 36px 40px; color: white; margin-bottom: 32px; }
+.min-sizes h4 { font-family: var(--font-display); font-weight: 500; font-size: 16px; margin-bottom: 16px; opacity: 0.9; }
+.min-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.min-item { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; text-align: center; }
+.min-item .min-val { font-family: var(--font-display); font-weight: 400; font-size: 25px; margin-bottom: 2px; }
+.min-item .min-label { font-size: 10px; font-weight: 600; opacity: 0.6; letter-spacing: 0.5px; }
+.min-item .min-context { font-size: 10px; opacity: 0.4; margin-top: 4px; }
+
+.footer-note { padding: 40px 80px; text-align: center; font-size: 13px; color: var(--text-light); border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag"><span class="dot"></span> Purinta Type System v2</div>
+  <h1>Ohno Softie + Rubik</h1>
+  <p>Type system based on Major Third scale (1.25) with 16px base. Ohno Softie as display font (titles, amounts, buttons) and Rubik as UI font (body, labels, data). Optimized for the Purinta mobile-first DApp.</p>
+</div>
+
+<!-- FUNDAMENTALS -->
+<div class="section">
+  <div class="section-label">00 &mdash; Foundations</div>
+  <div class="section-title">1.25 Scale &mdash; Major Third</div>
+  <div class="section-desc">Each step is 1.25x the previous. 13 levels from 3xs (8px) to 7xl (119px). Line-height adjusts inversely: large titles 1.2x, body 1.4x, small text 1.4x.</div>
+
+  <div class="info-row">
+    <div class="info-card">
+      <div class="scale-ratio">1.250</div>
+      <div class="scale-name">Major Third</div>
+      <p style="margin-top:10px;">Balanced harmonic ratio for UI. Generates clear hierarchical contrast without extreme jumps. Ideal for financial interfaces where readability is critical.</p>
+    </div>
+    <div class="info-card">
+      <div class="scale-ratio">16px</div>
+      <div class="scale-name">Base Size (sm)</div>
+      <p style="margin-top:10px;">Base size for body and buttons. WCAG AA compliant. Step 0 of the scale. All other sizes derive from this.</p>
+    </div>
+    <div class="info-card">
+      <div class="scale-ratio">0.5px</div>
+      <div class="scale-name">Letter Spacing</div>
+      <p style="margin-top:10px;">Ohno Softie requires 0.5px global letter-spacing due to its compact x-height. Buttons use 0.8px. Uppercase tags use 1.0px.</p>
+    </div>
+  </div>
+
+  <div class="min-sizes">
+    <h4>Minimum Sizes by Context</h4>
+    <div class="min-grid">
+      <div class="min-item">
+        <div class="min-val">8px</div>
+        <div class="min-label">Micro (3xs)</div>
+        <div class="min-context">Decorative only</div>
+      </div>
+      <div class="min-item">
+        <div class="min-val">10px</div>
+        <div class="min-label">Tags (2xs)</div>
+        <div class="min-context">Risk tags, prev labels</div>
+      </div>
+      <div class="min-item">
+        <div class="min-val">13px</div>
+        <div class="min-label">Labels (xs)</div>
+        <div class="min-context">Info labels, captions</div>
+      </div>
+      <div class="min-item">
+        <div class="min-val">16px</div>
+        <div class="min-label">Body (sm)</div>
+        <div class="min-context">Base text, buttons</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="compare-strip">
+    <div class="compare-card">
+      <div class="font-name">Ohno Softie Variable (Display)</div>
+      <div class="font-sample" style="font-family:var(--font-display); font-weight:400;">Aa Bb Gg</div>
+      <div class="font-chars" style="font-family:var(--font-display); font-weight:400;">Purinta $751,232</div>
+      <div class="font-weights">300 &middot; 400 &middot; 500 &middot; 600 &middot; 700</div>
+    </div>
+    <div class="compare-card">
+      <div class="font-name">Rubik (UI)</div>
+      <div class="font-sample" style="font-family:var(--font-ui); font-weight:500;">Aa Bb Gg</div>
+      <div class="font-chars" style="font-family:var(--font-ui); font-weight:400;">Supplying 210,34B</div>
+      <div class="font-weights">300 &middot; 400 &middot; 500 &middot; 600 &middot; 700</div>
+    </div>
+  </div>
+</div>
+
+<!-- DISPLAY SCALE -->
+<div class="section">
+  <div class="section-label">01 &mdash; Display Scale</div>
+  <div class="section-title">Ohno Softie &mdash; Titles, Amounts, Buttons</div>
+  <div class="section-desc">Kawaii display font with rounded terminals. Weight 400 by default (Ohno Softie already has visual presence). Hero uses 600 for emphasis. Letter-spacing 0.5px global, 0.8px on buttons. <strong>Minimum recommended size: 16px (sm).</strong> Below 16px, Ohno Softie loses legibility due to its rounded terminals and compact x-height &mdash; use Rubik instead for smaller sizes.</div>
+
+  <div class="type-table-wrap">
+    <div class="type-table-header">
+      <h3>Display Font Scale</h3>
+      <span class="badge display">Ohno Softie</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Token</th><th>Size</th><th>LH</th><th>Weight</th><th>LS</th><th>Preview</th><th>Usage</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl-green">
+          <td class="td-token">7xl</td><td class="td-size">119px</td><td class="td-lh">125px</td><td class="td-weight">600</td><td class="td-ls">-0.5</td>
+          <td class="td-preview" style="font-family:var(--font-display); font-size:56px; font-weight:600; line-height:1.05; letter-spacing:-0.5px;">Print</td>
+          <td class="td-use">Marketing hero, splash</td>
+        </tr>
+        <tr class="hl-green">
+          <td class="td-token">6xl</td><td class="td-size">95px</td><td class="td-lh">100px</td><td class="td-weight">600</td><td class="td-ls">-0.3</td>
+          <td class="td-preview" style="font-family:var(--font-display); font-size:48px; font-weight:600; line-height:1.05; letter-spacing:-0.3px;">Deposit</td>
+          <td class="td-use">Landing hero headline</td>
+        </tr>
+        <tr class="hl-green">
+          <td class="td-token">5xl</td><td class="td-size">76px</td><td class="td-lh">84px</td><td class="td-weight">600</td><td class="td-ls">0</td>
+          <td class="td-preview" style="font-family:var(--font-display); font-size:42px; font-weight:600; line-height:1.1; letter-spacing:0;">Memes.</td>
+          <td class="td-use">Marketing subheadline</td>
+        </tr>
+        <tr class="hl-green">
+          <td class="td-token">4xl</td><td class="td-size">61px</td><td class="td-lh">67px</td><td class="td-weight">600</td><td class="td-ls">0</td>
+          <td class="td-preview" style="font-family:var(--font-display); font-size:38px; font-weight:600; line-height:1.1; letter-spacing:0;">Print USDC.</td>
+          <td class="td-use">Feature section hero</td>
+        </tr>
+        <tr class="hl-green">
+          <td class="td-token">3xl</td><td class="td-size">49px</td><td class="td-lh">59px</td><td class="td-weight">600</td><td class="td-ls">0.5</td>
+          <td class="td-preview" style="font-family:var(--font-display); font-size:39px; font-weight:600; line-height:1.2; letter-spacing:0.5px;">Purinta</td>
+          <td class="td-use">DApp hero display</td>
+        </tr>
+        <tr class="hl-green">
+          <td class="td-token">2xl</td><td class="td-size">39px</td><td class="td-lh">47px</td><td class="td-weight">400</td><td class="td-ls">0.3</td>
+          <td class="td-preview" style="font-family:var(--font-display); font-size:33px; font-weight:400; line-height:1.2; letter-spacing:0.3px;">$751,232.14</td>
+          <td class="td-use">Amounts, big numbers</td>
+        </tr>
+        <tr>
+          <td class="td-token">xl</td><td class="td-size">31px</td><td class="td-lh">37px</td><td class="td-weight">600</td><td class="td-ls">0.5</td>
+          <td class="td-preview" style="font-family:var(--font-display); font-size:28px; font-weight:600; line-height:1.2; letter-spacing:0.5px;">Borrow with Purinta</td>
+          <td class="td-use">Hero title, page titles</td>
+        </tr>
+        <tr>
+          <td class="td-token">lg</td><td class="td-size">25px</td><td class="td-lh">30px</td><td class="td-weight">400</td><td class="td-ls">0.5</td>
+          <td class="td-preview" style="font-family:var(--font-display); font-size:23px; font-weight:400; line-height:1.2; letter-spacing:0.5px;">Borrow against</td>
+          <td class="td-use">Section titles, stats</td>
+        </tr>
+        <tr>
+          <td class="td-token">md</td><td class="td-size">20px</td><td class="td-lh">28px</td><td class="td-weight">400</td><td class="td-ls">0.5</td>
+          <td class="td-preview" style="font-family:var(--font-display); font-size:20px; font-weight:400; line-height:1.4; letter-spacing:0.5px;">Supply PEPE</td>
+          <td class="td-use">Subsections, token names</td>
+        </tr>
+        <tr>
+          <td class="td-token">sm</td><td class="td-size">16px</td><td class="td-lh">22px</td><td class="td-weight">400</td><td class="td-ls">0.8</td>
+          <td class="td-preview" style="font-family:var(--font-display); font-size:16px; font-weight:400; line-height:1.4; letter-spacing:0.8px;">Borrow Now</td>
+          <td class="td-use">Buttons</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- UI SCALE -->
+<div class="section">
+  <div class="section-label">02 &mdash; UI Scale</div>
+  <div class="section-title">Rubik &mdash; Body, Labels, Data</div>
+  <div class="section-desc">Geometric sans-serif for functional text. High readability at small sizes. Weight 400 for body, 500 for values, 600 for emphasis tags.</div>
+
+  <div class="type-table-wrap">
+    <div class="type-table-header">
+      <h3>UI Font Scale</h3>
+      <span class="badge ui">Rubik</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Token</th><th>Size</th><th>LH</th><th>Weight</th><th>LS</th><th>Preview</th><th>Usage</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl-green">
+          <td class="td-token">2xl</td><td class="td-size">39px</td><td class="td-lh">54px</td><td class="td-weight">400</td><td class="td-ls">0</td>
+          <td class="td-preview" style="font-family:var(--font-ui); font-size:33px; font-weight:400; line-height:1.4;">Deposit your memecoins</td>
+          <td class="td-use">Marketing lead paragraph</td>
+        </tr>
+        <tr class="hl-green">
+          <td class="td-token">xl</td><td class="td-size">31px</td><td class="td-lh">43px</td><td class="td-weight">400</td><td class="td-ls">0</td>
+          <td class="td-preview" style="font-family:var(--font-ui); font-size:28px; font-weight:400; line-height:1.4;">Borrow USDC against any memecoin</td>
+          <td class="td-use">Feature descriptions, large body</td>
+        </tr>
+        <tr class="hl-green">
+          <td class="td-token">lg</td><td class="td-size">25px</td><td class="td-lh">35px</td><td class="td-weight">400</td><td class="td-ls">0</td>
+          <td class="td-preview" style="font-family:var(--font-ui); font-size:23px; font-weight:400; line-height:1.4;">Built on Morpho with API3 oracle feeds for real-time pricing.</td>
+          <td class="td-use">Intro text, landing body</td>
+        </tr>
+        <tr>
+          <td class="td-token">md</td><td class="td-size">20px</td><td class="td-lh">28px</td><td class="td-weight">400</td><td class="td-ls">0</td>
+          <td class="td-preview" style="font-family:var(--font-ui); font-size:20px; font-weight:400; line-height:1.4;">Purinta is a memecoin collateral market. Deposit your memecoins, borrow USDC, and do much more.</td>
+          <td class="td-use">Subheading body, card descriptions</td>
+        </tr>
+        <tr>
+          <td class="td-token">sm</td><td class="td-size">16px</td><td class="td-lh">22px</td><td class="td-weight">400</td><td class="td-ls">0</td>
+          <td class="td-preview" style="font-family:var(--font-ui); font-size:16px; font-weight:400; line-height:1.4;">Borrowing $1,502,446.29</td>
+          <td class="td-use">Body, summary labels</td>
+        </tr>
+        <tr>
+          <td class="td-token">sm-medium</td><td class="td-size">16px</td><td class="td-lh">22px</td><td class="td-weight">500</td><td class="td-ls">0</td>
+          <td class="td-preview" style="font-family:var(--font-ui); font-size:16px; font-weight:500; line-height:1.4;">$0.041200</td>
+          <td class="td-use">Values, slider info</td>
+        </tr>
+        <tr>
+          <td class="td-token">xs</td><td class="td-size">13px</td><td class="td-lh">18px</td><td class="td-weight">400</td><td class="td-ls">0</td>
+          <td class="td-preview" style="font-family:var(--font-ui); font-size:13px; font-weight:400; line-height:1.4;">Supplying</td>
+          <td class="td-use">Labels, slider info labels</td>
+        </tr>
+        <tr>
+          <td class="td-token">xs-medium</td><td class="td-size">13px</td><td class="td-lh">18px</td><td class="td-weight">500</td><td class="td-ls">0</td>
+          <td class="td-preview" style="font-family:var(--font-ui); font-size:13px; font-weight:500; line-height:1.4;">0x23k...4534</td>
+          <td class="td-use">Wallet badge, captions</td>
+        </tr>
+        <tr>
+          <td class="td-token">2xs</td><td class="td-size">10px</td><td class="td-lh">14px</td><td class="td-weight">600</td><td class="td-ls">1.0</td>
+          <td class="td-preview" style="font-family:var(--font-ui); font-size:10px; font-weight:600; line-height:1.4; letter-spacing:1px; text-transform:uppercase;">Low &nbsp; None &nbsp; prev</td>
+          <td class="td-use">Risk tags, prev marker</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PAIRING PREVIEW (hidden) -->
+<div class="section" style="display:none;">
+  <div class="section-label">03 &mdash; Pairing Preview</div>
+  <div class="section-title">DApp UI Application</div>
+  <div class="section-desc">Example of how both fonts interact in a real interface context.</div>
+
+  <div class="pairing-preview">
+    <h3>Borrow Screen</h3>
+    <div class="preview-block">
+      <div class="preview-label">Display + UI Pairing</div>
+      <div style="font-family:var(--font-display); font-size:25px; font-weight:400; color:var(--text-dark); margin-bottom:4px; letter-spacing:0.5px;">Borrow against</div>
+      <div style="display:flex; gap:24px; margin-bottom:20px;">
+        <div>
+          <div style="font-family:var(--font-display); font-size:20px; font-weight:400; color:var(--text-dark); letter-spacing:0.5px; margin-bottom:4px;">Supply</div>
+          <div style="font-family:var(--font-ui); font-size:13px; color:var(--text-mid);">Supplying</div>
+          <div style="font-family:var(--font-ui); font-size:16px; font-weight:500; color:var(--text-dark);">210,34B</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-display); font-size:20px; font-weight:400; color:var(--text-dark); letter-spacing:0.5px; margin-bottom:4px;">Borrow</div>
+          <div style="font-family:var(--font-ui); font-size:13px; color:var(--text-mid);">Borrowing</div>
+          <div style="font-family:var(--font-ui); font-size:16px; font-weight:500; color:var(--text-dark);">$1,502,446.29</div>
+        </div>
+      </div>
+      <div style="font-family:var(--font-ui); font-size:16px; color:var(--text-mid); margin-bottom:4px;">Borrowing</div>
+      <div style="font-family:var(--font-display); font-size:39px; font-weight:400; color:var(--text-dark); letter-spacing:0.3px; margin-bottom:4px;">$751,232.14</div>
+      <div style="font-family:var(--font-ui); font-size:16px; color:var(--text-mid);">tokens</div>
+    </div>
+    <div class="preview-block">
+      <div class="preview-label">Buttons</div>
+      <div style="display:flex; gap:16px; flex-wrap:wrap;">
+        <div style="font-family:var(--font-display); font-size:16px; font-weight:400; letter-spacing:0.8px; background:linear-gradient(160deg, var(--green-400), var(--green-700)); color:white; padding:14px 28px; border-radius:9999px; display:inline-flex; align-items:center; gap:8px;">Borrow Now</div>
+        <div style="font-family:var(--font-display); font-size:16px; font-weight:400; letter-spacing:0.8px; background:#f7f8f4; color:var(--green-700); padding:12px 24px; border-radius:9999px; border:1px solid var(--green-400); display:inline-flex; align-items:center; gap:8px;">Modify Position</div>
+        <div style="font-family:var(--font-display); font-size:16px; font-weight:400; letter-spacing:0.8px; background:#f7f8f4; color:var(--green-700); padding:12px 24px; border-radius:9999px; border:1px solid var(--green-400); display:inline-flex; align-items:center; gap:8px;">Quick Repay</div>
+      </div>
+    </div>
+    <div class="preview-block">
+      <div class="preview-label">My Positions Card</div>
+      <div style="font-family:var(--font-display); font-size:20px; font-weight:400; color:var(--text-dark); letter-spacing:0.5px; margin-bottom:8px;">tkcollateral</div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+        <div>
+          <div style="font-family:var(--font-display); font-size:25px; font-weight:400; color:var(--text-dark);">$25,240K</div>
+          <div style="font-family:var(--font-ui); font-size:10px; font-weight:600; letter-spacing:0.5px; color:var(--text-light); text-transform:uppercase;">Borrowing</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:var(--font-display); font-size:25px; font-weight:400; color:var(--green-600);">12.5%<span style="font-family:var(--font-ui); font-size:16px; color:var(--text-mid);"> /yr</span></div>
+          <div style="font-family:var(--font-ui); font-size:10px; font-weight:600; letter-spacing:0.5px; color:var(--text-light); text-transform:uppercase;">Borrow Rate</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding-top:12px; border-top:1px solid var(--border);">
+        <div>
+          <div style="font-family:var(--font-ui); font-size:13px; color:var(--text-mid);">(Token) Price</div>
+          <div style="font-family:var(--font-ui); font-size:16px; font-weight:500; color:var(--text-dark);">$0,0<span style="font-size:10px;">4</span>1200</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:var(--font-ui); font-size:13px; color:var(--text-mid);">Liquidation Price</div>
+          <div style="font-family:var(--font-ui); font-size:16px; font-weight:500; color:var(--text-dark);">0.098 (-61.8%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  Purinta Type Scale v2 &mdash; Ohno Softie + Rubik &mdash; Scale 1.25 (Major Third) &mdash; Base 16px &mdash; 2026
+</div>
+
+</body>
+</html>
