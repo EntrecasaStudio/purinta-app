@@ -349,8 +349,8 @@
       background: var(--mint-100); border-radius: var(--r-full);
     }
     .slider-track-fill {
-      position: absolute; left: 0; height: 12px; top: 10px;
-      background: linear-gradient(90deg, var(--green-200), var(--green-300));
+      position: absolute; left: 0; height: 12px; top: 10px; z-index: 0;
+      background: linear-gradient(90deg, var(--green-200), var(--green-300)); z-index: 0;
       border-radius: var(--r-full); transition: width 0.3s ease;
     }
     .slider-thumb {
@@ -467,7 +467,7 @@
     .summary-row-label { color: var(--text-secondary); font-size: var(--ds-xs); }
     .summary-row-value { color: var(--text-primary); font-weight: 500; font-size: var(--ds-xs); }
     .summary-row-value .arrow { color: var(--green-500); margin: 0 6px; }
-    .borrow-cta { padding: 16px 20px; position: sticky; bottom: 0; background: var(--cream-50); z-index: 10; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); }
+    .borrow-cta { padding: 16px 20px; background: var(--cream-50); }
 
     /* ════════════════════════════════════════
        SCREEN 4: CONFIRMATION MODAL
@@ -631,7 +631,7 @@
     .risk-bar-fill {
       height: 100%; border-radius: var(--r-full); transition: width 0.5s ease;
     }
-    .risk-bar-fill.low { background: linear-gradient(90deg, var(--green-200), var(--green-300)); }
+    .risk-bar-fill.low { background: linear-gradient(90deg, var(--green-200), var(--green-300)); z-index: 0; }
     .risk-bar-fill.med { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
     .risk-bar-fill.high { background: linear-gradient(90deg, var(--blush-400), var(--blush-500)); }
     .position-actions { display: flex; flex-direction: column; gap: 8px; }
