@@ -106,19 +106,21 @@
     .btn:active { transform: translateY(1px) scale(0.96); filter: brightness(0.95); }
     .btn-primary {
       background: linear-gradient(160deg, var(--green-200), var(--green-300)); color: var(--green-700);
-      box-shadow: 0 4px 0 0 var(--green-300);
+      box-shadow: none;
       position: relative; overflow: visible;
       border: none; padding: 14px 28px;
       letter-spacing: 0.5px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .btn-primary:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 7px 0 0 var(--green-300), 0 12px 24px rgba(57,118,61,0.15);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 0 0 var(--green-500), 0 10px 20px rgba(57,118,61,0.12);
     }
     .btn-primary:active {
       transform: translateY(2px) scale(0.95);
       box-shadow: 0 1px 0 0 var(--green-300);
       filter: brightness(0.93);
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
     }
     .btn-star {
       position: absolute; top: 7px; right: 7px; width: 18px; height: 18px;
@@ -128,15 +130,17 @@
       background: var(--mint-100); color: var(--green-700); border: 1px solid var(--green-300);
       border-radius: var(--r-full);
       box-shadow: 0 0 0 0 var(--green-300);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .btn-secondary:hover { transform: translateY(-3px); box-shadow: 0 5px 0 0 var(--green-300); }
+    .btn-secondary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
     .btn-secondary:active { transform: translateY(1px) scale(0.96); box-shadow: 0 0 0 0 var(--green-300); filter: brightness(0.95); }
     .btn-ghost {
       background: var(--mint-100); color: var(--green-700); border: 1px solid var(--green-300);
       border-radius: var(--r-full);
       box-shadow: 0 0 0 0 var(--green-300);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .btn-ghost:hover { transform: translateY(-3px); box-shadow: 0 5px 0 0 var(--green-300); }
+    .btn-ghost:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
     .btn-ghost:active { transform: translateY(1px) scale(0.96); box-shadow: 0 0 0 0 var(--green-300); filter: brightness(0.95); }
     .btn-connect { background: white; color: var(--text-primary); border: 1.5px solid var(--cream-400); font-size: var(--ds-xs); padding: 8px 16px; }
     .btn-full { width: 100%; justify-content: center; }
@@ -680,7 +684,7 @@
       </div>
     </div>
     <div class="hero-section" style="padding: 8px 20px 0;">
-      <div class="hero-title" style="text-align: center;">Borrow with Purinta</div>
+      <div class="hero-title" style="text-align: center;">Borrow <span class="mini-icon usdc" style="display: inline-block; width: 28px; height: 28px; vertical-align: -4px;"></span> with Purinta</div>
     </div>
     <div class="token-list">
       <!-- Card 1 -->
@@ -689,7 +693,7 @@
           <div class="token-icon pepe"></div>
         </div>
         <div class="token-info">
-          <div class="token-pair-name">PEPE</div>
+          <div class="token-pair-name">Borrow against PEPE</div>
         </div>
         <div class="token-action"><button class="btn btn-primary"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v10"/><path d="M8 13l4 4 4-4"/></svg> Borrow</button></div>
       </div>
@@ -699,7 +703,7 @@
           <div class="token-icon eth"></div>
         </div>
         <div class="token-info">
-          <div class="token-pair-name">ETH</div>
+          <div class="token-pair-name">Borrow against ETH</div>
         </div>
         <div class="token-action"><button class="btn btn-primary"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v10"/><path d="M8 13l4 4 4-4"/></svg> Borrow</button></div>
       </div>
@@ -709,10 +713,9 @@
           <div class="token-icon doge"></div>
         </div>
         <div class="token-info">
-          <div class="token-pair-name">DOGE</div>
-          <div class="token-pair-amount">420.69B</div>
+          <div class="token-pair-name">Borrow against DOGE</div>
         </div>
-        <div class="token-action"><button class="btn btn-ghost"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 100-6.68L1 10"/></svg> Repay</button></div>
+        <div class="token-action"><button class="btn btn-primary"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v10"/><path d="M8 13l4 4 4-4"/></svg> Borrow</button></div>
       </div>
       <!-- Card 4 -->
       <div class="token-card">
@@ -720,9 +723,9 @@
           <div class="token-icon shib"></div>
         </div>
         <div class="token-info">
-          <div class="token-pair-name">SHIB</div>
+          <div class="token-pair-name">Borrow against SHIB</div>
         </div>
-        <div class="token-action"><button class="btn btn-secondary"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Invest</button></div>
+        <div class="token-action"><button class="btn btn-primary"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v10"/><path d="M8 13l4 4 4-4"/></svg> Borrow</button></div>
       </div>
       <!-- Card 5 -->
       <div class="token-card">
@@ -730,9 +733,9 @@
           <div class="token-icon wif"></div>
         </div>
         <div class="token-info">
-          <div class="token-pair-name">WIF</div>
+          <div class="token-pair-name">Borrow against WIF</div>
         </div>
-        <div class="token-action"><button class="btn btn-secondary"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Invest</button></div>
+        <div class="token-action"><button class="btn btn-primary"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v10"/><path d="M8 13l4 4 4-4"/></svg> Borrow</button></div>
       </div>
     </div>
     <div class="app-footer">
@@ -900,7 +903,7 @@
             <div class="summary-row"><span class="summary-row-label">You supply</span><span class="summary-row-value">—</span></div>
             <div class="summary-row"><span class="summary-row-label">You repay</span><span class="summary-row-value">—</span></div>
             <div class="summary-row"><span class="summary-row-label">(Token) Price</span><span class="summary-row-value">$0.041200</span></div>
-            <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value">$0.05714%</span></div>
+            <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value">$0.05714 <span style="font-size: var(--ds-2xs); font-weight: 400; color: var(--text-secondary);">(-38.6%)</span></span></div>
           </div>
         </div>
       </div>
@@ -1062,7 +1065,7 @@
           <div class="slider-track-bg"></div>
           <div class="slider-track-fill" style="width: 100%"></div>
           <div class="slider-track-delta" style="left: 0; width: 50%"></div>
-          <div class="slider-marker-old" style="left: calc(50% - 1px)" data-label="prev" data-pos="50"></div>
+          <div class="slider-marker-old" style="left: calc(50% - 1px)" data-label="now" data-pos="50"></div>
           <div class="slider-thumb" style="left: calc(100% - 16px)"><svg viewBox="-2 -2 28 28" fill="none"><path d="M12.19.5c.24.01.43.14.49.34l2.41 7.34.07.22.21.09 7.82 3.27c.23.1.31.28.3.44-.01.16-.11.34-.35.42l-7.59 2.42-.21.07-.09.21-3.46 7.88c-.09.2-.29.31-.54.3-.24-.01-.43-.15-.49-.35l-2.49-8.37-.08-.25-.25-.08-7.1-2.31c-.25-.08-.35-.27-.35-.44 0-.17.1-.35.35-.44l7.07-2.29.21-.07.09-.21L11.66.81l.03-.08c.1-.16.28-.24.5-.22z" fill="white" stroke="#498746" stroke-width="3" stroke-linejoin="round" paint-order="stroke fill"/></svg></div>
         </div>
         <div class="slider-info">
@@ -1089,7 +1092,7 @@
           <div class="slider-track-bg"></div>
           <div class="slider-track-fill" style="width: 25%"></div>
           <div class="slider-track-delta" style="left: 0; width: 25%"></div>
-          <div class="slider-marker-old" style="left: calc(25% - 1px)" data-label="prev" data-pos="25"></div>
+          <div class="slider-marker-old" style="left: calc(25% - 1px)" data-label="now" data-pos="25"></div>
           <div class="slider-thumb" style="left: calc(25% - 16px)"><svg viewBox="-2 -2 28 28" fill="none"><path d="M12.19.5c.24.01.43.14.49.34l2.41 7.34.07.22.21.09 7.82 3.27c.23.1.31.28.3.44-.01.16-.11.34-.35.42l-7.59 2.42-.21.07-.09.21-3.46 7.88c-.09.2-.29.31-.54.3-.24-.01-.43-.15-.49-.35l-2.49-8.37-.08-.25-.25-.08-7.1-2.31c-.25-.08-.35-.27-.35-.44 0-.17.1-.35.35-.44l7.07-2.29.21-.07.09-.21L11.66.81l.03-.08c.1-.16.28-.24.5-.22z" fill="white" stroke="#498746" stroke-width="3" stroke-linejoin="round" paint-order="stroke fill"/></svg></div>
         </div>
         <div class="slider-info">
@@ -1108,7 +1111,7 @@
             <div class="summary-row"><span class="summary-row-label">You supply</span><span class="summary-row-value"><span class="update-arrow"><span class="old">1000</span> <span class="arr">→</span> <span class="new">1500 PEPE</span></span></span></div>
             <div class="summary-row"><span class="summary-row-label">You repay</span><span class="summary-row-value">700,000 USDC</span></div>
             <div class="summary-row"><span class="summary-row-label">(Token) Price</span><span class="summary-row-value">$0.041200</span></div>
-            <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value"><span class="update-arrow"><span class="old">$0.05714%</span> <span class="arr">→</span> <span class="new">$0.05714%</span></span></span></div>
+            <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value"><span class="update-arrow"><span class="old">$0.05714 <span style="font-size: var(--ds-2xs); font-weight: 400; color: var(--text-secondary);">(-38.6%)</span></span> <span class="arr">→</span> <span class="new">$0.05714 <span style="font-size: var(--ds-2xs); font-weight: 400; color: var(--text-secondary);">(-42.1%)</span></span></span></span></div>
           </div>
         </div>
       </div>
