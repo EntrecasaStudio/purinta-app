@@ -13,7 +13,7 @@
     --ds-md: 20px; --ds-lg: 25px; --ds-xl: 31px; --ds-2xl: 39px;
     --ds-3xl: 49px; --ds-4xl: 61px; --ds-5xl: 76px; --ds-6xl: 95px; --ds-7xl: 119px;
       /* Green — aligned to mascot SVG palette */
-      --green-50: #FFFDEA; --green-100: #F1F3E7; --green-200: #9ECF84;
+      --green-50: #F1F3E7; --green-100: #C8E4B0; --green-200: #9ECF84;
       --green-300: #78BA68; --green-400: #57A053; --green-500: #498746;
       --green-600: #39763D; --green-700: #185229; --green-800: #144D26;
       /* Pastel card backgrounds (from mascot palette) */
@@ -31,15 +31,12 @@
       --mint-300: #C8E6D0; --mint-400: #A8D8B8; --mint-500: #8DC8A0;
       --mint-600: #69AA8A; --mint-700: #498A70; --mint-800: #2D6050; --mint-900: #194030;
       /* Neutrals */
-      --gray-50: #FAF8F5; --gray-100: #F3F1ED; --gray-200: #E5E1DA;
-      --gray-300: #D4D0C8; --gray-400: #B0B0B0; --gray-500: #6B7380;
-      --gray-600: #333333; --gray-700: #1D212B; --gray-800: #333333;
-      --gray-900: #0F2419;
+      --gray-900: #333333;
       /* Semantic text — from Figma + WCAG accessible */
       --text-primary: #333333;    /* Figma body text, 12.63:1 on white */
-      --text-secondary: #6B7380;  /* Figma Raven darkened, 4.78:1 — AA pass */
-      --text-heading: #185229;    /* Figma heading green, 9.22:1 */
-      --text-muted: #B0B0B0;     /* Figma muted — decorative only */
+      --text-secondary: #666666;  /* Figma Raven darkened, 4.78:1 — AA pass */
+      --text-heading: var(--green-700);    /* Figma heading green, 9.22:1 */
+      --text-muted: #B2B2B2;     /* Figma muted — decorative only */
       --font-display: 'ohno-softie-variable', 'Fredoka', 'Nunito', sans-serif;
       --font-ui: 'Rubik', sans-serif;
       --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-full: 9999px;
@@ -141,7 +138,7 @@
     }
     .btn-ghost:hover { transform: translateY(-3px); box-shadow: 0 5px 0 0 var(--green-300); }
     .btn-ghost:active { transform: translateY(1px) scale(0.96); box-shadow: 0 0 0 0 var(--green-300); filter: brightness(0.95); }
-    .btn-connect { background: white; color: var(--text-primary); border: 1.5px solid var(--gray-300); font-size: var(--ds-xs); padding: 8px 16px; }
+    .btn-connect { background: white; color: var(--text-primary); border: 1.5px solid var(--cream-400); font-size: var(--ds-xs); padding: 8px 16px; }
     .btn-full { width: 100%; justify-content: center; }
     .btn-sm { font-size: var(--ds-xs); padding: 8px 16px; }
     .btn-lg { font-size: var(--ds-sm); padding: 14px 32px; }
@@ -298,10 +295,10 @@
       color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
       transition: all 0.2s;
     }
-    .close-btn:hover { background: var(--gray-200); }
+    .close-btn:hover { background: var(--cream-400); }
     .token-select {
       display: inline-flex; align-items: center; gap: 6px;
-      background: var(--green-50); padding: 6px 14px 6px 8px;
+      background: var(--cream-200); padding: 6px 14px 6px 8px;
       border-radius: var(--r-full); font-family: var(--font-display);
       font-size: var(--ds-sm); font-weight: 500; color: var(--text-primary);
       cursor: pointer; border: 1.5px solid var(--cream-400);
@@ -333,7 +330,7 @@
     .pct-btn {
       font-family: var(--font-ui); font-size: var(--ds-sm); font-weight: 400;
       padding: 0; width: 64px; height: 42px; border-radius: var(--r-full); cursor: pointer;
-      border: 1.5px solid var(--gray-200); background: white; color: var(--text-primary);
+      border: 1.5px solid var(--cream-400); background: white; color: var(--text-primary);
       transition: all 0.2s; display: flex; align-items: center; justify-content: center;
     }
     .pct-btn:active { transform: scale(0.93); filter: brightness(0.95); }
@@ -393,7 +390,7 @@
       opacity: 0.3; pointer-events: none; cursor: default;
     }
     .slider-divider {
-      height: 1px; background: var(--gray-200); margin: 20px 0;
+      height: 1px; background: var(--cream-400); margin: 20px 0;
     }
 
     /* MASCOT AREA */
@@ -544,7 +541,7 @@
     .modal-message-text { font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-primary); line-height: 1.5; }
     .modal-progress {
       width: 100%; height: 6px; border-radius: 0 0 var(--r-md) var(--r-md);
-      background: var(--gray-200); overflow: hidden; margin: 0;
+      background: var(--cream-400); overflow: hidden; margin: 0;
     }
     .modal-progress-bar {
       height: 100%; border-radius: 0;
@@ -586,7 +583,7 @@
     .total-value { font-family: var(--font-display); font-size: var(--ds-lg); font-weight: 500; color: var(--text-primary); }
     .position-card {
       background: white; border-radius: 28px; padding: 20px;
-      border: 1.5px solid var(--gray-200); margin-bottom: 12px;
+      border: 1.5px solid var(--cream-400); margin-bottom: 12px;
       transition: all 0.25s ease;
     }
     .position-card:hover { border-color: var(--green-200); box-shadow: var(--shadow-card); }
@@ -614,25 +611,14 @@
     .risk-label { font-family: var(--font-ui); font-size: var(--ds-2xs); color: var(--text-secondary); }
     .risk-value { font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 500; }
     .risk-value.low { color: var(--green-500); }
-    .risk-value.med { color: #fbbf24; }
     .risk-value.high { color: var(--blush-500); }
-    .risk-tag {
-      font-size: var(--ds-2xs); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
-      padding: 2px 8px; border-radius: var(--r-full); display: inline-block;
-      position: relative; top: -4px; left: -3px;
-    }
-    .risk-tag.low { background: var(--green-100); color: var(--green-700); }
-    .risk-tag.med { background: var(--cream-200); color: #a16207; }
-    .risk-tag.high { background: var(--blush-200); color: var(--blush-500); }
-    .risk-tag.none { background: var(--cream-300); color: var(--text-secondary); }
     .risk-bar-track {
-      height: 6px; width: 100%; border-radius: var(--r-full); background: var(--gray-200); overflow: hidden;
+      height: 6px; width: 100%; border-radius: var(--r-full); background: var(--cream-400); overflow: hidden;
     }
     .risk-bar-fill {
       height: 100%; border-radius: var(--r-full); transition: width 0.5s ease;
     }
     .risk-bar-fill.low { background: linear-gradient(90deg, var(--green-200), var(--green-300)); z-index: 0; }
-    .risk-bar-fill.med { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
     .risk-bar-fill.high { background: linear-gradient(90deg, var(--blush-400), var(--blush-500)); }
     .position-actions { display: flex; flex-direction: column; gap: 8px; }
     .position-actions .btn { width: 100%; font-size: var(--ds-xs); padding: 10px; }
@@ -992,7 +978,7 @@
             <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-            <svg width="28" height="28" viewBox="0 0 24 24" stroke="var(--green-600)" stroke-width="1.5"><defs><linearGradient id="half"><stop offset="50%" stop-color="var(--green-400)"/><stop offset="50%" stop-color="var(--gray-200)"/></linearGradient></defs><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" fill="url(#half)"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" stroke="var(--green-600)" stroke-width="1.5"><defs><linearGradient id="half"><stop offset="50%" stop-color="var(--green-400)"/><stop offset="50%" stop-color="var(--cream-400)"/></linearGradient></defs><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" fill="url(#half)"/></svg>
           </div>
         </div>
         <div class="position-divider"></div>
@@ -1025,7 +1011,7 @@
             <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--green-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--gray-200)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--cream-400)" stroke="var(--green-600)" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
           </div>
         </div>
         <div class="position-divider"></div>
@@ -1241,7 +1227,7 @@ document.querySelectorAll('.pct-buttons').forEach(group => {
     });
 
     WINK_PATHS.forEach(function(d) { eyesWink.appendChild(el('path', { d: d, fill: '#185229' })); });
-    mouthBg.appendChild(el('path', { d: MOUTH_PATH, fill: '#0D1F12' }));
+    mouthBg.appendChild(el('path', { d: MOUTH_PATH, fill: '#185229' }));
     mouthOuter.appendChild(el('path', { d: MOUTH_PATH, fill: 'none', stroke: '#185229', 'stroke-width': '4', 'stroke-linejoin': 'round' }));
 
     while (svg.firstChild) svg.removeChild(svg.firstChild);
