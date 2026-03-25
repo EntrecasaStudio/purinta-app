@@ -54,7 +54,7 @@
 
     /* PHONE FRAME */
 
-    .phone { width: 390px; height: 844px; background: var(--cream-50); border-radius: 32px; overflow-x: hidden; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); position: relative; }
+    .phone { width: 360px; height: 800px; background: var(--cream-50); border-radius: 32px; overflow-x: hidden; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); position: relative; }
 
     /* DEV NAV — floating panel outside phone frame */
     .dev-nav { position: fixed; top: 16px; left: 16px; z-index: 9999; font-family: 'SF Mono', 'Menlo', monospace; }
@@ -88,9 +88,12 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 16px 20px; background: transparent; border-bottom: none;
     }
-    .app-logo { display: flex; align-items: center; height: 29px; cursor: pointer; gap: 6px; }
-    .app-logo .logo-symbol { display: block; height: 29px; width: 29px; flex-shrink: 0; }
-    .app-logo .logo-wordmark { display: block; height: 22px; width: auto; flex-shrink: 0; }
+    .app-logo { display: flex; align-items: center; height: 24px; cursor: pointer; gap: 6px; }
+    .app-logo .logo-symbol { display: block; height: 24px; width: 24px; flex-shrink: 0; }
+    .app-logo .logo-wordmark { display: block; height: 18px; width: auto; flex-shrink: 0; }
+    .phone.desktop .app-logo { height: 28px; }
+    .phone.desktop .app-logo .logo-symbol { height: 28px; width: 28px; }
+    .phone.desktop .app-logo .logo-wordmark { height: 21px; }
     .header-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     /* Hide wordmark below 400px viewport so disconnect stays visible */
     @media (max-width: 399px) {
@@ -413,17 +416,17 @@
     .mascot-area {
       border-radius: var(--r-sm) var(--r-sm) 32px 32px; padding: 24px 32px 32px; margin: 20px 0 0;
       display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 8px; height: 160px;
+      justify-content: flex-end; gap: 8px; height: 160px;
       transition: all 0.5s ease; position: relative; overflow: hidden;
     }
-    /* Health level 1: Ultra Safe — green bg */
+    /* Health level 1: Ultra Safe — deep green */
     .mascot-area.ultra-safe {
-      background: linear-gradient(108deg, var(--green-100) 2%, var(--mint-200) 106%);
-      border: 1px solid var(--green-200);
+      background: linear-gradient(108deg, var(--green-200) 2%, var(--mint-300) 106%);
+      border: 1px solid var(--green-300);
     }
-    /* Health level 2: Looking Good — green/pink gradient */
+    /* Health level 2: Looking Good — soft green */
     .mascot-area.looking-good, .mascot-area.happy {
-      background: linear-gradient(108deg, rgb(228, 243, 233) 2.38%, rgb(254, 240, 240) 106.36%);
+      background: linear-gradient(108deg, var(--green-100) 2%, var(--mint-200) 106%);
       border: 1px solid var(--green-200);
     }
     /* Health level 3: Getting Risky — cream/blush */
@@ -469,12 +472,13 @@
       100%     { transform: translate(-50%, -55%) scale(1) rotate(0deg); }
     }
     .mascot-illustration {
-      width: 90px; max-width: 80%; height: auto; position: relative; z-index: 1;
+      width: 72px; max-width: 80%; height: auto; position: relative; z-index: 1;
       filter: drop-shadow(0 3px 8px rgba(8, 60, 32, 0.12));
       animation: mascot-bob 3s ease-in-out infinite;
       object-fit: contain;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.2s ease, width 0.3s ease;
     }
+    .mascot-area.ultra-safe .mascot-illustration { width: 120px; position: relative; top: 12px; }
     @keyframes mascot-bob {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
@@ -728,8 +732,7 @@
     <div class="dev-nav-section">
       <div class="dev-nav-label">Breakpoint</div>
       <div class="dev-nav-group">
-        <button class="bp-btn active" onclick="setBreakpoint(390)" data-bp="390">390</button>
-        <button class="bp-btn" onclick="setBreakpoint(360)" data-bp="360">360</button>
+        <button class="bp-btn active" onclick="setBreakpoint(360)" data-bp="360">360</button>
         <button class="bp-btn" onclick="setBreakpoint(1280)" data-bp="1280">1280</button>
       </div>
     </div>
@@ -976,7 +979,7 @@
 
         <div id="health-mascot" class="mascot-area looking-good">
           <div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none"><path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/></svg></div>
-          <img id="health-emote" class="mascot-illustration" src="assets/Emoji-money copy.png" alt="Health emote" style="width: 72px;">
+          <img id="health-emote" class="mascot-illustration" src="assets/Emoji-happy.png" alt="Health emote">
           <span id="health-text" class="mascot-text">Looking good! Nice and safe</span>
         </div>
 
@@ -1242,10 +1245,10 @@
           <span class="update-arrow"><span class="old">$1.5M</span> <span class="arr">→</span> <span class="new">$700K USDC</span></span>
         </div>
 
-        <div class="mascot-area positive">
+        <div id="health-mascot-modify" class="mascot-area looking-good">
           <div class="mascot-blob"><svg width="140" height="108" viewBox="0 0 140 108" fill="none"><path d="M122.419 16.9187C132.103 41.8744 114.018 72.1683 82.0254 84.5821C50.0331 96.9959 16.2482 86.8286 6.5648 61.8729C-3.11862 36.9172 13.6396 41.9526 45.6319 29.5388C77.6242 17.1251 112.736 -8.03707 122.419 16.9187Z" fill="white"/></svg></div>
-          <img class="mascot-illustration" src="assets/Emoji-happy.png" alt="Happy emoji" style="width: 72px;">
-          <span class="mascot-text">Nice! Reducing risk with this update</span>
+          <img id="health-emote-modify" class="mascot-illustration" src="assets/Emoji-happy.png" alt="Health emote">
+          <span id="health-text-modify" class="mascot-text">Looking good! Nice and safe</span>
         </div>
 
         <div class="borrow-summary">
@@ -1269,7 +1272,7 @@
     if (save !== false) localStorage.setItem('purinta-bp', w);
     var phone = document.querySelector('.phone');
     phone.style.width = w + 'px';
-    var heights = { 360: 800, 390: 844 };
+    var heights = { 360: 800 };
     phone.style.height = heights[w] ? heights[w] + 'px' : 'auto';
     phone.classList.toggle('desktop', w >= 1280);
     document.querySelectorAll('.bp-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -1317,8 +1320,8 @@ document.querySelectorAll('.pct-buttons').forEach(group => {
       } else {
         if (fill) fill.style.width = pct + '%';
       }
-      // Update health mascot if inside borrow-connected
-      if (group.closest('#borrow-connected')) updateHealthMascot();
+      // Update health mascot if inside borrow-connected or modify
+      if (group.closest('#borrow-connected') || group.closest('#update')) updateHealthMascot();
     });
   });
 });
@@ -1326,14 +1329,14 @@ document.querySelectorAll('.pct-buttons').forEach(group => {
 /* ═══ HEALTH MASCOT — 5 levels based on slider positions ═══ */
 var healthLevels = [
   { key: 'ultra-safe',    img: 'assets/Emote-01-Ultra-safe.svg', text: 'Ultra safe! Maximum protection', isSvg: true },
-  { key: 'looking-good',  img: 'assets/Emoji-money copy.png',    text: 'Looking good! Nice and safe',    isSvg: false },
+  { key: 'looking-good',  img: 'assets/Emoji-happy.png',         text: 'Looking good! Nice and safe',    isSvg: false },
   { key: 'getting-risky', img: 'assets/Emoji-worried.png',       text: 'Getting risky! Watch your ratio', isSvg: false },
   { key: 'danger-zone',   img: 'assets/Emoji-worried.png',       text: 'Danger zone! Reduce your borrow', isSvg: false },
   { key: 'meltdown',      img: 'assets/Emoji-worried.png',       text: 'Meltdown risk! Close to liquidation', isSvg: false }
 ];
 
-function getSliderPcts() {
-  var screen = document.getElementById('borrow-connected');
+function getSliderPcts(screenId) {
+  var screen = document.getElementById(screenId);
   if (!screen) return { supply: 50, borrow: 50 };
   var groups = screen.querySelectorAll('.pct-buttons');
   var supply = 50, borrow = 50;
@@ -1361,30 +1364,64 @@ function getHealthLevel(supply, borrow) {
   return 2;
 }
 
-function updateHealthMascot() {
-  var pcts = getSliderPcts();
+function updateHealthForScreen(screenId, areaId, emoteId, textId) {
+  var pcts = getSliderPcts(screenId);
   var level = getHealthLevel(pcts.supply, pcts.borrow);
   var info = healthLevels[level];
-  var area = document.getElementById('health-mascot');
-  var emote = document.getElementById('health-emote');
-  var text = document.getElementById('health-text');
+  var area = document.getElementById(areaId);
+  var emote = document.getElementById(emoteId);
+  var text = document.getElementById(textId);
   if (!area || !emote || !text) return;
 
   // Remove all health classes
   healthLevels.forEach(function(l) { area.classList.remove(l.key); });
   area.classList.add(info.key);
 
-  // Update emote image
-  if (emote.getAttribute('src') !== info.img) {
-    emote.style.opacity = '0';
-    setTimeout(function() {
-      emote.src = info.img;
-      emote.style.opacity = '1';
-    }, 200);
+  // Update emote image — use <object> for SVG (enables internal CSS animations)
+  if (info.isSvg) {
+    if (emote.tagName !== 'OBJECT' || emote.getAttribute('data') !== info.img) {
+      emote.style.opacity = '0';
+      setTimeout(function() {
+        var obj = document.createElement('object');
+        obj.setAttribute('data', info.img);
+        obj.setAttribute('type', 'image/svg+xml');
+        obj.id = emote.id;
+        obj.className = emote.className;
+        obj.style.cssText = emote.style.cssText;
+        obj.style.opacity = '1';
+        obj.style.pointerEvents = 'none';
+        emote.parentNode.replaceChild(obj, emote);
+      }, 200);
+    }
+  } else {
+    // Switch back to img if currently an object
+    if (emote.tagName === 'OBJECT') {
+      emote.style.opacity = '0';
+      setTimeout(function() {
+        var img = document.createElement('img');
+        img.id = emote.id;
+        img.className = emote.className;
+        img.src = info.img;
+        img.alt = 'Health emote';
+        img.style.opacity = '1';
+        emote.parentNode.replaceChild(img, emote);
+      }, 200);
+    } else if (emote.getAttribute('src') !== info.img) {
+      emote.style.opacity = '0';
+      setTimeout(function() {
+        emote.src = info.img;
+        emote.style.opacity = '1';
+      }, 200);
+    }
   }
 
   // Update text
   text.textContent = info.text;
+}
+
+function updateHealthMascot() {
+  updateHealthForScreen('borrow-connected', 'health-mascot', 'health-emote', 'health-text');
+  updateHealthForScreen('update', 'health-mascot-modify', 'health-emote-modify', 'health-text-modify');
 }
 
 /* ═══ ANIMATED MASCOT (vanilla JS port) ═══ */
@@ -1542,6 +1579,6 @@ function updateHealthMascot() {
 })();
 </script>
 
-<script>var savedBp = parseInt(localStorage.getItem('purinta-bp')); if (savedBp) setBreakpoint(savedBp); else setBreakpoint(390, false); var initHash = location.hash.replace('#', ''); showScreen(initHash && document.getElementById(initHash) ? initHash : 'homepage');</script>
+<script>var savedBp = parseInt(localStorage.getItem('purinta-bp')); if (savedBp) setBreakpoint(savedBp); else setBreakpoint(360, false); var initHash = location.hash.replace('#', ''); showScreen(initHash && document.getElementById(initHash) ? initHash : 'homepage');</script>
 </body>
 </html>
