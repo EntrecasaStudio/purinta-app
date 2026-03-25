@@ -416,13 +416,30 @@
       justify-content: center; gap: 8px; height: 160px;
       transition: all 0.5s ease; position: relative; overflow: hidden;
     }
-    .mascot-area.happy {
+    /* Health level 1: Ultra Safe — green bg */
+    .mascot-area.ultra-safe {
+      background: linear-gradient(108deg, var(--green-100) 2%, var(--mint-200) 106%);
+      border: 1px solid var(--green-200);
+    }
+    /* Health level 2: Looking Good — green/pink gradient */
+    .mascot-area.looking-good, .mascot-area.happy {
       background: linear-gradient(108deg, rgb(228, 243, 233) 2.38%, rgb(254, 240, 240) 106.36%);
       border: 1px solid var(--green-200);
     }
-    .mascot-area.worried {
+    /* Health level 3: Getting Risky — cream/blush */
+    .mascot-area.getting-risky, .mascot-area.worried {
       background: linear-gradient(108deg, #FEECE8, #FFFAFA);
       border: 1px solid var(--blush-400);
+    }
+    /* Health level 4: Danger Zone — warm blush */
+    .mascot-area.danger-zone {
+      background: linear-gradient(108deg, var(--blush-300), var(--blush-100));
+      border: 1px solid var(--blush-500);
+    }
+    /* Health level 5: Meltdown — intense blush/red */
+    .mascot-area.meltdown {
+      background: linear-gradient(108deg, var(--blush-400), var(--blush-200));
+      border: 1px solid var(--blush-600);
     }
     .mascot-area.excited {
       background: linear-gradient(135deg, var(--cream-100), var(--green-100));
@@ -456,6 +473,7 @@
       filter: drop-shadow(0 3px 8px rgba(8, 60, 32, 0.12));
       animation: mascot-bob 3s ease-in-out infinite;
       object-fit: contain;
+      transition: opacity 0.2s ease;
     }
     @keyframes mascot-bob {
       0%, 100% { transform: translateY(0); }
@@ -956,10 +974,10 @@
           <span class="slider-info-value">$1,502,446.29</span>
         </div>
 
-        <div class="mascot-area worried">
+        <div id="health-mascot" class="mascot-area looking-good">
           <div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none"><path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/></svg></div>
-          <img class="mascot-illustration" src="assets/Emoji-worried.png" alt="Worried emoji" style="width: 72px;">
-          <span class="mascot-text">Careful! Getting close to liquidation</span>
+          <img id="health-emote" class="mascot-illustration" src="assets/Emoji-money copy.png" alt="Health emote" style="width: 72px;">
+          <span id="health-text" class="mascot-text">Looking good! Nice and safe</span>
         </div>
 
         <div class="borrow-summary">
@@ -1299,9 +1317,75 @@ document.querySelectorAll('.pct-buttons').forEach(group => {
       } else {
         if (fill) fill.style.width = pct + '%';
       }
+      // Update health mascot if inside borrow-connected
+      if (group.closest('#borrow-connected')) updateHealthMascot();
     });
   });
 });
+
+/* ═══ HEALTH MASCOT — 5 levels based on slider positions ═══ */
+var healthLevels = [
+  { key: 'ultra-safe',    img: 'assets/Emote-01-Ultra-safe.svg', text: 'Ultra safe! Maximum protection', isSvg: true },
+  { key: 'looking-good',  img: 'assets/Emoji-money copy.png',    text: 'Looking good! Nice and safe',    isSvg: false },
+  { key: 'getting-risky', img: 'assets/Emoji-worried.png',       text: 'Getting risky! Watch your ratio', isSvg: false },
+  { key: 'danger-zone',   img: 'assets/Emoji-worried.png',       text: 'Danger zone! Reduce your borrow', isSvg: false },
+  { key: 'meltdown',      img: 'assets/Emoji-worried.png',       text: 'Meltdown risk! Close to liquidation', isSvg: false }
+];
+
+function getSliderPcts() {
+  var screen = document.getElementById('borrow-connected');
+  if (!screen) return { supply: 50, borrow: 50 };
+  var groups = screen.querySelectorAll('.pct-buttons');
+  var supply = 50, borrow = 50;
+  if (groups[0]) {
+    var active = groups[0].querySelector('.pct-btn.active');
+    if (active) supply = parseInt(active.textContent);
+  }
+  if (groups[1]) {
+    var active2 = groups[1].querySelector('.pct-btn.active');
+    if (active2) borrow = parseInt(active2.textContent);
+  }
+  return { supply: supply, borrow: borrow };
+}
+
+function getHealthLevel(supply, borrow) {
+  // Level 0: Ultra Safe — high supply, low borrow
+  if (supply >= 75 && borrow <= 50) return 0;
+  // Level 1: Looking Good — decent supply, moderate borrow
+  if (supply >= 50 && borrow <= 50) return 1;
+  // Level 4: Meltdown — extreme risk
+  if (borrow >= 100 || (supply <= 25 && borrow >= 75)) return 4;
+  // Level 3: Danger Zone — high borrow or very low supply
+  if (borrow >= 75 || (supply <= 25 && borrow > 50)) return 3;
+  // Level 2: Getting Risky — everything else
+  return 2;
+}
+
+function updateHealthMascot() {
+  var pcts = getSliderPcts();
+  var level = getHealthLevel(pcts.supply, pcts.borrow);
+  var info = healthLevels[level];
+  var area = document.getElementById('health-mascot');
+  var emote = document.getElementById('health-emote');
+  var text = document.getElementById('health-text');
+  if (!area || !emote || !text) return;
+
+  // Remove all health classes
+  healthLevels.forEach(function(l) { area.classList.remove(l.key); });
+  area.classList.add(info.key);
+
+  // Update emote image
+  if (emote.getAttribute('src') !== info.img) {
+    emote.style.opacity = '0';
+    setTimeout(function() {
+      emote.src = info.img;
+      emote.style.opacity = '1';
+    }, 200);
+  }
+
+  // Update text
+  text.textContent = info.text;
+}
 
 /* ═══ ANIMATED MASCOT (vanilla JS port) ═══ */
 (function() {
