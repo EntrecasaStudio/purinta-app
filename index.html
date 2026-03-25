@@ -50,7 +50,8 @@
     /* Accessible focus styles */
     :focus-visible { outline: 2px solid var(--green-600); outline-offset: 2px; border-radius: 4px; }
     button:focus-visible { outline: 2px solid var(--green-600); outline-offset: 2px; }
-    body { font-family: var(--font-ui); background: #333333; display: flex; justify-content: center; padding: 24px; min-height: 100vh; }
+    body { font-family: var(--font-ui); background: #333333; display: flex; justify-content: center; padding: 0; min-height: 100vh; }
+    @media (min-width: 1400px) { body { padding: 24px; } }
 
     /* PHONE FRAME */
 
@@ -97,7 +98,10 @@
     .header-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     /* Hide wordmark below 400px viewport so disconnect stays visible */
     @media (max-width: 399px) {
+      body { padding: 0; background: var(--cream-50); }
+      .phone { border-radius: 0; box-shadow: none; width: 100% !important; height: 100vh !important; }
       .app-logo .logo-wordmark { display: none; }
+      .dev-nav { display: none; }
     }
     .wallet-badge {
       font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 500;
