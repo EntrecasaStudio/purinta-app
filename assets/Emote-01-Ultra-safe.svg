@@ -1,16 +1,23 @@
 <svg width="986" height="860" viewBox="0 0 986 860" fill="none" xmlns="http://www.w3.org/2000/svg">
 <style>
+  /* Stars appear from nothing, then pulse */
+  @keyframes star-appear {
+    0% { opacity: 0; transform: scale(0) rotate(-45deg); }
+    40% { opacity: 1; transform: scale(1.15) rotate(10deg); }
+    60% { opacity: 1; transform: scale(0.9) rotate(-5deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
   @keyframes star-pulse {
     0% { opacity: 0; transform: scale(0.5); }
     30% { opacity: 1; transform: scale(1); }
     70% { opacity: 1; transform: scale(1); }
     100% { opacity: 0; transform: scale(0.5); }
   }
-  .star-big-r { animation: star-pulse 2.5s ease-in-out 0s infinite; transform-origin: 857px 95px; }
-  .star-big-l { animation: star-pulse 2.5s ease-in-out 0.8s infinite; transform-origin: 108px 100px; }
-  .star-sm-bl { animation: star-pulse 2s ease-in-out 1.5s infinite; transform-origin: 47px 241px; }
-  .star-sm-tr { animation: star-pulse 2s ease-in-out 0.4s infinite; transform-origin: 747px 50px; }
-  .star-sm-far { animation: star-pulse 2s ease-in-out 1.2s infinite; transform-origin: 938px 206px; }
+  .star-big-r { opacity: 0; animation: star-appear 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.3s forwards, star-pulse 2.5s ease-in-out 1s infinite; transform-origin: 857px 95px; }
+  .star-big-l { opacity: 0; animation: star-appear 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.5s forwards, star-pulse 2.5s ease-in-out 1.3s infinite; transform-origin: 108px 100px; }
+  .star-sm-bl { opacity: 0; animation: star-appear 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.7s forwards, star-pulse 2s ease-in-out 1.7s infinite; transform-origin: 47px 241px; }
+  .star-sm-tr { opacity: 0; animation: star-appear 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.4s forwards, star-pulse 2s ease-in-out 1.2s infinite; transform-origin: 747px 50px; }
+  .star-sm-far { opacity: 0; animation: star-appear 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.6s forwards, star-pulse 2s ease-in-out 1.5s infinite; transform-origin: 938px 206px; }
   @keyframes eye-beat {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.12); }
