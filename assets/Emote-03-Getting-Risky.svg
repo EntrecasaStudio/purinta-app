@@ -22,7 +22,14 @@
   .drop-2 { animation: sweat-fall 2.8s ease-in 1.2s infinite; transform-origin: 205px 180px; }
   .drop-3 { animation: sweat-fall 3.2s ease-in 0.7s infinite; transform-origin: 117px 310px; }
   .drop-4 { animation: sweat-fall 2.5s ease-in 1.8s infinite; transform-origin: 647px 160px; }
-  .eyes { animation: tremble 0.3s ease-in-out infinite; }
+  @keyframes eye-pulse {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.10); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.07); }
+    60% { transform: scale(1); }
+  }
+  .eyes { animation: tremble 0.3s ease-in-out infinite, eye-pulse 1.8s ease-in-out infinite; transform-origin: 478px 370px; }
   .mouth-inner { animation: mouth-wave 1.2s linear infinite; }
 </style>
 <path d="M336.721 838.66L207.251 836.45C193.681 836.22 181.301 834.58 168.391 831.4C137.751 823.85 113.111 803.24 100.581 774.3C93.8507 758.75 91.0407 742.62 90.0307 725.61C88.8607 705.91 88.2707 687.46 88.8407 667.58L93.0207 522.72L97.5007 427.67L103.681 349.05L112.961 266.6C115.151 247.2 119.071 229.29 125.741 211.04C142.301 165.66 182.541 133.66 230.891 128.34C324.351 118.06 564.861 116.61 659.411 123.26L718.441 127.41C756.241 130.07 790.931 148.75 813.181 179.57C825.551 196.71 832.891 215.9 837.351 236.5C849.431 292.32 860.881 453.23 862.671 514.05L867.571 680.52C868.021 695.75 867.191 709.68 866.461 724.64C865.881 736.45 864.191 747.45 861.241 758.83C852.121 793.99 825.661 821.27 790.521 830.95C776.491 834.82 762.981 836.48 747.951 836.64L518.201 839.12L336.741 838.66H336.721Z" fill="url(#paint0_linear_1124_32494)" stroke="#185229" stroke-width="17.6324" stroke-linejoin="round"/>

@@ -6,6 +6,13 @@
   <title>Purinta — App UI</title>
   <link rel="stylesheet" href="https://use.typekit.net/rne3qwz.css">
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Preload emote SVGs for instant transitions -->
+  <link rel="prefetch" href="assets/Emote-00-Basic.svg">
+  <link rel="prefetch" href="assets/Emote-01-Ultra-safe.svg">
+  <link rel="prefetch" href="assets/Emote-02-Looking-Good.svg">
+  <link rel="prefetch" href="assets/Emote-03-Getting-Risky.svg">
+  <link rel="prefetch" href="assets/Emote-04-Danger-Zone.svg">
+  <link rel="prefetch" href="assets/Emote-05-Meltdown.svg">
   <style>
     :root {
     /* DS Type Scale (ratio 1.25, base 16) */
@@ -485,12 +492,12 @@
       object-fit: contain;
       transition: opacity 0.2s ease, width 0.3s ease;
     }
-    .mascot-area.happy .mascot-illustration,
+    .mascot-area.happy .mascot-illustration { width: 114px; position: relative; top: 12px; }
     .mascot-area.ultra-safe .mascot-illustration,
     .mascot-area.looking-good .mascot-illustration,
     .mascot-area.getting-risky .mascot-illustration { width: 120px; position: relative; top: 12px; }
     .mascot-area.danger-zone .mascot-illustration { width: 128px; position: relative; top: 12px; }
-    .mascot-area.meltdown .mascot-illustration { width: 119px; position: relative; top: 18px; }
+    .mascot-area.meltdown .mascot-illustration { width: 119px; position: relative; top: 12px; }
     @keyframes mascot-bob {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
@@ -1347,6 +1354,11 @@ document.querySelectorAll('.pct-buttons').forEach(group => {
     });
   });
 });
+
+/* ═══ PRELOAD ALL EMOTE SVGs FOR INSTANT TRANSITIONS ═══ */
+['assets/Emote-00-Basic.svg','assets/Emote-01-Ultra-safe.svg','assets/Emote-02-Looking-Good.svg',
+ 'assets/Emote-03-Getting-Risky.svg','assets/Emote-04-Danger-Zone.svg','assets/Emote-05-Meltdown.svg']
+.forEach(function(src) { fetch(src).catch(function(){}); });
 
 /* ═══ HEALTH MASCOT — 5 levels based on slider positions ═══ */
 var healthLevels = [
