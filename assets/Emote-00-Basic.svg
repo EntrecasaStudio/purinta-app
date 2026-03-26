@@ -1,13 +1,13 @@
 <svg width="939" height="962" viewBox="0 0 939 962" fill="none" xmlns="http://www.w3.org/2000/svg">
 <style>
-  /* Bill printing animation - slides up through slot mask */
+  /* Bill printing animation - slides DOWN out of mascot slot */
   @keyframes bill-print {
-    0% { transform: translateY(250px); }
-    50% { transform: translateY(0); }
+    0% { transform: translateY(-250px); }
+    60% { transform: translateY(0); }
     100% { transform: translateY(0); }
   }
   .bill-slide {
-    animation: bill-print 3s ease-out infinite;
+    animation: bill-print 3.5s ease-out infinite;
   }
 </style>
 <!-- Body white background (stars removed) -->
