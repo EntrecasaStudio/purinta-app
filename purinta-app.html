@@ -90,10 +90,11 @@
     .dev-nav-group button.bp-secondary.active { opacity: 1; background: var(--green-600); }
     .dev-nav-group button.opt-toggle { position: relative; }
     .dev-nav-group button.opt-toggle.active { background: var(--green-700); }
-    .phones-container { display: flex; gap: 48px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
-    .phone-label { font-family: 'SF Mono', 'Menlo', monospace; font-size: 10px; font-weight: 600; text-align: center;
-      color: rgba(0,0,0,0.35); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-    .phone-wrap { display: flex; flex-direction: column; align-items: center; }
+    .phones-container { display: flex; gap: 96px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+    .phone-label { font-family: 'SF Mono', 'Menlo', monospace; font-size: 20px; font-weight: 500;
+      color: rgba(255,255,255,0.6); background: rgba(30,30,30,0.85); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; padding: 6px 12px; position: absolute; left: -48px; top: 54px; }
+    .phone-wrap { display: flex; flex-direction: column; align-items: center; position: relative; }
     .phone-wrap.hidden { display: none; }
 
     /* SCREENS */
@@ -297,9 +298,9 @@
     .token-icon.shib, .mini-icon.shib { background: url('assets/symbols/shib.svg') center/cover; }
     .token-icon.dai, .mini-icon.dai { background: url('assets/symbols/dai.svg') center/cover; }
     .token-icon.wif, .mini-icon.wif { background: url('assets/symbols/wif.png') center/cover; }
-    .token-icon.morpho, .mini-icon.morpho { background: #2470FF; font-size: 11px; font-weight: 700; }
-    .token-icon.comp, .mini-icon.comp { background: #00D395; font-size: 11px; font-weight: 700; }
-    .token-icon.syrup, .mini-icon.syrup { background: #FC784A; font-size: 11px; font-weight: 700; }
+    .token-icon.morpho, .mini-icon.morpho { background: url('assets/symbols/morpho.svg') center/cover; }
+    .token-icon.comp, .mini-icon.comp { background: url('assets/symbols/comp.svg') center/cover; }
+    .token-icon.syrup, .mini-icon.syrup { background: url('assets/symbols/syrup.svg') center/cover; }
     .token-icon.pink { background: linear-gradient(135deg, var(--blush-400), var(--blush-500)); }
     .token-icon.green { background: linear-gradient(135deg, var(--green-400), var(--green-600)); }
     .token-icon.blue { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
@@ -353,14 +354,45 @@
       overflow: hidden;
       position: absolute; top: 0; right: 0; left: 0;
       max-height: 46px;
-      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                  box-shadow 0.35s ease;
+      transform-origin: top center;
+      will-change: transform, max-height;
     }
     .token-select.open {
       max-height: 300px;
+      box-shadow: 0 6px 20px rgba(26,58,42,0.10);
+      animation: pill-liquid-open 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes pill-liquid-open {
+      0%   { transform: scaleY(0.35) scaleX(0.97); opacity: 0.5; }
+      55%  { transform: scaleY(1.045) scaleX(1.01); opacity: 1; }
+      72%  { transform: scaleY(0.975); }
+      86%  { transform: scaleY(1.015); }
+      100% { transform: scaleY(1) scaleX(1); }
+    }
+    .token-select.closing {
+      animation: pill-liquid-close 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes pill-liquid-close {
+      0%   { max-height: 300px; }
+      65%  { max-height: 36px; }
+      82%  { max-height: 52px; }
+      100% { max-height: 46px; }
     }
     .token-select-trigger {
       display: flex; align-items: center; gap: 8px;
       padding: 6px 12px 6px 8px; min-width: 172px; min-height: 43px; box-sizing: border-box;
+      transform-origin: center center;
+    }
+    .token-select.closing .token-select-trigger {
+      animation: trigger-settle 0.32s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+    }
+    @keyframes trigger-settle {
+      0%   { transform: translateY(3px); }
+      45%  { transform: translateY(-2px); }
+      75%  { transform: translateY(1px); }
+      100% { transform: translateY(0); }
     }
     .token-select .mini-icon {
       width: 32px; height: 32px; border-radius: 50%; font-size: var(--ds-2xs); font-weight: 500;
@@ -368,7 +400,7 @@
       overflow: hidden; flex-shrink: 0;
     }
     .token-select .token-name { flex: 1; text-align: left; }
-    .token-select .chevron { margin-left: auto; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); width: 10px; height: 9px; flex-shrink: 0; }
+    .token-select .chevron { margin-left: auto; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); width: 10px; height: 9px; flex-shrink: 0; }
     .token-select.open .chevron { transform: rotate(180deg); }
     .token-dropdown {
       display: flex; flex-direction: column;
@@ -380,13 +412,38 @@
       font: inherit; font-size: var(--ds-md);
       color: var(--text-primary); transition: background 0.15s ease;
       margin: 0 4px;
+      opacity: 0; transform: translateY(-6px) scale(0.97);
+    }
+    .token-select.open .token-dropdown-row {
+      animation: row-bounce-in 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    .token-select.open .token-dropdown-row:nth-child(1) { animation-delay: 0.06s; }
+    .token-select.open .token-dropdown-row:nth-child(2) { animation-delay: 0.11s; }
+    .token-select.open .token-dropdown-row:nth-child(3) { animation-delay: 0.16s; }
+    @keyframes row-bounce-in {
+      0%   { opacity: 0; transform: translateY(-6px) scale(0.97); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
     .token-dropdown-row:first-child { margin-top: 2px; }
     .token-dropdown-row:last-child { margin-bottom: 6px; }
     .token-dropdown-row:hover { background: var(--cream-300); }
-    .token-dropdown-row.selected { background: var(--cream-300); opacity: 0.55; }
+    .token-dropdown-row.selected { background: var(--cream-300); }
+    .token-select.open .token-dropdown-row.selected {
+      animation: row-bounce-in-muted 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes row-bounce-in-muted {
+      0%   { opacity: 0; transform: translateY(-6px) scale(0.97); }
+      100% { opacity: 0.55; transform: translateY(0) scale(1); }
+    }
+    .token-select.closing .token-dropdown-row {
+      animation: row-fade-out 0.15s ease-out forwards;
+    }
+    @keyframes row-fade-out {
+      0%   { opacity: 1; }
+      100% { opacity: 0; }
+    }
     .token-dropdown-row .mini-icon {
-      width: 32px; height: 32px; border-radius: 50%;
+      width: 28px; height: 28px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center; color: white;
       overflow: hidden; flex-shrink: 0;
     }
@@ -426,18 +483,44 @@
     }
     .slider-track-bg {
       position: absolute; left: 0; right: 0; height: 12px; top: 10px;
-      background: var(--mint-100); border-radius: var(--r-full);
+      background: var(--mint-100); border-radius: var(--r-full); transition: background 0.4s ease;
     }
     .slider-track-fill {
       position: absolute; left: 0; height: 12px; top: 10px; z-index: 0;
       background: linear-gradient(90deg, var(--green-200), var(--green-300)); z-index: 0;
-      border-radius: var(--r-full); transition: width 0.3s ease;
+      border-radius: var(--r-full); transition: width 0.3s ease, background 0.4s ease;
+    }
+    /* Option B: Borrow slider & pct buttons turn warm on danger/meltdown */
+    #phone-b .danger-zone .slider-divider ~ .slider-track .slider-track-fill {
+      background: linear-gradient(90deg, var(--green-200), var(--blush-500));
+    }
+    #phone-b .meltdown .slider-divider ~ .slider-track .slider-track-fill {
+      background: linear-gradient(90deg, var(--green-200), var(--blush-600));
+    }
+    #phone-b .danger-zone .slider-divider ~ .slider-track .slider-track-bg {
+      background: var(--blush-100);
+    }
+    #phone-b .meltdown .slider-divider ~ .slider-track .slider-track-bg {
+      background: var(--blush-200);
+    }
+    /* Option B: Borrow pct buttons turn red on danger/meltdown — #B5403A passes 4.5:1 on blush-200 */
+    #phone-b .danger-zone .slider-divider ~ .pct-buttons .pct-btn.active,
+    #phone-b .meltdown .slider-divider ~ .pct-buttons .pct-btn.active {
+      background: var(--blush-200); color: #B5403A;
+    }
+    /* Option B: Borrow thumb stroke turns red on danger/meltdown */
+    #phone-b .danger-zone .slider-divider ~ .slider-track .slider-thumb path,
+    #phone-b .meltdown .slider-divider ~ .slider-track .slider-thumb path {
+      stroke: #B5403A;
     }
     .slider-thumb {
       position: absolute; width: 32px; height: 32px; top: 0; z-index: 2;
       background: none; border: none;
       filter: drop-shadow(0 2px 4px rgba(26,58,42,0.15));
       transition: left 0.3s ease;
+    }
+    .slider-thumb path {
+      transition: stroke 0.4s ease;
     }
     .slider-thumb svg { width: 100%; height: 100%; }
     .slider-info {
@@ -837,7 +920,7 @@
 
 <div class="phones-container">
 <div class="phone-wrap" id="wrap-a">
-  <div class="phone-label">Option A</div>
+  <div class="phone-label">A</div>
   <div class="phone" id="phone-a">
 
   <!-- ═══ SCREEN 1: HOMEPAGE ═══ -->
@@ -947,15 +1030,15 @@
                   <svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5L6.5 11.5L12.5 4.5" stroke="var(--green-700)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </div>
                 <div class="token-dropdown-row" data-token="morpho" onclick="event.stopPropagation(); selectToken(this)">
-                  <span class="mini-icon morpho">M</span>
+                  <span class="mini-icon morpho"></span>
                   <span class="token-name">MORPHO</span>
                 </div>
                 <div class="token-dropdown-row" data-token="comp" onclick="event.stopPropagation(); selectToken(this)">
-                  <span class="mini-icon comp">C</span>
+                  <span class="mini-icon comp"></span>
                   <span class="token-name">COMP</span>
                 </div>
                 <div class="token-dropdown-row" data-token="syrup" onclick="event.stopPropagation(); selectToken(this)">
-                  <span class="mini-icon syrup">S</span>
+                  <span class="mini-icon syrup"></span>
                   <span class="token-name">SYRUP</span>
                 </div>
               </div>
@@ -1057,15 +1140,15 @@
                   <svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5L6.5 11.5L12.5 4.5" stroke="var(--green-700)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </div>
                 <div class="token-dropdown-row" data-token="morpho" onclick="event.stopPropagation(); selectToken(this)">
-                  <span class="mini-icon morpho">M</span>
+                  <span class="mini-icon morpho"></span>
                   <span class="token-name">MORPHO</span>
                 </div>
                 <div class="token-dropdown-row" data-token="comp" onclick="event.stopPropagation(); selectToken(this)">
-                  <span class="mini-icon comp">C</span>
+                  <span class="mini-icon comp"></span>
                   <span class="token-name">COMP</span>
                 </div>
                 <div class="token-dropdown-row" data-token="syrup" onclick="event.stopPropagation(); selectToken(this)">
-                  <span class="mini-icon syrup">S</span>
+                  <span class="mini-icon syrup"></span>
                   <span class="token-name">SYRUP</span>
                 </div>
               </div>
@@ -1412,7 +1495,7 @@
 </div>
 </div>
 <div class="phone-wrap hidden" id="wrap-b">
-  <div class="phone-label">Option B</div>
+  <div class="phone-label">B</div>
   <div class="phone" id="phone-b"></div>
 </div>
 </div>
@@ -1436,9 +1519,9 @@ function setOption(mode) {
   // Sync breakpoint to both phones
   var bp = parseInt(localStorage.getItem('purinta-bp')) || 360;
   setBreakpoint(bp, false);
-  // Show labels only in A/B mode
+  // Always show labels so you know which option you're viewing
   document.querySelectorAll('.phone-label').forEach(function(l) {
-    l.style.display = mode === 'ab' ? 'block' : 'none';
+    l.style.display = 'block';
   });
 }
 function initPhoneB() {
@@ -1471,15 +1554,33 @@ function applyOptionBExceptions(phoneB) {
 }
 
 /* ═══ TOKEN DROPDOWN ═══ */
+function closeTokenDropdown(select, onDone) {
+  if (!select.classList.contains('open') || select.classList.contains('closing')) return;
+  select.classList.add('closing');
+  function finish() {
+    select.classList.remove('open', 'closing');
+    select.closest('.token-select-wrap').classList.remove('open');
+    if (onDone) onDone();
+  }
+  select.addEventListener('animationend', function handler(e) {
+    // Only react to the container's own close animation, ignore bubbled row animations
+    if (e.animationName !== 'pill-liquid-close') return;
+    select.removeEventListener('animationend', handler);
+    finish();
+  });
+  // Safety fallback
+  setTimeout(function() { if (select.classList.contains('closing')) finish(); }, 450);
+}
 function toggleTokenDropdown(el) {
   var select = el.closest('.token-select');
   var isOpen = select.classList.contains('open');
   // Close all other dropdowns first
   document.querySelectorAll('.token-select.open').forEach(function(s) {
-    s.classList.remove('open');
-    s.closest('.token-select-wrap').classList.remove('open');
+    if (s !== select) closeTokenDropdown(s);
   });
-  if (!isOpen) {
+  if (isOpen) {
+    closeTokenDropdown(select);
+  } else {
     select.classList.add('open');
     select.closest('.token-select-wrap').classList.add('open');
   }
@@ -1502,16 +1603,14 @@ function selectToken(row) {
   var trigger = select.querySelector('.token-select-trigger');
   trigger.querySelector('.mini-icon').className = 'mini-icon ' + token;
   trigger.querySelector('.token-name').textContent = name;
-  // Close dropdown
-  select.classList.remove('open');
-  select.closest('.token-select-wrap').classList.remove('open');
+  // Animated close
+  closeTokenDropdown(select);
 }
 // Close dropdown on outside click
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.token-select-wrap')) {
     document.querySelectorAll('.token-select.open').forEach(function(s) {
-      s.classList.remove('open');
-      s.closest('.token-select-wrap').classList.remove('open');
+      closeTokenDropdown(s);
     });
   }
 });
@@ -1564,31 +1663,36 @@ window.addEventListener('hashchange', function() {
 });
 
 
-// Make percentage buttons interactive
-document.querySelectorAll('.pct-buttons').forEach(group => {
-  group.querySelectorAll('.pct-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      group.querySelectorAll('.pct-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const pct = parseInt(btn.textContent);
-      const track = group.nextElementSibling;
-      const fill = track?.querySelector('.slider-track-fill');
-      const thumb = track?.querySelector('.slider-thumb');
-      const delta = track?.querySelector('.slider-track-delta');
-      const marker = track?.querySelector('.slider-marker-old');
-      if (thumb) { thumb.style.left = 'calc(' + pct + '% - 16px)'; thumb.style.display = ''; }
-      if (delta && marker) {
-        var prevPct = parseFloat(marker.getAttribute('data-pos'));
-        if (fill) fill.style.width = pct + '%';
-        delta.style.left = '0';
-        delta.style.width = prevPct + '%';
-      } else {
-        if (fill) fill.style.width = pct + '%';
-      }
-      // Update health mascot if inside borrow-connected or modify
-      if (group.closest('#borrow-connected') || group.closest('#update')) updateHealthMascot();
-    });
-  });
+// Make percentage buttons interactive (event delegation so cloned phone-b works)
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.pct-btn');
+  if (!btn) return;
+  var group = btn.closest('.pct-buttons');
+  if (!group) return;
+  group.querySelectorAll('.pct-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  var pct = parseInt(btn.textContent);
+  var track = group.nextElementSibling;
+  var fill = track ? track.querySelector('.slider-track-fill') : null;
+  var thumb = track ? track.querySelector('.slider-thumb') : null;
+  var delta = track ? track.querySelector('.slider-track-delta') : null;
+  var marker = track ? track.querySelector('.slider-marker-old') : null;
+  if (thumb) { thumb.style.left = 'calc(' + pct + '% - 16px)'; thumb.style.display = ''; }
+  if (delta && marker) {
+    var prevPct = parseFloat(marker.getAttribute('data-pos'));
+    if (fill) fill.style.width = pct + '%';
+    delta.style.left = '0';
+    delta.style.width = prevPct + '%';
+  } else {
+    if (fill) fill.style.width = pct + '%';
+  }
+  // Update health mascot for whichever phone this button belongs to
+  var screen = group.closest('.screen');
+  if (screen) {
+    var sid = screen.id;
+    if (sid === 'borrow-connected' || sid === 'update') updateHealthMascot();
+    if (sid === 'borrow-connected-b' || sid === 'update-b') updateHealthMascotB();
+  }
 });
 
 /* ═══ PRELOAD ALL EMOTE SVGs FOR INSTANT TRANSITIONS ═══ */
@@ -1641,9 +1745,14 @@ function updateHealthForScreen(screenId, areaId, emoteId, textId) {
   var text = document.getElementById(textId);
   if (!area || !emote || !text) return;
 
-  // Remove all health classes
-  healthLevels.forEach(function(l) { area.classList.remove(l.key); });
+  // Remove all health classes from area and screen
+  var screen = document.getElementById(screenId);
+  healthLevels.forEach(function(l) {
+    area.classList.remove(l.key);
+    if (screen) screen.classList.remove(l.key);
+  });
   area.classList.add(info.key);
+  if (screen) screen.classList.add(info.key);
 
   // Update text always
   text.textContent = info.text;
@@ -1683,6 +1792,10 @@ function updateHealthForScreen(screenId, areaId, emoteId, textId) {
 function updateHealthMascot() {
   updateHealthForScreen('borrow-connected', 'health-mascot', 'health-emote', 'health-text');
   updateHealthForScreen('update', 'health-mascot-modify', 'health-emote-modify', 'health-text-modify');
+}
+function updateHealthMascotB() {
+  updateHealthForScreen('borrow-connected-b', 'health-mascot-b', 'health-emote-b', 'health-text-b');
+  updateHealthForScreen('update-b', 'health-mascot-modify-b', 'health-emote-modify-b', 'health-text-modify-b');
 }
 
 /* ═══ ANIMATED MASCOT (vanilla JS port) ═══ */
