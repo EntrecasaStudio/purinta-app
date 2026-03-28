@@ -348,7 +348,7 @@
     .close-btn:hover { background: var(--cream-400); }
     .token-select-wrap {
       position: relative; z-index: 20; align-self: center;
-      width: 188px; height: 46px;
+      width: 184px; height: 46px;
     }
     .token-select-wrap.open { z-index: 30; }
     .slider-label { position: relative; z-index: 5; }
@@ -389,7 +389,7 @@
     }
     .token-select-trigger {
       display: flex; align-items: center; gap: 8px;
-      padding: 6px 20px 6px 8px; min-width: 188px; min-height: 43px; box-sizing: border-box;
+      padding: 6px 20px 6px 8px; min-width: 184px; min-height: 43px; box-sizing: border-box;
       transform-origin: center center;
     }
     .token-select.closing .token-select-trigger {
@@ -1747,8 +1747,9 @@ function formatPrice(p) {
 function updateBorrowValues(screenId) {
   var screen = document.getElementById(screenId);
   if (!screen) return;
-  // Get current token
+  // Get current token — check dropdown first, then fixed badge
   var tokenNameEl = screen.querySelector('.token-select-trigger .token-name');
+  if (!tokenNameEl) tokenNameEl = screen.querySelector('.slider-token-badge');
   var tokenKey = tokenNameEl ? tokenNameEl.textContent.trim().toLowerCase() : 'pepe';
   var td = tokenData[tokenKey];
   if (!td) return;
@@ -1759,7 +1760,6 @@ function updateBorrowValues(screenId) {
   var supplyUSD = supplyAmount * td.price;
   var maxBorrow = supplyUSD * maxLTV;
   var borrowUSD = maxBorrow * (pcts.borrow / 100);
-  var borrowTokens = borrowUSD / borrowTokenPrice;
   // Liquidation price
   var liqPrice = (pcts.borrow > 0 && supplyAmount > 0)
     ? (borrowUSD / (supplyAmount * maxLTV))
@@ -1767,21 +1767,41 @@ function updateBorrowValues(screenId) {
   var liqDelta = (td.price > 0 && liqPrice > 0)
     ? ((liqPrice / td.price) - 1) * 100
     : 0;
-  // Update Supplying value (1st .slider-info-value)
-  var infoValues = screen.querySelectorAll('.slider-info-value');
-  if (infoValues[0]) infoValues[0].textContent = formatCompact(supplyAmount);
-  // Update Borrowing value (2nd .slider-info-value)
-  if (infoValues[1]) infoValues[1].textContent = formatUSD(borrowUSD);
-  // Update summary rows
-  var summaryValues = screen.querySelectorAll('.summary-row-value');
-  if (summaryValues[0]) summaryValues[0].textContent = formatCompact(supplyAmount) + ' ' + td.name;
-  if (summaryValues[1]) summaryValues[1].textContent = borrowUSD > 0 ? formatUSD(borrowUSD) + ' USDC' : '—';
-  if (summaryValues[2]) summaryValues[2].innerHTML = formatPrice(td.price);
-  if (summaryValues[3]) {
-    if (liqPrice > 0) {
-      summaryValues[3].innerHTML = formatPrice(liqPrice) + ' <span style="font-size:var(--ds-2xs);font-weight:400;color:var(--text-secondary);">(' + (liqDelta >= 0 ? '+' : '') + liqDelta.toFixed(1) + '%)</span>';
-    } else {
-      summaryValues[3].textContent = '—';
+  // Detect if this is a modify/update screen (uses old → new arrows)
+  var isUpdate = screenId.indexOf('update') !== -1;
+  if (isUpdate) {
+    // Update the .new spans in slider-info
+    var sliderInfos = screen.querySelectorAll('.slider-info');
+    if (sliderInfos[0]) { var n = sliderInfos[0].querySelector('.new'); if (n) n.textContent = formatCompact(supplyAmount); }
+    if (sliderInfos[1]) { var n = sliderInfos[1].querySelector('.new'); if (n) n.textContent = formatUSD(borrowUSD) + ' USDC'; }
+    // Update summary .new spans or plain values
+    var summaryRows = screen.querySelectorAll('.summary-row-value');
+    if (summaryRows[0]) { var n = summaryRows[0].querySelector('.new'); if (n) n.textContent = formatCompact(supplyAmount) + ' ' + td.name; }
+    if (summaryRows[1]) summaryRows[1].textContent = borrowUSD > 0 ? formatUSD(borrowUSD) + ' USDC' : '—';
+    if (summaryRows[2]) summaryRows[2].innerHTML = formatPrice(td.price);
+    if (summaryRows[3]) {
+      var newLiq = summaryRows[3].querySelector('.new');
+      if (newLiq && liqPrice > 0) {
+        newLiq.innerHTML = formatPrice(liqPrice) + '<span style="font-size:var(--ds-2xs);font-weight:400;color:var(--text-secondary);line-height:1;">(' + (liqDelta >= 0 ? '+' : '') + liqDelta.toFixed(1) + '%)</span>';
+      } else if (newLiq) {
+        newLiq.textContent = '—';
+      }
+    }
+  } else {
+    // Borrow-connected screen — simple values
+    var infoValues = screen.querySelectorAll('.slider-info-value');
+    if (infoValues[0]) infoValues[0].textContent = formatCompact(supplyAmount);
+    if (infoValues[1]) infoValues[1].textContent = formatUSD(borrowUSD);
+    var summaryValues = screen.querySelectorAll('.summary-row-value');
+    if (summaryValues[0]) summaryValues[0].textContent = formatCompact(supplyAmount) + ' ' + td.name;
+    if (summaryValues[1]) summaryValues[1].textContent = borrowUSD > 0 ? formatUSD(borrowUSD) + ' USDC' : '—';
+    if (summaryValues[2]) summaryValues[2].innerHTML = formatPrice(td.price);
+    if (summaryValues[3]) {
+      if (liqPrice > 0) {
+        summaryValues[3].innerHTML = formatPrice(liqPrice) + ' <span style="font-size:var(--ds-2xs);font-weight:400;color:var(--text-secondary);">(' + (liqDelta >= 0 ? '+' : '') + liqDelta.toFixed(1) + '%)</span>';
+      } else {
+        summaryValues[3].textContent = '—';
+      }
     }
   }
 }
