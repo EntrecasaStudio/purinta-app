@@ -1643,6 +1643,9 @@ function selectToken(row) {
   trigger.querySelector('.token-name').textContent = name;
   // Animated close
   closeTokenDropdown(select);
+  // Recalculate values for new token
+  var screen = select.closest('.screen');
+  if (screen) updateBorrowValues(screen.id);
 }
 // Close dropdown on outside click
 document.addEventListener('click', function(e) {
@@ -1692,6 +1695,7 @@ function showScreen(id) {
   // Update health mascot when entering screens with dynamic emotes
   if (id === 'borrow-connected' || id === 'update') {
     if (typeof updateHealthMascot === 'function') updateHealthMascot();
+    if (typeof updateBorrowValues === 'function') updateBorrowValues(id);
   }
 }
 // Navigate on hash change (browser back/forward)
@@ -1700,6 +1704,87 @@ window.addEventListener('hashchange', function() {
   if (hash && document.getElementById(hash)) showScreen(hash);
 });
 
+
+/* ═══ DYNAMIC BORROW/SUPPLY VALUES ═══ */
+var tokenData = {
+  pepe:   { maxSupply: 420680000000, price: 0.0000412, name: 'PEPE', decimals: 6 },
+  morpho: { maxSupply: 5000000,      price: 0.85,       name: 'MORPHO', decimals: 2 },
+  comp:   { maxSupply: 169,          price: 45.45,       name: 'COMP', decimals: 2 },
+  syrup:  { maxSupply: 25000,        price: 0.12,        name: 'SYRUP', decimals: 2 }
+};
+var borrowTokenPrice = 1.00; // USDC = $1
+var maxLTV = 0.75;
+
+function formatCompact(n) {
+  if (n >= 1e12) return (n / 1e12).toFixed(2) + 'T';
+  if (n >= 1e9)  return (n / 1e9).toFixed(2) + 'B';
+  if (n >= 1e6)  return (n / 1e6).toFixed(2) + 'M';
+  if (n >= 1e3)  return (n / 1e3).toFixed(n >= 1e4 ? 1 : 2) + 'K';
+  if (n >= 1)    return n.toFixed(2);
+  return n.toPrecision(4);
+}
+
+function formatUSD(n) {
+  if (n >= 1e9)  return '$' + (n / 1e9).toFixed(2) + 'B';
+  if (n >= 1e6)  return '$' + (n / 1e6).toFixed(2) + 'M';
+  if (n >= 1e3)  return '$' + n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return '$' + n.toFixed(2);
+}
+
+function formatPrice(p) {
+  if (p >= 1) return '$' + p.toFixed(2);
+  if (p >= 0.01) return '$' + p.toFixed(4);
+  // subscript notation for tiny prices
+  var s = p.toFixed(10);
+  var match = s.match(/^0\.(0+)(\d{4})/);
+  if (match) {
+    var zeros = match[1].length;
+    return '$0.0<span style="font-size:var(--ds-3xs);vertical-align:baseline;">' + zeros + '</span>' + match[2];
+  }
+  return '$' + p.toPrecision(4);
+}
+
+function updateBorrowValues(screenId) {
+  var screen = document.getElementById(screenId);
+  if (!screen) return;
+  // Get current token
+  var tokenNameEl = screen.querySelector('.token-select-trigger .token-name');
+  var tokenKey = tokenNameEl ? tokenNameEl.textContent.trim().toLowerCase() : 'pepe';
+  var td = tokenData[tokenKey];
+  if (!td) return;
+  // Get percentages
+  var pcts = getSliderPcts(screenId);
+  // Calculate values
+  var supplyAmount = td.maxSupply * (pcts.supply / 100);
+  var supplyUSD = supplyAmount * td.price;
+  var maxBorrow = supplyUSD * maxLTV;
+  var borrowUSD = maxBorrow * (pcts.borrow / 100);
+  var borrowTokens = borrowUSD / borrowTokenPrice;
+  // Liquidation price
+  var liqPrice = (pcts.borrow > 0 && supplyAmount > 0)
+    ? (borrowUSD / (supplyAmount * maxLTV))
+    : 0;
+  var liqDelta = (td.price > 0 && liqPrice > 0)
+    ? ((liqPrice / td.price) - 1) * 100
+    : 0;
+  // Update Supplying value (1st .slider-info-value)
+  var infoValues = screen.querySelectorAll('.slider-info-value');
+  if (infoValues[0]) infoValues[0].textContent = formatCompact(supplyAmount);
+  // Update Borrowing value (2nd .slider-info-value)
+  if (infoValues[1]) infoValues[1].textContent = formatUSD(borrowUSD);
+  // Update summary rows
+  var summaryValues = screen.querySelectorAll('.summary-row-value');
+  if (summaryValues[0]) summaryValues[0].textContent = formatCompact(supplyAmount) + ' ' + td.name;
+  if (summaryValues[1]) summaryValues[1].textContent = borrowUSD > 0 ? formatUSD(borrowUSD) + ' USDC' : '—';
+  if (summaryValues[2]) summaryValues[2].innerHTML = formatPrice(td.price);
+  if (summaryValues[3]) {
+    if (liqPrice > 0) {
+      summaryValues[3].innerHTML = formatPrice(liqPrice) + ' <span style="font-size:var(--ds-2xs);font-weight:400;color:var(--text-secondary);">(' + (liqDelta >= 0 ? '+' : '') + liqDelta.toFixed(1) + '%)</span>';
+    } else {
+      summaryValues[3].textContent = '—';
+    }
+  }
+}
 
 // Make percentage buttons interactive (event delegation so cloned phone-b works)
 document.addEventListener('click', function(e) {
@@ -1728,8 +1813,8 @@ document.addEventListener('click', function(e) {
   var screen = group.closest('.screen');
   if (screen) {
     var sid = screen.id;
-    if (sid === 'borrow-connected' || sid === 'update') updateHealthMascot();
-    if (sid === 'borrow-connected-b' || sid === 'update-b') updateHealthMascotB();
+    if (sid === 'borrow-connected' || sid === 'update') { updateHealthMascot(); updateBorrowValues(sid); }
+    if (sid === 'borrow-connected-b' || sid === 'update-b') { updateHealthMascotB(); updateBorrowValues(sid); }
   }
 });
 
