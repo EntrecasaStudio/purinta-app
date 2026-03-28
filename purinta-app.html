@@ -348,7 +348,7 @@
     .close-btn:hover { background: var(--cream-400); }
     .token-select-wrap {
       position: relative; z-index: 20; align-self: center;
-      width: 172px; height: 46px;
+      width: 188px; height: 46px;
     }
     .token-select-wrap.open { z-index: 30; }
     .slider-label { position: relative; z-index: 5; }
@@ -389,7 +389,7 @@
     }
     .token-select-trigger {
       display: flex; align-items: center; gap: 8px;
-      padding: 6px 12px 6px 8px; min-width: 172px; min-height: 43px; box-sizing: border-box;
+      padding: 6px 20px 6px 8px; min-width: 188px; min-height: 43px; box-sizing: border-box;
       transform-origin: center center;
     }
     .token-select.closing .token-select-trigger {
@@ -1039,13 +1039,13 @@
               <span class="token-select-trigger">
                 <span class="mini-icon pepe"></span>
                 <span class="token-name">PEPE</span>
-                <i class="ph-light ph-caret-down chevron"></i>
+                <svg class="chevron" viewBox="-1 -1 12 11" fill="none"><path d="M5 8.66L0 0h10L5 8.66z" fill="#333" stroke="#333" stroke-width="2" stroke-linejoin="round"/></svg>
               </span>
               <div class="token-dropdown">
                 <div class="token-dropdown-row selected" data-token="pepe" onclick="event.stopPropagation(); selectToken(this)">
                   <span class="mini-icon pepe"></span>
                   <span class="token-name">PEPE</span>
-                  <i class="ph-light ph-check check-icon" style="color: var(--green-700);"></i>
+                  <i class="ph ph-check check-icon" style="color: var(--green-700);"></i>
                 </div>
                 <div class="token-dropdown-row" data-token="morpho" onclick="event.stopPropagation(); selectToken(this)">
                   <span class="mini-icon morpho"></span>
@@ -1149,13 +1149,13 @@
               <span class="token-select-trigger">
                 <span class="mini-icon pepe"></span>
                 <span class="token-name">PEPE</span>
-                <i class="ph-light ph-caret-down chevron"></i>
+                <svg class="chevron" viewBox="-1 -1 12 11" fill="none"><path d="M5 8.66L0 0h10L5 8.66z" fill="#333" stroke="#333" stroke-width="2" stroke-linejoin="round"/></svg>
               </span>
               <div class="token-dropdown">
                 <div class="token-dropdown-row selected" data-token="pepe" onclick="event.stopPropagation(); selectToken(this)">
                   <span class="mini-icon pepe"></span>
                   <span class="token-name">PEPE</span>
-                  <i class="ph-light ph-check check-icon" style="color: var(--green-700);"></i>
+                  <i class="ph ph-check check-icon" style="color: var(--green-700);"></i>
                 </div>
                 <div class="token-dropdown-row" data-token="morpho" onclick="event.stopPropagation(); selectToken(this)">
                   <span class="mini-icon morpho"></span>
@@ -1635,7 +1635,7 @@ function selectToken(row) {
   });
   row.classList.add('selected');
   if (!row.querySelector('.check-icon')) {
-    row.insertAdjacentHTML('beforeend', '<i class="ph-light ph-check check-icon" style="color: var(--green-700);"></i>');
+    row.insertAdjacentHTML('beforeend', '<i class="ph ph-check check-icon" style="color: var(--green-700);"></i>');
   }
   // Update the trigger
   var trigger = select.querySelector('.token-select-trigger');
