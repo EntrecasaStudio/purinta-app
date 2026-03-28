@@ -190,15 +190,16 @@
     .btn-sm { font-size: var(--ds-xs); padding: 8px 16px; }
     .btn-lg { font-size: var(--ds-sm); padding: 14px 32px; }
     .power-btn { width: 32px; height: 32px; padding: 0; border-radius: 50%; font-size: 24px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    .power-btn:hover { color: var(--text-primary); }
-    .power-btn:active { transform: scale(0.88); filter: brightness(0.9); }
+    .power-btn:hover { color: var(--green-600); -webkit-text-stroke: 0.5px currentColor; }
+    .power-btn:active { transform: scale(0.88); color: var(--green-700); }
     .wallet-positions {
       width: 32px; height: 32px; padding: 0; border-radius: 50%; border: none;
       background: transparent; cursor: pointer; color: var(--text-secondary);
       display: flex; align-items: center; justify-content: center; transition: all 0.2s;
       font-size: 24px;
     }
-    .wallet-positions:hover { color: var(--green-600); }
+    .wallet-positions:hover { color: var(--green-600); -webkit-text-stroke: 0.5px currentColor; }
+    .wallet-positions:active { transform: scale(0.88); color: var(--green-700); }
 
     /* ════════════════════════════════════════
        SCREEN 1: HOMEPAGE
