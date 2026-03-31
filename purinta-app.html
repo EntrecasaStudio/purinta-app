@@ -1629,16 +1629,19 @@ function initPhoneB() {
     el.id = el.id + '-b';
   });
   // Show same screen as A
-  var activeScreen = phoneA.querySelector('.screen.active');
-  if (activeScreen) {
-    var screenId = activeScreen.id + '-b';
-    phoneB.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); s.classList.remove('bg-screen'); });
-    var target = document.getElementById(screenId);
-    if (target) target.classList.add('active');
-    // Handle confirm background
-    if (activeScreen.id === 'confirm') {
-      var bgB = document.getElementById('borrow-connected-b');
-      if (bgB) { bgB.classList.add('active'); bgB.classList.add('bg-screen'); }
+  phoneB.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); s.classList.remove('bg-screen'); });
+  var confirmA = document.getElementById('confirm');
+  var isConfirm = confirmA && confirmA.classList.contains('active');
+  if (isConfirm) {
+    var confirmB = document.getElementById('confirm-b');
+    if (confirmB) confirmB.classList.add('active');
+    var bgB = document.getElementById('borrow-connected-b');
+    if (bgB) { bgB.classList.add('active'); bgB.classList.add('bg-screen'); }
+  } else {
+    var activeScreen = phoneA.querySelector('.screen.active');
+    if (activeScreen) {
+      var target = document.getElementById(activeScreen.id + '-b');
+      if (target) target.classList.add('active');
     }
   }
   // Restore B mascots to original <object> elements (since A was already v2-transformed)
