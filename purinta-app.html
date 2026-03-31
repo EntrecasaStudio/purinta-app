@@ -152,7 +152,11 @@
       padding: 6px 12px; border-radius: var(--r-full);
       display: flex; align-items: center; gap: 6px;
     }
-    .wallet-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-300); }
+    .wallet-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-300); animation: wallet-pulse 2s ease-in-out infinite; }
+    @keyframes wallet-pulse {
+      0%, 100% { background: var(--green-300); }
+      50% { background: var(--green-100); }
+    }
 
     /* BUTTONS */
     .btn {
@@ -659,13 +663,36 @@
       object-fit: contain;
       transition: opacity 0.2s ease, width 0.3s ease;
     }
-    .mascot-area.happy .mascot-illustration { width: 121px; position: relative; top: 12px; }
-    .mascot-area.happy img.mascot-illustration { width: 112px; top: 16px; animation: none; }
+    .mascot-area.happy .mascot-illustration { width: 130px; position: relative; top: 12px; }
+    .mascot-area.happy img.mascot-illustration { width: 114px; top: 16px; animation: none; }
     .mascot-area.ultra-safe .mascot-illustration,
     .mascot-area.looking-good .mascot-illustration,
     .mascot-area.getting-risky .mascot-illustration,
-    .mascot-area.danger-zone .mascot-illustration,
-    .mascot-area.meltdown .mascot-illustration { width: 121px; position: relative; top: 12px; }
+    .mascot-area.danger-zone .mascot-illustration { width: 139px; position: relative; top: 23px; }
+    .mascot-area.meltdown .mascot-illustration { width: 131px; position: relative; top: 23px; }
+    /* Ultra-safe sparkles — sized & positioned from Figma ref, scaled 1.625x */
+    .mascot-stars {
+      position: absolute; z-index: 2; pointer-events: none;
+      width: 180px; height: 80px;
+      top: -4px; left: 50%; transform: translateX(-50%);
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .mascot-area.ultra-safe .mascot-stars { opacity: 1; }
+    .mascot-stars svg { position: absolute; }
+    /* Top-left large sparkle (near left hand) */
+    .mascot-stars .sp1 { width: 22px; height: 22px; top: 0; left: 8px; animation: star-twinkle 2.2s ease-in-out infinite 0s; }
+    /* Top-right sparkle (near right hand) */
+    .mascot-stars .sp2 { width: 18px; height: 18px; top: 2px; right: 6px; animation: star-twinkle 2.2s ease-in-out infinite 0.6s; }
+    /* Mid-left small (beside left hand) */
+    .mascot-stars .sp3 { width: 12px; height: 12px; top: 30px; left: 2px; animation: star-twinkle 2.2s ease-in-out infinite 1.2s; }
+    /* Top-center-left (above head left) */
+    .mascot-stars .sp4 { width: 14px; height: 14px; top: 6px; left: 52px; animation: star-twinkle 2.2s ease-in-out infinite 0.3s; }
+    /* Top-center-right (above head right) */
+    .mascot-stars .sp5 { width: 16px; height: 16px; top: 4px; right: 42px; animation: star-twinkle 2.2s ease-in-out infinite 0.9s; }
+    /* Mid-right (beside right hand) */
+    .mascot-stars .sp6 { width: 10px; height: 10px; top: 34px; right: 2px; animation: star-twinkle 2.2s ease-in-out infinite 1.6s; }
+    /* Bottom-left small */
+    .mascot-stars .sp7 { width: 11px; height: 11px; top: 48px; left: 18px; animation: star-twinkle 2.2s ease-in-out infinite 1.9s; }
     @keyframes mascot-bob {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
@@ -1198,7 +1225,7 @@
       <div class="header-right">
         <button class="wallet-positions" aria-label="My positions" onclick="showScreen('positions')"><i class="ph-light ph-wallet"></i></button>
         <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
-        <button class="power-btn" aria-label="Disconnect wallet"><i class="ph-light ph-power"></i></button>
+        <button class="power-btn" aria-label="Disconnect wallet" onclick="showScreen('borrow')"><i class="ph-light ph-power"></i></button>
       </div>
     </div>
     <div class="borrow-content">
@@ -1280,10 +1307,19 @@
           <span class="slider-info-value">$1,502,446.29</span>
         </div>
 
-        <div id="health-mascot" class="mascot-area looking-good">
+        <div id="health-mascot" class="mascot-area danger-zone">
+          <div class="mascot-stars">
+            <svg class="sp1" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
+            <svg class="sp2" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#78BA68"/></svg>
+            <svg class="sp3" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#C8E4B0"/></svg>
+            <svg class="sp4" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
+            <svg class="sp5" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#78BA68"/></svg>
+            <svg class="sp6" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#C8E4B0"/></svg>
+            <svg class="sp7" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
+          </div>
           <div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none"><path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/></svg></div>
-          <object id="health-emote" class="mascot-illustration" data="assets/Emote-02-Looking-Good.svg" type="image/svg+xml" style="pointer-events:none;"></object>
-          <span id="health-text" class="mascot-text">Looking good! Nice and safe</span>
+          <object id="health-emote" class="mascot-illustration" data="assets/Emote-04-Danger-Zone.svg" type="image/svg+xml" style="pointer-events:none;"></object>
+          <span id="health-text" class="mascot-text">Danger zone! Reduce your borrow</span>
         </div>
 
         <div class="borrow-summary">
@@ -1337,7 +1373,7 @@
       <div class="header-right">
         <button class="wallet-positions" aria-label="My positions" onclick="showScreen('positions')"><i class="ph-light ph-wallet"></i></button>
         <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
-        <button class="power-btn" aria-label="Disconnect wallet"><i class="ph-light ph-power"></i></button>
+        <button class="power-btn" aria-label="Disconnect wallet" onclick="showScreen('borrow')"><i class="ph-light ph-power"></i></button>
       </div>
     </div>
     <div class="positions-content">
@@ -1512,7 +1548,7 @@
       <div class="header-right">
         <button class="wallet-positions" aria-label="My positions" onclick="showScreen('positions')"><i class="ph-light ph-wallet"></i></button>
         <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
-        <button class="power-btn" aria-label="Disconnect wallet"><i class="ph-light ph-power"></i></button>
+        <button class="power-btn" aria-label="Disconnect wallet" onclick="showScreen('borrow')"><i class="ph-light ph-power"></i></button>
       </div>
     </div>
     <div class="borrow-content">
@@ -1577,6 +1613,15 @@
         </div>
 
         <div id="health-mascot-modify" class="mascot-area ultra-safe">
+          <div class="mascot-stars">
+            <svg class="sp1" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
+            <svg class="sp2" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#78BA68"/></svg>
+            <svg class="sp3" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#C8E4B0"/></svg>
+            <svg class="sp4" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
+            <svg class="sp5" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#78BA68"/></svg>
+            <svg class="sp6" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#C8E4B0"/></svg>
+            <svg class="sp7" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
+          </div>
           <div class="mascot-blob"><svg width="140" height="108" viewBox="0 0 140 108" fill="none"><path d="M122.419 16.9187C132.103 41.8744 114.018 72.1683 82.0254 84.5821C50.0331 96.9959 16.2482 86.8286 6.5648 61.8729C-3.11862 36.9172 13.6396 41.9526 45.6319 29.5388C77.6242 17.1251 112.736 -8.03707 122.419 16.9187Z" fill="white"/></svg></div>
           <object id="health-emote-modify" class="mascot-illustration" data="assets/Emote-01-Ultra-safe.svg" type="image/svg+xml" style="pointer-events:none;"></object>
           <span id="health-text-modify" class="mascot-text">Ultra safe! Maximum protection</span>
@@ -2050,10 +2095,14 @@ function parseV2Emote(svgString, emoteKey) {
   // Get body origin from first body path
   var bodyOrigin = bodyEls[0] ? getPathOrigin(bodyEls[0]) : null;
 
+  // Calculate padded viewBox (used by ALL layers so they align perfectly)
+  var vbParts = vb.split(/\s+/).map(Number);
+  var padVB = (vbParts[0] - 4) + ' ' + (vbParts[1] - 4) + ' ' + (vbParts[2] + 8) + ' ' + (vbParts[3] + 8);
+
   // Store shared body + reference position from first parsed emote
   if (!v2BodySvg && bodyEls.length >= V2_BODY_COUNT && bodyOrigin) {
-    v2BodyRef = { x: bodyOrigin.x, y: bodyOrigin.y, viewBox: vb };
-    var b = '<svg viewBox="' + vb + '" fill="none" xmlns="http://www.w3.org/2000/svg">';
+    v2BodyRef = { x: bodyOrigin.x, y: bodyOrigin.y, viewBox: vb, padViewBox: padVB };
+    var b = '<svg viewBox="' + padVB + '" fill="none" xmlns="http://www.w3.org/2000/svg">';
     bodyEls.forEach(function(el) { b += el.outerHTML; });
     b += '</svg>';
     v2BodySvg = b;
@@ -2066,9 +2115,9 @@ function parseV2Emote(svgString, emoteKey) {
     dy = v2BodyRef.y - bodyOrigin.y;
   }
   var useRefVB = v2BodyRef ? v2BodyRef.viewBox : vb;
-  // Pad viewBox so hands aren't clipped at edges
-  var vbParts = useRefVB.split(/\s+/).map(Number);
-  var padVB = (vbParts[0] - 4) + ' ' + (vbParts[1] - 4) + ' ' + (vbParts[2] + 8) + ' ' + (vbParts[3] + 8);
+  // Pad viewBox so hands aren't clipped at edges (use ref padded viewBox if available)
+  var refPadParts = useRefVB.split(/\s+/).map(Number);
+  padVB = (refPadParts[0] - 4) + ' ' + (refPadParts[1] - 4) + ' ' + (refPadParts[2] + 8) + ' ' + (refPadParts[3] + 8);
   var needsTranslate = (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5);
 
   // Build feet SVG (behind body)
@@ -2103,6 +2152,11 @@ function parseV2Emote(svgString, emoteKey) {
       loaded++;
       if (loaded === keys.length) {
         v2EmotesReady = true;
+        // Normalize feet: use ultra-safe legs for all non-meltdown emotes
+        var refFeet = v2ExprParts['ultra-safe'] && !v2ExprParts['ultra-safe'].fullSvg ? v2ExprParts['ultra-safe'].feet : null;
+        if (refFeet) {
+          keys.forEach(function(k) { if (k !== 'ultra-safe' && k !== 'meltdown' && v2ExprParts[k] && !v2ExprParts[k].fullSvg) v2ExprParts[k].feet = refFeet; });
+        }
         // Transform Phone A mascots on first load
         if (!_v2AppliedToA) {
           applyV2Emotes(document.getElementById('phone-a'));
@@ -2116,6 +2170,8 @@ function parseV2Emote(svgString, emoteKey) {
             applyV2Expression(container, ek);
           }
         });
+        // Re-sync health mascot now that emotes are ready (fixes race condition on initial load)
+        if (typeof updateHealthMascot === 'function') updateHealthMascot();
       }
     }).catch(function() { loaded++; });
   });
