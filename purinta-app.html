@@ -701,7 +701,7 @@
       border-bottom: 1px solid var(--cream-300);
       font-family: var(--font-ui); gap: 8px;
     }
-    .summary-row-label { flex-shrink: 1; min-width: 0; }
+    .summary-row-label { flex-shrink: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .liq-arrow { display: inline-flex !important; align-items: flex-start; gap: 6px; font-family: var(--font-ui); }
     .liq-arrow .old, .liq-arrow .new { display: inline-flex; flex-direction: column; align-items: center; }
     .liq-arrow .old { color: var(--text-secondary); text-decoration: line-through; }
@@ -1587,7 +1587,7 @@
             <div class="summary-row"><span class="summary-row-label">You supply</span><span class="summary-row-value"><span class="update-arrow"><span class="old">1000</span> <span class="arr">→</span> <span class="new">1500 PEPE</span></span></span></div>
             <div class="summary-row"><span class="summary-row-label">You repay</span><span class="summary-row-value">700,000 USDC</span></div>
             <div class="summary-row"><span class="summary-row-label">(Token) Price</span><span class="summary-row-value">$0.041200</span></div>
-            <div class="summary-row"><span class="summary-row-label">Liquid. Price</span><span class="summary-row-value liq-arrow"><span class="old"><span class="liq-price">$0.05714</span><span class="liq-pct">(-38.6%)</span></span><span class="arr">→</span><span class="new"><span class="liq-price">$0.05714</span><span class="liq-pct">(-42.1%)</span></span></span></div>
+            <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value liq-arrow"><span class="old"><span class="liq-price">$0.05714</span><span class="liq-pct">(-38.6%)</span></span><span class="arr">→</span><span class="new"><span class="liq-price">$0.05714</span><span class="liq-pct">(-42.1%)</span></span></span></div>
           </div>
         </div>
       </div>
