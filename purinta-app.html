@@ -907,15 +907,23 @@
     .phone.desktop .screen { max-width: 720px; margin: 0 auto; padding: 0 40px; }
     .phone.desktop .screen.active { display: block; }
     .phone.desktop #homepage,
-    .phone.desktop #confirm { max-width: none; padding: 0 40px; }
-    #confirm.active { position: absolute; top: 0; left: 0; right: 0; z-index: 30; min-height: 100%; }
-    #confirm > .modal-overlay { align-items: center !important; justify-content: center; background: rgba(10,51,24,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); min-height: auto; position: sticky; top: 0; height: 100vh; }
-    .phone.desktop #homepage .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .phone.desktop #homepage .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
-    .phone.desktop #homepage .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
-    .phone.desktop #homepage .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
-    .phone.desktop #homepage .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; max-width: none; }
-    .phone.desktop #homepage .token-card { width: calc(33.333% - 11px); box-sizing: border-box; flex-shrink: 0; }
+    .phone.desktop #homepage-b,
+    .phone.desktop #confirm,
+    .phone.desktop #confirm-b { max-width: none; padding: 0 40px; }
+    #confirm.active, #confirm-b.active { position: absolute; top: 0; left: 0; right: 0; z-index: 30; min-height: 100%; }
+    #confirm > .modal-overlay, #confirm-b > .modal-overlay { align-items: center !important; justify-content: center; background: rgba(10,51,24,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); min-height: auto; position: sticky; top: 0; height: 100vh; }
+    .phone.desktop #homepage .hero-wrap,
+    .phone.desktop #homepage-b .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .phone.desktop #homepage .hero-wrap .hero-section:last-child,
+    .phone.desktop #homepage-b .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
+    .phone.desktop #homepage .hero-wrap .hero-title,
+    .phone.desktop #homepage-b .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
+    .phone.desktop #homepage .hero-title .mini-icon,
+    .phone.desktop #homepage-b .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
+    .phone.desktop #homepage .token-list,
+    .phone.desktop #homepage-b .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; max-width: none; }
+    .phone.desktop #homepage .token-card,
+    .phone.desktop #homepage-b .token-card { width: calc(33.333% - 11px); box-sizing: border-box; flex-shrink: 0; }
 
     .phone.desktop .hero { padding: 24px 0; }
     .phone.desktop .token-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 0; }
@@ -923,13 +931,21 @@
     .phone.desktop .positions-content { }
     
     .phone.desktop #borrow,
+    .phone.desktop #borrow-b,
     .phone.desktop #borrow-connected,
+    .phone.desktop #borrow-connected-b,
     .phone.desktop #update,
-    .phone.desktop #positions { max-width: none; padding: 0 40px; }
+    .phone.desktop #update-b,
+    .phone.desktop #positions,
+    .phone.desktop #positions-b { max-width: none; padding: 0 40px; }
     .phone.desktop #borrow .borrow-content,
+    .phone.desktop #borrow-b .borrow-content,
     .phone.desktop #borrow-connected .borrow-content,
+    .phone.desktop #borrow-connected-b .borrow-content,
     .phone.desktop #update .borrow-content,
-    .phone.desktop #positions .positions-content { max-width: 500px; margin-left: auto; margin-right: auto; }
+    .phone.desktop #update-b .borrow-content,
+    .phone.desktop #positions .positions-content,
+    .phone.desktop #positions-b .positions-content { max-width: 500px; margin-left: auto; margin-right: auto; }
     .phone.desktop .update-arrow .old,
     .phone.desktop .update-arrow .new { flex-direction: row !important; gap: 4px; }
     .phone.desktop .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; max-width: none; width: 100%; margin: 0; padding: 40px 20px; z-index: 40; }
