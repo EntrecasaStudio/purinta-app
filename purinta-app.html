@@ -672,6 +672,7 @@
     }
     /* V2 full-body emote system (Option B) — static body + instant face swap */
     .emote-v2 { position: relative; overflow: visible; aspect-ratio: 1 / 0.85; }
+    .emote-v2 svg { overflow: visible; }
     .emote-v2 .emote-v2-feet,
     .emote-v2 .emote-v2-body,
     .emote-v2 .emote-v2-face,
@@ -2037,24 +2038,27 @@ function parseV2Emote(svgString, emoteKey) {
     dy = v2BodyRef.y - bodyOrigin.y;
   }
   var useRefVB = v2BodyRef ? v2BodyRef.viewBox : vb;
+  // Pad viewBox so hands aren't clipped at edges
+  var vbParts = useRefVB.split(/\s+/).map(Number);
+  var padVB = (vbParts[0] - 4) + ' ' + (vbParts[1] - 4) + ' ' + (vbParts[2] + 8) + ' ' + (vbParts[3] + 8);
   var needsTranslate = (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5);
 
   // Build feet SVG (behind body)
-  var f = '<svg viewBox="' + useRefVB + '" fill="none" xmlns="http://www.w3.org/2000/svg">';
+  var f = '<svg viewBox="' + padVB + '" fill="none" xmlns="http://www.w3.org/2000/svg">';
   if (needsTranslate) f += '<g transform="translate(' + dx.toFixed(2) + ',' + dy.toFixed(2) + ')">';
   feet.forEach(function(el) { f += el.outerHTML; });
   if (needsTranslate) f += '</g>';
   f += '</svg>';
 
   // Build face+hands SVG (above body)
-  var e = '<svg viewBox="' + useRefVB + '" fill="none" xmlns="http://www.w3.org/2000/svg">';
+  var e = '<svg viewBox="' + padVB + '" fill="none" xmlns="http://www.w3.org/2000/svg">';
   if (defs) e += defs.outerHTML;
   if (needsTranslate) e += '<g transform="translate(' + dx.toFixed(2) + ',' + dy.toFixed(2) + ')">';
   faceEls.forEach(function(el) { e += el.outerHTML; });
   if (needsTranslate) e += '</g>';
   e += '</svg>';
 
-  return { feet: f, face: e, fullSvg: false, viewBox: useRefVB };
+  return { feet: f, face: e, fullSvg: false, viewBox: padVB };
 }
 
 // Preload v2 SVGs — load 129×104 viewBox emotes first to establish body
