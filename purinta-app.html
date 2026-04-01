@@ -1772,17 +1772,22 @@ function setOption(mode, save) {
   var phone = document.getElementById('phone-a');
   var peek = document.querySelector('.new-borrow-peek');
   if (!phone || !peek) return;
-  var stickyTop = parseFloat(getComputedStyle(peek).top) || 130;
-  var firstCard = document.querySelector('.position-card');
-  // Compute the scroll threshold once: when first card top reaches peek sticky position
-  var hideThreshold = firstCard ? firstCard.offsetTop - stickyTop : 100;
+  var hideThreshold = null;
   phone.addEventListener('scroll', function() {
     var s = phone.scrollTop;
-    var maxScroll = 80;
-    var t = Math.min(s / maxScroll, 1);
+    // Lazy-compute threshold when first scrolling (positions screen must be visible)
+    if (hideThreshold === null) {
+      var firstCard = phone.querySelector('.position-card');
+      var stickyTop = parseFloat(getComputedStyle(peek).top) || 130;
+      // Hide when first card fully covers peek (card top reaches peek sticky top)
+      hideThreshold = firstCard ? firstCard.offsetTop - stickyTop : 80;
+      if (hideThreshold < 30) hideThreshold = 30; // safety minimum
+    }
+    // Shrink animation: scale from 1 → 0.85 over full scroll distance to hide
+    var t = Math.min(s / hideThreshold, 1);
     var scale = 1 - (t * 0.15);
     peek.style.transform = 'scale(' + scale + ')';
-    // Once scrolled past threshold, hide and keep hidden
+    // Hide when fully covered by first card
     peek.style.visibility = s >= hideThreshold ? 'hidden' : 'visible';
   });
 })();
