@@ -350,6 +350,7 @@
       padding: 16px 20px; text-align: center;
       font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary);
       border-top: 1px solid var(--cream-300);
+      position: relative; z-index: 1; background: var(--cream-50);
     }
     .app-footer a { color: var(--text-secondary); text-decoration: none; }
     .app-footer a:hover { color: var(--green-600); }
@@ -661,8 +662,11 @@
       filter: drop-shadow(0 3px 8px rgba(8, 60, 32, 0.12));
       animation: mascot-bob 3s ease-in-out infinite;
       object-fit: contain;
-      transition: opacity 0.2s ease, width 0.3s ease;
+      transition: opacity 0.2s ease;
     }
+    /* Hide <object> mascots in Phone A until v2 emotes replace them — prevents size flash */
+    #phone-a object.mascot-illustration { opacity: 0; }
+    .emote-v2.mascot-illustration { opacity: 1; }
     .mascot-area.happy .mascot-illustration { width: 130px; position: relative; top: 12px; }
     .mascot-area.happy img.mascot-illustration { width: 114px; top: 16px; animation: none; }
     .mascot-area.ultra-safe .mascot-illustration,
@@ -863,7 +867,7 @@
       border: 1.5px solid var(--cream-400); margin-bottom: 12px;
       transition: all 0.25s ease;
     }
-    .position-card:hover { border-color: var(--green-200); box-shadow: var(--shadow-card); }
+    .position-card:hover { border-color: var(--green-200); }
     .position-header {
       display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
     }
@@ -910,6 +914,76 @@
     .risk-bar-fill.high { background: linear-gradient(90deg, var(--blush-400), var(--blush-500)); }
     .position-actions { display: flex; flex-direction: column; gap: 8px; }
     .position-actions .btn { width: 100%; font-size: var(--ds-xs); padding: 10px; }
+    /* Option A: Title + Total row, then centered New Borrow button */
+    .positions-title-row {
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      margin-bottom: 24px;
+    }
+    .positions-title-row .positions-header-line {
+      display: flex; align-items: baseline; justify-content: space-between; width: 100%;
+      padding-left: 0; padding-right: 0;
+    }
+    .positions-title-row .positions-header-line .positions-title { margin-bottom: 0; align-items: baseline; line-height: 1; }
+    .positions-title-row .positions-header-line .positions-title i { align-self: center; }
+    .positions-title-row .total-row { margin-bottom: 0; margin-left: 0; margin-right: 0; align-items: baseline; gap: 8px; position: relative; top: -1px; }
+    .positions-title-row .total-label, .positions-title-row .total-value { line-height: 1; }
+    .btn.btn-sm { font-size: var(--ds-xs); padding: 6px 14px; }
+    /* Option C: Peek-behind card */
+    .new-borrow-peek {
+      background: linear-gradient(135deg, var(--green-50) 0%, var(--cream-100) 100%);
+      border: 1.5px solid var(--green-200);
+      border-radius: 20px;
+      padding: 12px 20px 12px 20px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      cursor: pointer; transition: border-color 0.3s ease;
+      margin: 0 21.5px 16px 21.5px;
+      position: sticky; top: 130px; z-index: 0;
+      transform-origin: center top; overflow: hidden;
+    }
+    .new-borrow-peek::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--green-200) 0%, var(--green-100) 50%, var(--green-50) 100%);
+      opacity: 0; transition: opacity 0.3s ease;
+      border-radius: inherit; z-index: -1;
+    }
+    .new-borrow-peek:hover::before { opacity: 1; }
+    .new-borrow-peek:hover { border-color: var(--green-400); }
+    .new-borrow-peek:active { transform: scale(0.96); }
+    .new-borrow-peek .peek-icon { font-size: 16px; color: var(--green-600); }
+    .new-borrow-peek .peek-text {
+      font-family: var(--font-display); font-size: var(--ds-xs); font-weight: 400;
+      color: var(--green-700); letter-spacing: 0.8px;
+    }
+    .position-card { position: relative; z-index: 1; box-shadow: 0 12px 0 0 var(--cream-50); }
+    .position-card:hover { box-shadow: var(--shadow-card), 0 12px 0 0 var(--cream-50); }
+    /* Option B: CTA card at bottom */
+    .new-borrow-cta {
+      background: linear-gradient(135deg, var(--green-50) 0%, var(--cream-100) 100%);
+      border: 1.5px solid var(--green-200); border-radius: 28px;
+      padding: 24px 20px; margin-top: 12px;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      gap: 8px; cursor: pointer; transition: border-color 0.3s ease;
+      position: relative; overflow: hidden; z-index: 1;
+    }
+    .new-borrow-cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--green-200) 0%, var(--green-100) 50%, var(--green-50) 100%);
+      opacity: 0; transition: opacity 0.3s ease;
+      border-radius: inherit; z-index: 0;
+    }
+    .new-borrow-cta:hover::before { opacity: 1; }
+    .new-borrow-cta:hover { border-color: var(--green-400); }
+    .new-borrow-cta > * { position: relative; z-index: 1; }
+    .new-borrow-cta:active { transform: scale(0.98); }
+    .new-borrow-cta .cta-mascot { width: 72px; height: auto; filter: drop-shadow(0 2px 6px rgba(8,60,32,0.1)); }
+    .new-borrow-cta .cta-text {
+      font-family: var(--font-display); font-size: var(--ds-sm); font-weight: 500;
+      color: var(--green-700);
+    }
+    .new-borrow-cta .cta-sub {
+      font-family: var(--font-ui); font-size: var(--ds-2xs); color: var(--text-secondary);
+      margin-top: -4px;
+    }
 
     /* ════════════════════════════════════════
        SCREEN 6: UPDATE LOAN
@@ -1377,10 +1451,21 @@
       </div>
     </div>
     <div class="positions-content">
-      <div class="positions-title"><i class="ph-light ph-wallet" style="font-size: 26px; color: var(--green-600);"></i> My Positions</div>
-      <div class="total-row">
-        <span class="total-label">Total</span>
-        <span class="total-value">$35.6K</span>
+      <div class="positions-title-row">
+        <div class="positions-header-line">
+          <div class="positions-title"><i class="ph-light ph-wallet" style="font-size: 26px; color: var(--green-600);"></i> My Positions</div>
+          <div class="total-row">
+            <span class="total-label">Total</span>
+            <span class="total-value">$35.6K</span>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="display:none;" onclick="showScreen('borrow-connected')"><i class="ph ph-plus" style="font-size: 14px;"></i> New Borrow</button>
+      </div>
+
+      <!-- Option C: Peek-behind card -->
+      <div class="new-borrow-peek" onclick="showScreen('borrow-connected')">
+        <i class="ph ph-plus peek-icon"></i>
+        <span class="peek-text">New Borrow</span>
       </div>
 
       <!-- Position — PEPE -->
@@ -1412,7 +1497,7 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-plus btn-icon"></i> Modify Position</button>
+          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
           <button class="btn btn-ghost"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
@@ -1428,7 +1513,7 @@
           <div style="text-align: right;"><div class="stat-big accent">—<span style="font-size: var(--ds-xs); color: var(--text-secondary);"> /yr</span></div><div class="stat-label">Borrow Rate</div></div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-plus btn-icon"></i> Modify Position</button>
+          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
           <button class="btn btn-ghost"><i class="ph ph-arrow-circle-up btn-icon"></i> Quick Withdraw</button>
         </div>
       </div>
@@ -1462,7 +1547,7 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-plus btn-icon"></i> Modify Position</button>
+          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
           <button class="btn btn-ghost"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
@@ -1496,7 +1581,7 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-plus btn-icon"></i> Modify Position</button>
+          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
           <button class="btn btn-ghost"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
@@ -1530,9 +1615,16 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-plus btn-icon"></i> Modify Position</button>
+          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
           <button class="btn btn-ghost"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
+      </div>
+
+      <!-- Option B: CTA card for new borrow -->
+      <div class="new-borrow-cta" onclick="showScreen('borrow-connected')">
+        <img class="cta-mascot" src="assets/v2-emote-00-basic-money.svg" alt="Purinta">
+        <div class="cta-text">Open a new position</div>
+        <div class="cta-sub">Borrow against your favorite tokens</div>
       </div>
 
     </div>
@@ -1674,6 +1766,29 @@ function setOption(mode, save) {
     l.style.display = 'block';
   });
 }
+
+// Peek-behind shrink on scroll
+(function() {
+  var phone = document.getElementById('phone-a');
+  var peek = document.querySelector('.new-borrow-peek');
+  if (!phone || !peek) return;
+  var stickyTop = parseFloat(getComputedStyle(peek).top) || 130;
+  var firstCard = document.querySelector('.position-card');
+  // Compute the scroll threshold once: when first card top reaches peek sticky position
+  var hideThreshold = firstCard ? firstCard.offsetTop - stickyTop : 100;
+  phone.addEventListener('scroll', function() {
+    var s = phone.scrollTop;
+    var maxScroll = 80;
+    var t = Math.min(s / maxScroll, 1);
+    var scale = 1 - (t * 0.15);
+    peek.style.transform = 'scale(' + scale + ')';
+    // Once scrolled past threshold, hide and keep hidden
+    peek.style.visibility = s >= hideThreshold ? 'hidden' : 'visible';
+  });
+})();
+
+// Phone A = Option A: keep both header btn and CTA card
+
 function initPhoneB() {
   var phoneA = document.getElementById('phone-a');
   var phoneB = document.getElementById('phone-b');
@@ -1718,6 +1833,28 @@ function initPhoneB() {
     phoneB.querySelectorAll('.reveal-in').forEach(function(el) {
       el.classList.add('revealed');
     });
+  }
+  // A/B: Phone B = Option B (CTA card visible, restore original title/total layout, hide header btn)
+  var phoneBPositions = document.getElementById('positions-b');
+  if (phoneBPositions) {
+    var headerBtnB = phoneBPositions.querySelector('.positions-title-row .btn-sm');
+    if (headerBtnB) headerBtnB.remove();
+    var ctaB = phoneBPositions.querySelector('.new-borrow-cta');
+    if (ctaB) ctaB.style.display = '';
+    // Restore original layout: title then total-row as separate siblings
+    var titleRowB = phoneBPositions.querySelector('.positions-title-row');
+    var titleB = phoneBPositions.querySelector('.positions-title');
+    var totalRowB = phoneBPositions.querySelector('.total-row');
+    if (titleRowB && titleB && totalRowB) {
+      var parent = titleRowB.parentNode;
+      parent.insertBefore(titleB, titleRowB);
+      parent.insertBefore(totalRowB, titleRowB);
+      titleRowB.remove();
+      // Reset total-row to original styles
+      totalRowB.style.marginBottom = '20px';
+      totalRowB.style.marginLeft = '34px';
+      totalRowB.style.marginRight = '34px';
+    }
   }
 }
 /* Store original <object> outerHTML keyed by base ID (without -b suffix) */
