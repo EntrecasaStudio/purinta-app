@@ -161,7 +161,7 @@
     /* BUTTONS */
     .btn {
       font-family: var(--font-display); font-weight: 500; font-size: var(--ds-sm); letter-spacing: 0.3px;
-      padding: 11px 24px 13px; border-radius: var(--r-full); border: none;
+      padding: 12px 24px 14px; border-radius: var(--r-full); border: none; /* 44px ×4 */
       cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       text-transform: none;
@@ -178,7 +178,7 @@
       background: linear-gradient(160deg, var(--green-200), var(--green-300)); color: var(--green-700);
       box-shadow: none;
       position: relative; overflow: visible;
-      border: none; padding: 14px 28px;
+      border: none; padding: 13px 28px; /* 44px ×4 */
       letter-spacing: 0.5px;
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -198,7 +198,7 @@
     }
     .btn-secondary {
       background: var(--mint-100); color: var(--green-700); border: 1px solid var(--green-300);
-      border-radius: var(--r-full);
+      border-radius: var(--r-full); padding: 11px 24px 13px; /* 44px ×4 (compensate 2px border) */
       box-shadow: 0 0 0 0 var(--green-300);
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -206,16 +206,16 @@
     .btn-secondary:active { transform: translateY(1px) scale(0.96); box-shadow: 0 0 0 0 var(--green-300); filter: brightness(0.95); }
     .btn-ghost {
       background: var(--mint-100); color: var(--green-700); border: 1px solid var(--green-300);
-      border-radius: var(--r-full);
+      border-radius: var(--r-full); padding: 11px 24px 13px; /* 44px ×4 (compensate 2px border) */
       box-shadow: 0 0 0 0 var(--green-300);
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .btn-ghost:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
     .btn-ghost:active { transform: translateY(1px) scale(0.96); box-shadow: 0 0 0 0 var(--green-300); filter: brightness(0.95); }
-    .btn-connect { background: white; color: var(--text-primary); border: 1.5px solid var(--cream-400); font-size: var(--ds-xs); padding: 8px 16px; }
+    .btn-connect { background: white; color: var(--text-primary); border: 1.5px solid var(--cream-400); font-size: var(--ds-xs); padding: 9.5px 16px; } /* 40px ×4 */
     .btn-full { width: 100%; justify-content: center; }
-    .btn-sm { font-size: var(--ds-xs); padding: 8px 16px; }
-    .btn-lg { font-size: var(--ds-sm); padding: 14px 32px; }
+    .btn-sm { font-size: var(--ds-xs); padding: 6.5px 14px; }  /* 28px ×4 */
+    .btn-lg { font-size: var(--ds-sm); padding: 14.75px 32px; } /* 52px ×4 */
     .power-btn { width: 32px; height: 32px; padding: 0; border-radius: 50%; font-size: 24px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .power-btn:hover { color: var(--green-600); -webkit-text-stroke: 0.5px currentColor; }
     .power-btn:active { transform: scale(0.88); color: var(--green-700); }
@@ -345,7 +345,7 @@
     .token-pair-name { font-family: var(--font-display); font-weight: 500; font-size: var(--ds-md); color: var(--text-primary); }
     .token-pair-amount { font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary); margin-top: 2px; }
     .token-action { width: 100%; }
-    .token-action .btn { font-size: var(--ds-xs); padding: 10px 20px; width: 100%; }
+    .token-action .btn { font-size: var(--ds-xs); padding: 11px 20px; width: 100%; } /* 40px ×4 */
     .app-footer {
       padding: 16px 20px; text-align: center;
       font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary);
@@ -913,7 +913,7 @@
     .risk-bar-fill.low { background: linear-gradient(90deg, var(--green-200), var(--green-300)); z-index: 0; }
     .risk-bar-fill.high { background: linear-gradient(90deg, var(--blush-400), var(--blush-500)); }
     .position-actions { display: flex; flex-direction: column; gap: 8px; }
-    .position-actions .btn { width: 100%; font-size: var(--ds-xs); padding: 10px; }
+    .position-actions .btn { width: 100%; font-size: var(--ds-xs); padding: 11px 10px; } /* 40px ×4 */
     /* Option A: Title + Total row, then centered New Borrow button */
     .positions-title-row {
       display: flex; flex-direction: column; align-items: center; gap: 16px;
@@ -927,12 +927,13 @@
     .positions-title-row .positions-header-line .positions-title i { align-self: center; }
     .positions-title-row .total-row { margin-bottom: 0; margin-left: 0; margin-right: 0; align-items: baseline; gap: 8px; position: relative; top: -1px; }
     .positions-title-row .total-label, .positions-title-row .total-value { line-height: 1; }
-    .btn.btn-sm { font-size: var(--ds-xs); padding: 6px 14px; }
+    .btn.btn-sm { font-size: var(--ds-xs); padding: 6.5px 14px; } /* 28px ×4 */
     /* Option C: Peek-behind card */
     .new-borrow-peek {
       background: linear-gradient(135deg, var(--green-50) 0%, var(--cream-100) 100%);
-      border: 1.5px solid var(--green-200);
+      border: none;
       border-radius: 20px;
+      box-shadow: inset 0 0 0 1.5px var(--green-200);
       padding: 12px 20px 12px 20px;
       display: flex; align-items: center; justify-content: center; gap: 8px;
       cursor: pointer; transition: border-color 0.3s ease;
@@ -1065,6 +1066,7 @@
     .phone.desktop .borrow-cta .btn { max-width: 392px; margin: 0 auto; display: flex; }
     .phone.desktop .slider-section { padding-left: 32px; padding-right: 32px; }
     .phone.desktop .position-card { padding-left: 32px; padding-right: 32px; }
+
   </style>
 </head>
 <body>
@@ -1454,19 +1456,21 @@
       <div class="positions-title-row">
         <div class="positions-header-line">
           <div class="positions-title"><i class="ph-light ph-wallet" style="font-size: 26px; color: var(--green-600);"></i> My Positions</div>
-          <div class="total-row">
+          <!-- Total removed: ambiguous (borrows vs supplies) -->
+          <!--<div class="total-row">
             <span class="total-label">Total</span>
             <span class="total-value">$35.6K</span>
-          </div>
+          </div>-->
         </div>
-        <button class="btn btn-secondary btn-sm" style="display:none;" onclick="showScreen('borrow-connected')"><i class="ph ph-plus" style="font-size: 14px;"></i> New Borrow</button>
+        <!-- New Borrow header button — removed -->
+        <!--<button class="btn btn-secondary btn-sm" style="display:none;" onclick="showScreen('borrow-connected')"><i class="ph ph-plus" style="font-size: 14px;"></i> New Borrow</button>-->
       </div>
 
-      <!-- Option C: Peek-behind card -->
-      <div class="new-borrow-peek" onclick="showScreen('borrow-connected')">
+      <!-- Option C: Peek-behind card — removed -->
+      <!--<div class="new-borrow-peek" onclick="showScreen('borrow-connected')">
         <i class="ph ph-plus peek-icon"></i>
         <span class="peek-text">New Borrow</span>
-      </div>
+      </div>-->
 
       <!-- Position — PEPE -->
       <div class="position-card">
@@ -1620,12 +1624,12 @@
         </div>
       </div>
 
-      <!-- Option B: CTA card for new borrow -->
-      <div class="new-borrow-cta" onclick="showScreen('borrow-connected')">
+      <!-- Option B: CTA card — removed -->
+      <!--<div class="new-borrow-cta" onclick="showScreen('borrow-connected')">
         <img class="cta-mascot" src="assets/v2-emote-00-basic-money.svg" alt="Purinta">
         <div class="cta-text">Open a new position</div>
         <div class="cta-sub">Borrow against your favorite tokens</div>
-      </div>
+      </div>-->
 
     </div>
     <div class="app-footer">
