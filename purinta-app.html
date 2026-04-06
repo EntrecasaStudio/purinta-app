@@ -162,8 +162,8 @@
 
     /* BUTTONS */
     .btn {
-      font-family: var(--font-display); font-weight: 500; font-size: var(--ds-xs); letter-spacing: 0.3px;
-      padding: 11px 24px; border-radius: var(--r-full); border: none; /* 40px ×4 */
+      font-family: var(--font-display); font-weight: 500; font-size: var(--ds-sm); letter-spacing: 0.3px;
+      padding: 12px 24px; border-radius: var(--r-full); border: none; /* 44px ×4 (icon 20px + 12*2) */
       cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       text-transform: none;
@@ -216,9 +216,9 @@
     .btn-ghost:active { transform: translateY(1px) scale(0.96); box-shadow: 0 0 0 0 var(--green-300); filter: brightness(0.95); }
     .btn-connect { background: white; color: var(--text-primary); border: 1.5px solid var(--cream-400); font-size: var(--ds-xs); padding: 9.5px 16px; } /* 40px ×4 */
     .btn-full { width: 100%; justify-content: center; }
-    .btn-sm { font-size: var(--ds-xs); padding: 8.5px 14px; }  /* 32px ×4 */
+    .btn-sm { font-size: var(--ds-xs); padding: 11px 14px; }  /* 40px ×4 */
     .btn-sm .btn-icon, .btn-sm i.btn-icon { width: 16px; height: 16px; font-size: 16px; }
-    .btn-lg { font-size: var(--ds-sm); padding: 14.75px 32px; } /* 52px ×4 */
+    .btn-lg { font-size: var(--ds-md); padding: 14.75px 32px; } /* 52px ×4 */
     .power-btn { width: 32px; height: 32px; padding: 0; border-radius: 50%; font-size: 24px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .power-btn:hover { color: var(--green-600); -webkit-text-stroke: 0.5px currentColor; }
     .power-btn:active { transform: scale(0.88); color: var(--green-700); }
@@ -234,7 +234,7 @@
       font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-primary); margin-bottom: 10px; }
     .disconnect-dropdown .dd-address .wallet-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-500); flex-shrink: 0; }
     .disconnect-dropdown .btn-disconnect { width: 100%; padding: 10px 16px; border-radius: 12px; border: none; cursor: pointer;
-      font-family: var(--font-ui); font-size: var(--ds-sm); font-weight: 600;
+      font-family: var(--font-ui); font-size: var(--ds-sm); font-weight: 400; letter-spacing: 0.5px;
       background: #FEF2F2; color: #DC2626; transition: all 0.15s; }
     .disconnect-dropdown .btn-disconnect:hover { background: #FEE2E2; color: #B91C1C; }
     .disconnect-dropdown .btn-disconnect:active { transform: scale(0.97); background: #FECACA; }
@@ -364,7 +364,7 @@
     .token-pair-name { font-family: var(--font-display); font-weight: 500; font-size: var(--ds-md); color: var(--text-primary); }
     .token-pair-amount { font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary); margin-top: 2px; }
     .token-action { width: 100%; }
-    .token-action .btn { font-size: var(--ds-xs); padding: 11px 20px; width: 100%; } /* 40px ×4 */
+    .token-action .btn { padding: 12px 20px; width: 100%; } /* 44px ×4 — inherits default 16px */
     .app-footer {
       padding: 16px 20px; text-align: center;
       font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary);
@@ -975,7 +975,8 @@
     .risk-bar-fill.low { background: linear-gradient(90deg, var(--green-200), var(--green-300)); z-index: 0; }
     .risk-bar-fill.high { background: linear-gradient(90deg, var(--blush-400), var(--blush-500)); }
     .position-actions { display: flex; flex-direction: column; gap: 8px; }
-    .position-actions .btn { width: 100%; font-size: var(--ds-xs); padding: 11px 10px; } /* 40px ×4 */
+    .position-actions .btn { width: 100%; font-size: var(--ds-xs); padding: 9px 10px; } /* 40px ×4 btn-sm */
+    .position-actions .btn i.btn-icon { font-size: 16px; }
     /* Option A: Title + Total row, then centered New Borrow button */
     .positions-title-row {
       display: flex; flex-direction: column; align-items: center; gap: 16px;
@@ -1060,7 +1061,7 @@
     .update-arrow .arr { color: var(--green-500); flex-shrink: 0; }
     .update-arrow .new { color: var(--green-700); font-weight: 500; flex-shrink: 0; }
     /* DS Typography — Display (Ohno Softie) */
-    .btn { font-size: var(--ds-sm); font-weight: 400; letter-spacing: 0.8px; }
+    .btn { font-weight: 400; letter-spacing: 0.8px; }
     .btn-lg { font-size: var(--ds-md); letter-spacing: 0.5px; }
     .borrow-title { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
     .slider-label-text { font-size: var(--ds-md); font-weight: 400; letter-spacing: 0.5px; }
@@ -1073,7 +1074,6 @@
     .total-value { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
     .stat-big { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
     .position-name { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
-    .token-action .btn { font-size: var(--ds-sm); }
 
     /* Desktop responsive — applied when phone width >= 1280 via JS class */
     .phone.desktop { border-radius: 0; box-shadow: none; overflow: visible; height: auto !important; min-height: 100vh; }
@@ -1225,6 +1225,8 @@
     .health-hearts svg { width: 19.6px; height: 17px; flex-shrink: 0; }
     .health-hearts span[style*="opacity"] { opacity: 0.5 !important; display: flex; }
     .position-buttons { flex: 1; display: flex; flex-direction: column; gap: 16px; justify-content: flex-end; }
+    .position-buttons .btn { font-size: var(--ds-xs); padding: 9px 10px; } /* 40px ×4 btn-sm */
+    .position-buttons .btn i.btn-icon { font-size: 16px; }
 
   </style>
 </head>
