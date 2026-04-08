@@ -1,0 +1,503 @@
+{
+  "Purinta/Primitives/Typography": {
+    "Display": {
+      "7xl-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.7xl}",
+          "lineHeight": "119",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 10 · 119px · LH 1 · W 500 · L/S 1%",
+        "type": "typography"
+      },
+      "7xl-semibold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.7xl}",
+          "lineHeight": "119",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.600}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 10 · 119px · LH 1 · W 600 · L/S 1%",
+        "type": "typography"
+      },
+      "7xl-bold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.7xl}",
+          "lineHeight": "119",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.700}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 10 · 119px · LH 1 · W 700 · L/S 1%",
+        "type": "typography"
+      },
+      "6xl-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.6xl}",
+          "lineHeight": "95",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 9 · 95px · LH 1 · W 500 · L/S 1%",
+        "type": "typography"
+      },
+      "6xl-semibold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.6xl}",
+          "lineHeight": "95",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.600}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 9 · 95px · LH 1 · W 600 · L/S 1%",
+        "type": "typography"
+      },
+      "6xl-bold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.6xl}",
+          "lineHeight": "95",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.700}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 9 · 95px · LH 1 · W 700 · L/S 1%",
+        "type": "typography"
+      },
+      "5xl-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.5xl}",
+          "lineHeight": "76",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 8 · 76px · LH 1 · W 500 · L/S 1%",
+        "type": "typography"
+      },
+      "5xl-semibold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.5xl}",
+          "lineHeight": "76",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.600}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 8 · 76px · LH 1 · W 600 · L/S 1%",
+        "type": "typography"
+      },
+      "5xl-bold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.5xl}",
+          "lineHeight": "76",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.700}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 8 · 76px · LH 1 · W 700 · L/S 1%",
+        "type": "typography"
+      },
+      "4xl-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.4xl}",
+          "lineHeight": "61",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 7 · 61px · LH 1 · W 500 · L/S 2%",
+        "type": "typography"
+      },
+      "4xl-semibold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.4xl}",
+          "lineHeight": "61",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.600}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 7 · 61px · LH 1 · W 600 · L/S 2%",
+        "type": "typography"
+      },
+      "4xl-bold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.4xl}",
+          "lineHeight": "61",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.700}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 7 · 61px · LH 1 · W 700 · L/S 2%",
+        "type": "typography"
+      },
+      "3xl-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.3xl}",
+          "lineHeight": "54",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 6 · 49px · LH 1.1 · W 500 · L/S 2%",
+        "type": "typography"
+      },
+      "3xl-semibold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.3xl}",
+          "lineHeight": "54",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.600}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 6 · 49px · LH 1.1 · W 600 · L/S 2%",
+        "type": "typography"
+      },
+      "3xl-bold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.3xl}",
+          "lineHeight": "54",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.700}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 6 · 49px · LH 1.1 · W 700 · L/S 2%",
+        "type": "typography"
+      },
+      "2xl-semibold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.2xl}",
+          "lineHeight": "43",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.600}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 5 · 39px · LH 1.1 · W 600 · L/S 2%",
+        "type": "typography"
+      },
+      "2xl-bold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.2xl}",
+          "lineHeight": "43",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.700}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 5 · 39px · LH 1.1 · W 700 · L/S 2%",
+        "type": "typography"
+      },
+      "xl-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.xl}",
+          "lineHeight": "37",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 4 · 31px · LH 1.2 · W 500 · L/S 2%",
+        "type": "typography"
+      },
+      "xl-semibold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.xl}",
+          "lineHeight": "37",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.600}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 4 · 31px · LH 1.2 · W 600 · L/S 2%",
+        "type": "typography"
+      },
+      "lg-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.lg}",
+          "lineHeight": "33",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 3 · 25px · LH 1.3 · W 400 · L/S 2%",
+        "type": "typography"
+      },
+      "lg-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.lg}",
+          "lineHeight": "33",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 3 · 25px · LH 1.3 · W 500 · L/S 2%",
+        "type": "typography"
+      },
+      "lg-semibold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.lg}",
+          "lineHeight": "33",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.600}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 3 · 25px · LH 1.3 · W 600 · L/S 2%",
+        "type": "typography"
+      },
+      "md-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.md}",
+          "lineHeight": "32",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 2 · 20px · LH 1.6 · W 400 · L/S 2%",
+        "type": "typography"
+      },
+      "md-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.md}",
+          "lineHeight": "32",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 2 · 20px · LH 1.6 · W 500 · L/S 2%",
+        "type": "typography"
+      },
+      "md-semibold": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.md}",
+          "lineHeight": "32",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.600}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step 2 · 20px · LH 1.6 · W 600 · L/S 2%",
+        "type": "typography"
+      },
+      "sm-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.sm}",
+          "lineHeight": "26",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Widest}"
+        },
+        "description": "Step 1 · 16px · LH 1.6 · W 400 · L/S 3%",
+        "type": "typography"
+      },
+      "sm-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.sm}",
+          "lineHeight": "26",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Widest}"
+        },
+        "description": "Step 1 · 16px · LH 1.6 · W 500 · L/S 3%",
+        "type": "typography"
+      },
+      "xs-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.xs}",
+          "lineHeight": "21",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Widest}"
+        },
+        "description": "Step -1 · 13px · LH 1.6 · W 400 · L/S 3%",
+        "type": "typography"
+      },
+      "xs-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.Display}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.xs}",
+          "lineHeight": "21",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Widest}"
+        },
+        "description": "Step -1 · 13px · LH 1.6 · W 500 · L/S 3%",
+        "type": "typography"
+      }
+    },
+    "UI": {
+      "2xl-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.2xl}",
+          "lineHeight": "55",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Tight}"
+        },
+        "description": "Step 5 · 39px · LH 1.4 · W 400 · L/S -0.5%",
+        "type": "typography"
+      },
+      "2xl-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.2xl}",
+          "lineHeight": "55",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Tight}"
+        },
+        "description": "Step 5 · 39px · LH 1.4 · W 500 · L/S -0.5%",
+        "type": "typography"
+      },
+      "xl-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.xl}",
+          "lineHeight": "45",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.None}"
+        },
+        "description": "Step 4 · 31px · LH 1.45 · W 400 · L/S 0%",
+        "type": "typography"
+      },
+      "xl-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.xl}",
+          "lineHeight": "45",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.None}"
+        },
+        "description": "Step 4 · 31px · LH 1.45 · W 500 · L/S 0%",
+        "type": "typography"
+      },
+      "lg-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.lg}",
+          "lineHeight": "38",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 3 · 25px · LH 1.5 · W 400 · L/S 1%",
+        "type": "typography"
+      },
+      "lg-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.lg}",
+          "lineHeight": "38",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 3 · 25px · LH 1.5 · W 500 · L/S 1%",
+        "type": "typography"
+      },
+      "md-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.md}",
+          "lineHeight": "32",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 2 · 20px · LH 1.6 · W 400 · L/S 1%",
+        "type": "typography"
+      },
+      "md-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.md}",
+          "lineHeight": "32",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 2 · 20px · LH 1.6 · W 500 · L/S 1%",
+        "type": "typography"
+      },
+      "sm-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.sm}",
+          "lineHeight": "26",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 1 · 16px · LH 1.6 · W 400 · L/S 1%",
+        "type": "typography"
+      },
+      "sm-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.sm}",
+          "lineHeight": "26",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wide}"
+        },
+        "description": "Step 1 · 16px · LH 1.6 · W 500 · L/S 1%",
+        "type": "typography"
+      },
+      "xs-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.xs}",
+          "lineHeight": "21",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step -1 · 13px · LH 1.6 · W 400 · L/S 2%",
+        "type": "typography"
+      },
+      "xs-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.xs}",
+          "lineHeight": "21",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Wider}"
+        },
+        "description": "Step -1 · 13px · LH 1.6 · W 500 · L/S 2%",
+        "type": "typography"
+      },
+      "2xs-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.2xs}",
+          "lineHeight": "18",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Widest}"
+        },
+        "description": "Step -2 · 11px · LH 1.6 · W 400 · L/S 3%",
+        "type": "typography"
+      },
+      "2xs-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.2xs}",
+          "lineHeight": "18",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Widest}"
+        },
+        "description": "Step -2 · 11px · LH 1.6 · W 500 · L/S 3%",
+        "type": "typography"
+      },
+      "3xs-regular": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.3xs}",
+          "lineHeight": "16",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.400}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Widest}"
+        },
+        "description": "Step -3 · 10px · LH 1.6 · W 400 · L/S 3%",
+        "type": "typography"
+      },
+      "3xs-medium": {
+        "value": {
+          "fontFamily": "{Purinta/Primitives/Font.Family.UI}",
+          "fontSize": "{Purinta/Primitives/Sizing.Size.3xs}",
+          "lineHeight": "16",
+          "fontWeight": "{Purinta/Primitives/Font.Weight.500}",
+          "letterSpacing": "{Purinta/Primitives/Font.LetterSpacing.Widest}"
+        },
+        "description": "Step -3 · 10px · LH 1.6 · W 500 · L/S 3%",
+        "type": "typography"
+      }
+    }
+  }
+}
