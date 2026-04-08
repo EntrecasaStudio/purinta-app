@@ -89,7 +89,7 @@
 
     /* PHONE FRAME */
 
-    .phone { width: 360px; height: 700px; background: var(--cream-50); border-radius: 32px; overflow-x: hidden; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); position: relative; }
+    .phone { width: 360px; height: 700px; background: var(--cream-50); border-radius: 32px; overflow-x: hidden; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); position: relative; margin-top: 24px; }
 
     /* DEV NAV — floating panel outside phone frame */
     .dev-nav { position: fixed; top: 16px; left: 16px; z-index: 9999; font-family: 'SF Mono', 'Menlo', monospace; }
@@ -234,7 +234,7 @@
       font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-primary); margin-bottom: 10px; }
     .disconnect-dropdown .dd-address .wallet-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-500); flex-shrink: 0; }
     .disconnect-dropdown .btn-disconnect { width: 100%; padding: 10px 16px; border-radius: 12px; border: none; cursor: pointer;
-      font-family: var(--font-ui); font-size: var(--ds-sm); font-weight: 400; letter-spacing: 0.5px;
+      font-family: var(--font-ui); font-size: var(--ds-sm); font-weight: 400; letter-spacing: 0.16px;
       background: #FEF2F2; color: #DC2626; transition: all 0.15s; }
     .disconnect-dropdown .btn-disconnect:hover { background: #FEE2E2; color: #B91C1C; }
     .disconnect-dropdown .btn-disconnect:active { transform: scale(0.97); background: #FECACA; }
@@ -387,7 +387,7 @@
       background: none; border: none; cursor: pointer;
       padding: 4px 16px; border-radius: 12px;
       color: var(--text-secondary); transition: color 0.2s ease;
-      font-family: var(--font-ui); font-size: 10px; letter-spacing: 0.3px;
+      font-family: var(--font-ui); font-size: 10px; letter-spacing: 0.5px;
     }
     .bottom-nav-item i { font-size: 20px; }
     .bottom-nav-item:hover { color: var(--green-600); }
@@ -639,7 +639,7 @@
     .slider-marker-old::after {
       content: attr(data-label); position: absolute; top: -12px;
       left: 50%; transform: translateX(-50%);
-      font-family: var(--font-ui); font-size: var(--ds-3xs); color: var(--text-secondary); letter-spacing: 1px;
+      font-family: var(--font-ui); font-size: var(--ds-3xs); color: var(--text-secondary); letter-spacing: 0.24px;
       white-space: nowrap;
     }
     .pct-btn.disabled {
@@ -963,9 +963,6 @@
     .risk-section { margin-bottom: 16px; width: 100%; }
     .risk-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
     .risk-label { font-family: var(--font-ui); font-size: var(--ds-2xs); color: var(--text-secondary); }
-    .risk-value { font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 500; }
-    .risk-value.low { color: var(--green-500); }
-    .risk-value.high { color: var(--blush-500); }
     .risk-bar-track {
       height: 6px; width: 100%; border-radius: var(--r-full); background: var(--cream-400); overflow: hidden;
     }
@@ -975,7 +972,7 @@
     .risk-bar-fill.low { background: linear-gradient(90deg, var(--green-200), var(--green-300)); z-index: 0; }
     .risk-bar-fill.high { background: linear-gradient(90deg, var(--blush-400), var(--blush-500)); }
     .position-actions { display: flex; flex-direction: column; gap: 8px; }
-    .position-actions .btn { width: 100%; font-size: var(--ds-xs); padding: 9px 10px; } /* 40px ×4 btn-sm */
+    .position-actions .btn { width: 100%; font-size: var(--ds-xs); padding: 9px 10px; letter-spacing: 0.39px; } /* 40px btn-sm · step -1 · 3% */
     .position-actions .btn i.btn-icon { font-size: 16px; }
     /* Option A: Title + Total row, then centered New Borrow button */
     .positions-title-row {
@@ -1016,7 +1013,7 @@
     .new-borrow-peek .peek-icon { font-size: 16px; color: var(--green-600); }
     .new-borrow-peek .peek-text {
       font-family: var(--font-display); font-size: var(--ds-xs); font-weight: 400;
-      color: var(--green-700); letter-spacing: 0.8px;
+      color: var(--green-700); letter-spacing: 0.39px;
     }
     .position-card { position: relative; z-index: 1; box-shadow: 0 12px 0 0 var(--cream-50); }
     .position-card:hover { box-shadow: var(--shadow-card), 0 12px 0 0 var(--cream-50); }
@@ -1060,20 +1057,60 @@
     .update-arrow .old { color: var(--text-secondary); text-decoration: line-through; flex-shrink: 0; }
     .update-arrow .arr { color: var(--green-500); flex-shrink: 0; }
     .update-arrow .new { color: var(--green-700); font-weight: 500; flex-shrink: 0; }
-    /* DS Typography — Display (Ohno Softie) */
-    .btn { font-weight: 400; letter-spacing: 0.8px; }
-    .btn-lg { font-size: var(--ds-md); letter-spacing: 0.5px; }
-    .borrow-title { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
-    .slider-label-text { font-size: var(--ds-md); font-weight: 400; letter-spacing: 0.5px; }
-    .token-select { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
-    .slider-token-badge { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
-    .token-pair-name { font-size: var(--ds-md); font-weight: 400; letter-spacing: 0.5px; }
-    .hero-title { font-size: var(--ds-xl); font-weight: 600; letter-spacing: 0.5px; }
-    .summary-amount { font-size: var(--ds-xl); font-weight: 600; letter-spacing: 0.5px; }
-    .positions-title { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
-    .total-value { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
-    .stat-big { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
-    .position-name { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }
+    /* DS Typography — Display (Ohno Softie)
+       Step 4 (31px): 2% = 0.62px | Step 3 (25px): 2% = 0.5px | Step 2 (20px): 2% = 0.4px
+       Step 1 (16px): 3% = 0.48px | Step -1 (13px): 3% = 0.39px */
+    .btn { font-weight: 400; letter-spacing: 0.48px; }              /* step 1 (16px) · 3% */
+    .btn-sm { letter-spacing: 0.39px; }                            /* step -1 (13px) · 3% */
+    .btn-lg { font-size: var(--ds-md); letter-spacing: 0.4px; }    /* step 2 (20px) · 2% */
+    .borrow-title { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }       /* step 3 · 2% */
+    .slider-label-text { font-size: var(--ds-md); font-weight: 400; letter-spacing: 0.4px; }  /* step 2 · 2% */
+    .token-select { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }       /* step 3 · 2% */
+    .slider-token-badge { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; } /* step 3 · 2% */
+    .token-pair-name { font-size: var(--ds-md); font-weight: 400; letter-spacing: 0.4px; }    /* step 2 · 2% */
+    .hero-title { font-size: var(--ds-xl); font-weight: 600; letter-spacing: 0.62px; }        /* step 4 · 2% */
+    .summary-amount { font-size: var(--ds-xl); font-weight: 600; letter-spacing: 0.62px; }    /* step 4 · 2% */
+    .positions-title { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }    /* step 3 · 2% */
+    .total-value { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }        /* step 3 · 2% */
+    .stat-big { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }           /* step 3 · 2% */
+    .position-name { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }      /* step 3 · 2% */
+    /* DS Typography — UI (Rubik)
+       Step 1 (16px): 1% = 0.16px | Step -1 (13px): 2% = 0.26px
+       Step -2 (11px): 3% = 0.33px | Step -3 (10px): 3% = 0.3px */
+    .summary-label { letter-spacing: 0.16px; }                         /* Rubik 16px · 1% */
+    .slider-val { letter-spacing: 0.16px; }                            /* Rubik 16px · 1% */
+    .btn-disconnect { letter-spacing: 0.16px; }                        /* Rubik 16px · 1% */
+    .slider-info-label { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
+    .slider-info-value { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
+    .summary-row-value { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
+    .detail-item-value { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
+    .token-pair-amount { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
+    .bottom-nav-item { letter-spacing: 0.3px; }                        /* Rubik 10px · 3% */
+    .risk-label { letter-spacing: 0.3px; }                             /* Rubik 10px · 3% (was 1px) */
+    .detail-item-label { letter-spacing: 0.3px; }                      /* Rubik 10px · 3% */
+    .stat-label { letter-spacing: 0.3px; }                             /* Rubik 10px · 3% */
+    .mascot-text { letter-spacing: 0.3px; }                            /* Rubik 10px · 3% */
+    .supply-label { letter-spacing: 0.3px; }                           /* Rubik 10px · 3% */
+    .health-label { letter-spacing: 0.3px; }                           /* Rubik 10px · 3% */
+    /* ── Phone B overrides: restore OLD styles for A/B comparison ── */
+    #phone-b .summary-label { letter-spacing: 0; }
+    #phone-b .slider-val { letter-spacing: 0; }
+    #phone-b .btn-disconnect { letter-spacing: 0.5px; }
+    #phone-b .slider-info-label { letter-spacing: 0; }
+    #phone-b .slider-info-value { letter-spacing: 0; }
+    #phone-b .summary-row-value { letter-spacing: 0; }
+    #phone-b .detail-item-value { letter-spacing: 0; }
+    #phone-b .token-pair-amount { letter-spacing: 0; }
+    #phone-b .bottom-nav-item { letter-spacing: 0.3px; }
+    #phone-b .risk-label { letter-spacing: 1px; }
+    #phone-b .detail-item-label { letter-spacing: 0; }
+    #phone-b .stat-label { letter-spacing: 0; }
+    #phone-b .mascot-text { letter-spacing: 0; }
+    #phone-b .supply-label { letter-spacing: 0; }
+    #phone-b .health-label { letter-spacing: 0; }
+    #phone-b .btn { letter-spacing: 0.8px; }
+    #phone-b .btn-sm { letter-spacing: 0.65px; }
+    #phone-b .btn-lg { letter-spacing: 0.8px; }
 
     /* Desktop responsive — applied when phone width >= 1280 via JS class */
     .phone.desktop { border-radius: 0; box-shadow: none; overflow: visible; height: auto !important; min-height: 100vh; }
@@ -1225,7 +1262,7 @@
     .health-hearts svg { width: 19.6px; height: 17px; flex-shrink: 0; }
     .health-hearts span[style*="opacity"] { opacity: 0.5 !important; display: flex; }
     .position-buttons { flex: 1; display: flex; flex-direction: column; gap: 16px; justify-content: flex-end; }
-    .position-buttons .btn { font-size: var(--ds-xs); padding: 9px 10px; } /* 40px ×4 btn-sm */
+    .position-buttons .btn { font-size: var(--ds-xs); padding: 9px 10px; letter-spacing: 0.39px; } /* 40px btn-sm · step -1 · 3% */
     .position-buttons .btn i.btn-icon { font-size: 16px; }
 
   </style>
@@ -1295,11 +1332,11 @@
     {id:'ph-copy', label:'Cards Stacked (2)'},
     {id:'ph-cards-three', label:'Cards Three'},
     {id:'ph-rows', label:'Rows'},
-    {id:'ph-list-dashes', label:'List Dashes'},
     {id:'ph-vault', label:'Vault'},
     {id:'ph-wallet', label:'Wallet'},
     {id:'ph-list-bullets', label:'List Bullets'},
-    {id:'ph-briefcase', label:'Briefcase'}
+    {id:'ph-briefcase', label:'Briefcase'},
+    {id:'ph-notebook', label:'Ledger / Notebook'}
   ];
   var container = document.getElementById('icon-options');
   icons.forEach(function(ic){
@@ -1331,10 +1368,8 @@
     {id:'ph-currency-circle-dollar', label:'Dollar Circle'},
     {id:'ph-money', label:'Bills'},
     {id:'ph-hand-coins', label:'Hand Coins'},
-    {id:'ph-piggy-bank', label:'Piggy Bank'},
     {id:'ph-arrow-circle-down', label:'Arrow Circle Down'},
-    {id:'ph-download-simple', label:'Download'},
-    {id:'ph-vault', label:'Vault'}
+    {id:'ph-download-simple', label:'Download'}
   ];
   var container = document.getElementById('borrow-icon-options');
   icons.forEach(function(ic){
