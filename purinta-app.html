@@ -391,7 +391,7 @@
     }
     .bottom-nav-item i { font-size: 20px; }
     .bottom-nav-item:hover { color: var(--green-600); }
-    .bottom-nav-item.active { color: var(--green-600); font-weight: 500; }
+    .bottom-nav-item.active { color: var(--green-600); }
 
     /* Top navigation (desktop only) */
     .top-nav {
@@ -407,7 +407,7 @@
     }
     .top-nav-link i { font-size: 20px; }
     .top-nav-link:hover { color: var(--green-600); background: var(--mint-50); }
-    .top-nav-link.active { color: var(--green-600); font-weight: 500; background: var(--mint-100); }
+    .top-nav-link.active { color: var(--green-600); background: var(--mint-100); }
 
     /* ════════════════════════════════════════
        SCREEN 2 & 3: BORROW FLOW
@@ -656,7 +656,7 @@
       border-radius: var(--r-sm) var(--r-sm) 24px 24px; padding: 32px 32px 32px; margin: 20px 0 0;
       display: flex; flex-direction: column; align-items: center;
       justify-content: flex-end; gap: 8px; height: 168px;
-      position: relative; overflow: visible;
+      position: relative; overflow: hidden;
       background: linear-gradient(108deg, var(--grad-start) 2%, var(--grad-end) 106%);
       transition: --grad-start 0.5s ease, --grad-end 0.5s ease, border-color 0.5s ease;
     }
@@ -798,18 +798,19 @@
     .summary-row-label { color: var(--text-secondary); font-size: var(--ds-xs); }
     .summary-row-value { color: var(--text-primary); font-weight: 500; font-size: var(--ds-xs); letter-spacing: 0; }
     .summary-row-value .arrow { color: var(--green-500); margin: 0 6px; }
-    .borrow-cta { padding: 8px 20px 32px; }
+    .borrow-cta { padding: 8px 20px 32px; background: transparent; }
 
     /* ════════════════════════════════════════
        SCREEN 4: CONFIRMATION MODAL
        ════════════════════════════════════════ */
     .screen.bg-screen { pointer-events: none; filter: brightness(0.7); }
     .modal-overlay {
-      background: rgba(10,51,24,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 40px 20px;
-      display: flex; align-items: flex-end; min-height: 100%;
+      background: rgba(10,51,24,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 20px;
+      display: flex; align-items: center; justify-content: center;
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 50;
     }
     .modal-card {
-      background: white; border-radius: var(--r-xl); padding: 32px 20px;
+      background: white; border-radius: var(--r-xl); padding: 20px 20px 32px;
       width: 100%; text-align: center;
     }
     .modal-close {
@@ -863,24 +864,21 @@
     }
     .modal-amount-token { font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary); }
     .modal-message {
-      display: flex; align-items: flex-start; gap: 10px;
-      background: var(--cream-300); border-radius: var(--r-md) var(--r-md) 0 0; padding: 12px 16px;
+      display: flex; align-items: flex-start; gap: 6px;
+      background: var(--cream-300); border-radius: 12px 12px 0 0; padding: 12px 16px 12px 16px;
       margin: 20px 0 0; text-align: left;
     }
-    .modal-message-icon { font-size: var(--ds-md); flex-shrink: 0; margin-top: 1px; }
-    .modal-message-icon svg { animation: clock-tick 2s linear infinite; transform-origin: center; }
-    @keyframes clock-tick {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .modal-message-text { font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-primary); line-height: 1.5; }
+    .modal-message-icon { flex-shrink: 0; display: flex; align-items: center; height: 21px; }
+    .modal-message-icon i { font-size: 16px; color: var(--gray-900); }
+    .modal-message-text { font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-primary); line-height: 18px; }
+    .modal-message-text strong { font-weight: 500; line-height: 21px; letter-spacing: 0.26px; }
     .modal-progress {
-      width: 100%; height: 6px; border-radius: 0 0 var(--r-md) var(--r-md);
-      background: var(--cream-400); overflow: hidden; margin: 0;
+      width: 100%; height: 6px; min-height: 6px; border-radius: 0 0 8px 8px;
+      background: var(--cream-400); overflow: hidden; margin: 0; display: block;
     }
     .modal-progress-bar {
       height: 100%; border-radius: 0;
-      background: linear-gradient(90deg, var(--green-300), var(--green-400));
+      background: #7B99D5;
       animation: progress-slide 2.5s ease-in-out infinite;
     }
     @keyframes progress-slide {
@@ -889,11 +887,11 @@
       100% { width: 0%; margin-left: 100%; }
     }
     .modal-dots {
-      display: inline-flex; gap: 8px; margin-left: 4px; position: relative; top: -1px;
+      display: inline-flex; gap: 4px; margin-left: 6px; position: relative; top: -1px; padding-top: 2px;
     }
     .modal-dots span {
-      width: 4px; height: 4px; border-radius: 50%;
-      background: var(--green-400); animation: dot-pulse 1.4s ease-in-out infinite;
+      width: 4px; height: 4px; border-radius: 2px;
+      background: #7B99D5; animation: dot-pulse 1.4s ease-in-out infinite;
     }
     .modal-dots span:nth-child(2) { animation-delay: 0.2s; }
     .modal-dots span:nth-child(3) { animation-delay: 0.4s; }
@@ -1082,6 +1080,7 @@
     .btn-disconnect { letter-spacing: 0.16px; }                        /* Rubik 16px · 1% */
     .slider-info-label { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
     .slider-info-value { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
+    .summary-row-label { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
     .summary-row-value { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
     .detail-item-value { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
     .token-pair-amount { letter-spacing: 0.26px; }                     /* Rubik 13px · 2% */
@@ -1098,6 +1097,7 @@
     #phone-b .btn-disconnect { letter-spacing: 0.5px; }
     #phone-b .slider-info-label { letter-spacing: 0; }
     #phone-b .slider-info-value { letter-spacing: 0; }
+    #phone-b .summary-row-label { letter-spacing: 0; }
     #phone-b .summary-row-value { letter-spacing: 0; }
     #phone-b .detail-item-value { letter-spacing: 0; }
     #phone-b .token-pair-amount { letter-spacing: 0; }
@@ -1111,6 +1111,11 @@
     #phone-b .btn { letter-spacing: 0.8px; }
     #phone-b .btn-sm { letter-spacing: 0.65px; }
     #phone-b .btn-lg { letter-spacing: 0.8px; }
+    #phone-b .modal-dots span { background: var(--green-400); border-radius: 50%; }
+    #phone-b .modal-progress-bar { background: linear-gradient(90deg, var(--green-300), var(--green-400)); }
+    #phone-b .modal-progress { background: var(--cream-400); }
+    #phone-b .modal-message-icon i { color: var(--green-600); }
+    #phone-b .modal-message-text strong { font-weight: 400; }
 
     /* Desktop responsive — applied when phone width >= 1280 via JS class */
     .phone.desktop { border-radius: 0; box-shadow: none; overflow: visible; height: auto !important; min-height: 100vh; }
@@ -1123,8 +1128,8 @@
     .phone.desktop #homepage-connected-b { max-width: none; padding: 0 40px; }
     .phone.desktop #confirm,
     .phone.desktop #confirm-b { max-width: none; padding: 0; }
-    #confirm.active, #confirm-b.active { position: absolute; top: 0; left: 0; right: 0; z-index: 30; min-height: 100%; }
-    #confirm > .modal-overlay, #confirm-b > .modal-overlay { align-items: center !important; justify-content: center; background: rgba(10,51,24,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); min-height: auto; position: sticky; top: 0; height: 100vh; }
+    #confirm.active, #confirm-b.active { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; }
+    #confirm > .modal-overlay, #confirm-b > .modal-overlay { height: 100%; }
     .phone.desktop #homepage .hero-wrap,
     .phone.desktop #homepage-b .hero-wrap,
     .phone.desktop #homepage-connected .hero-wrap,
@@ -1194,17 +1199,17 @@
     .phone.desktop .borrow-col-sliders .slider-divider { display: none; }
     .phone.desktop .borrow-col-sliders .slider-info { margin-bottom: 0; border-bottom: 1px solid var(--cream-300); padding-bottom: 20px; }
     .phone.desktop .borrow-col-sliders .slider-info:last-child { border-bottom: none; padding-bottom: 0; }
-    .phone.desktop .borrow-col-sidebar { flex: 1; max-width: 320px; display: flex; flex-direction: column; gap: 20px; min-width: 0; justify-content: space-between; }
+    .phone.desktop .borrow-col-sidebar { flex: 1; max-width: 320px; display: flex; flex-direction: column; gap: 0; min-width: 0; justify-content: space-between; }
     .phone.desktop .borrow-col-sidebar .mascot-area {
       border-radius: 8px 24px 24px 8px; margin: 0; height: 180px;
     }
     .phone.desktop .borrow-col-sidebar .mascot-illustration {
       width: 139px; max-width: 139px; max-height: 150px;
     }
-    .phone.desktop .borrow-col-sidebar .borrow-summary { padding-top: 4px; }
+    .phone.desktop .borrow-col-sidebar .borrow-summary { padding-top: 0; padding-bottom: 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
     .phone.desktop .borrow-col-sidebar .borrow-summary .summary-row { border-bottom: 1px solid var(--cream-300); padding: 8px 0 9px; }
-    .phone.desktop .borrow-col-sidebar .borrow-summary .summary-row:last-child { border-bottom: none; }
-    .phone.desktop .borrow-col-sidebar .borrow-cta-inner { display: block; padding-top: 20px; background: var(--cream-50); }
+    .phone.desktop .borrow-col-sidebar .borrow-summary .summary-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .phone.desktop .borrow-col-sidebar .borrow-cta-inner { display: block; padding-top: 20px; background: transparent; }
     .phone.desktop .borrow-col-sidebar .borrow-cta-inner .btn { width: 100%; max-width: 394px; }
     .phone.desktop .borrow-content { padding-left: 0; padding-right: 0; }
     .phone.desktop .borrow-header { max-width: 720px; margin: 0 auto 16px; width: 100%; }
@@ -1327,14 +1332,10 @@
 <script>
 (function(){
   var icons = [
-    {id:'ph-squares-four', label:'Grid / Dashboard'},
-    {id:'ph-stack', label:'Stack / Layers'},
-    {id:'ph-copy', label:'Cards Stacked (2)'},
     {id:'ph-cards-three', label:'Cards Three'},
+    {id:'ph-copy', label:'Cards Stacked (2)'},
     {id:'ph-rows', label:'Rows'},
     {id:'ph-vault', label:'Vault'},
-    {id:'ph-wallet', label:'Wallet'},
-    {id:'ph-list-bullets', label:'List Bullets'},
     {id:'ph-briefcase', label:'Briefcase'},
     {id:'ph-notebook', label:'Ledger / Notebook'}
   ];
@@ -1363,13 +1364,10 @@
 })();
 (function(){
   var icons = [
-    {id:'ph-coins', label:'Coins (2 stacked)'},
     {id:'ph-coin', label:'Single Coin'},
+    {id:'ph-coins', label:'Coins (2 stacked)'},
     {id:'ph-currency-circle-dollar', label:'Dollar Circle'},
     {id:'ph-money', label:'Bills'},
-    {id:'ph-hand-coins', label:'Hand Coins'},
-    {id:'ph-arrow-circle-down', label:'Arrow Circle Down'},
-    {id:'ph-download-simple', label:'Download'}
   ];
   var container = document.getElementById('borrow-icon-options');
   icons.forEach(function(ic){
@@ -1378,7 +1376,7 @@
     btn.innerHTML = '<i class="ph-light '+ic.id+'" style="font-size:20px;"></i> '+ic.label;
     btn.onmouseenter = function(){ if(!btn.classList.contains('selected')) btn.style.background='var(--mint-50)'; };
     btn.onmouseleave = function(){ if(!btn.classList.contains('selected')) btn.style.background='none'; };
-    if(ic.id === 'ph-coins') { btn.style.background='var(--mint-100)'; btn.style.borderColor='var(--green-300)'; btn.classList.add('selected'); }
+    if(ic.id === 'ph-coin') { btn.style.background='var(--mint-100)'; btn.style.borderColor='var(--green-300)'; btn.classList.add('selected'); }
     btn.onclick = function(){
       container.querySelectorAll('button').forEach(function(b){ b.style.background='none'; b.style.borderColor='#e5e1be'; b.classList.remove('selected'); });
       btn.style.background='var(--mint-100)'; btn.style.borderColor='var(--green-300)'; btn.classList.add('selected');
@@ -1412,7 +1410,7 @@
       <nav class="top-nav">
         <button class="top-nav-link" onclick="showScreen('homepage')" data-screen="homepage"><i class="ph-light ph-house"></i> Home</button>
         <button class="top-nav-link" onclick="showScreen('positions')" data-screen="positions"><i class="ph-light ph-cards-three"></i> My Positions</button>
-        <button class="top-nav-link" onclick="showScreen('borrow')" data-screen="borrow"><i class="ph-light ph-coins"></i> Borrow</button>
+        <button class="top-nav-link" onclick="showScreen('borrow')" data-screen="borrow"><i class="ph-light ph-coin"></i> Borrow</button>
       </nav>
       <button class="btn btn-connect" onclick="showScreen('homepage-connected')">Connect</button>
     </div>
@@ -1440,7 +1438,7 @@
         <div class="token-info">
           <div class="token-pair-name">Borrow against PEPE</div>
         </div>
-        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coins btn-icon"></i> Borrow</button></div>
+        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coin btn-icon"></i> Borrow</button></div>
       </div>
       <!-- Card 2 -->
       <div class="token-card">
@@ -1450,7 +1448,7 @@
         <div class="token-info">
           <div class="token-pair-name">Borrow against ETH</div>
         </div>
-        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coins btn-icon"></i> Borrow</button></div>
+        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coin btn-icon"></i> Borrow</button></div>
       </div>
       <!-- Card 3 -->
       <div class="token-card">
@@ -1460,7 +1458,7 @@
         <div class="token-info">
           <div class="token-pair-name">Borrow against DOGE</div>
         </div>
-        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coins btn-icon"></i> Borrow</button></div>
+        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coin btn-icon"></i> Borrow</button></div>
       </div>
       <!-- Card 4 -->
       <div class="token-card">
@@ -1470,7 +1468,7 @@
         <div class="token-info">
           <div class="token-pair-name">Borrow against SHIB</div>
         </div>
-        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coins btn-icon"></i> Borrow</button></div>
+        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coin btn-icon"></i> Borrow</button></div>
       </div>
       <!-- Card 5 -->
       <div class="token-card">
@@ -1480,7 +1478,7 @@
         <div class="token-info">
           <div class="token-pair-name">Borrow against WIF</div>
         </div>
-        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coins btn-icon"></i> Borrow</button></div>
+        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coin btn-icon"></i> Borrow</button></div>
       </div>
     </div>
     <div class="app-footer">
@@ -1495,7 +1493,7 @@
       <nav class="top-nav">
         <button class="top-nav-link" onclick="showScreen('homepage-connected')" data-screen="homepage-connected"><i class="ph-light ph-house"></i> Home</button>
         <button class="top-nav-link" onclick="showScreen('positions')" data-screen="positions"><i class="ph-light ph-cards-three"></i> My Positions</button>
-        <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-coins"></i> Borrow</button>
+        <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-coin"></i> Borrow</button>
       </nav>
       <div class="header-right">
         <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
@@ -1523,27 +1521,27 @@
       <div class="token-card" onclick="showScreen('borrow-connected')">
         <div class="token-icons"><div class="token-icon pepe"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against PEPE</div></div>
-        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coins btn-icon"></i> Borrow</button></div>
+        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coin btn-icon"></i> Borrow</button></div>
       </div>
       <div class="token-card" onclick="showScreen('borrow-connected')">
         <div class="token-icons"><div class="token-icon eth"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against ETH</div></div>
-        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coins btn-icon"></i> Borrow</button></div>
+        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coin btn-icon"></i> Borrow</button></div>
       </div>
       <div class="token-card" onclick="showScreen('borrow-connected')">
         <div class="token-icons"><div class="token-icon doge"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against DOGE</div></div>
-        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coins btn-icon"></i> Borrow</button></div>
+        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coin btn-icon"></i> Borrow</button></div>
       </div>
       <div class="token-card" onclick="showScreen('borrow-connected')">
         <div class="token-icons"><div class="token-icon shib"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against SHIB</div></div>
-        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coins btn-icon"></i> Borrow</button></div>
+        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coin btn-icon"></i> Borrow</button></div>
       </div>
       <div class="token-card" onclick="showScreen('borrow-connected')">
         <div class="token-icons"><div class="token-icon wif"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against WIF</div></div>
-        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coins btn-icon"></i> Borrow</button></div>
+        <div class="token-action"><button class="btn btn-primary"><i class="ph ph-coin btn-icon"></i> Borrow</button></div>
       </div>
     </div>
     <div class="app-footer">
@@ -1558,7 +1556,7 @@
       <nav class="top-nav">
         <button class="top-nav-link" onclick="showScreen('homepage')" data-screen="homepage"><i class="ph-light ph-house"></i> Home</button>
         <button class="top-nav-link" onclick="showScreen('positions')" data-screen="positions"><i class="ph-light ph-cards-three"></i> My Positions</button>
-        <button class="top-nav-link" onclick="showScreen('borrow')" data-screen="borrow"><i class="ph-light ph-coins"></i> Borrow</button>
+        <button class="top-nav-link" onclick="showScreen('borrow')" data-screen="borrow"><i class="ph-light ph-coin"></i> Borrow</button>
       </nav>
       <button class="btn btn-connect" onclick="showScreen('borrow-connected')">Connect</button>
     </div>
@@ -1676,7 +1674,7 @@
       <nav class="top-nav">
         <button class="top-nav-link" onclick="showScreen('homepage')" data-screen="homepage"><i class="ph-light ph-house"></i> Home</button>
         <button class="top-nav-link" onclick="showScreen('positions')" data-screen="positions"><i class="ph-light ph-cards-three"></i> My Positions</button>
-        <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-coins"></i> Borrow</button>
+        <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-coin"></i> Borrow</button>
       </nav>
       <div class="header-right">
         <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
@@ -1792,13 +1790,13 @@
           </div>
         </div>
         <div class="borrow-cta-inner">
-          <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('confirm')"><i class="ph-light ph-coins btn-icon-lg"></i> Borrow Now</button>
+          <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('confirm')"><i class="ph-light ph-coin btn-icon-lg"></i> Borrow Now</button>
         </div>
         </div>
       </div>
     </div>
     <div class="borrow-cta">
-      <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('confirm')"><i class="ph-light ph-coins btn-icon-lg"></i> Borrow Now</button>
+      <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('confirm')"><i class="ph-light ph-coin btn-icon-lg"></i> Borrow Now</button>
     </div>
   </div>
 
@@ -1822,8 +1820,8 @@
         <div style="margin-bottom: 4px;"><span class="modal-amount">$751,232.14</span></div>
         <div class="modal-amount-token">tokens</div>
         <div class="modal-message">
-          <span class="modal-message-icon"><i class="ph-light ph-clock" style="font-size: 18px; color: var(--green-600);"></i></span>
-          <span class="modal-message-text">Processing<span class="modal-dots"><span></span><span></span><span></span></span><br>This may take a few moments to confirm on-chain.</span>
+          <span class="modal-message-icon"><i class="ph-light ph-clock"></i></span>
+          <span class="modal-message-text"><strong>Processing<span class="modal-dots"><span></span><span></span><span></span></span></strong><br>This may take a few moments to confirm on-chain.</span>
         </div>
         <div class="modal-progress"><div class="modal-progress-bar"></div></div>
         <button class="btn btn-primary btn-full" onclick="showScreen('positions')" style="margin-top: 16px;"><i class="ph ph-cards-three btn-icon"></i> View Positions</button>
@@ -1838,7 +1836,7 @@
       <nav class="top-nav">
         <button class="top-nav-link" onclick="showScreen('homepage')" data-screen="homepage"><i class="ph-light ph-house"></i> Home</button>
         <button class="top-nav-link" onclick="showScreen('positions')" data-screen="positions"><i class="ph-light ph-cards-three"></i> My Positions</button>
-        <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-coins"></i> Borrow</button>
+        <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-coin"></i> Borrow</button>
       </nav>
       <div class="header-right">
         <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
@@ -2296,7 +2294,7 @@
       <nav class="top-nav">
         <button class="top-nav-link" onclick="showScreen('homepage')" data-screen="homepage"><i class="ph-light ph-house"></i> Home</button>
         <button class="top-nav-link" onclick="showScreen('positions')" data-screen="positions"><i class="ph-light ph-cards-three"></i> My Positions</button>
-        <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-coins"></i> Borrow</button>
+        <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-coin"></i> Borrow</button>
       </nav>
       <div class="header-right">
         <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
@@ -2415,7 +2413,7 @@
       <span>My Positions</span>
     </button>
     <button class="bottom-nav-item" onclick="showScreen('borrow-connected')" data-screen="borrow-connected">
-      <i class="ph-light ph-coins"></i>
+      <i class="ph-light ph-coin"></i>
       <span>Borrow</span>
     </button>
   </nav>
@@ -2716,6 +2714,8 @@ function showScreen(id) {
     document.getElementById('borrow-connected').classList.add('bg-screen');
   }
   document.getElementById(id).classList.add('active');
+  // Block scroll on modal screens
+  phoneA.style.overflow = (id === 'confirm') ? 'hidden' : '';
   // Phone B (if initialized)
   var phoneB = document.getElementById('phone-b');
   if (phoneB && phoneB.hasChildNodes()) {
