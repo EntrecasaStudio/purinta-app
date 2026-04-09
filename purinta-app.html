@@ -368,8 +368,9 @@
     .app-footer {
       padding: 16px 20px; text-align: center;
       font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary);
-      position: relative; z-index: 1;
+      position: relative; z-index: 1; display: none;
     }
+    .phone.desktop .app-footer { display: block; }
     .app-footer a { color: var(--text-secondary); text-decoration: none; }
     .app-footer a:hover { color: var(--green-600); }
     .app-footer a:active { transform: scale(0.95); filter: brightness(0.9); }
