@@ -151,7 +151,7 @@
     .wallet-badge {
       font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 500;
       background: white; color: var(--green-700);
-      padding: 6px 12px; border-radius: var(--r-full);
+      padding: 8px 14px; border-radius: var(--r-full);
       display: flex; align-items: center; gap: 6px;
     }
     #phone-a .power-btn { display: none; }
@@ -159,7 +159,7 @@
     #phone-a .disconnect-dropdown { display: none !important; }
     /* Pill Expand — wallet badge becomes expandable pill */
     #phone-a .wallet-badge {
-      padding: 8px 12px; border: 1px solid var(--cream-400);
+      padding: 8px 14px; border: 1px solid var(--cream-400);
       cursor: pointer; white-space: nowrap;
       display: flex; align-items: center; gap: 0;
       min-height: 36px; box-sizing: border-box;
@@ -275,7 +275,7 @@
     .power-btn:active { transform: scale(0.88); color: var(--green-700); }
     .header-right { position: relative; }
     .disconnect-dropdown { position: absolute; top: calc(100% + 8px); right: 0; z-index: 50;
-      background: white; border-radius: 16px; padding: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      background: white; border-radius: 16px; padding: 12px; box-shadow: var(--shadow-card);
       border: 1px solid var(--cream-200); min-width: 180px;
       opacity: 0; transform: translateY(-8px); pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease; }
@@ -289,7 +289,7 @@
       font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 400; letter-spacing: 0.26px;
       background: #F2E3E8; color: #BD3261; transition: all 0.15s; }
     .disconnect-dropdown .btn-disconnect:hover { background: #E9C9D3; color: #962C4F; }
-    .disconnect-dropdown .btn-disconnect:active { transform: scale(0.97); background: #FECACA; }
+    .disconnect-dropdown .btn-disconnect:active { transform: scale(0.97); background: #DFA4B8; }
     .wallet-positions {
       width: 32px; height: 32px; padding: 0; border-radius: 50%; border: none;
       background: transparent; cursor: pointer; color: var(--text-secondary);
@@ -1197,6 +1197,9 @@
     #phone-b .modal-progress { background: var(--cream-400); }
     #phone-b .modal-message-icon i { color: var(--green-600); }
     #phone-b .modal-message-text strong { font-weight: 400; }
+    #phone-b .power-btn { display: none; }
+    #phone-b .wallet-badge { cursor: pointer; border: 1px solid var(--cream-400); transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+    #phone-b .wallet-badge:hover { background: var(--mint-100); border-color: var(--green-300); box-shadow: var(--shadow-card); }
 
     /* Desktop responsive — applied when phone width >= 1280 via JS class */
     .phone.desktop { border-radius: 0; box-shadow: none; overflow: visible; height: auto !important; min-height: 100vh; }
@@ -1237,6 +1240,9 @@
     .phone.desktop #homepage-connected-b .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
 
     .phone.desktop .app-header { height: 72px; box-sizing: border-box; padding-left: 0; padding-right: 0; }
+    #phone-a.desktop .wallet-badge { height: 52px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; }
+    #phone-a.desktop .wallet-badge.expanded { padding-right: 0; }
+    #phone-a.desktop .wallet-badge.expanded .wallet-disconnect-zone { padding-right: 24px !important; }
     .phone.desktop .hero { padding: 24px 0; }
     .phone.desktop .token-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 0; }
     
@@ -2913,6 +2919,25 @@ document.addEventListener('click', function(e) {
   }
   // Click anywhere else — close all
   document.querySelectorAll('#phone-a .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
+});
+
+// Phone B: wallet-badge click opens disconnect dropdown
+document.addEventListener('click', function(e) {
+  var badge = e.target.closest('#phone-b .wallet-badge');
+  if (badge) {
+    var headerRight = badge.closest('.header-right');
+    if (!headerRight) return;
+    var dropdown = headerRight.querySelector('.disconnect-dropdown');
+    if (!dropdown) return;
+    var isOpen = dropdown.classList.contains('open');
+    document.querySelectorAll('#phone-b .disconnect-dropdown.open').forEach(function(d) { d.classList.remove('open'); });
+    if (!isOpen) dropdown.classList.add('open');
+    return;
+  }
+  // Click outside — close all Phone B dropdowns
+  if (!e.target.closest('#phone-b .disconnect-dropdown')) {
+    document.querySelectorAll('#phone-b .disconnect-dropdown.open').forEach(function(d) { d.classList.remove('open'); });
+  }
 });
 
 function toggleDisconnect(btn) {
