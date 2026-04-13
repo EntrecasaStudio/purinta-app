@@ -159,13 +159,15 @@
     #phone-a .disconnect-dropdown { display: none !important; }
     /* Pill Expand — wallet badge becomes expandable pill */
     #phone-a .wallet-badge {
-      padding: 0; border: 1px solid var(--cream-400);
+      padding: 8px 12px; border: 1px solid var(--cream-400);
       cursor: pointer; white-space: nowrap;
       display: flex; align-items: center; gap: 0;
+      min-height: 36px; box-sizing: border-box;
       transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
     }
     #phone-a .wallet-badge .wallet-address-text {
-      padding: 8px 12px; display: flex; align-items: center;
+      display: flex; align-items: center; pointer-events: none;
     }
     #phone-a .wallet-badge .wallet-disconnect-zone {
       display: flex; align-items: center; gap: 4px;
@@ -178,6 +180,7 @@
       width: 0; height: 16px; flex-shrink: 0;
       border-left: 1px solid transparent;
       transition: border-color 0.2s ease;
+      pointer-events: none;
     }
     #phone-a .wallet-badge.expanded {
       background: white; border-color: var(--cream-400);
@@ -188,7 +191,7 @@
       transition: border-color 0.25s ease 0.1s;
     }
     #phone-a .wallet-badge.expanded .wallet-disconnect-zone {
-      max-width: 130px !important; opacity: 1 !important; padding: 8px 12px 8px 10px !important; overflow: hidden !important;
+      max-width: 130px !important; opacity: 1 !important; padding: 0 12px 0 10px !important; overflow: hidden !important;
       transition: max-width 0.35s ease-out, opacity 0.25s ease 0.05s, padding 0.35s ease-out, color 0.2s ease;
     }
     #phone-a .wallet-badge:has(.wallet-disconnect-zone:hover) {
@@ -198,7 +201,9 @@
     #phone-a .wallet-badge .wallet-disconnect-zone:hover {
       color: #D87998;
     }
-    #phone-a .wallet-badge:hover:not(.expanded) { background: var(--mint-100); color: var(--green-600); border-color: var(--green-300); }
+    @media (hover: hover) {
+      #phone-a .wallet-badge:hover:not(.expanded) { background: var(--mint-100); color: var(--green-600); border-color: var(--green-300); }
+    }
     @keyframes wallet-pulse {
       0%, 100% { background: var(--green-300); }
       50% { background: var(--green-100); }
@@ -2891,25 +2896,21 @@ document.addEventListener('click', function(e) {
     document.querySelectorAll('.bp-btn').forEach(function(b) { b.classList.remove('active'); });
     var bpBtn = document.querySelector('.bp-btn[data-bp="' + w + '"]'); if (bpBtn) bpBtn.classList.add('active');
   }
-// Phone A: Pill Expand — wallet-badge toggles expanded state
-document.querySelectorAll('#phone-a .wallet-badge').forEach(function(badge) {
-  badge.addEventListener('click', function(e) {
-    if (e.target.closest('.wallet-disconnect-zone')) return; // let disconnect handle itself
-    var isExpanded = badge.classList.contains('expanded');
-    // Close all other expanded badges
+// Phone A: Pill Expand — single global handler
+document.addEventListener('click', function(e) {
+  var badge = e.target.closest('#phone-a .wallet-badge');
+  // Click on disconnect zone — let it handle itself
+  if (e.target.closest('.wallet-disconnect-zone')) return;
+  // Click on a wallet badge — toggle it
+  if (badge) {
+    var wasExpanded = badge.classList.contains('expanded');
+    // Close all expanded badges first
     document.querySelectorAll('#phone-a .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
-    if (!isExpanded) {
-      badge.classList.add('expanded');
-      setTimeout(function() {
-        document.addEventListener('click', function closePill(ev) {
-          if (!badge.contains(ev.target)) {
-            badge.classList.remove('expanded');
-            document.removeEventListener('click', closePill);
-          }
-        });
-      }, 10);
-    }
-  });
+    if (!wasExpanded) badge.classList.add('expanded');
+    return;
+  }
+  // Click anywhere else — close all
+  document.querySelectorAll('#phone-a .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
 });
 
 function toggleDisconnect(btn) {
