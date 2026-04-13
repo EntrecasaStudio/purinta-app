@@ -154,7 +154,51 @@
       padding: 6px 12px; border-radius: var(--r-full);
       display: flex; align-items: center; gap: 6px;
     }
-    .wallet-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-300); animation: wallet-pulse 2s ease-in-out infinite; }
+    #phone-a .power-btn { display: none; }
+    #phone-a .wallet-badge .wallet-dot { display: none; }
+    #phone-a .disconnect-dropdown { display: none !important; }
+    /* Pill Expand — wallet badge becomes expandable pill */
+    #phone-a .wallet-badge {
+      padding: 0; border: 1px solid var(--cream-400);
+      cursor: pointer; white-space: nowrap;
+      display: flex; align-items: center; gap: 0;
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    #phone-a .wallet-badge .wallet-address-text {
+      padding: 8px 12px; display: flex; align-items: center;
+    }
+    #phone-a .wallet-badge .wallet-disconnect-zone {
+      display: flex; align-items: center; gap: 4px;
+      max-width: 0; opacity: 0; overflow: hidden; padding: 0;
+      color: #BD3261; font-weight: 400; font-size: var(--ds-xs);
+      cursor: pointer; white-space: nowrap;
+      transition: max-width 0.3s ease-in, opacity 0.15s ease, padding 0.3s ease-in, color 0.2s ease;
+    }
+    #phone-a .wallet-badge .wallet-divider {
+      width: 0; height: 16px; flex-shrink: 0;
+      border-left: 1px solid transparent;
+      transition: border-color 0.2s ease;
+    }
+    #phone-a .wallet-badge.expanded {
+      background: white; border-color: var(--cream-400);
+      box-shadow: var(--shadow-card);
+    }
+    #phone-a .wallet-badge.expanded .wallet-divider {
+      border-left-color: var(--cream-400);
+      transition: border-color 0.25s ease 0.1s;
+    }
+    #phone-a .wallet-badge.expanded .wallet-disconnect-zone {
+      max-width: 130px !important; opacity: 1 !important; padding: 8px 12px 8px 10px !important; overflow: hidden !important;
+      transition: max-width 0.35s ease-out, opacity 0.25s ease 0.05s, padding 0.35s ease-out, color 0.2s ease;
+    }
+    #phone-a .wallet-badge:has(.wallet-disconnect-zone:hover) {
+      border-color: #D87998;
+      box-shadow: 0 4px 16px rgba(216, 121, 152, 0.2);
+    }
+    #phone-a .wallet-badge .wallet-disconnect-zone:hover {
+      color: #D87998;
+    }
+    #phone-a .wallet-badge:hover:not(.expanded) { background: var(--mint-100); color: var(--green-600); border-color: var(--green-300); }
     @keyframes wallet-pulse {
       0%, 100% { background: var(--green-300); }
       50% { background: var(--green-100); }
@@ -234,9 +278,10 @@
       font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-primary); margin-bottom: 10px; }
     .disconnect-dropdown .dd-address .wallet-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-500); flex-shrink: 0; }
     .disconnect-dropdown .btn-disconnect { width: 100%; padding: 10px 16px; border-radius: 12px; border: none; cursor: pointer;
-      font-family: var(--font-ui); font-size: var(--ds-sm); font-weight: 400; letter-spacing: 0.16px;
-      background: #FEF2F2; color: #DC2626; transition: all 0.15s; }
-    .disconnect-dropdown .btn-disconnect:hover { background: #FEE2E2; color: #B91C1C; }
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 400; letter-spacing: 0.26px;
+      background: #F2E3E8; color: #BD3261; transition: all 0.15s; }
+    .disconnect-dropdown .btn-disconnect:hover { background: #E9C9D3; color: #962C4F; }
     .disconnect-dropdown .btn-disconnect:active { transform: scale(0.97); background: #FECACA; }
     .wallet-positions {
       width: 32px; height: 32px; padding: 0; border-radius: 50%; border: none;
@@ -317,7 +362,7 @@
       66%      { d: path('M125 14C130 38 118 68 86 82C54 96 12 90 5 65C-2 40 10 45 42 32C74 19 120 -10 125 14Z'); }
     }
     .hero-title {
-      font-family: var(--font-display); font-weight: 500; font-size: var(--ds-xl);
+      font-family: var(--font-display); font-weight: 600; font-size: var(--ds-xl);
       color: var(--green-800); margin-bottom: 8px; line-height: 1.3;
     }
     .hero-sub {
@@ -366,11 +411,10 @@
     .token-action { width: 100%; }
     .token-action .btn { padding: 12px 20px; width: 100%; } /* 44px ×4 — inherits default 16px */
     .app-footer {
-      padding: 16px 20px; text-align: center;
+      padding: 15px 20px; text-align: center;
       font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary);
-      position: relative; z-index: 1; display: none;
+      position: relative; z-index: 1;
     }
-    .phone.desktop .app-footer { display: block; }
     .app-footer a { color: var(--text-secondary); text-decoration: none; }
     .app-footer a:hover { color: var(--green-600); }
     .app-footer a:active { transform: scale(0.95); filter: brightness(0.9); }
@@ -913,7 +957,7 @@
     .empty-state-graphic {
       width: 170px; height: 170px; display: flex; align-items: center; justify-content: center;
     }
-    .empty-state-graphic img { width: 140px; height: auto; }
+    .empty-state-graphic img { width: 175px; height: auto; }
     .empty-state-cta {
       display: flex; flex-direction: column; align-items: center; gap: 24px;
       padding: 24px 24px 0; width: 100%;
@@ -930,6 +974,9 @@
     }
     .empty-state-cta .btn { width: 100%; max-width: 260px; }
     #positions-empty.active, #error-404.active { display: flex; flex-direction: column; min-height: 100%; }
+    #positions-empty .mascot-area.happy img.mascot-illustration { width: 143px; }
+    #positions-empty .app-footer,
+    #error-404 .app-footer { margin-top: auto; }
     .positions-content { padding: 20px; }
     .positions-title {
       font-family: var(--font-display); font-weight: 500; font-size: var(--ds-lg);
@@ -1182,7 +1229,7 @@
     .phone.desktop #homepage-connected .token-card,
     .phone.desktop #homepage-connected-b .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
 
-    .phone.desktop .app-header { height: 72px; box-sizing: border-box; }
+    .phone.desktop .app-header { height: 72px; box-sizing: border-box; padding-left: 0; padding-right: 0; }
     .phone.desktop .hero { padding: 24px 0; }
     .phone.desktop .token-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 0; }
     
@@ -1192,6 +1239,12 @@
     .phone.desktop #positions-b,
     .phone.desktop #positions-empty,
     .phone.desktop #error-404 { max-width: none; padding: 0 40px; }
+    .phone.desktop #positions-empty.active,
+    .phone.desktop #error-404.active { position: relative; min-height: 100vh; }
+    .phone.desktop #positions-empty .app-footer,
+    .phone.desktop #error-404 .app-footer { position: absolute; bottom: 0; left: 0; right: 0; margin-top: 0; }
+    .phone.desktop #positions-empty .positions-content,
+    .phone.desktop #error-404 .positions-content { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }
     .phone.desktop #borrow,
     .phone.desktop #borrow-b,
     .phone.desktop #borrow-connected,
@@ -1352,6 +1405,7 @@
       <div class="dev-nav-group">
         <button onclick="var p=document.getElementById('icon-picker');p.style.display=p.style.display==='none'?'block':'none';">Positions Icons</button>
         <button onclick="var p=document.getElementById('borrow-icon-picker');p.style.display=p.style.display==='none'?'block':'none';">Borrow Icons</button>
+        <button onclick="var p=document.getElementById('disconnect-icon-picker');p.style.display=p.style.display==='none'?'block':'none';">Disconnect Icons</button>
       </div>
     </div>
   </div>
@@ -1432,6 +1486,41 @@
         var sizeClass = isLg ? 'btn-icon-lg' : 'btn-icon';
         var weight = isLg ? 'ph-light' : 'ph';
         el.className = weight + ' ' + ic.id + ' ' + sizeClass;
+      });
+    };
+    container.appendChild(btn);
+  });
+})();
+</script>
+<div id="disconnect-icon-picker" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;background:white;padding:24px;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.25);min-width:220px;">
+  <div style="font-family:var(--font-ui);font-size:12px;color:var(--text-secondary);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+    <span>Disconnect icon options</span>
+    <button onclick="document.getElementById('disconnect-icon-picker').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:16px;color:#666;"><i class="ph-light ph-x"></i></button>
+  </div>
+  <div id="disconnect-icon-options" style="display:flex;flex-direction:column;gap:6px;"></div>
+</div>
+<script>
+(function(){
+  var icons = [
+    {id:'ph-sign-out', label:'Sign Out'},
+    {id:'ph-power', label:'Power'},
+    {id:'ph-plug', label:'Plug / Unplug'},
+    {id:'ph-x-circle', label:'X Circle'},
+    {id:'ph-link-break', label:'Link Break'},
+  ];
+  var container = document.getElementById('disconnect-icon-options');
+  icons.forEach(function(ic){
+    var btn = document.createElement('button');
+    btn.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #e5e1be;border-radius:10px;background:none;cursor:pointer;font-family:var(--font-ui);font-size:13px;color:#333;width:100%;text-align:left;transition:all 0.15s;';
+    btn.innerHTML = '<i class="ph-light '+ic.id+'" style="font-size:20px;"></i> '+ic.label;
+    btn.onmouseenter = function(){ if(!btn.classList.contains('selected')) btn.style.background='var(--mint-50)'; };
+    btn.onmouseleave = function(){ if(!btn.classList.contains('selected')) btn.style.background='none'; };
+    if(ic.id === 'ph-sign-out') { btn.style.background='var(--mint-100)'; btn.style.borderColor='var(--green-300)'; btn.classList.add('selected'); }
+    btn.onclick = function(){
+      container.querySelectorAll('button').forEach(function(b){ b.style.background='none'; b.style.borderColor='#e5e1be'; b.classList.remove('selected'); });
+      btn.style.background='var(--mint-100)'; btn.style.borderColor='var(--green-300)'; btn.classList.add('selected');
+      document.querySelectorAll('#phone-a .btn-disconnect i').forEach(function(el){
+        el.className = 'ph-light ' + ic.id + ' btn-icon';
       });
     };
     container.appendChild(btn);
@@ -1537,10 +1626,10 @@
         <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-currency-circle-dollar"></i> Borrow</button>
       </nav>
       <div class="header-right">
-        <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
+        <div class="wallet-badge"><span class="wallet-dot"></span><span class="wallet-address-text">0x23k...4534</span><span class="wallet-divider"></span><span class="wallet-disconnect-zone" style="max-width:0;opacity:0;padding:0;overflow:hidden" onclick="event.stopPropagation();showScreen('homepage');">Disconnect <i class="ph-light ph-sign-out" style="font-size:14px;"></i></span></div>
         <button class="power-btn" aria-label="Disconnect wallet" onclick="toggleDisconnect(this)"><i class="ph-light ph-power"></i></button>
         <div class="disconnect-dropdown">
-          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect</button>
+          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect <i class="ph-light ph-sign-out btn-icon"></i></button>
         </div>
       </div>
     </div>
@@ -1721,10 +1810,10 @@
         <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-currency-circle-dollar"></i> Borrow</button>
       </nav>
       <div class="header-right">
-        <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
+        <div class="wallet-badge"><span class="wallet-dot"></span><span class="wallet-address-text">0x23k...4534</span><span class="wallet-divider"></span><span class="wallet-disconnect-zone" style="max-width:0;opacity:0;padding:0;overflow:hidden" onclick="event.stopPropagation();showScreen('homepage');">Disconnect <i class="ph-light ph-sign-out" style="font-size:14px;"></i></span></div>
         <button class="power-btn" aria-label="Disconnect wallet" onclick="toggleDisconnect(this)"><i class="ph-light ph-power"></i></button>
         <div class="disconnect-dropdown">
-          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect</button>
+          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect <i class="ph-light ph-sign-out btn-icon"></i></button>
         </div>
       </div>
     </div>
@@ -1886,10 +1975,10 @@
         <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-currency-circle-dollar"></i> Borrow</button>
       </nav>
       <div class="header-right">
-        <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
+        <div class="wallet-badge"><span class="wallet-dot"></span><span class="wallet-address-text">0x23k...4534</span><span class="wallet-divider"></span><span class="wallet-disconnect-zone" style="max-width:0;opacity:0;padding:0;overflow:hidden" onclick="event.stopPropagation();showScreen('homepage');">Disconnect <i class="ph-light ph-sign-out" style="font-size:14px;"></i></span></div>
         <button class="power-btn" aria-label="Disconnect wallet" onclick="toggleDisconnect(this)"><i class="ph-light ph-power"></i></button>
         <div class="disconnect-dropdown">
-          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect</button>
+          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect <i class="ph-light ph-sign-out btn-icon"></i></button>
         </div>
       </div>
     </div>
@@ -2344,10 +2433,10 @@
         <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-currency-circle-dollar"></i> Borrow</button>
       </nav>
       <div class="header-right">
-        <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
+        <div class="wallet-badge"><span class="wallet-dot"></span><span class="wallet-address-text">0x23k...4534</span><span class="wallet-divider"></span><span class="wallet-disconnect-zone" style="max-width:0;opacity:0;padding:0;overflow:hidden" onclick="event.stopPropagation();showScreen('homepage');">Disconnect <i class="ph-light ph-sign-out" style="font-size:14px;"></i></span></div>
         <button class="power-btn" aria-label="Disconnect wallet" onclick="toggleDisconnect(this)"><i class="ph-light ph-power"></i></button>
         <div class="disconnect-dropdown">
-          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect</button>
+          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect <i class="ph-light ph-sign-out btn-icon"></i></button>
         </div>
       </div>
     </div>
@@ -2382,16 +2471,16 @@
         <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected-none"><i class="ph-light ph-currency-circle-dollar"></i> Borrow</button>
       </nav>
       <div class="header-right">
-        <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
+        <div class="wallet-badge"><span class="wallet-dot"></span><span class="wallet-address-text">0x23k...4534</span><span class="wallet-divider"></span><span class="wallet-disconnect-zone" style="max-width:0;opacity:0;padding:0;overflow:hidden" onclick="event.stopPropagation();showScreen('homepage');">Disconnect <i class="ph-light ph-sign-out" style="font-size:14px;"></i></span></div>
         <button class="power-btn" aria-label="Disconnect wallet" onclick="toggleDisconnect(this)"><i class="ph-light ph-power"></i></button>
         <div class="disconnect-dropdown">
-          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect</button>
+          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect <i class="ph-light ph-sign-out btn-icon"></i></button>
         </div>
       </div>
     </div>
     <div class="positions-content" style="display:flex; flex-direction:column; align-items:center; flex:1;">
       <div class="empty-state-graphic" style="margin-top:56px;">
-        <img src="assets/Emote-05-Meltdown.svg" alt="Purinta confused" style="pointer-events:none;">
+        <img src="assets/v2-emote-05-meltdown.svg" alt="Purinta confused" style="pointer-events:none;">
       </div>
       <div class="empty-state-cta">
         <div class="text-group">
@@ -2416,10 +2505,10 @@
         <button class="top-nav-link" onclick="showScreen('borrow-connected')" data-screen="borrow-connected"><i class="ph-light ph-currency-circle-dollar"></i> Borrow</button>
       </nav>
       <div class="header-right">
-        <div class="wallet-badge"><span class="wallet-dot"></span> 0x23k...4534</div>
+        <div class="wallet-badge"><span class="wallet-dot"></span><span class="wallet-address-text">0x23k...4534</span><span class="wallet-divider"></span><span class="wallet-disconnect-zone" style="max-width:0;opacity:0;padding:0;overflow:hidden" onclick="event.stopPropagation();showScreen('homepage');">Disconnect <i class="ph-light ph-sign-out" style="font-size:14px;"></i></span></div>
         <button class="power-btn" aria-label="Disconnect wallet" onclick="toggleDisconnect(this)"><i class="ph-light ph-power"></i></button>
         <div class="disconnect-dropdown">
-          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect</button>
+          <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect <i class="ph-light ph-sign-out btn-icon"></i></button>
         </div>
       </div>
     </div>
@@ -2802,6 +2891,27 @@ document.addEventListener('click', function(e) {
     document.querySelectorAll('.bp-btn').forEach(function(b) { b.classList.remove('active'); });
     var bpBtn = document.querySelector('.bp-btn[data-bp="' + w + '"]'); if (bpBtn) bpBtn.classList.add('active');
   }
+// Phone A: Pill Expand — wallet-badge toggles expanded state
+document.querySelectorAll('#phone-a .wallet-badge').forEach(function(badge) {
+  badge.addEventListener('click', function(e) {
+    if (e.target.closest('.wallet-disconnect-zone')) return; // let disconnect handle itself
+    var isExpanded = badge.classList.contains('expanded');
+    // Close all other expanded badges
+    document.querySelectorAll('#phone-a .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
+    if (!isExpanded) {
+      badge.classList.add('expanded');
+      setTimeout(function() {
+        document.addEventListener('click', function closePill(ev) {
+          if (!badge.contains(ev.target)) {
+            badge.classList.remove('expanded');
+            document.removeEventListener('click', closePill);
+          }
+        });
+      }, 10);
+    }
+  });
+});
+
 function toggleDisconnect(btn) {
   var dropdown = btn.parentElement.querySelector('.disconnect-dropdown');
   if (!dropdown) return;
