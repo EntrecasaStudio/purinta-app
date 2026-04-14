@@ -207,7 +207,9 @@
     .wallet-badge.no-transition,
     .wallet-badge.no-transition * { transition: none !important; }
     #phone-a .wallet-badge:hover:not(.expanded) { background: var(--mint-100) !important; color: var(--green-600) !important; border-color: var(--green-300) !important; box-shadow: var(--shadow-card) !important; }
-    #phone-a .wallet-badge:not(.expanded) .wallet-disconnect-zone { pointer-events: none; }
+    /* All children pointer-events none when collapsed — click goes to badge */
+    .wallet-badge:not(.expanded) > * { pointer-events: none; }
+    .wallet-badge.expanded > .wallet-disconnect-zone { pointer-events: auto; }
     @keyframes wallet-pulse {
       0%, 100% { background: var(--green-300); }
       50% { background: var(--green-100); }
@@ -1203,52 +1205,59 @@
     #phone-b .disconnect-dropdown { display: none !important; }
     #phone-b .wallet-badge {
       cursor: pointer; border: 1px solid var(--cream-400);
-      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, border-radius 0.3s ease;
-      height: 34px; box-sizing: border-box;
-      position: relative; overflow: visible;
+      box-sizing: border-box;
+      position: relative; overflow: hidden;
+      flex-direction: column; align-items: stretch;
+      align-self: flex-start;
+      height: 34px;
+      transition: height 0.3s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, padding 0.3s ease;
     }
     #phone-b .wallet-badge .wallet-dot { display: none; }
     #phone-b.desktop .wallet-badge { height: 44px; padding-left: 24px; padding-right: 24px; }
     #phone-b .wallet-badge:hover:not(.expanded) { background: var(--mint-100) !important; color: var(--green-600) !important; border-color: var(--green-300) !important; box-shadow: var(--shadow-card) !important; }
-    /* Phone B: vertical pill expand — same pill grows down */
-    #phone-b .wallet-badge {
-      flex-direction: column; overflow: hidden;
-      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, border-radius 0.25s ease, width 0.3s ease, padding 0.3s ease;
+    /* Phone B: vertical pill expand — same pill grows down from top-right corner */
+    #phone-b .wallet-badge .wallet-address-text {
+      display: flex; align-items: center;
+      flex-shrink: 0;
     }
     #phone-b .wallet-badge .wallet-divider {
       width: 100%; height: 0; flex-shrink: 0;
       border-left: none; border-top: 1px solid transparent;
       margin: 0; overflow: hidden;
-      transition: border-color 0.2s ease, margin 0.25s ease;
+      transition: border-color 0.25s ease, margin 0.3s ease;
     }
     #phone-b .wallet-badge .wallet-disconnect-zone {
       display: flex; align-items: center; justify-content: center; gap: 4px;
       max-height: 0; max-width: none !important; opacity: 0; overflow: hidden; padding: 0;
       color: #BD3261; font-weight: 400; font-size: var(--ds-xs);
       cursor: pointer; white-space: nowrap;
-      transition: max-height 0.25s ease-in, opacity 0.15s ease, padding 0.25s ease-in, color 0.2s ease;
+      transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease, color 0.2s ease;
     }
     #phone-b .wallet-badge.expanded {
       background: white; border-color: var(--cream-400);
-      border-radius: var(--r-lg); box-shadow: var(--shadow-card);
-      padding: 10px 16px; height: auto !important;
+      border-radius: 17px; box-shadow: var(--shadow-card);
+      height: 80px; z-index: 20;
+      overflow: visible;
     }
     #phone-b .wallet-badge.expanded .wallet-divider {
       border-top-color: var(--cream-300); margin: 8px 0;
     }
     #phone-b .wallet-badge.expanded .wallet-disconnect-zone {
       max-height: 30px !important; opacity: 1 !important; padding: 0 !important;
-      transition: max-height 0.3s ease-out, opacity 0.2s ease 0.05s, padding 0.3s ease-out, color 0.2s ease;
+      transition: max-height 0.3s ease-out, opacity 0.25s ease 0.05s, padding 0.3s ease-out, color 0.2s ease;
     }
     #phone-b .wallet-badge .wallet-disconnect-zone:hover { color: #D87998; }
-    #phone-b .wallet-badge:not(.expanded) .wallet-disconnect-zone { pointer-events: none; }
-    /* Desktop B: grow a bit wider when expanded */
-    #phone-b.desktop .wallet-badge.expanded { padding: 14px 24px; min-width: 180px; }
-    /* Mobile B: overlay full header width */
+    /* pointer-events handled globally above */
+    /* Desktop B: stays in flow, overflows into content below */
+    #phone-b.desktop .header-right { align-self: flex-start; margin-top: 14px; }
+    #phone-b.desktop .wallet-badge.expanded { border-radius: 22px; padding: 8px 24px 14px 24px; height: 90px; }
+    #phone-b.desktop .app-header { overflow: visible; }
+    /* Mobile B: grows down from top-right, no position jump */
+    #phone-b:not(.desktop) .app-header { position: relative; overflow: visible; }
+    #phone-b:not(.desktop) .header-right { align-self: flex-start; margin-top: 19px; position: relative; overflow: visible; }
     #phone-b:not(.desktop) .wallet-badge.expanded {
-      position: absolute; right: 20px; left: 20px; top: 50%; transform: translateY(-50%);
-      z-index: 20; width: auto; padding: 12px 20px;
-      transform-origin: top right;
+      position: relative;
+      width: auto; padding: 8px 20px 12px 20px; height: 76px;
     }
 
     /* Desktop responsive — applied when phone width >= 1280 via JS class */
@@ -2798,7 +2807,7 @@ function initPhoneB() {
   var srcWM = phoneA.querySelector('.logo-wordmark');
   if (srcWM) {
     phoneB.querySelectorAll('.logo-wordmark').forEach(function(wm) {
-      if (!wm.innerHTML.trim()) wm.innerHTML = srcWM.innerHTML;
+      wm.innerHTML = srcWM.innerHTML;
     });
   }
   // Ensure homepage-b sections are revealed (unless we're about to play loading intro)
