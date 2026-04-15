@@ -186,7 +186,8 @@
       box-shadow: var(--shadow-card);
     }
     #phone-a:not(.desktop) .wallet-badge.expanded {
-      z-index: 20; padding-right: 0;
+      position: absolute; top: 50%; right: 0; transform: translateY(-50%);
+      z-index: 50; padding-right: 0;
       transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out;
     }
     #phone-a .wallet-badge.expanded .wallet-divider {
@@ -261,14 +262,6 @@
     }
     .btn-secondary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
     .btn-secondary:active { transform: translateY(1px) scale(0.96); box-shadow: 0 0 0 0 var(--green-300); filter: brightness(0.95); }
-    .btn-ghost {
-      background: var(--mint-100); color: var(--green-700); border: 1px solid var(--green-300);
-      border-radius: var(--r-full); padding: 11px 24px 13px; /* 44px ×4 (compensate 2px border) */
-      box-shadow: 0 0 0 0 var(--green-300);
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .btn-ghost:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
-    .btn-ghost:active { transform: translateY(1px) scale(0.96); box-shadow: 0 0 0 0 var(--green-300); filter: brightness(0.95); }
     .btn-connect { background: white; color: var(--text-primary); border: 1.5px solid var(--cream-400); font-size: var(--ds-xs); padding: 9.5px 16px; } /* 40px ×4 */
     .btn-full { width: 100%; justify-content: center; }
     .btn-sm { font-size: var(--ds-xs); padding: 11px 14px; }  /* 40px ×4 */
@@ -1203,61 +1196,89 @@
     #phone-b .modal-message-text strong { font-weight: 400; }
     #phone-b .power-btn { display: none; }
     #phone-b .disconnect-dropdown { display: none !important; }
+    #phone-b .app-header { overflow: visible; position: relative; z-index: 40; }
+
+    /* ═══ PHONE B — WALLET PILL (Figma spec) ═══ */
+
+    /* Header-right: reserves space for badge so nav links don't move */
+    #phone-b .header-right { position: relative; min-width: 120px; min-height: 34px; }
+    #phone-b.desktop .header-right { min-width: 160px; min-height: 52px; }
+
+    /* Badge: absolute anchored top-right — grows downward without pushing anything */
     #phone-b .wallet-badge {
-      cursor: pointer; border: 1px solid var(--cream-400);
-      box-sizing: border-box;
-      position: relative; overflow: hidden;
-      flex-direction: column; align-items: stretch;
-      align-self: flex-start;
-      height: 34px;
-      transition: height 0.3s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, padding 0.3s ease;
+      position: absolute; top: 0; right: 0; z-index: 41;
+      background: #FEFEFE; border: 1px solid #E5E1BE; border-radius: 22px;
+      cursor: pointer; white-space: nowrap; box-sizing: border-box;
+      display: flex; flex-direction: column; align-items: stretch; gap: 0;
+      overflow: hidden;
+      padding: 12px 20px;
+      font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 500;
+      color: #185229; letter-spacing: 0.26px; line-height: 21px;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
     }
+
     #phone-b .wallet-badge .wallet-dot { display: none; }
-    #phone-b.desktop .wallet-badge { height: 44px; padding-left: 24px; padding-right: 24px; }
-    #phone-b .wallet-badge:hover:not(.expanded) { background: var(--mint-100) !important; color: var(--green-600) !important; border-color: var(--green-300) !important; box-shadow: var(--shadow-card) !important; }
-    /* Phone B: vertical pill expand — same pill grows down from top-right corner */
+
+    /* Address: stays at top (padding-top never changes) */
     #phone-b .wallet-badge .wallet-address-text {
-      display: flex; align-items: center;
+      display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
+
+    /* Divider: separates address from disconnect, only when expanded */
     #phone-b .wallet-badge .wallet-divider {
-      width: 100%; height: 0; flex-shrink: 0;
-      border-left: none; border-top: 1px solid transparent;
-      margin: 0; overflow: hidden;
-      transition: border-color 0.25s ease, margin 0.3s ease;
+      width: 44px; height: 0; flex-shrink: 0; align-self: center;
+      border: none; border-top: 1px solid #E5E1BE;
+      opacity: 0;
+      transition: opacity 0.15s ease;
     }
+
+    /* Disconnect: hidden by default via max-height */
     #phone-b .wallet-badge .wallet-disconnect-zone {
-      display: flex; align-items: center; justify-content: center; gap: 4px;
-      max-height: 0; max-width: none !important; opacity: 0; overflow: hidden; padding: 0;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      max-height: 0 !important; max-width: none !important;
+      opacity: 0 !important; overflow: hidden !important; padding: 0 !important;
       color: #BD3261; font-weight: 400; font-size: var(--ds-xs);
+      letter-spacing: 0.26px; line-height: 21px;
       cursor: pointer; white-space: nowrap;
-      transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease, color 0.2s ease;
+      pointer-events: none;
+      transition: max-height 0.2s ease, opacity 0.15s ease, padding 0.2s ease;
     }
+
+    /* Hover collapsed */
+    #phone-b .wallet-badge:hover:not(.expanded) {
+      background: var(--mint-100); color: var(--green-600);
+      border-color: var(--green-300); box-shadow: var(--shadow-card);
+    }
+
+    /* ─── EXPANDED: badge grows downward ─── */
     #phone-b .wallet-badge.expanded {
-      background: white; border-color: var(--cream-400);
-      border-radius: 17px; box-shadow: var(--shadow-card);
-      height: 80px; z-index: 20;
-      overflow: visible;
+      box-shadow: var(--shadow-card);
+      padding-bottom: 12px;
     }
     #phone-b .wallet-badge.expanded .wallet-divider {
-      border-top-color: var(--cream-300); margin: 8px 0;
+      opacity: 1; margin-bottom: 8px;
     }
     #phone-b .wallet-badge.expanded .wallet-disconnect-zone {
-      max-height: 30px !important; opacity: 1 !important; padding: 0 !important;
-      transition: max-height 0.3s ease-out, opacity 0.25s ease 0.05s, padding 0.3s ease-out, color 0.2s ease;
+      max-height: 30px !important; opacity: 1 !important;
+      padding: 0 !important;
+      pointer-events: auto;
     }
+
+    /* Hover disconnect */
     #phone-b .wallet-badge .wallet-disconnect-zone:hover { color: #D87998; }
-    /* pointer-events handled globally above */
-    /* Desktop B: stays in flow, overflows into content below */
-    #phone-b.desktop .header-right { align-self: flex-start; margin-top: 14px; }
-    #phone-b.desktop .wallet-badge.expanded { border-radius: 22px; padding: 8px 24px 14px 24px; height: 90px; }
-    #phone-b.desktop .app-header { overflow: visible; }
-    /* Mobile B: grows down from top-right, no position jump */
-    #phone-b:not(.desktop) .app-header { position: relative; overflow: visible; }
-    #phone-b:not(.desktop) .header-right { align-self: flex-start; margin-top: 19px; position: relative; overflow: visible; }
-    #phone-b:not(.desktop) .wallet-badge.expanded {
-      position: relative;
-      width: auto; padding: 8px 20px 12px 20px; height: 76px;
+    #phone-b .wallet-badge:has(.wallet-disconnect-zone:hover) { border-color: #D87998; }
+
+    /* ─── DESKTOP B ─── */
+    #phone-b.desktop .wallet-badge {
+      min-height: 52px; padding: 0 32px; border-radius: 26px;
+    }
+    #phone-b.desktop .wallet-badge .wallet-address-text {
+      height: 50px; /* 52px - 2px border */
+    }
+    #phone-b.desktop .wallet-badge.expanded {
+      padding-bottom: 14px;
     }
 
     /* Desktop responsive — applied when phone width >= 1280 via JS class */
@@ -1769,7 +1790,6 @@
     <div class="borrow-content">
       <div class="borrow-header">
         <div class="borrow-title">Borrow against</div>
-        <button class="close-btn" aria-label="Close" onclick="showScreen('homepage')"><i class="ph-light ph-x"></i></button>
       </div>
 
       <div class="slider-section">
@@ -1896,7 +1916,6 @@
     <div class="borrow-content">
       <div class="borrow-header">
         <div class="borrow-title">Borrow against</div>
-        <button class="close-btn" aria-label="Close" onclick="showScreen('homepage')"><i class="ph-light ph-x"></i></button>
       </div>
 
       <div class="slider-section">
@@ -2126,7 +2145,7 @@
         </div>
         <div class="position-actions">
           <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-ghost"><i class="ph ph-arrow-circle-up btn-icon"></i> Quick Withdraw</button>
+          <button class="btn btn-secondary"><i class="ph ph-arrow-circle-up btn-icon"></i> Quick Withdraw</button>
         </div>
       </div>
 
@@ -2215,7 +2234,7 @@
         </div>
         <div class="position-actions">
           <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-ghost"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
 
@@ -2304,7 +2323,7 @@
         </div>
         <div class="position-actions">
           <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-ghost"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
 
@@ -2393,7 +2412,7 @@
         </div>
         <div class="position-actions">
           <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-ghost"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
 
@@ -2482,7 +2501,7 @@
         </div>
         <div class="position-actions">
           <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-ghost"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
 
@@ -3003,6 +3022,12 @@ document.addEventListener('click', function(e) {
   }
   // Click outside — close all
   document.querySelectorAll('#phone-b .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
+});
+// Escape closes all expanded pills
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
+  }
 });
 
 function toggleDisconnect(btn) {
