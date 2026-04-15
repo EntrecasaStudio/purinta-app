@@ -172,7 +172,7 @@
     #phone-a .wallet-badge .wallet-disconnect-zone {
       display: flex; align-items: center; gap: 4px;
       max-width: 0; opacity: 0; overflow: hidden; padding: 0;
-      color: #BD3261; font-weight: 400; font-size: var(--ds-xs);
+      color: #E5008B; font-weight: 400; font-size: var(--ds-xs);
       cursor: pointer; white-space: nowrap;
       transition: max-width 0.3s ease-in, opacity 0.15s ease, padding 0.3s ease-in, color 0.2s ease;
     }
@@ -199,11 +199,11 @@
       transition: max-width 0.35s ease-out, opacity 0.25s ease 0.05s, padding 0.35s ease-out, color 0.2s ease;
     }
     #phone-a .wallet-badge:has(.wallet-disconnect-zone:hover) {
-      border-color: #D87998;
-      box-shadow: 0 4px 16px rgba(216, 121, 152, 0.2);
+      border-color: #FF32BF;
+      box-shadow: 0 4px 16px rgba(255, 50, 191, 0.2);
     }
     #phone-a .wallet-badge .wallet-disconnect-zone:hover {
-      color: #D87998;
+      color: #FF32BF;
     }
     .wallet-badge.no-transition,
     .wallet-badge.no-transition * { transition: none !important; }
@@ -284,9 +284,9 @@
     .disconnect-dropdown .btn-disconnect { width: 100%; padding: 10px 16px; border-radius: 12px; border: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 6px;
       font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 400; letter-spacing: 0.26px;
-      background: #F2E3E8; color: #BD3261; transition: all 0.15s; }
-    .disconnect-dropdown .btn-disconnect:hover { background: #E9C9D3; color: #962C4F; }
-    .disconnect-dropdown .btn-disconnect:active { transform: scale(0.97); background: #DFA4B8; }
+      background: #FFC1EA; color: #E5008B; transition: all 0.15s; }
+    .disconnect-dropdown .btn-disconnect:hover { background: #FF95DC; color: #BD0070; }
+    .disconnect-dropdown .btn-disconnect:active { transform: scale(0.97); background: #FF68CF; }
     .wallet-positions {
       width: 32px; height: 32px; padding: 0; border-radius: 50%; border: none;
       background: transparent; cursor: pointer; color: var(--text-secondary);
@@ -927,7 +927,7 @@
     }
     .modal-progress-bar {
       height: 100%; border-radius: 0;
-      background: #7B99D5;
+      background: #176DFF;
       animation: progress-slide 2.5s ease-in-out infinite;
     }
     @keyframes progress-slide {
@@ -940,7 +940,7 @@
     }
     .modal-dots span {
       width: 4px; height: 4px; border-radius: 2px;
-      background: #7B99D5; animation: dot-pulse 1.4s ease-in-out infinite;
+      background: #176DFF; animation: dot-pulse 1.4s ease-in-out infinite;
     }
     .modal-dots span:nth-child(2) { animation-delay: 0.2s; }
     .modal-dots span:nth-child(3) { animation-delay: 0.4s; }
@@ -1239,7 +1239,7 @@
       display: flex; align-items: center; justify-content: center; gap: 6px;
       max-height: 0 !important; max-width: none !important;
       opacity: 0 !important; overflow: hidden !important; padding: 0 !important;
-      color: #BD3261; font-weight: 400; font-size: var(--ds-xs);
+      color: #E5008B; font-weight: 400; font-size: var(--ds-xs);
       letter-spacing: 0.26px; line-height: 21px;
       cursor: pointer; white-space: nowrap;
       pointer-events: none;
@@ -1267,8 +1267,8 @@
     }
 
     /* Hover disconnect */
-    #phone-b .wallet-badge .wallet-disconnect-zone:hover { color: #D87998; }
-    #phone-b .wallet-badge:has(.wallet-disconnect-zone:hover) { border-color: #D87998; }
+    #phone-b .wallet-badge .wallet-disconnect-zone:hover { color: #FF32BF; }
+    #phone-b .wallet-badge:has(.wallet-disconnect-zone:hover) { border-color: #FF32BF; }
 
     /* ─── DESKTOP B ─── */
     #phone-b.desktop .wallet-badge {
