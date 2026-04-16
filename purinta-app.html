@@ -733,6 +733,20 @@
       --grad-start: #FEC4C0; --grad-end: #FEDBD8;
       border: 1px solid #FEAAA4;
     }
+    /* Option A (phone-a) — feedback-based mascot gradients */
+    #phone-a .mascot-area.ultra-safe { --grad-start: #97D8D3; --grad-end: #E0F0EF; border-color: #6ECFC6; }
+    #phone-a .mascot-area.looking-good { --grad-start: #E0F0EF; --grad-end: #F2F8F7; border-color: #97D8D3; }
+    #phone-a .mascot-area.getting-risky, #phone-a .mascot-area.worried { --grad-start: #E0ECFF; --grad-end: #FFEDF9; border-color: #B2D0FF; }
+    #phone-a .mascot-area.danger-zone { --grad-start: #FFEDF9; --grad-end: #FFB2E6; border-color: #FF80D6; }
+    #phone-a .mascot-area.meltdown { --grad-start: #FFB2E6; --grad-end: #FF80D6; border-color: #FF66CF; }
+    /* Phone A ultra-safe stars: white tones (green doesn't work on new turquoise bg) */
+    #phone-a .mascot-area.ultra-safe .mascot-stars .sp1 path,
+    #phone-a .mascot-area.ultra-safe .mascot-stars .sp4 path,
+    #phone-a .mascot-area.ultra-safe .mascot-stars .sp7 path { fill: #FFFFFF; }
+    #phone-a .mascot-area.ultra-safe .mascot-stars .sp2 path,
+    #phone-a .mascot-area.ultra-safe .mascot-stars .sp5 path { fill: rgba(255,255,255,0.8); }
+    #phone-a .mascot-area.ultra-safe .mascot-stars .sp3 path,
+    #phone-a .mascot-area.ultra-safe .mascot-stars .sp6 path { fill: rgba(255,255,255,0.6); }
     .mascot-area.excited {
       background: linear-gradient(135deg, var(--cream-100), var(--green-100));
       border: 2px solid var(--cream-400);
