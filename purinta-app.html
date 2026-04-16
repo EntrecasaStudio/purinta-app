@@ -993,7 +993,10 @@
     }
     .empty-state-cta .btn { width: 100%; max-width: 260px; }
     #positions-empty.active, #error-404.active { display: flex; flex-direction: column; min-height: 100%; }
-    #positions-empty .mascot-area.happy img.mascot-illustration { width: 143px; }
+    #positions-empty .mascot-area.happy img.mascot-illustration { width: 158px; top: 40px; }
+    .phone.desktop #positions-empty .mascot-area.happy { background: transparent !important; border: none !important; }
+    .phone.desktop #positions-empty .mascot-area.happy .mascot-blob { display: none; }
+    .phone.desktop #positions-empty .mascot-area.happy img.mascot-illustration { width: 173px; top: 56px; }
     #positions-empty .app-footer,
     #error-404 .app-footer { margin-top: auto; }
     .positions-content { padding: 20px; }
@@ -2556,7 +2559,7 @@
       </div>
       <div class="mascot-area happy" style="margin-top:8px; width:100%; border-radius:32px;">
         <div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none"><path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/></svg></div>
-        <img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="Purinta with money" style="pointer-events:none;">
+        <img class="mascot-illustration" src="assets/empty-state-mascot.png" alt="Purinta sad - no active positions" style="pointer-events:none;">
       </div>
       <div class="empty-state-cta">
         <div class="text-group">
