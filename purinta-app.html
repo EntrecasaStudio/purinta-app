@@ -375,9 +375,9 @@
     }
     .token-list { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
     .token-card {
-      background: rgba(255,255,255,0.75); backdrop-filter: blur(8px);
+      background: white;
       border-radius: 32px; padding: 32px;
-      border: 1.5px solid rgba(255,255,255,0.5); display: flex; flex-direction: column;
+      border: 1px solid var(--cream-400); display: flex; flex-direction: column;
       align-items: center; gap: 12px; transition: all 0.25s ease; cursor: pointer;
       text-align: center;
     }
@@ -653,7 +653,7 @@
     .slider-track-fill {
       position: absolute; left: 0; height: 12px; top: 10px; z-index: 0;
       background: linear-gradient(90deg, var(--green-200), var(--green-300)); z-index: 0;
-      border-radius: var(--r-full); transition: width 0.3s ease, background 0.4s ease;
+      border-radius: var(--r-full) 0 0 var(--r-full); transition: width 0.3s ease, background 0.4s ease;
     }
     /* Option B: Borrow slider & pct buttons turn warm on danger/meltdown */
     #phone-b .danger-zone .slider-divider ~ .slider-track .slider-track-fill {
@@ -2892,6 +2892,7 @@
           <div class="summary-details">
             <div class="summary-row"><span class="summary-row-label">You supply</span><span class="summary-row-value"><span class="update-arrow"><span class="old">1000</span> <span class="arr">→</span> <span class="new">1500 PEPE</span></span></span></div>
             <div class="summary-row"><span class="summary-row-label">You repay</span><span class="summary-row-value">700,000 USDC</span></div>
+            <div class="summary-row"><span class="summary-row-label">Borrow Rate <i class="ph ph-info summary-info-icon"></i></span><span class="summary-row-value">5.25%<span class="rate-suffix">/yr</span></span></div>
             <div class="summary-row"><span class="summary-row-label">(Token) Price</span><span class="summary-row-value">$0.041200</span></div>
             <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value liq-arrow"><span class="old"><span class="liq-price">$0.05714</span><span class="liq-pct">(-38.6%)</span></span><span class="arr">→</span><span class="new"><span class="liq-price">$0.05714</span><span class="liq-pct">(-42.1%)</span></span></span></div>
           </div>
@@ -3179,6 +3180,19 @@ function selectToken(row) {
     // Sync the no-funds class BEFORE recalculating mascot/values so they read the right state
     var inWallet = !!walletHoldings[token];
     screen.classList.toggle('no-funds', !inWallet);
+    // Disable Borrow slider + CTA when switching to a token without funds:
+    // no funds ⇒ effective supply is 0, which is what .supply-zero represents.
+    // On return to a funded token, recompute .supply-zero from the actual supply slider value.
+    if (!inWallet) {
+      screen.classList.add('supply-zero');
+    } else {
+      var supplyPct = 0;
+      try {
+        var pcts = (typeof getSliderPcts === 'function') ? getSliderPcts(screen.id) : null;
+        if (pcts) supplyPct = pcts.supply;
+      } catch (e) {}
+      screen.classList.toggle('supply-zero', supplyPct <= 0);
+    }
     // Recalc values + mascot text (mascot reads .no-funds to pick the right line)
     updateBorrowValues(screen.id);
     if (screen.id === 'borrow-connected' && typeof updateHealthMascot === 'function') updateHealthMascot();
@@ -3459,12 +3473,14 @@ function updateBorrowValues(screenId) {
     if (sliderInfos[0]) { var n = sliderInfos[0].querySelector('.new'); if (n) n.textContent = formatCompact(supplyAmount); }
     if (sliderInfos[1]) { var n = sliderInfos[1].querySelector('.new'); if (n) n.textContent = formatUSD(borrowUSD) + ' USDC'; }
     // Update summary .new spans or plain values
+    // Row order in Modify: [0] You supply, [1] You repay, [2] Borrow Rate, [3] Price, [4] Liquidation
     var summaryRows = screen.querySelectorAll('.summary-row-value');
     if (summaryRows[0]) { var n = summaryRows[0].querySelector('.new'); if (n) n.textContent = formatCompact(supplyAmount) + ' ' + td.name; }
     if (summaryRows[1]) summaryRows[1].textContent = borrowUSD > 0 ? formatUSD(borrowUSD) + ' USDC' : '—';
-    if (summaryRows[2]) summaryRows[2].innerHTML = formatPrice(td.price);
-    if (summaryRows[3]) {
-      var newLiq = summaryRows[3].querySelector('.new');
+    if (summaryRows[2]) summaryRows[2].innerHTML = (td.borrowRate != null ? td.borrowRate.toFixed(2) : '—') + '%<span class="rate-suffix">/yr</span>';
+    if (summaryRows[3]) summaryRows[3].innerHTML = formatPrice(td.price);
+    if (summaryRows[4]) {
+      var newLiq = summaryRows[4].querySelector('.new');
       if (newLiq && liqPrice > 0) {
         newLiq.innerHTML = '<span class="liq-price">' + formatPrice(liqPrice) + '</span><span class="liq-pct">(' + (liqDelta >= 0 ? '+' : '') + liqDelta.toFixed(1) + '%)</span>';
       } else if (newLiq) {
@@ -3897,7 +3913,9 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
   });
 
   // NO-SUPPLY state — money mascot (full body) + contextual message
-  if (pcts.supply <= 0) {
+  // Treat .no-funds (token not in wallet) as effective supply=0 so Borrow stays disabled
+  var noFunds = !!(screen && screen.classList.contains('no-funds'));
+  if (pcts.supply <= 0 || noFunds) {
     area.classList.add('happy');
     if (screen) screen.classList.add('supply-zero');
     var tk = screen ? screen.querySelector('.token-select-trigger .token-name') : null;
