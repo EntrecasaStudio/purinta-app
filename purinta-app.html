@@ -759,8 +759,8 @@
     #phone-a #borrow-connected.supply-zero .btn-primary i , #phone-b #borrow-connected.supply-zero .btn-primary i { opacity: 0.6; }
     /* Supply thumb breathing glow — guides first action */
     @keyframes supplyBreath {
-      0%, 100% { filter: drop-shadow(0 0 4px rgba(73,135,70,0.35)); transform: scale(1); }
-      50%      { filter: drop-shadow(0 0 12px rgba(73,135,70,0.75)); transform: scale(1.06); }
+      0%, 100% { filter: drop-shadow(0 0 4px rgba(8,250,60,0.35)); transform: scale(1); }
+      50%      { filter: drop-shadow(0 0 12px rgba(8,250,60,0.75)); transform: scale(1.06); }
     }
     #phone-a #borrow-connected.supply-zero .slider-label + .pct-buttons + .slider-track .slider-thumb , #phone-b #borrow-connected.supply-zero .slider-label + .pct-buttons + .slider-track .slider-thumb {
       animation: supplyBreath 1.8s ease-in-out infinite;
@@ -973,7 +973,9 @@
       transition: opacity 0.2s ease;
     }
     /* Hide <object> mascots in Phone A until v2 emotes replace them — prevents size flash */
-    #phone-a object.mascot-illustration , #phone-b object.mascot-illustration { opacity: 0; }
+    /* Hide original <object> mascots in phone-a only (v2 transform replaces them).
+       phone-b keeps its <object> tags as OP1 snapshot — do NOT hide. */
+    #phone-a object.mascot-illustration { opacity: 0; }
     .emote-v2.mascot-illustration { opacity: 1; }
     .mascot-area.happy .mascot-illustration { width: 130px; position: relative; top: 12px; }
     .mascot-area.happy img.mascot-illustration { width: 114px; top: 16px; animation: none; }
@@ -3220,16 +3222,17 @@ function applyV2Emotes(phone) {
 }
 
 /* Restore Phone B mascots to original <object> elements */
-function restoreOriginalEmotes(phoneC) {
-  phoneC.querySelectorAll('.emote-v2').forEach(function(v2El) {
+function restoreOriginalEmotes(phoneEl) {
+  phoneEl.querySelectorAll('.emote-v2').forEach(function(v2El) {
     if (!v2El.id) return;
-    var baseId = v2El.id.replace(/-c$/, '');
+    // Strip -b or -c suffix (phone-b and phone-c both clone from snapshot)
+    var baseId = v2El.id.replace(/-(b|c)$/, '');
     var origHTML = _originalEmoteEls[baseId];
     if (!origHTML) return;
     var temp = document.createElement('div');
     temp.innerHTML = origHTML;
     var origObj = temp.firstElementChild;
-    origObj.id = v2El.id; // keep the -c suffix
+    origObj.id = v2El.id; // keep the suffix
     v2El.parentNode.replaceChild(origObj, v2El);
   });
 }
