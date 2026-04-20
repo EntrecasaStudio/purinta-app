@@ -1979,22 +1979,22 @@
     </div>
     <div class="token-list reveal-in">
       <!-- Tokens in sync with the market dropdown: PEPE, MORPHO, COMP, SYRUP -->
-      <div class="token-card" onclick="showScreen('borrow')">
+      <div class="token-card" onclick="borrowWithToken('borrow', 'pepe')">
         <div class="token-icons"><div class="token-icon pepe"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against PEPE</div></div>
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
       </div>
-      <div class="token-card" onclick="showScreen('borrow')">
+      <div class="token-card" onclick="borrowWithToken('borrow', 'morpho')">
         <div class="token-icons"><div class="token-icon morpho"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against MORPHO</div></div>
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
       </div>
-      <div class="token-card" onclick="showScreen('borrow')">
+      <div class="token-card" onclick="borrowWithToken('borrow', 'comp')">
         <div class="token-icons"><div class="token-icon comp"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against COMP</div></div>
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
       </div>
-      <div class="token-card" onclick="showScreen('borrow')">
+      <div class="token-card" onclick="borrowWithToken('borrow', 'syrup')">
         <div class="token-icons"><div class="token-icon syrup"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against SYRUP</div></div>
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
@@ -2038,22 +2038,22 @@
     </div>
     <div class="token-list">
       <!-- Tokens in sync with the market dropdown: PEPE, MORPHO, COMP, SYRUP -->
-      <div class="token-card" onclick="showScreen('borrow-connected')">
+      <div class="token-card" onclick="borrowWithToken('borrow-connected', 'pepe')">
         <div class="token-icons"><div class="token-icon pepe"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against PEPE</div></div>
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
       </div>
-      <div class="token-card" onclick="showScreen('borrow-connected')">
+      <div class="token-card" onclick="borrowWithToken('borrow-connected', 'morpho')">
         <div class="token-icons"><div class="token-icon morpho"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against MORPHO</div></div>
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
       </div>
-      <div class="token-card" onclick="showScreen('borrow-connected')">
+      <div class="token-card" onclick="borrowWithToken('borrow-connected', 'comp')">
         <div class="token-icons"><div class="token-icon comp"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against COMP</div></div>
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
       </div>
-      <div class="token-card" onclick="showScreen('borrow-connected')">
+      <div class="token-card" onclick="borrowWithToken('borrow-connected', 'syrup')">
         <div class="token-icons"><div class="token-icon syrup"></div></div>
         <div class="token-info"><div class="token-pair-name">Borrow against SYRUP</div></div>
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
@@ -3630,6 +3630,31 @@ function toggleDisconnect(btn) {
       });
     }, 10);
   }
+}
+
+/* Navigate to a borrow screen with a specific token preselected.
+   Called from home token cards. Syncs selection across all 3 phones
+   so side-by-side comparison stays aligned. */
+function borrowWithToken(target, token) {
+  showScreen(target);
+  ['', '-b', '-c'].forEach(function(sfx) {
+    var screen = document.getElementById(target + sfx);
+    if (!screen) return;
+    var row = screen.querySelector('.token-dropdown-row[data-token="' + token + '"]');
+    if (row && typeof selectToken === 'function') {
+      // Connected path: full selectToken flow (updates trigger, no-funds, banner, mascot)
+      selectToken(row);
+    } else {
+      // Disconnected path (no dropdown rows): just update the trigger display
+      var trigger = screen.querySelector('.token-select-trigger');
+      if (trigger) {
+        var iconEl = trigger.querySelector('.mini-icon');
+        var nameEl = trigger.querySelector('.token-name');
+        if (iconEl) iconEl.className = 'mini-icon ' + token;
+        if (nameEl) nameEl.textContent = token.toUpperCase();
+      }
+    }
+  });
 }
 
 function showScreen(id) {
