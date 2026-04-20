@@ -3864,11 +3864,15 @@ function setSliderPct(track, pct) {
   if (thumb) { thumb.style.left = 'calc((100% - 32px) * ' + pct + ' / 100)'; thumb.style.display = ''; }
   if (delta && marker) {
     var prevPct = parseFloat(marker.getAttribute('data-pos'));
-    if (fill) fill.style.width = pct + '%';
+    // Fill ends at thumb CENTER (not track-pct). Keeps the green bar from
+    // extending past the thumb on the right as pct approaches 100.
+    if (fill) fill.style.width = 'calc((100% - 32px) * ' + pct + ' / 100 + 16px)';
     delta.style.left = '0';
     delta.style.width = prevPct + '%';
   } else {
-    if (fill) fill.style.width = pct + '%';
+    // Fill ends at thumb CENTER (not track-pct). Keeps the green bar from
+    // extending past the thumb on the right as pct approaches 100.
+    if (fill) fill.style.width = 'calc((100% - 32px) * ' + pct + ' / 100 + 16px)';
   }
   // Sync THIS slider's pct-btn group (the .pct-buttons immediately preceding this track)
   var group = track.previousElementSibling;
@@ -3943,11 +3947,15 @@ document.addEventListener('click', function(e) {
   if (thumb) { thumb.style.left = 'calc((100% - 32px) * ' + pct + ' / 100)'; thumb.style.display = ''; }
   if (delta && marker) {
     var prevPct = parseFloat(marker.getAttribute('data-pos'));
-    if (fill) fill.style.width = pct + '%';
+    // Fill ends at thumb CENTER (not track-pct). Keeps the green bar from
+    // extending past the thumb on the right as pct approaches 100.
+    if (fill) fill.style.width = 'calc((100% - 32px) * ' + pct + ' / 100 + 16px)';
     delta.style.left = '0';
     delta.style.width = prevPct + '%';
   } else {
-    if (fill) fill.style.width = pct + '%';
+    // Fill ends at thumb CENTER (not track-pct). Keeps the green bar from
+    // extending past the thumb on the right as pct approaches 100.
+    if (fill) fill.style.width = 'calc((100% - 32px) * ' + pct + ' / 100 + 16px)';
   }
   // Update health mascot for whichever phone this button belongs to
   var screen = group.closest('.screen');
