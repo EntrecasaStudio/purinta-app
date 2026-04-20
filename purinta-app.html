@@ -639,7 +639,7 @@
       /* Top: rounded sheet handle. Bottom: match phone's 32px border-radius
          so corners follow the device frame's curvature. */
       border-radius: 28px 28px 32px 32px;
-      padding: 12px 0 24px;
+      padding: 12px 16px 24px;
       box-shadow: 0 -8px 32px rgba(24, 82, 41, 0.12);
       transform: translateY(100%);
       transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
@@ -653,11 +653,12 @@
     .token-sheet-title {
       font-family: var(--font-display); font-size: var(--ds-md);
       color: var(--text-heading); text-align: center;
-      padding: 0 20px 12px;
+      padding: 0 20px 20px;
     }
     .token-sheet-row {
       display: flex; align-items: center; gap: 12px;
       padding: 14px 20px;
+      border-radius: 16px;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       transition: background 0.12s ease;
@@ -3395,9 +3396,13 @@ function closeTokenBottomSheet() {
 function selectTokenFromSheet(sheetRow) {
   if (!_activeSheetSelect) { closeTokenBottomSheet(); return; }
   var token = sheetRow.dataset.token;
-  // Find the matching dropdown-row inside the original select and reuse existing selectToken logic
+  // Find the matching dropdown-row inside the original select and reuse existing selectToken logic.
+  // closeTokenDropdown (called inside selectToken) bails early unless the select has .open —
+  // the bottom sheet never opened the dropdown, so we add .open here to let the post-close
+  // callback fire (updates no-funds class, banner, health mascot, values).
   var origRow = _activeSheetSelect.querySelector('.token-dropdown-row[data-token="' + token + '"]');
   if (origRow && typeof selectToken === 'function') {
+    _activeSheetSelect.classList.add('open');
     selectToken(origRow);
   }
   closeTokenBottomSheet();
@@ -3423,6 +3428,19 @@ function selectToken(row) {
   var trigger = select.querySelector('.token-select-trigger');
   trigger.querySelector('.mini-icon').className = 'mini-icon ' + token;
   trigger.querySelector('.token-name').textContent = name;
+  // Option A (OP2): Supply section has a static .slider-token-badge placed
+  // by applyOP2ToPhoneA(). Keep it in sync with the title selector.
+  var screenForBadge = select.closest('.screen');
+  if (screenForBadge) {
+    var supplyLabel = screenForBadge.querySelector('.slider-section .slider-label');
+    var badge = supplyLabel && supplyLabel.querySelector('.slider-token-badge');
+    if (badge) {
+      var badgeIcon = badge.querySelector('.mini-icon');
+      if (badgeIcon) badgeIcon.className = 'mini-icon ' + token;
+      // Replace the text node after the icon with the new token name
+      badge.innerHTML = '<span class="' + (badgeIcon ? badgeIcon.className : 'mini-icon ' + token) + '"></span>' + name;
+    }
+  }
   // Animated close — after dropdown collapses, handle banner + values
   var screen = select.closest('.screen');
   closeTokenDropdown(select, function() {
