@@ -1615,11 +1615,13 @@
     .phone.desktop #homepage-connected .hero-title .mini-icon,
     .phone.desktop #homepage-connected-b .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
     .phone.desktop #homepage-connected-c .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
+    /* Phone A desktop: 32px gap between cards (brand spec) */
     .phone.desktop #homepage .token-list,
+    .phone.desktop #homepage-connected .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 32px; max-width: none; }
+    /* Phones B and C desktop: keep 16px gap */
     .phone.desktop #homepage-b .token-list,
     .phone.desktop #homepage-c .token-list,
-    .phone.desktop #homepage-connected .token-list,
-    .phone.desktop #homepage-connected-b .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; max-width: none; }
+    .phone.desktop #homepage-connected-b .token-list,
     .phone.desktop #homepage-connected-c .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; max-width: none; }
     .phone.desktop #homepage .token-card,
     .phone.desktop #homepage-b .token-card,
