@@ -620,23 +620,30 @@
 
     /* ═══ BOTTOM SHEET (Option A mobile only) ═══
        Replaces the dropdown when tapping the market selector in the OP2 title.
-       Activated via .bottom-sheet-mode class on the parent .phone. */
+       Scoped to the parent .phone element so the overlay + sheet stay inside
+       the device frame. A .has-sheet class on .phone triggers a transform,
+       which creates a local containing block for position:fixed children
+       (so they align to phone edges, not viewport). */
+    .phone.has-sheet { transform: translateZ(0); }
     .token-sheet-overlay {
       position: fixed; inset: 0; z-index: 100;
       background: rgba(10, 51, 24, 0.45);
       opacity: 0; pointer-events: none;
       transition: opacity 0.22s ease;
+      border-radius: inherit;
     }
     .token-sheet-overlay.open { opacity: 1; pointer-events: auto; }
     .token-sheet {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
       background: var(--neutral-50);
-      border-radius: 28px 28px 0 0;
+      /* Top: rounded sheet handle. Bottom: match phone's 32px border-radius
+         so corners follow the device frame's curvature. */
+      border-radius: 28px 28px 32px 32px;
       padding: 12px 0 24px;
       box-shadow: 0 -8px 32px rgba(24, 82, 41, 0.12);
       transform: translateY(100%);
       transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
-      max-height: 70vh; overflow-y: auto;
+      max-height: 70%; overflow-y: auto;
     }
     .token-sheet.open { transform: translateY(0); }
     .token-sheet-handle {
@@ -664,7 +671,8 @@
     .token-sheet-row.selected { background: var(--cream-50); }
     .token-sheet-row.selected .token-name { color: var(--green-700); }
     .token-sheet-row .check-icon {
-      color: var(--green-600); font-size: 18px;
+      width: 20px; height: 20px; flex-shrink: 0;
+      background: url("assets/check-icon.svg") center/contain no-repeat;
       visibility: hidden;
     }
     .token-sheet-row.selected .check-icon { visibility: visible; }
@@ -3334,21 +3342,23 @@ function toggleTokenDropdown(el) {
 var _activeSheetSelect = null;  // reference to the .token-select that opened the sheet
 function openTokenBottomSheet(select) {
   _activeSheetSelect = select;
-  // Ensure overlay + sheet exist (lazy-create, singleton)
-  var overlay = document.getElementById('token-sheet-overlay');
-  var sheet = document.getElementById('token-sheet');
+  // Scope overlay + sheet to the parent phone so they stay inside the device frame.
+  // The .has-sheet class adds a transform which makes the phone a containing
+  // block for position:fixed children — keeps the sheet inside the phone bounds.
+  var phone = select.closest('.phone') || document.getElementById('phone-a');
+  phone.classList.add('has-sheet');
+  var overlay = phone.querySelector('.token-sheet-overlay');
+  var sheet = phone.querySelector('.token-sheet');
   if (!overlay) {
     overlay = document.createElement('div');
-    overlay.id = 'token-sheet-overlay';
     overlay.className = 'token-sheet-overlay';
     overlay.addEventListener('click', closeTokenBottomSheet);
-    document.body.appendChild(overlay);
+    phone.appendChild(overlay);
   }
   if (!sheet) {
     sheet = document.createElement('div');
-    sheet.id = 'token-sheet';
     sheet.className = 'token-sheet';
-    document.body.appendChild(sheet);
+    phone.appendChild(sheet);
   }
   // Populate with rows cloned from the select's dropdown
   sheet.innerHTML = '<div class="token-sheet-handle"></div>' +
@@ -3361,7 +3371,7 @@ function openTokenBottomSheet(select) {
     var name = srcRow.querySelector('.token-name').textContent;
     row.innerHTML = '<span class="' + miniClass + '"></span>' +
       '<span class="token-name">' + name + '</span>' +
-      '<i class="ph ph-check check-icon"></i>';
+      '<span class="check-icon"></span>';
     row.addEventListener('click', function() { selectTokenFromSheet(row); });
     sheet.appendChild(row);
   });
@@ -3371,10 +3381,15 @@ function openTokenBottomSheet(select) {
   sheet.classList.add('open');
 }
 function closeTokenBottomSheet() {
-  var overlay = document.getElementById('token-sheet-overlay');
-  var sheet = document.getElementById('token-sheet');
-  if (overlay) overlay.classList.remove('open');
-  if (sheet) sheet.classList.remove('open');
+  document.querySelectorAll('.token-sheet-overlay, .token-sheet').forEach(function(el) {
+    el.classList.remove('open');
+  });
+  // Remove containing-block transform after sheet close animation finishes
+  setTimeout(function() {
+    document.querySelectorAll('.phone.has-sheet').forEach(function(p) {
+      p.classList.remove('has-sheet');
+    });
+  }, 300);
   _activeSheetSelect = null;
 }
 function selectTokenFromSheet(sheetRow) {
