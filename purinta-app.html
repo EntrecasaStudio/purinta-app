@@ -309,8 +309,13 @@
     /* ════════════════════════════════════════
        SCREEN 1: HOMEPAGE
        ════════════════════════════════════════ */
-    #homepage, #homepage-b, #homepage-connected, #homepage-connected-b, #homepage, #homepage-c, #homepage-connected, #homepage-connected-c {
+    /* Phones B and C keep the original mint→salmon gradient */
+    #homepage-b, #homepage-connected-b, #homepage-c, #homepage-connected-c {
       background: linear-gradient(108deg, rgb(228, 243, 233) 2.38%, rgb(254, 240, 240) 106.36%);
+    }
+    /* Phone A — Figma brand-guidelines gradient (node 1708:135394): blush-50 → mint-50 at 102° */
+    #homepage, #homepage-connected {
+      background: linear-gradient(102deg, var(--blush-50) 2.38%, var(--mint-50) 106.36%);
     }
     .hero-section {
       padding: 16px 20px 8px; text-align: center;
