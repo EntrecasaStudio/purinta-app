@@ -4417,7 +4417,9 @@ function playLoadingIntro(phone) {
   var savedBp = parseInt(localStorage.getItem('purinta-bp'));
   if (savedBp) setBreakpoint(savedBp); else setBreakpoint(360, false);
   var savedOpt = localStorage.getItem('purinta-opt');
-  if (savedOpt && (savedOpt === 'a' || savedOpt === 'b' || savedOpt === 'ab')) {
+  // Map legacy 'ab' mode (old A/B toggle) to 'abc'
+  if (savedOpt === 'ab') savedOpt = 'abc';
+  if (savedOpt && (savedOpt === 'a' || savedOpt === 'b' || savedOpt === 'c' || savedOpt === 'abc')) {
     setOption(savedOpt, false);
   }
   // Copy wordmark SVG to homepage-connected (avoids duplicating huge inline SVG)
