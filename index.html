@@ -618,6 +618,57 @@
       background: url("assets/check-icon.svg") center/contain no-repeat;
     }
 
+    /* ═══ BOTTOM SHEET (Option A mobile only) ═══
+       Replaces the dropdown when tapping the market selector in the OP2 title.
+       Activated via .bottom-sheet-mode class on the parent .phone. */
+    .token-sheet-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(10, 51, 24, 0.45);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .token-sheet-overlay.open { opacity: 1; pointer-events: auto; }
+    .token-sheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
+      background: var(--neutral-50);
+      border-radius: 28px 28px 0 0;
+      padding: 12px 0 24px;
+      box-shadow: 0 -8px 32px rgba(24, 82, 41, 0.12);
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+      max-height: 70vh; overflow-y: auto;
+    }
+    .token-sheet.open { transform: translateY(0); }
+    .token-sheet-handle {
+      width: 40px; height: 4px; background: var(--cream-400);
+      border-radius: 2px; margin: 4px auto 16px;
+    }
+    .token-sheet-title {
+      font-family: var(--font-display); font-size: var(--ds-md);
+      color: var(--text-heading); text-align: center;
+      padding: 0 20px 12px;
+    }
+    .token-sheet-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 20px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.12s ease;
+    }
+    .token-sheet-row:active { background: var(--cream-100); }
+    .token-sheet-row .mini-icon { width: 32px; height: 32px; flex-shrink: 0; }
+    .token-sheet-row .token-name {
+      font-family: var(--font-display); font-size: var(--ds-sm);
+      color: var(--text-primary); flex: 1;
+    }
+    .token-sheet-row.selected { background: var(--cream-50); }
+    .token-sheet-row.selected .token-name { color: var(--green-700); }
+    .token-sheet-row .check-icon {
+      color: var(--green-600); font-size: 18px;
+      visibility: hidden;
+    }
+    .token-sheet-row.selected .check-icon { visibility: visible; }
+
     /* SLIDER SECTION */
     .slider-section {
       background: white; border-radius: 32px; padding: 20px;
@@ -3257,6 +3308,15 @@ function closeTokenDropdown(select, onDone) {
 }
 function toggleTokenDropdown(el) {
   var select = el.closest('.token-select');
+  // Option A mobile: title selector opens a bottom sheet instead of dropdown
+  var phone = select.closest('.phone');
+  var inTitle = !!select.closest('.borrow-title');
+  var isPhoneA = phone && phone.id === 'phone-a';
+  var isMobile = phone && !phone.classList.contains('desktop');
+  if (isPhoneA && inTitle && isMobile) {
+    openTokenBottomSheet(select);
+    return;
+  }
   var isOpen = select.classList.contains('open');
   // Close all other dropdowns first
   document.querySelectorAll('.token-select.open').forEach(function(s) {
@@ -3268,6 +3328,64 @@ function toggleTokenDropdown(el) {
     select.classList.add('open');
     select.closest('.token-select-wrap').classList.add('open');
   }
+}
+
+/* ═══ BOTTOM SHEET token selector — Option A mobile only ═══ */
+var _activeSheetSelect = null;  // reference to the .token-select that opened the sheet
+function openTokenBottomSheet(select) {
+  _activeSheetSelect = select;
+  // Ensure overlay + sheet exist (lazy-create, singleton)
+  var overlay = document.getElementById('token-sheet-overlay');
+  var sheet = document.getElementById('token-sheet');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'token-sheet-overlay';
+    overlay.className = 'token-sheet-overlay';
+    overlay.addEventListener('click', closeTokenBottomSheet);
+    document.body.appendChild(overlay);
+  }
+  if (!sheet) {
+    sheet = document.createElement('div');
+    sheet.id = 'token-sheet';
+    sheet.className = 'token-sheet';
+    document.body.appendChild(sheet);
+  }
+  // Populate with rows cloned from the select's dropdown
+  sheet.innerHTML = '<div class="token-sheet-handle"></div>' +
+    '<div class="token-sheet-title">Select market</div>';
+  select.querySelectorAll('.token-dropdown-row').forEach(function(srcRow) {
+    var row = document.createElement('div');
+    row.className = 'token-sheet-row' + (srcRow.classList.contains('selected') ? ' selected' : '');
+    row.dataset.token = srcRow.dataset.token;
+    var miniClass = srcRow.querySelector('.mini-icon').className;
+    var name = srcRow.querySelector('.token-name').textContent;
+    row.innerHTML = '<span class="' + miniClass + '"></span>' +
+      '<span class="token-name">' + name + '</span>' +
+      '<i class="ph ph-check check-icon"></i>';
+    row.addEventListener('click', function() { selectTokenFromSheet(row); });
+    sheet.appendChild(row);
+  });
+  // Force a reflow so the transition fires from the initial state
+  void sheet.offsetHeight;
+  overlay.classList.add('open');
+  sheet.classList.add('open');
+}
+function closeTokenBottomSheet() {
+  var overlay = document.getElementById('token-sheet-overlay');
+  var sheet = document.getElementById('token-sheet');
+  if (overlay) overlay.classList.remove('open');
+  if (sheet) sheet.classList.remove('open');
+  _activeSheetSelect = null;
+}
+function selectTokenFromSheet(sheetRow) {
+  if (!_activeSheetSelect) { closeTokenBottomSheet(); return; }
+  var token = sheetRow.dataset.token;
+  // Find the matching dropdown-row inside the original select and reuse existing selectToken logic
+  var origRow = _activeSheetSelect.querySelector('.token-dropdown-row[data-token="' + token + '"]');
+  if (origRow && typeof selectToken === 'function') {
+    selectToken(origRow);
+  }
+  closeTokenBottomSheet();
 }
 // Wallet holdings — tokens present in user's wallet. Banner appears for tokens NOT in wallet.
 var walletHoldings = { pepe: true, morpho: false, comp: false, syrup: false };
