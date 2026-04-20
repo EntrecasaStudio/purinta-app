@@ -156,11 +156,11 @@
       padding: 8px 14px; border-radius: var(--r-full);
       display: flex; align-items: center; gap: 6px;
     }
-    #phone-a .power-btn { display: none; }
-    #phone-a .wallet-badge .wallet-dot { display: none; }
-    #phone-a .disconnect-dropdown { display: none !important; }
+    #phone-a .power-btn , #phone-b .power-btn { display: none; }
+    #phone-a .wallet-badge .wallet-dot , #phone-b .wallet-badge .wallet-dot { display: none; }
+    #phone-a .disconnect-dropdown , #phone-b .disconnect-dropdown { display: none !important; }
     /* Pill Expand — wallet badge becomes expandable pill */
-    #phone-a .wallet-badge {
+    #phone-a .wallet-badge , #phone-b .wallet-badge {
       padding: 8px 14px; border: 1px solid var(--cream-400);
       cursor: pointer; white-space: nowrap;
       display: flex; align-items: center; gap: 0;
@@ -168,48 +168,49 @@
       transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.25s ease-in;
       -webkit-tap-highlight-color: transparent;
     }
-    #phone-a .wallet-badge .wallet-address-text {
+    #phone-a .wallet-badge .wallet-address-text , #phone-b .wallet-badge .wallet-address-text {
       display: flex; align-items: center;
     }
-    #phone-a .wallet-badge .wallet-disconnect-zone {
+    #phone-a .wallet-badge .wallet-disconnect-zone , #phone-b .wallet-badge .wallet-disconnect-zone {
       display: flex; align-items: center; gap: 4px;
       max-width: 0; opacity: 0; overflow: hidden; padding: 0;
       color: #E5008B; font-weight: 400; font-size: var(--ds-xs);
       cursor: pointer; white-space: nowrap;
       transition: max-width 0.3s ease-in, opacity 0.15s ease, padding 0.3s ease-in, color 0.2s ease;
     }
-    #phone-a .wallet-badge .wallet-divider {
+    #phone-a .wallet-badge .wallet-divider , #phone-b .wallet-badge .wallet-divider {
       width: 0; height: 16px; flex-shrink: 0;
       border-left: 1px solid transparent; margin-left: 0;
       transition: border-color 0.15s ease, margin-left 0.25s ease-in;
     }
-    #phone-a .wallet-badge.expanded {
+    #phone-a .wallet-badge.expanded , #phone-b .wallet-badge.expanded {
       background: white; border-color: var(--cream-400);
       box-shadow: var(--shadow-card);
     }
-    #phone-a:not(.desktop) .wallet-badge.expanded {
+    #phone-a:not(.desktop) .wallet-badge.expanded,
+    #phone-b:not(.desktop) .wallet-badge.expanded {
       position: absolute; top: 50%; right: 0; transform: translateY(-50%);
       z-index: 50; padding-right: 0;
       transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out;
     }
-    #phone-a .wallet-badge.expanded .wallet-divider {
+    #phone-a .wallet-badge.expanded .wallet-divider , #phone-b .wallet-badge.expanded .wallet-divider {
       border-left-color: var(--cream-400); margin-left: 12px;
       transition: border-color 0.25s ease 0.1s, margin-left 0.35s ease-out;
     }
-    #phone-a .wallet-badge.expanded .wallet-disconnect-zone {
+    #phone-a .wallet-badge.expanded .wallet-disconnect-zone , #phone-b .wallet-badge.expanded .wallet-disconnect-zone {
       max-width: 140px !important; opacity: 1 !important; padding: 0 16px 0 10px !important; overflow: hidden !important;
       transition: max-width 0.35s ease-out, opacity 0.25s ease 0.05s, padding 0.35s ease-out, color 0.2s ease;
     }
-    #phone-a .wallet-badge:has(.wallet-disconnect-zone:hover) {
+    #phone-a .wallet-badge:has(.wallet-disconnect-zone:hover) , #phone-b .wallet-badge:has(.wallet-disconnect-zone:hover) {
       border-color: #FF32BF;
       box-shadow: 0 4px 16px rgba(255, 50, 191, 0.2);
     }
-    #phone-a .wallet-badge .wallet-disconnect-zone:hover {
+    #phone-a .wallet-badge .wallet-disconnect-zone:hover , #phone-b .wallet-badge .wallet-disconnect-zone:hover {
       color: #FF32BF;
     }
     .wallet-badge.no-transition,
     .wallet-badge.no-transition * { transition: none !important; }
-    #phone-a .wallet-badge:hover:not(.expanded) { background: var(--mint-100) !important; color: var(--green-600) !important; border-color: var(--green-300) !important; box-shadow: var(--shadow-card) !important; }
+    #phone-a .wallet-badge:hover:not(.expanded) , #phone-b .wallet-badge:hover:not(.expanded) { background: var(--mint-100) !important; color: var(--green-600) !important; border-color: var(--green-300) !important; box-shadow: var(--shadow-card) !important; }
     /* All children pointer-events none when collapsed — click goes to badge */
     .wallet-badge:not(.expanded) > * { pointer-events: none; }
     .wallet-badge.expanded > .wallet-disconnect-zone { pointer-events: auto; }
@@ -301,7 +302,7 @@
     /* ════════════════════════════════════════
        SCREEN 1: HOMEPAGE
        ════════════════════════════════════════ */
-    #homepage, #homepage-b, #homepage-connected, #homepage-connected-b {
+    #homepage, #homepage-b, #homepage-connected, #homepage-connected-b, #homepage, #homepage-c, #homepage-connected, #homepage-connected-c {
       background: linear-gradient(108deg, rgb(228, 243, 233) 2.38%, rgb(254, 240, 240) 106.36%);
     }
     .hero-section {
@@ -591,28 +592,28 @@
     .token-dropdown-row .token-name { flex: 1; text-align: left; }
     .token-dropdown-row .check-icon { width: 16px; height: 16px; flex-shrink: 0; }
     /* === Phone A — smaller pill token dropdown === */
-    #phone-a .token-select-wrap { width: 136px; height: 46px; }
-    #phone-a .token-select-trigger { min-width: 136px; min-height: 40px; padding: 5px 12px 3px 8px; gap: 6px; }
-    #phone-a .token-select { font-size: var(--ds-sm); }
-    #phone-a .token-select .mini-icon { width: 28px; height: 28px; }
-    #phone-a .token-select .token-name { font-size: var(--ds-sm); line-height: 26px; }
-    #phone-a .token-select .chevron { width: 10px; height: 8px; }
-    #phone-a .token-dropdown { padding: 2px 0 4px; }
-    #phone-a .token-dropdown-row { padding: 5px 10px 5px 8px; font-size: var(--ds-xs); margin: 0 2px; gap: 6px; }
-    #phone-a .token-dropdown-row .mini-icon { width: 24px; height: 24px; }
-    #phone-a .token-dropdown-row .token-name { font-size: var(--ds-xs); line-height: 21px; }
-    #phone-a .token-dropdown-row.selected { background: var(--cream-50); border-top: 1px solid var(--cream-300); border-bottom: 1px solid var(--cream-300); border-radius: 0; margin: 0; padding-left: 10px; padding-right: 6px; color: var(--cream-600); }
-    #phone-a .token-dropdown-row.selected .mini-icon { opacity: 0.5; }
-    #phone-a .token-dropdown-row .check-icon { width: 14px; height: 14px; }
+    #phone-a .token-select-wrap , #phone-b .token-select-wrap { width: 136px; height: 46px; }
+    #phone-a .token-select-trigger , #phone-b .token-select-trigger { min-width: 136px; min-height: 40px; padding: 5px 12px 3px 8px; gap: 6px; }
+    #phone-a .token-select , #phone-b .token-select { font-size: var(--ds-sm); }
+    #phone-a .token-select .mini-icon , #phone-b .token-select .mini-icon { width: 28px; height: 28px; }
+    #phone-a .token-select .token-name , #phone-b .token-select .token-name { font-size: var(--ds-sm); line-height: 26px; }
+    #phone-a .token-select .chevron , #phone-b .token-select .chevron { width: 10px; height: 8px; }
+    #phone-a .token-dropdown , #phone-b .token-dropdown { padding: 2px 0 4px; }
+    #phone-a .token-dropdown-row , #phone-b .token-dropdown-row { padding: 5px 10px 5px 8px; font-size: var(--ds-xs); margin: 0 2px; gap: 6px; }
+    #phone-a .token-dropdown-row .mini-icon , #phone-b .token-dropdown-row .mini-icon { width: 24px; height: 24px; }
+    #phone-a .token-dropdown-row .token-name , #phone-b .token-dropdown-row .token-name { font-size: var(--ds-xs); line-height: 21px; }
+    #phone-a .token-dropdown-row.selected , #phone-b .token-dropdown-row.selected { background: var(--cream-50); border-top: 1px solid var(--cream-300); border-bottom: 1px solid var(--cream-300); border-radius: 0; margin: 0; padding-left: 10px; padding-right: 6px; color: var(--cream-600); }
+    #phone-a .token-dropdown-row.selected .mini-icon , #phone-b .token-dropdown-row.selected .mini-icon { opacity: 0.5; }
+    #phone-a .token-dropdown-row .check-icon , #phone-b .token-dropdown-row .check-icon { width: 14px; height: 14px; }
     /* Phone A — Borrow USDC badge text 16px */
-    #phone-a .slider-token-badge { font-size: var(--ds-sm); letter-spacing: 0.16px; }
+    #phone-a .slider-token-badge , #phone-b .slider-token-badge { font-size: var(--ds-sm); letter-spacing: 0.16px; }
     /* Phone A — token-select bg white (not cream-200), chevron cream-900 */
-    #phone-a .token-select { background: var(--neutral-50); box-shadow: none; }
-    #phone-a .token-select.open { box-shadow: 2px 2px 4px 0 rgba(163,158,117,0.05); }
-    #phone-a .token-select .chevron path { fill: #8B8765 !important; stroke: #8B8765 !important; }
+    #phone-a .token-select , #phone-b .token-select { background: var(--neutral-50); box-shadow: none; }
+    #phone-a .token-select.open , #phone-b .token-select.open { box-shadow: 2px 2px 4px 0 rgba(163,158,117,0.05); }
+    #phone-a .token-select .chevron path , #phone-b .token-select .chevron path { fill: #8B8765 !important; stroke: #8B8765 !important; }
     /* Phone A — hide phosphor check, use Figma check asset via ::after */
-    #phone-a .token-dropdown-row.selected .check-icon { color: transparent !important; position: relative; width: 16px; height: 16px; }
-    #phone-a .token-dropdown-row.selected .check-icon::after {
+    #phone-a .token-dropdown-row.selected .check-icon , #phone-b .token-dropdown-row.selected .check-icon { color: transparent !important; position: relative; width: 16px; height: 16px; }
+    #phone-a .token-dropdown-row.selected .check-icon::after , #phone-b .token-dropdown-row.selected .check-icon::after {
       content: ''; position: absolute; top: 0; left: 0; width: 16px; height: 16px;
       background: url("assets/check-icon.svg") center/contain no-repeat;
     }
@@ -658,26 +659,26 @@
       border-radius: var(--r-full) 0 0 var(--r-full); transition: width 0.3s ease, background 0.4s ease;
     }
     /* Option B: Borrow slider & pct buttons turn warm on danger/meltdown */
-    #phone-b .danger-zone .slider-divider ~ .slider-track .slider-track-fill {
+    #phone-c .danger-zone .slider-divider ~ .slider-track .slider-track-fill {
       background: linear-gradient(90deg, var(--green-200), var(--blush-500));
     }
-    #phone-b .meltdown .slider-divider ~ .slider-track .slider-track-fill {
+    #phone-c .meltdown .slider-divider ~ .slider-track .slider-track-fill {
       background: linear-gradient(90deg, var(--green-200), var(--blush-600));
     }
-    #phone-b .danger-zone .slider-divider ~ .slider-track .slider-track-bg {
+    #phone-c .danger-zone .slider-divider ~ .slider-track .slider-track-bg {
       background: var(--blush-100);
     }
-    #phone-b .meltdown .slider-divider ~ .slider-track .slider-track-bg {
+    #phone-c .meltdown .slider-divider ~ .slider-track .slider-track-bg {
       background: var(--blush-200);
     }
     /* Option B: Borrow pct buttons turn red on danger/meltdown — #B5403A passes 4.5:1 on blush-200 */
-    #phone-b .danger-zone .slider-divider ~ .pct-buttons .pct-btn.active,
-    #phone-b .meltdown .slider-divider ~ .pct-buttons .pct-btn.active {
+    #phone-c .danger-zone .slider-divider ~ .pct-buttons .pct-btn.active,
+    #phone-c .meltdown .slider-divider ~ .pct-buttons .pct-btn.active {
       background: var(--blush-200); color: #B5403A;
     }
     /* Option B: Borrow thumb stroke turns red on danger/meltdown */
-    #phone-b .danger-zone .slider-divider ~ .slider-track .slider-thumb path,
-    #phone-b .meltdown .slider-divider ~ .slider-track .slider-thumb path {
+    #phone-c .danger-zone .slider-divider ~ .slider-track .slider-thumb path,
+    #phone-c .meltdown .slider-divider ~ .slider-track .slider-thumb path {
       stroke: #B5403A;
     }
     .slider-thumb {
@@ -723,51 +724,51 @@
       opacity: 0.3; pointer-events: none; cursor: default;
     }
     /* Phone A — pct-btn disabled (default/unselected): white fill, cream-100 border, gray text */
-    #phone-a .pct-btn.disabled {
+    #phone-a .pct-btn.disabled , #phone-b .pct-btn.disabled {
       opacity: 1;
       border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
     }
     /* Phone A — pct-btn disabled + active (selected) per Figma node 1467:170139:
        solid gray fill, no border, medium weight */
-    #phone-a .pct-btn.disabled.active,
-    #phone-a .pct-buttons.disabled .pct-btn.active {
+    #phone-a .pct-btn.disabled.active, #phone-b .pct-btn.disabled.active,
+    #phone-a .pct-buttons.disabled .pct-btn.active , #phone-b .pct-buttons.disabled .pct-btn.active {
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
     /* Phone A — token-select disabled state (disconnected wallet) */
-    #phone-a .token-select.disabled { border-color: #F0F0F0 !important; pointer-events: none; }
-    #phone-a .token-select.disabled .mini-icon { opacity: 0.5; }
-    #phone-a .token-select.disabled .token-name { color: var(--cream-500); }
-    #phone-a .token-select.disabled .chevron path { fill: #D6D2B2 !important; stroke: #D6D2B2 !important; }
+    #phone-a .token-select.disabled , #phone-b .token-select.disabled { border-color: #F0F0F0 !important; pointer-events: none; }
+    #phone-a .token-select.disabled .mini-icon , #phone-b .token-select.disabled .mini-icon { opacity: 0.5; }
+    #phone-a .token-select.disabled .token-name , #phone-b .token-select.disabled .token-name { color: var(--cream-500); }
+    #phone-a .token-select.disabled .chevron path , #phone-b .token-select.disabled .chevron path { fill: #D6D2B2 !important; stroke: #D6D2B2 !important; }
     /* Phone A — slider disabled state (disconnected wallet in #borrow) */
-    #phone-a #borrow .slider-track-bg { background: #F0F0F0; }
-    #phone-a #borrow .slider-track-fill { display: none; }
-    #phone-a #borrow .slider-thumb { display: none !important; }
+    #phone-a #borrow .slider-track-bg , #phone-b #borrow .slider-track-bg { background: #F0F0F0; }
+    #phone-a #borrow .slider-track-fill , #phone-b #borrow .slider-track-fill { display: none; }
+    #phone-a #borrow .slider-thumb , #phone-b #borrow .slider-thumb { display: none !important; }
     /* Phone A — borrow-connected: disable Borrow section when Supply=0 */
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn {
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn , #phone-b #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn {
       pointer-events: none; border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
     }
     /* Disabled + active variant in borrow-connected (solid gray, medium) */
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn.active {
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn.active , #phone-b #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn.active {
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track { pointer-events: none; cursor: default; }
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-bg { background: #F0F0F0; }
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-fill { background: transparent; }
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb path { stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
-    #phone-a #borrow-connected.supply-zero .btn-primary { pointer-events: none; background: var(--mint-100); color: var(--green-200); box-shadow: none !important; border-color: transparent; }
-    #phone-a #borrow-connected.supply-zero .btn-primary i { opacity: 0.6; }
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track , #phone-b #borrow-connected.supply-zero .slider-divider ~ .slider-track { pointer-events: none; cursor: default; }
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-bg , #phone-b #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-bg { background: #F0F0F0; }
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-fill , #phone-b #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-fill { background: transparent; }
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb path , #phone-b #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb path { stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
+    #phone-a #borrow-connected.supply-zero .btn-primary , #phone-b #borrow-connected.supply-zero .btn-primary { pointer-events: none; background: var(--mint-100); color: var(--green-200); box-shadow: none !important; border-color: transparent; }
+    #phone-a #borrow-connected.supply-zero .btn-primary i , #phone-b #borrow-connected.supply-zero .btn-primary i { opacity: 0.6; }
     /* Supply thumb breathing glow — guides first action */
     @keyframes supplyBreath {
       0%, 100% { filter: drop-shadow(0 0 4px rgba(73,135,70,0.35)); transform: scale(1); }
       50%      { filter: drop-shadow(0 0 12px rgba(73,135,70,0.75)); transform: scale(1.06); }
     }
-    #phone-a #borrow-connected.supply-zero .slider-label + .pct-buttons + .slider-track .slider-thumb {
+    #phone-a #borrow-connected.supply-zero .slider-label + .pct-buttons + .slider-track .slider-thumb , #phone-b #borrow-connected.supply-zero .slider-label + .pct-buttons + .slider-track .slider-thumb {
       animation: supplyBreath 1.8s ease-in-out infinite;
       animation-delay: 1s;
       transform-origin: center;
     }
     /* Suppress breathing glow on Borrow slider thumb (only Supply should glow) */
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb { animation: none !important; }
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb , #phone-b #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb { animation: none !important; }
 
     /* ═══ SUPPLY WARNING BANNER — token not in wallet ═══ */
     .supply-warning-banner {
@@ -840,7 +841,7 @@
       position: sticky; top: 16px; z-index: 50;
     }
     /* Ensure slider-section never stacks above the sticky banner */
-    #phone-a #borrow-connected .slider-section { position: relative; z-index: 1; }
+    #phone-a #borrow-connected .slider-section , #phone-b #borrow-connected .slider-section { position: relative; z-index: 1; }
 
     /* Top mask — sticky cream strip that hides scrolling content above AND behind
        the banner's rounded corner cavities. Height 48px = 16px top gap + 32px banner radius.
@@ -884,19 +885,19 @@
 
     /* ═══ NO-FUNDS state: disable Supply section too (on top of supply-zero styles)
            Uses :has() — targets elements BEFORE the .slider-divider (i.e. Supply side) ═══ */
-    #phone-a #borrow-connected.no-funds .pct-buttons:has(~ .slider-divider) .pct-btn {
+    #phone-a #borrow-connected.no-funds .pct-buttons:has(~ .slider-divider) .pct-btn , #phone-b #borrow-connected.no-funds .pct-buttons:has(~ .slider-divider) .pct-btn {
       pointer-events: none; border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
     }
-    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) { pointer-events: none; cursor: default; }
-    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-bg { background: #F0F0F0; }
-    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-fill { background: transparent; }
-    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb path { stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
+    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) , #phone-b #borrow-connected.no-funds .slider-track:has(~ .slider-divider) { pointer-events: none; cursor: default; }
+    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-bg , #phone-b #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-bg { background: #F0F0F0; }
+    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-fill , #phone-b #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-fill { background: transparent; }
+    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb path , #phone-b #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb path { stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
     /* Suppress breathing glow when Supply is disabled (no funds) */
-    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb { animation: none !important; }
+    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb , #phone-b #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb { animation: none !important; }
     /* State-driven: glow auto-stops when .supply-zero is removed (supply > 0)
        and resumes if supply returns to 0% — no .touched gating */
     @media (prefers-reduced-motion: reduce) {
-      #phone-a #borrow-connected.supply-zero .slider-thumb { animation: none !important; }
+      #phone-a #borrow-connected.supply-zero .slider-thumb , #phone-b #borrow-connected.supply-zero .slider-thumb { animation: none !important; }
     }
     .slider-divider {
       height: 1px; background: var(--cream-400); margin: 20px 0;
@@ -972,7 +973,7 @@
       transition: opacity 0.2s ease;
     }
     /* Hide <object> mascots in Phone A until v2 emotes replace them — prevents size flash */
-    #phone-a object.mascot-illustration { opacity: 0; }
+    #phone-a object.mascot-illustration , #phone-b object.mascot-illustration { opacity: 0; }
     .emote-v2.mascot-illustration { opacity: 1; }
     .mascot-area.happy .mascot-illustration { width: 130px; position: relative; top: 12px; }
     .mascot-area.happy img.mascot-illustration { width: 114px; top: 16px; animation: none; }
@@ -1214,11 +1215,11 @@
     .position-card.supply-only { background: var(--cream-100); }
     .position-card.supply-only:hover { border-color: var(--green-200); }
     /* Supply-only desktop card: simplified layout per Figma 951:54420 */
-    #phone-a.desktop .position-card.supply-only .price-row { display: none; }
-    #phone-a.desktop .position-card.supply-only .health-row { display: none; }
-    #phone-a.desktop .position-card.supply-only .stats-row { border-bottom: none; padding-bottom: 0; }
-    #phone-a.desktop .position-card.supply-only .position-spacer-top { border-bottom: none; }
-    #phone-a.desktop .position-card.supply-only .position-buttons { justify-content: center; }
+    #phone-a.desktop .position-card.supply-only .price-row , #phone-b.desktop .position-card.supply-only .price-row { display: none; }
+    #phone-a.desktop .position-card.supply-only .health-row , #phone-b.desktop .position-card.supply-only .health-row { display: none; }
+    #phone-a.desktop .position-card.supply-only .stats-row , #phone-b.desktop .position-card.supply-only .stats-row { border-bottom: none; padding-bottom: 0; }
+    #phone-a.desktop .position-card.supply-only .position-spacer-top , #phone-b.desktop .position-card.supply-only .position-spacer-top { border-bottom: none; }
+    #phone-a.desktop .position-card.supply-only .position-buttons , #phone-b.desktop .position-card.supply-only .position-buttons { justify-content: center; }
     .position-header {
       display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
     }
@@ -1383,42 +1384,42 @@
     .supply-label { letter-spacing: 0.3px; }                           /* Rubik 10px · 3% */
     .health-label { letter-spacing: 0.3px; }                           /* Rubik 10px · 3% */
     /* ── Phone B overrides: restore OLD styles for A/B comparison ── */
-    #phone-b .summary-label { letter-spacing: 0; }
-    #phone-b .slider-val { letter-spacing: 0; }
-    #phone-b .btn-disconnect { letter-spacing: 0.5px; }
-    #phone-b .slider-info-label { letter-spacing: 0; }
-    #phone-b .slider-info-value { letter-spacing: 0; }
-    #phone-b .summary-row-label { letter-spacing: 0; }
-    #phone-b .summary-row-value { letter-spacing: 0; }
-    #phone-b .detail-item-value { letter-spacing: 0; }
-    #phone-b .token-pair-amount { letter-spacing: 0; }
-    #phone-b .bottom-nav-item { letter-spacing: 0.3px; }
-    #phone-b .risk-label { letter-spacing: 1px; }
-    #phone-b .detail-item-label { letter-spacing: 0; }
-    #phone-b .stat-label { letter-spacing: 0; }
-    #phone-b .mascot-text { letter-spacing: 0; }
-    #phone-b .supply-label { letter-spacing: 0; }
-    #phone-b .health-label { letter-spacing: 0; }
-    #phone-b .btn { letter-spacing: 0.8px; }
-    #phone-b .btn-sm { letter-spacing: 0.65px; }
-    #phone-b .btn-lg { letter-spacing: 0.8px; }
-    #phone-b .modal-dots span { background: var(--green-400); border-radius: 50%; }
-    #phone-b .modal-progress-bar { background: linear-gradient(90deg, var(--green-300), var(--green-400)); }
-    #phone-b .modal-progress { background: var(--cream-400); }
-    #phone-b .modal-message-icon i { color: var(--green-600); }
-    #phone-b .modal-message-text strong { font-weight: 400; }
-    #phone-b .power-btn { display: none; }
-    #phone-b .disconnect-dropdown { display: none !important; }
-    #phone-b .app-header { overflow: visible; position: relative; z-index: 40; }
+    #phone-c .summary-label { letter-spacing: 0; }
+    #phone-c .slider-val { letter-spacing: 0; }
+    #phone-c .btn-disconnect { letter-spacing: 0.5px; }
+    #phone-c .slider-info-label { letter-spacing: 0; }
+    #phone-c .slider-info-value { letter-spacing: 0; }
+    #phone-c .summary-row-label { letter-spacing: 0; }
+    #phone-c .summary-row-value { letter-spacing: 0; }
+    #phone-c .detail-item-value { letter-spacing: 0; }
+    #phone-c .token-pair-amount { letter-spacing: 0; }
+    #phone-c .bottom-nav-item { letter-spacing: 0.3px; }
+    #phone-c .risk-label { letter-spacing: 1px; }
+    #phone-c .detail-item-label { letter-spacing: 0; }
+    #phone-c .stat-label { letter-spacing: 0; }
+    #phone-c .mascot-text { letter-spacing: 0; }
+    #phone-c .supply-label { letter-spacing: 0; }
+    #phone-c .health-label { letter-spacing: 0; }
+    #phone-c .btn { letter-spacing: 0.8px; }
+    #phone-c .btn-sm { letter-spacing: 0.65px; }
+    #phone-c .btn-lg { letter-spacing: 0.8px; }
+    #phone-c .modal-dots span { background: var(--green-400); border-radius: 50%; }
+    #phone-c .modal-progress-bar { background: linear-gradient(90deg, var(--green-300), var(--green-400)); }
+    #phone-c .modal-progress { background: var(--cream-400); }
+    #phone-c .modal-message-icon i { color: var(--green-600); }
+    #phone-c .modal-message-text strong { font-weight: 400; }
+    #phone-c .power-btn { display: none; }
+    #phone-c .disconnect-dropdown { display: none !important; }
+    #phone-c .app-header { overflow: visible; position: relative; z-index: 40; }
 
     /* ═══ PHONE B — WALLET PILL (Figma spec) ═══ */
 
     /* Header-right: reserves space for badge so nav links don't move */
-    #phone-b .header-right { position: relative; min-width: 120px; min-height: 34px; }
-    #phone-b.desktop .header-right { min-width: 160px; min-height: 52px; }
+    #phone-c .header-right { position: relative; min-width: 120px; min-height: 34px; }
+    #phone-c.desktop .header-right { min-width: 160px; min-height: 52px; }
 
     /* Badge: absolute anchored top-right — grows downward without pushing anything */
-    #phone-b .wallet-badge {
+    #phone-c .wallet-badge {
       position: absolute; top: 0; right: 0; z-index: 41;
       background: var(--neutral-50); border: 1px solid var(--cream-400); border-radius: 22px;
       cursor: pointer; white-space: nowrap; box-sizing: border-box;
@@ -1431,16 +1432,16 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    #phone-b .wallet-badge .wallet-dot { display: none; }
+    #phone-c .wallet-badge .wallet-dot { display: none; }
 
     /* Address: stays at top (padding-top never changes) */
-    #phone-b .wallet-badge .wallet-address-text {
+    #phone-c .wallet-badge .wallet-address-text {
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
 
     /* Divider: separates address from disconnect, only when expanded */
-    #phone-b .wallet-badge .wallet-divider {
+    #phone-c .wallet-badge .wallet-divider {
       width: 44px; height: 0; flex-shrink: 0; align-self: center;
       border: none; border-top: 1px solid var(--cream-400);
       opacity: 0;
@@ -1448,7 +1449,7 @@
     }
 
     /* Disconnect: hidden by default via max-height */
-    #phone-b .wallet-badge .wallet-disconnect-zone {
+    #phone-c .wallet-badge .wallet-disconnect-zone {
       display: flex; align-items: center; justify-content: center; gap: 6px;
       max-height: 0 !important; max-width: none !important;
       opacity: 0 !important; overflow: hidden !important; padding: 0 !important;
@@ -1460,37 +1461,37 @@
     }
 
     /* Hover collapsed */
-    #phone-b .wallet-badge:hover:not(.expanded) {
+    #phone-c .wallet-badge:hover:not(.expanded) {
       background: var(--mint-100); color: var(--green-600);
       border-color: var(--green-300); box-shadow: var(--shadow-card);
     }
 
     /* ─── EXPANDED: badge grows downward ─── */
-    #phone-b .wallet-badge.expanded {
+    #phone-c .wallet-badge.expanded {
       box-shadow: var(--shadow-card);
       padding-bottom: 12px;
     }
-    #phone-b .wallet-badge.expanded .wallet-divider {
+    #phone-c .wallet-badge.expanded .wallet-divider {
       opacity: 1; margin-bottom: 8px;
     }
-    #phone-b .wallet-badge.expanded .wallet-disconnect-zone {
+    #phone-c .wallet-badge.expanded .wallet-disconnect-zone {
       max-height: 30px !important; opacity: 1 !important;
       padding: 0 !important;
       pointer-events: auto;
     }
 
     /* Hover disconnect */
-    #phone-b .wallet-badge .wallet-disconnect-zone:hover { color: #FF32BF; }
-    #phone-b .wallet-badge:has(.wallet-disconnect-zone:hover) { border-color: #FF32BF; }
+    #phone-c .wallet-badge .wallet-disconnect-zone:hover { color: #FF32BF; }
+    #phone-c .wallet-badge:has(.wallet-disconnect-zone:hover) { border-color: #FF32BF; }
 
     /* ─── DESKTOP B ─── */
-    #phone-b.desktop .wallet-badge {
+    #phone-c.desktop .wallet-badge {
       min-height: 52px; padding: 0 32px; border-radius: 26px;
     }
-    #phone-b.desktop .wallet-badge .wallet-address-text {
+    #phone-c.desktop .wallet-badge .wallet-address-text {
       height: 50px; /* 52px - 2px border */
     }
-    #phone-b.desktop .wallet-badge.expanded {
+    #phone-c.desktop .wallet-badge.expanded {
       padding-bottom: 14px;
     }
 
@@ -1504,49 +1505,67 @@
     .phone.desktop .app-footer { margin-top: auto; }
     .phone.desktop #homepage,
     .phone.desktop #homepage-b,
+    .phone.desktop #homepage-c,
     .phone.desktop #homepage-connected,
     .phone.desktop #homepage-connected-b { max-width: none; padding: 0 40px; }
+    .phone.desktop #homepage-connected-c { max-width: none; padding: 0 40px; }
     .phone.desktop #confirm,
     .phone.desktop #confirm-b { max-width: none; padding: 0; }
+    .phone.desktop #confirm-c { max-width: none; padding: 0; }
     #confirm.active, #confirm-b.active { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; }
+    #confirm.active, #confirm-c.active { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; }
     #confirm > .modal-overlay, #confirm-b > .modal-overlay { height: 100%; }
+    #confirm > .modal-overlay, #confirm-c > .modal-overlay { height: 100%; }
     .phone.desktop #homepage .hero-wrap,
     .phone.desktop #homepage-b .hero-wrap,
+    .phone.desktop #homepage-c .hero-wrap,
     .phone.desktop #homepage-connected .hero-wrap,
     .phone.desktop #homepage-connected-b .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .phone.desktop #homepage-connected-c .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
     .phone.desktop #homepage .hero-wrap .hero-section:last-child,
     .phone.desktop #homepage-b .hero-wrap .hero-section:last-child,
+    .phone.desktop #homepage-c .hero-wrap .hero-section:last-child,
     .phone.desktop #homepage-connected .hero-wrap .hero-section:last-child,
     .phone.desktop #homepage-connected-b .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
+    .phone.desktop #homepage-connected-c .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
     .phone.desktop #homepage .hero-wrap .hero-title,
     .phone.desktop #homepage-b .hero-wrap .hero-title,
+    .phone.desktop #homepage-c .hero-wrap .hero-title,
     .phone.desktop #homepage-connected .hero-wrap .hero-title,
     .phone.desktop #homepage-connected-b .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
+    .phone.desktop #homepage-connected-c .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
     .phone.desktop #homepage .hero-title .mini-icon,
     .phone.desktop #homepage-b .hero-title .mini-icon,
+    .phone.desktop #homepage-c .hero-title .mini-icon,
     .phone.desktop #homepage-connected .hero-title .mini-icon,
     .phone.desktop #homepage-connected-b .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
+    .phone.desktop #homepage-connected-c .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
     .phone.desktop #homepage .token-list,
     .phone.desktop #homepage-b .token-list,
+    .phone.desktop #homepage-c .token-list,
     .phone.desktop #homepage-connected .token-list,
     .phone.desktop #homepage-connected-b .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; max-width: none; }
+    .phone.desktop #homepage-connected-c .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; max-width: none; }
     .phone.desktop #homepage .token-card,
     .phone.desktop #homepage-b .token-card,
+    .phone.desktop #homepage-c .token-card,
     .phone.desktop #homepage-connected .token-card,
     .phone.desktop #homepage-connected-b .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
+    .phone.desktop #homepage-connected-c .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
 
     .phone.desktop .app-header { height: 72px; box-sizing: border-box; padding-left: 0; padding-right: 0; }
     .phone.desktop .btn-connect { height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; font-size: var(--ds-sm); }
-    #phone-a.desktop .wallet-badge { height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.25s ease-in; }
-    #phone-a.desktop .wallet-badge.expanded { padding-right: 0; transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out; }
-    #phone-a.desktop .wallet-badge.expanded .wallet-disconnect-zone { padding-right: 24px !important; }
+    #phone-a.desktop .wallet-badge , #phone-b.desktop .wallet-badge { height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.25s ease-in; }
+    #phone-a.desktop .wallet-badge.expanded , #phone-b.desktop .wallet-badge.expanded { padding-right: 0; transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out; }
+    #phone-a.desktop .wallet-badge.expanded .wallet-disconnect-zone , #phone-b.desktop .wallet-badge.expanded .wallet-disconnect-zone { padding-right: 24px !important; }
     .phone.desktop .hero { padding: 24px 0; }
     .phone.desktop .token-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 0; }
     
-    #phone-a.desktop .positions-content { padding-left: 0; padding-right: 0; }
+    #phone-a.desktop .positions-content , #phone-b.desktop .positions-content { padding-left: 0; padding-right: 0; }
     
     .phone.desktop #positions,
     .phone.desktop #positions-b,
+    .phone.desktop #positions-c,
     .phone.desktop #positions-empty,
     .phone.desktop #error-404 { max-width: none; padding: 0 40px; }
     /* positions-empty and error-404 inherit the universal flex-column + margin-top:auto
@@ -1555,21 +1574,28 @@
     .phone.desktop #error-404 .positions-content { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }
     .phone.desktop #borrow,
     .phone.desktop #borrow-b,
+    .phone.desktop #borrow-c,
     .phone.desktop #borrow-connected,
     .phone.desktop #borrow-connected-b,
+    .phone.desktop #borrow-connected-c,
     .phone.desktop #update,
     .phone.desktop #update-b { max-width: none; padding: 0 40px; }
+    .phone.desktop #update-c { max-width: none; padding: 0 40px; }
     .phone.desktop #borrow .borrow-content,
     .phone.desktop #borrow-b .borrow-content,
-    #phone-a.desktop #positions .positions-content,
-    #phone-a.desktop #positions-empty .positions-content,
-    #phone-a.desktop #error-404 .positions-content { max-width: 720px; margin-left: auto; margin-right: auto; }
+    .phone.desktop #borrow-c .borrow-content,
+    #phone-a.desktop #positions .positions-content, #phone-b.desktop #positions .positions-content,
+    #phone-a.desktop #positions-empty .positions-content, #phone-b.desktop #positions-empty .positions-content,
+    #phone-a.desktop #error-404 .positions-content , #phone-b.desktop #error-404 .positions-content { max-width: 720px; margin-left: auto; margin-right: auto; }
     .phone.desktop #borrow .borrow-content,
     .phone.desktop #borrow-b .borrow-content,
+    .phone.desktop #borrow-c .borrow-content,
     .phone.desktop #borrow-connected .borrow-content,
     .phone.desktop #borrow-connected-b .borrow-content,
+    .phone.desktop #borrow-connected-c .borrow-content,
     .phone.desktop #update .borrow-content,
     .phone.desktop #update-b .borrow-content { max-width: 720px; margin-left: auto; margin-right: auto; }
+    .phone.desktop #update-c .borrow-content { max-width: 720px; margin-left: auto; margin-right: auto; }
     .phone.desktop .update-arrow .old,
     .phone.desktop .update-arrow .new { flex-direction: row !important; gap: 4px; }
     .phone.desktop .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; max-width: none; width: 100%; margin: 0; padding: 40px 20px; z-index: 40; }
@@ -1608,17 +1634,17 @@
     .borrow-cta-inner { display: none; }
     /* Desktop horizontal position cards — v4 layout (phone-a only) */
     .position-card-inner { display: none; }
-    #phone-a.desktop .position-card-inner { display: flex; align-items: flex-start; }
+    #phone-a.desktop .position-card-inner , #phone-b.desktop .position-card-inner { display: flex; align-items: flex-start; }
     .position-card-inner > .card-icon { display: none; }
-    #phone-a.desktop .position-card-inner > .card-icon { display: flex; width: 42px; height: 42px; flex-shrink: 0; margin-right: 8px; margin-top: 7px; }
-    #phone-a.desktop .supply-row .mini-icon { display: none; }
-    #phone-a.desktop .position-card { padding: 33px; padding-right: 65px; border-radius: 40px; }
-    #phone-a.desktop .position-card .position-header,
-    #phone-a.desktop .position-card .position-stats,
-    #phone-a.desktop .position-card .position-divider,
-    #phone-a.desktop .position-card .detail-row,
-    #phone-a.desktop .position-card .health-section,
-    #phone-a.desktop .position-card .position-actions { display: none !important; }
+    #phone-a.desktop .position-card-inner > .card-icon , #phone-b.desktop .position-card-inner > .card-icon { display: flex; width: 42px; height: 42px; flex-shrink: 0; margin-right: 8px; margin-top: 7px; }
+    #phone-a.desktop .supply-row .mini-icon , #phone-b.desktop .supply-row .mini-icon { display: none; }
+    #phone-a.desktop .position-card , #phone-b.desktop .position-card { padding: 33px; padding-right: 65px; border-radius: 40px; }
+    #phone-a.desktop .position-card .position-header, #phone-b.desktop .position-card .position-header,
+    #phone-a.desktop .position-card .position-stats, #phone-b.desktop .position-card .position-stats,
+    #phone-a.desktop .position-card .position-divider, #phone-b.desktop .position-card .position-divider,
+    #phone-a.desktop .position-card .detail-row, #phone-b.desktop .position-card .detail-row,
+    #phone-a.desktop .position-card .health-section, #phone-b.desktop .position-card .health-section,
+    #phone-a.desktop .position-card .position-actions , #phone-b.desktop .position-card .position-actions { display: none !important; }
     /* — Left content column — */
     .position-left { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
     /* — Row 1: Supply (token info) — */
@@ -1628,7 +1654,7 @@
       padding: 0 6px;
     }
     .supply-row .mini-icon { width: 42px; height: 42px; border-radius: 21px; flex-shrink: 0; }
-    #phone-a.desktop .supply-row { padding: 0; }
+    #phone-a.desktop .supply-row , #phone-b.desktop .supply-row { padding: 0; }
     .supply-info { display: flex; flex-direction: column; gap: 2px; }
     .supply-label { font-family: var(--font-ui); font-size: var(--ds-2xs); color: var(--text-secondary); line-height: 18px; }
     .supply-value { display: flex; align-items: center; gap: 8px; }
@@ -1643,7 +1669,7 @@
     .stat-col { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     /* — Row 3: Prices — */
     .price-row { display: flex; gap: 24px; align-items: flex-start; min-height: 38px; }
-    #phone-a.desktop .price-row > .detail-item { flex: 1 !important; min-width: 0; }
+    #phone-a.desktop .price-row > .detail-item , #phone-b.desktop .price-row > .detail-item { flex: 1 !important; min-width: 0; }
     /* — Spacer column — */
     .position-spacer { width: 32px; flex-shrink: 0; align-self: stretch; display: flex; flex-direction: column; }
     .position-spacer-top { height: 57.6px; border-bottom: 1px solid var(--cream-300); }
@@ -1683,7 +1709,8 @@
       <div class="dev-nav-group option-nav">
         <button class="opt-toggle active" onclick="setOption('a')">A</button>
         <button class="opt-toggle" onclick="setOption('b')">B</button>
-        <button class="opt-toggle" onclick="setOption('ab')">A/B</button>
+        <button class="opt-toggle" onclick="setOption('c')">C</button>
+        <button class="opt-toggle" onclick="setOption('abc')">ABC</button>
       </div>
     </div>
     <div class="dev-nav-section">
@@ -2935,26 +2962,45 @@
   <div class="phone-label">B</div>
   <div class="phone" id="phone-b"></div>
 </div>
+<div class="phone-wrap hidden" id="wrap-c">
+  <div class="phone-label">C</div>
+  <div class="phone" id="phone-c"></div>
+</div>
 </div>
 
 <script>
-/* ═══ OPTION A/B ═══ */
+/* ═══ OPTION A/B/C ═══
+   A = phone-a (live DOM, OP2 applied — title has market selector)
+   B = phone-b (snapshot clone of pre-OP2 phone-a = OP1 frozen)
+   C = phone-c (snapshot clone + old-B tweaks) */
+
+/* Snapshot of phone-a BEFORE OP2 transform — captured on page init.
+   Used as source for both phone-b and phone-c clones. */
+var _phoneASnapshot = null;
+function capturePhoneASnapshot() {
+  if (_phoneASnapshot) return;
+  var phoneA = document.getElementById('phone-a');
+  if (phoneA) _phoneASnapshot = phoneA.innerHTML;
+}
+
 function setOption(mode, save) {
   if (save !== false) localStorage.setItem('purinta-opt', mode);
   var wrapA = document.getElementById('wrap-a');
   var wrapB = document.getElementById('wrap-b');
+  var wrapC = document.getElementById('wrap-c');
   var btns = document.querySelectorAll('.opt-toggle');
   btns.forEach(function(b) { b.classList.remove('active'); });
-  if (mode === 'a') { btns[0].classList.add('active'); }
-  else if (mode === 'b') { btns[1].classList.add('active'); }
-  else { btns[2].classList.add('active'); }
-  var showA = mode === 'a' || mode === 'ab';
-  var showB = mode === 'b' || mode === 'ab';
+  var idx = { a: 0, b: 1, c: 2, abc: 3 }[mode];
+  if (btns[idx]) btns[idx].classList.add('active');
+  var showA = mode === 'a' || mode === 'abc';
+  var showB = mode === 'b' || mode === 'abc';
+  var showC = mode === 'c' || mode === 'abc';
   wrapA.classList.toggle('hidden', !showA);
   wrapB.classList.toggle('hidden', !showB);
-  // Always re-clone B from A to stay in sync
+  wrapC.classList.toggle('hidden', !showC);
   if (showB) { initPhoneB(); }
-  // Sync breakpoint to both phones
+  if (showC) { initPhoneC(); }
+  // Sync breakpoint to all phones
   var bp = parseInt(localStorage.getItem('purinta-bp')) || 360;
   setBreakpoint(bp, false);
   // Always show labels so you know which option you're viewing
@@ -2962,6 +3008,45 @@ function setOption(mode, save) {
     l.style.display = 'block';
   });
 }
+
+/* Capture phone-a snapshot IMMEDIATELY at script exec — before any async
+   transform (OP2 structure change, v2 emotes, etc.) touches the DOM.
+   phone-b and phone-c clone from this snapshot, so they represent OP1. */
+capturePhoneASnapshot();
+
+/* ═══ OP2 transform: move market selector from Supply section to title ═══
+   Applied ONLY to phone-a. Runs after snapshot so B and C stay OP1. */
+function applyOP2ToPhoneA() {
+  var phoneA = document.getElementById('phone-a');
+  if (!phoneA) return;
+  // Process each screen that has a borrow-title + slider-section with a Supply selector
+  ['borrow', 'borrow-connected', 'update'].forEach(function(screenId) {
+    var screen = phoneA.querySelector('#' + screenId);
+    if (!screen) return;
+    var title = screen.querySelector('.borrow-title');
+    var sliderSection = screen.querySelector('.slider-section');
+    if (!title || !sliderSection) return;
+    // First .slider-label is Supply; that's where the market selector lives today
+    var supplyLabel = sliderSection.querySelector('.slider-label');
+    if (!supplyLabel) return;
+    var selectorWrap = supplyLabel.querySelector('.token-select-wrap');
+    if (!selectorWrap) return;
+    // Extract current token info to recreate as a static badge in Supply's place
+    var selectedMini = selectorWrap.querySelector('.mini-icon');
+    var selectedName = selectorWrap.querySelector('.token-name');
+    var miniClass = selectedMini ? selectedMini.className : 'mini-icon pepe';
+    var tokenText = selectedName ? selectedName.textContent : 'PEPE';
+    // Replace in Supply with a static .slider-token-badge (matches Borrow side visually)
+    var badge = document.createElement('span');
+    badge.className = 'slider-token-badge';
+    badge.innerHTML = '<span class="' + miniClass + '"></span>' + tokenText;
+    selectorWrap.parentNode.replaceChild(badge, selectorWrap);
+    // Append the selector to the title (as part of the headline)
+    title.appendChild(document.createTextNode(' '));
+    title.appendChild(selectorWrap);
+  });
+}
+applyOP2ToPhoneA();
 
 // Peek-behind shrink on scroll
 (function() {
@@ -2988,84 +3073,110 @@ function setOption(mode, save) {
   });
 })();
 
-// Phone A = Option A: keep both header btn and CTA card
+// Phone A = Option A (OP2: market selector in title)
 
-function initPhoneB() {
-  var phoneA = document.getElementById('phone-a');
-  var phoneB = document.getElementById('phone-b');
-  phoneB.innerHTML = phoneA.innerHTML;
-  // Remap IDs in phone-b to avoid conflicts
-  phoneB.querySelectorAll('[id]').forEach(function(el) {
-    el.id = el.id + '-b';
+/* Shared clone logic for phone-b and phone-c.
+   Both clone from _phoneASnapshot (pre-OP2 markup = OP1 structure).
+   suffix: 'b' or 'c' — used for ID remapping. */
+function clonePhoneFromSnapshot(phoneEl, suffix) {
+  if (!_phoneASnapshot) capturePhoneASnapshot();
+  phoneEl.innerHTML = _phoneASnapshot;
+  var dash = '-' + suffix;
+  // Remap IDs to avoid conflicts
+  phoneEl.querySelectorAll('[id]').forEach(function(el) {
+    el.id = el.id + dash;
   });
-  // Show same screen as A
-  phoneB.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); s.classList.remove('bg-screen'); });
+  // Reset all screen active states
+  phoneEl.querySelectorAll('.screen').forEach(function(s) {
+    s.classList.remove('active'); s.classList.remove('bg-screen');
+  });
+  // Mirror the active screen from phone-a
+  var phoneA = document.getElementById('phone-a');
   var confirmA = document.getElementById('confirm');
   var isConfirm = confirmA && confirmA.classList.contains('active');
   if (isConfirm) {
-    var confirmB = document.getElementById('confirm-b');
-    if (confirmB) confirmB.classList.add('active');
-    var bgB = document.getElementById('borrow-connected-b');
-    if (bgB) { bgB.classList.add('active'); bgB.classList.add('bg-screen'); }
+    var confirmTarget = document.getElementById('confirm' + dash);
+    if (confirmTarget) confirmTarget.classList.add('active');
+    var bgTarget = document.getElementById('borrow-connected' + dash);
+    if (bgTarget) { bgTarget.classList.add('active'); bgTarget.classList.add('bg-screen'); }
   } else {
     var activeScreen = phoneA.querySelector('.screen.active');
     if (activeScreen) {
-      var target = document.getElementById(activeScreen.id + '-b');
+      var target = document.getElementById(activeScreen.id + dash);
       if (target) target.classList.add('active');
     }
   }
-  // Restore B mascots to original <object> elements (since A was already v2-transformed)
-  restoreOriginalEmotes(phoneB);
-  // Restore borrow-b mascot to original face-only emote (A has full-body, B stays face-only)
-  var borrowBMascot = phoneB.querySelector('#borrow-b .mascot-area.happy .mascot-illustration');
-  if (borrowBMascot && borrowBMascot.tagName === 'IMG') {
+  // Restore original <object> mascots (snapshot may have v2-transformed ones)
+  restoreOriginalEmotes(phoneEl);
+  // Restore borrow mascot to original face-only emote
+  var borrowMascot = phoneEl.querySelector('#borrow' + dash + ' .mascot-area.happy .mascot-illustration');
+  if (borrowMascot && borrowMascot.tagName === 'IMG') {
     var origObj = document.createElement('object');
     origObj.className = 'mascot-illustration';
     origObj.setAttribute('data', 'assets/Emote-00-Basic.svg');
     origObj.setAttribute('type', 'image/svg+xml');
     origObj.style.pointerEvents = 'none';
-    borrowBMascot.parentNode.replaceChild(origObj, borrowBMascot);
+    borrowMascot.parentNode.replaceChild(origObj, borrowMascot);
   }
-  // Remove any cloned loading overlays from B
-  phoneB.querySelectorAll('.loading-screen-overlay').forEach(function(el) { el.remove(); });
-  // Copy wordmark SVG to all screens in Phone B
+  // Remove cloned loading overlays
+  phoneEl.querySelectorAll('.loading-screen-overlay').forEach(function(el) { el.remove(); });
+  // Copy wordmark SVG from live phone-a (OP2) — wordmark is identical across options
   var srcWM = phoneA.querySelector('.logo-wordmark');
   if (srcWM) {
-    phoneB.querySelectorAll('.logo-wordmark').forEach(function(wm) {
+    phoneEl.querySelectorAll('.logo-wordmark').forEach(function(wm) {
       wm.innerHTML = srcWM.innerHTML;
     });
   }
-  // Ensure homepage-b sections are revealed (unless we're about to play loading intro)
+  // Reveal homepage sections (unless loading intro will play)
   var currentScreen = localStorage.getItem('purinta-screen') || 'homepage';
   if (currentScreen !== 'homepage') {
-    phoneB.querySelectorAll('.reveal-in').forEach(function(el) {
+    phoneEl.querySelectorAll('.reveal-in').forEach(function(el) {
       el.classList.add('revealed');
     });
   }
-  // A/B: Phone B = Option B (CTA card visible, restore original title/total layout, hide header btn)
-  var phoneBPositions = document.getElementById('positions-b');
-  if (phoneBPositions) {
-    var headerBtnB = phoneBPositions.querySelector('.positions-title-row .btn-sm');
-    if (headerBtnB) headerBtnB.remove();
-    var ctaB = phoneBPositions.querySelector('.new-borrow-cta');
-    if (ctaB) ctaB.style.display = '';
-    // Restore original layout: title then total-row as separate siblings
-    var titleRowB = phoneBPositions.querySelector('.positions-title-row');
-    var titleB = phoneBPositions.querySelector('.positions-title');
-    var totalRowB = phoneBPositions.querySelector('.total-row');
-    if (titleRowB && titleB && totalRowB) {
-      var parent = titleRowB.parentNode;
-      parent.insertBefore(titleB, titleRowB);
-      parent.insertBefore(totalRowB, titleRowB);
-      titleRowB.remove();
-      // Reset total-row to original styles
-      totalRowB.style.marginBottom = '20px';
-      totalRowB.style.marginLeft = '34px';
-      totalRowB.style.marginRight = '34px';
+  // Restore OP1 title text ("Borrow against" → "Borrow") — snapshot may contain
+  // the transitional "Borrow against" phrasing; for OP1 variants we want just "Borrow"
+  phoneEl.querySelectorAll('.borrow-title').forEach(function(t) {
+    var txt = (t.textContent || '').trim();
+    if (txt === 'Borrow against') t.textContent = 'Borrow';
+  });
+}
+
+/* Option B = OP1 frozen snapshot (identity clone, no tweaks) */
+function initPhoneB() {
+  var phoneB = document.getElementById('phone-b');
+  if (!phoneB) return;
+  clonePhoneFromSnapshot(phoneB, 'b');
+}
+
+/* Option C = old Option B variant (CTA card visible, restored title/total layout) */
+function initPhoneC() {
+  var phoneC = document.getElementById('phone-c');
+  if (!phoneC) return;
+  clonePhoneFromSnapshot(phoneC, 'c');
+  // Positions screen tweaks specific to Option C
+  var phoneCPositions = document.getElementById('positions-c');
+  if (phoneCPositions) {
+    var headerBtnC = phoneCPositions.querySelector('.positions-title-row .btn-sm');
+    if (headerBtnC) headerBtnC.remove();
+    var ctaC = phoneCPositions.querySelector('.new-borrow-cta');
+    if (ctaC) ctaC.style.display = '';
+    // Restore original layout: title and total-row as separate siblings
+    var titleRowC = phoneCPositions.querySelector('.positions-title-row');
+    var titleC = phoneCPositions.querySelector('.positions-title');
+    var totalRowC = phoneCPositions.querySelector('.total-row');
+    if (titleRowC && titleC && totalRowC) {
+      var parent = titleRowC.parentNode;
+      parent.insertBefore(titleC, titleRowC);
+      parent.insertBefore(totalRowC, titleRowC);
+      titleRowC.remove();
+      totalRowC.style.marginBottom = '20px';
+      totalRowC.style.marginLeft = '34px';
+      totalRowC.style.marginRight = '34px';
     }
   }
 }
-/* Store original <object> outerHTML keyed by base ID (without -b suffix) */
+/* Store original <object> outerHTML keyed by base ID (without -c suffix) */
 var _originalEmoteEls = {};
 var _v2AppliedToA = false;
 
@@ -3109,16 +3220,16 @@ function applyV2Emotes(phone) {
 }
 
 /* Restore Phone B mascots to original <object> elements */
-function restoreOriginalEmotes(phoneB) {
-  phoneB.querySelectorAll('.emote-v2').forEach(function(v2El) {
+function restoreOriginalEmotes(phoneC) {
+  phoneC.querySelectorAll('.emote-v2').forEach(function(v2El) {
     if (!v2El.id) return;
-    var baseId = v2El.id.replace(/-b$/, '');
+    var baseId = v2El.id.replace(/-c$/, '');
     var origHTML = _originalEmoteEls[baseId];
     if (!origHTML) return;
     var temp = document.createElement('div');
     temp.innerHTML = origHTML;
     var origObj = temp.firstElementChild;
-    origObj.id = v2El.id; // keep the -b suffix
+    origObj.id = v2El.id; // keep the -c suffix
     v2El.parentNode.replaceChild(origObj, v2El);
   });
 }
@@ -3200,6 +3311,7 @@ function selectToken(row) {
     updateBorrowValues(screen.id);
     if (screen.id === 'borrow-connected' && typeof updateHealthMascot === 'function') updateHealthMascot();
     if (screen.id === 'borrow-connected-b' && typeof updateHealthMascotB === 'function') updateHealthMascotB();
+    if (screen.id === 'borrow-connected-c' && typeof updateHealthMascotC === 'function') updateHealthMascotC();
     // 80ms gap per motion spec — banner expand feels intentional (separate from dropdown close)
     setTimeout(function() { updateSupplyWarningBanner(screen, token, name); }, 80);
   });
@@ -3292,16 +3404,16 @@ document.addEventListener('click', function(e) {
 
 // Phone B: Pill Expand vertical — single global handler
 document.addEventListener('click', function(e) {
-  var badge = e.target.closest('#phone-b .wallet-badge');
-  if (e.target.closest('#phone-b .wallet-disconnect-zone')) return;
+  var badge = e.target.closest('#phone-c .wallet-badge');
+  if (e.target.closest('#phone-c .wallet-disconnect-zone')) return;
   if (badge) {
     var wasExpanded = badge.classList.contains('expanded');
-    document.querySelectorAll('#phone-b .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
+    document.querySelectorAll('#phone-c .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
     if (!wasExpanded) badge.classList.add('expanded');
     return;
   }
   // Click outside — close all
-  document.querySelectorAll('#phone-b .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
+  document.querySelectorAll('#phone-c .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
 });
 // Escape closes all expanded pills
 document.addEventListener('keydown', function(e) {
@@ -3337,7 +3449,7 @@ function showScreen(id) {
   // Close any open disconnect dropdowns on screen change
   document.querySelectorAll('.disconnect-dropdown.open').forEach(function(d) { d.classList.remove('open'); });
   // Collapse expanded wallet pills and freeze transitions during screen switch
-  document.querySelectorAll('#phone-a .wallet-badge, #phone-b .wallet-badge').forEach(function(b) {
+  document.querySelectorAll('#phone-a .wallet-badge, #phone-b .wallet-badge, #phone-c .wallet-badge').forEach(function(b) {
     b.classList.remove('expanded');
     b.classList.add('no-transition');
     b.querySelectorAll('.wallet-disconnect-zone, .wallet-divider').forEach(function(el) { el.style.transition = 'none'; });
@@ -3358,17 +3470,18 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   // Block scroll on modal screens
   phoneA.style.overflow = (id === 'confirm') ? 'hidden' : '';
-  // Phone B (if initialized)
-  var phoneB = document.getElementById('phone-b');
-  if (phoneB && phoneB.hasChildNodes()) {
-    phoneB.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.classList.remove('bg-screen'); });
-    var targetB = document.getElementById(id + '-b');
-    if (targetB) targetB.classList.add('active');
+  // Mirror active screen to phone-b and phone-c (if initialized)
+  ['b', 'c'].forEach(function(sfx) {
+    var ph = document.getElementById('phone-' + sfx);
+    if (!ph || !ph.hasChildNodes()) return;
+    ph.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.classList.remove('bg-screen'); });
+    var target = document.getElementById(id + '-' + sfx);
+    if (target) target.classList.add('active');
     if (id === 'confirm') {
-      var bgB = document.getElementById('borrow-connected-b');
-      if (bgB) { bgB.classList.add('active'); bgB.classList.add('bg-screen'); }
+      var bg = document.getElementById('borrow-connected-' + sfx);
+      if (bg) { bg.classList.add('active'); bg.classList.add('bg-screen'); }
     }
-  }
+  });
   document.querySelectorAll('.screen-nav button').forEach(b => b.classList.remove('active'));
   const labels = { homepage:0, 'homepage-connected':1, borrow:2, 'borrow-connected':3, confirm:4, positions:5, 'positions-empty':6, update:7, 'error-404':8 };
   var navBtn = document.querySelectorAll('.screen-nav button')[labels[id]];
@@ -3378,10 +3491,12 @@ function showScreen(id) {
   history.replaceState({ screen: id }, '', location.pathname + location.search);
   // Play loading intro on homepage navigation
   if (id === 'homepage' && typeof playLoadingIntro === 'function') {
-    var wA = document.getElementById('wrap-a');
-    var wB = document.getElementById('wrap-b');
-    if (wA && !wA.classList.contains('hidden')) playLoadingIntro(document.getElementById('phone-a'));
-    if (wB && !wB.classList.contains('hidden')) playLoadingIntro(document.getElementById('phone-b'));
+    ['a', 'b', 'c'].forEach(function(sfx) {
+      var w = document.getElementById('wrap-' + sfx);
+      if (w && !w.classList.contains('hidden')) {
+        playLoadingIntro(document.getElementById('phone-' + sfx));
+      }
+    });
   }
   // Update health mascot when entering screens with dynamic emotes
   if (id === 'borrow-connected' || id === 'update') {
@@ -3542,7 +3657,7 @@ function setSliderPct(track, pct) {
   if (screen) {
     var sid = screen.id;
     // Toggle supply-zero class on borrow-connected based on first slider value
-    if (sid === 'borrow-connected' || sid === 'borrow-connected-b') {
+    if (sid === 'borrow-connected' || sid === 'borrow-connected-b' || sid === 'borrow-connected-c') {
       var firstTrack = screen.querySelector('.slider-track');
       var firstFill = firstTrack ? firstTrack.querySelector('.slider-track-fill') : null;
       var supplyPct = firstFill ? parseFloat(firstFill.style.width) || 0 : 0;
@@ -3550,6 +3665,7 @@ function setSliderPct(track, pct) {
     }
     if (sid === 'borrow-connected' || sid === 'update') { updateHealthMascot && updateHealthMascot(); updateBorrowValues && updateBorrowValues(sid); }
     if (sid === 'borrow-connected-b' || sid === 'update-b') { updateHealthMascotB && updateHealthMascotB(); updateBorrowValues && updateBorrowValues(sid); }
+    if (sid === 'borrow-connected-c' || sid === 'update-c') { updateHealthMascotC && updateHealthMascotC(); updateBorrowValues && updateBorrowValues(sid); }
   }
 }
 
@@ -3582,7 +3698,7 @@ function setSliderPct(track, pct) {
   document.addEventListener('pointercancel', function() { dragTrack = null; });
 })();
 
-// Make percentage buttons interactive (event delegation so cloned phone-b works)
+// Make percentage buttons interactive (event delegation so cloned phone-c works)
 document.addEventListener('click', function(e) {
   var btn = e.target.closest('.pct-btn');
   if (!btn) return;
@@ -3612,6 +3728,7 @@ document.addEventListener('click', function(e) {
     var sid = screen.id;
     if (sid === 'borrow-connected' || sid === 'update') { updateHealthMascot(); updateBorrowValues(sid); }
     if (sid === 'borrow-connected-b' || sid === 'update-b') { updateHealthMascotB(); updateBorrowValues(sid); }
+    if (sid === 'borrow-connected-c' || sid === 'update-c') { updateHealthMascotC(); updateBorrowValues(sid); }
   }
 });
 
@@ -3899,6 +4016,10 @@ function updateHealthMascot() {
 function updateHealthMascotB() {
   updateHealthForScreen('borrow-connected-b', 'health-mascot-b', 'health-emote-b', 'health-text-b');
   updateHealthForScreen('update-b', 'health-mascot-modify-b', 'health-emote-modify-b', 'health-text-modify-b');
+}
+function updateHealthMascotC() {
+  updateHealthForScreen('borrow-connected-c', 'health-mascot-c', 'health-emote-c', 'health-text-c');
+  updateHealthForScreen('update-c', 'health-mascot-modify-c', 'health-emote-modify-c', 'health-text-modify-c');
 }
 
 /* V2 health update — full-body V2 mascot + no-supply state */
