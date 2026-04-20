@@ -181,7 +181,7 @@
     #phone-a .wallet-badge .wallet-disconnect-zone , #phone-b .wallet-badge .wallet-disconnect-zone {
       display: flex; align-items: center; gap: 4px;
       max-width: 0; opacity: 0; overflow: hidden; padding: 0;
-      color: #E5008B; font-weight: 400; font-size: var(--ds-xs);
+      color: var(--text-secondary); font-weight: 400; font-size: var(--ds-xs);
       cursor: pointer; white-space: nowrap;
       transition: max-width 0.3s ease-in, opacity 0.15s ease, padding 0.3s ease-in, color 0.2s ease;
     }
@@ -209,11 +209,11 @@
       transition: max-width 0.35s ease-out, opacity 0.25s ease 0.05s, padding 0.35s ease-out, color 0.2s ease;
     }
     #phone-a .wallet-badge:has(.wallet-disconnect-zone:hover) , #phone-b .wallet-badge:has(.wallet-disconnect-zone:hover) {
-      border-color: #FF32BF;
-      box-shadow: 0 4px 16px rgba(255, 50, 191, 0.2);
+      border-color: var(--cream-400);
+      box-shadow: var(--shadow-card);
     }
     #phone-a .wallet-badge .wallet-disconnect-zone:hover , #phone-b .wallet-badge .wallet-disconnect-zone:hover {
-      color: #FF32BF;
+      color: var(--green-700);
     }
     .wallet-badge.no-transition,
     .wallet-badge.no-transition * { transition: none !important; }
@@ -291,12 +291,12 @@
       background: var(--cream-50); border-radius: 20px; padding: 8px 14px;
       font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-primary); margin-bottom: 10px; }
     .disconnect-dropdown .dd-address .wallet-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-500); flex-shrink: 0; }
-    .disconnect-dropdown .btn-disconnect { width: 100%; padding: 10px 16px; border-radius: 12px; border: none; cursor: pointer;
+    .disconnect-dropdown .btn-disconnect { width: 100%; padding: 10px 16px; border-radius: 12px; border: 1px solid var(--cream-400); cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 6px;
       font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 400; letter-spacing: 0.26px;
-      background: #FFC1EA; color: #E5008B; transition: all 0.15s; }
-    .disconnect-dropdown .btn-disconnect:hover { background: #FF95DC; color: #BD0070; }
-    .disconnect-dropdown .btn-disconnect:active { transform: scale(0.97); background: #FF68CF; }
+      background: var(--cream-50); color: var(--text-secondary); transition: all 0.15s; }
+    .disconnect-dropdown .btn-disconnect:hover { background: var(--cream-100); color: var(--green-700); border-color: var(--green-300); }
+    .disconnect-dropdown .btn-disconnect:active { transform: scale(0.97); background: var(--cream-100); }
     .wallet-positions {
       width: 32px; height: 32px; padding: 0; border-radius: 50%; border: none;
       background: transparent; cursor: pointer; color: var(--text-secondary);
@@ -1531,7 +1531,7 @@
       display: flex; align-items: center; justify-content: center; gap: 6px;
       max-height: 0 !important; max-width: none !important;
       opacity: 0 !important; overflow: hidden !important; padding: 0 !important;
-      color: #E5008B; font-weight: 400; font-size: var(--ds-xs);
+      color: var(--text-secondary); font-weight: 400; font-size: var(--ds-xs);
       letter-spacing: 0.26px; line-height: 21px;
       cursor: pointer; white-space: nowrap;
       pointer-events: none;
@@ -1559,8 +1559,8 @@
     }
 
     /* Hover disconnect */
-    #phone-c .wallet-badge .wallet-disconnect-zone:hover { color: #FF32BF; }
-    #phone-c .wallet-badge:has(.wallet-disconnect-zone:hover) { border-color: #FF32BF; }
+    #phone-c .wallet-badge .wallet-disconnect-zone:hover { color: var(--green-700); }
+    #phone-c .wallet-badge:has(.wallet-disconnect-zone:hover) { border-color: var(--cream-400); }
 
     /* ─── DESKTOP B ─── */
     #phone-c.desktop .wallet-badge {
