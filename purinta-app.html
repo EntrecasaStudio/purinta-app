@@ -3403,13 +3403,11 @@ function closeTokenBottomSheet() {
 function selectTokenFromSheet(sheetRow) {
   if (!_activeSheetSelect) { closeTokenBottomSheet(); return; }
   var token = sheetRow.dataset.token;
-  // Find the matching dropdown-row inside the original select and reuse existing selectToken logic.
-  // closeTokenDropdown (called inside selectToken) bails early unless the select has .open —
-  // the bottom sheet never opened the dropdown, so we add .open here to let the post-close
-  // callback fire (updates no-funds class, banner, health mascot, values).
+  // Find the matching dropdown-row inside the original select; selectToken()
+  // branches on .open to skip the dropdown-close animation when it's not open
+  // (bottom sheet path), so no hack needed — effects apply directly.
   var origRow = _activeSheetSelect.querySelector('.token-dropdown-row[data-token="' + token + '"]');
   if (origRow && typeof selectToken === 'function') {
-    _activeSheetSelect.classList.add('open');
     selectToken(origRow);
   }
   closeTokenBottomSheet();
@@ -3448,34 +3446,46 @@ function selectToken(row) {
       badge.innerHTML = '<span class="' + (badgeIcon ? badgeIcon.className : 'mini-icon ' + token) + '"></span>' + name;
     }
   }
-  // Animated close — after dropdown collapses, handle banner + values
+  // Screen-level effects (no-funds, supply-zero, values, mascot, banner)
+  // are factored out so both the dropdown path and the bottom sheet path
+  // can apply them without needing closeTokenDropdown's callback.
   var screen = select.closest('.screen');
-  closeTokenDropdown(select, function() {
-    if (!screen) return;
-    // Sync the no-funds class BEFORE recalculating mascot/values so they read the right state
-    var inWallet = !!walletHoldings[token];
-    screen.classList.toggle('no-funds', !inWallet);
-    // Disable Borrow slider + CTA when switching to a token without funds:
-    // no funds ⇒ effective supply is 0, which is what .supply-zero represents.
-    // On return to a funded token, recompute .supply-zero from the actual supply slider value.
-    if (!inWallet) {
-      screen.classList.add('supply-zero');
-    } else {
-      var supplyPct = 0;
-      try {
-        var pcts = (typeof getSliderPcts === 'function') ? getSliderPcts(screen.id) : null;
-        if (pcts) supplyPct = pcts.supply;
-      } catch (e) {}
-      screen.classList.toggle('supply-zero', supplyPct <= 0);
-    }
-    // Recalc values + mascot text (mascot reads .no-funds to pick the right line)
-    updateBorrowValues(screen.id);
-    if (screen.id === 'borrow-connected' && typeof updateHealthMascot === 'function') updateHealthMascot();
-    if (screen.id === 'borrow-connected-b' && typeof updateHealthMascotB === 'function') updateHealthMascotB();
-    if (screen.id === 'borrow-connected-c' && typeof updateHealthMascotC === 'function') updateHealthMascotC();
-    // 80ms gap per motion spec — banner expand feels intentional (separate from dropdown close)
-    setTimeout(function() { updateSupplyWarningBanner(screen, token, name); }, 80);
-  });
+  if (select.classList.contains('open')) {
+    // Dropdown path — animated close, then apply effects after collapse
+    closeTokenDropdown(select, function() {
+      applyTokenSelectionEffects(screen, token, name);
+    });
+  } else {
+    // Bottom sheet path (or programmatic) — no dropdown to close
+    applyTokenSelectionEffects(screen, token, name);
+  }
+}
+
+function applyTokenSelectionEffects(screen, token, name) {
+  if (!screen) return;
+  // Sync the no-funds class BEFORE recalculating mascot/values so they read the right state
+  var inWallet = !!walletHoldings[token];
+  screen.classList.toggle('no-funds', !inWallet);
+  // Disable Borrow slider + CTA when switching to a token without funds:
+  // no funds ⇒ effective supply is 0, which is what .supply-zero represents.
+  // On return to a funded token, recompute .supply-zero from the actual supply slider value.
+  if (!inWallet) {
+    screen.classList.add('supply-zero');
+  } else {
+    var supplyPct = 0;
+    try {
+      var pcts = (typeof getSliderPcts === 'function') ? getSliderPcts(screen.id) : null;
+      if (pcts) supplyPct = pcts.supply;
+    } catch (e) {}
+    screen.classList.toggle('supply-zero', supplyPct <= 0);
+  }
+  // Recalc values + mascot text (mascot reads .no-funds to pick the right line)
+  updateBorrowValues(screen.id);
+  if (screen.id === 'borrow-connected' && typeof updateHealthMascot === 'function') updateHealthMascot();
+  if (screen.id === 'borrow-connected-b' && typeof updateHealthMascotB === 'function') updateHealthMascotB();
+  if (screen.id === 'borrow-connected-c' && typeof updateHealthMascotC === 'function') updateHealthMascotC();
+  // 80ms gap per motion spec — banner expand feels intentional
+  setTimeout(function() { updateSupplyWarningBanner(screen, token, name); }, 80);
 }
 
 // Scroll detector: toggles '.stuck' on the banner-top-mask whenever the banner
