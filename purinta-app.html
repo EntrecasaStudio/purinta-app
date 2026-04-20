@@ -58,6 +58,13 @@
       --shadow-lg: 0 8px 24px rgba(26,58,42,0.1);
       --shadow-cute: 0 4px 16px rgba(232,160,160,0.15);
       --shadow-card: 0 2px 8px rgba(139,135,101,0.04), 0 8px 24px rgba(139,135,101,0.06);
+      /* Scrims — semantic pairs (reversible vs committing), not a scale.
+         blur + brightness are bundled into commit since they're not
+         independent knobs — they travel together to sever context. */
+      --scrim-select: rgba(10, 51, 24, 0.45);
+      --scrim-commit: rgba(10, 51, 24, 0.80);
+      --scrim-commit-blur: blur(8px);
+      --scrim-commit-underlay: brightness(0.7);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     /* Accessible focus styles */
@@ -627,7 +634,7 @@
     .phone.has-sheet { transform: translateZ(0); }
     .token-sheet-overlay {
       position: fixed; inset: 0; z-index: 100;
-      background: rgba(10, 51, 24, 0.45);
+      background: var(--scrim-select);
       opacity: 0; pointer-events: none;
       transition: opacity 0.22s ease;
       border-radius: inherit;
@@ -1124,9 +1131,9 @@
     /* ════════════════════════════════════════
        SCREEN 4: CONFIRMATION MODAL
        ════════════════════════════════════════ */
-    .screen.bg-screen { pointer-events: none; filter: brightness(0.7); }
+    .screen.bg-screen { pointer-events: none; filter: var(--scrim-commit-underlay); }
     .modal-overlay {
-      background: rgba(10,51,24,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 20px;
+      background: var(--scrim-commit); backdrop-filter: var(--scrim-commit-blur); -webkit-backdrop-filter: var(--scrim-commit-blur); padding: 20px;
       display: flex; align-items: center; justify-content: center;
       position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 50;
     }
