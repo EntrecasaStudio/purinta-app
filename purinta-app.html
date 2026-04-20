@@ -2152,13 +2152,13 @@
           </div>
         </div>
         <div class="borrow-cta-inner">
-          <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('borrow-connected')"><i class="ph-light ph-link btn-icon-lg"></i> Connect Wallet</button>
+          <button class="btn btn-primary btn-full btn-lg" onclick="connectWalletFromBorrow()"><i class="ph-light ph-link btn-icon-lg"></i> Connect Wallet</button>
         </div>
         </div>
       </div>
     </div>
     <div class="borrow-cta">
-      <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('borrow-connected')"><i class="ph-light ph-link btn-icon-lg"></i> Connect Wallet</button>
+      <button class="btn btn-primary btn-full btn-lg" onclick="connectWalletFromBorrow()"><i class="ph-light ph-link btn-icon-lg"></i> Connect Wallet</button>
     </div>
     <div class="app-footer">
       <a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a>
@@ -3630,6 +3630,21 @@ function toggleDisconnect(btn) {
       });
     }, 10);
   }
+}
+
+/* "Connect Wallet" from the disconnected borrow screen.
+   Reads whichever token is currently displayed in the disabled trigger
+   and preserves that selection on the connected screen (so tapping
+   MORPHO → Connect Wallet lands you on MORPHO, not PEPE). */
+function connectWalletFromBorrow() {
+  var iconEl = document.querySelector('#borrow .token-select-trigger .mini-icon');
+  var token = 'pepe';
+  if (iconEl) {
+    for (var i = 0; i < iconEl.classList.length; i++) {
+      if (iconEl.classList[i] !== 'mini-icon') { token = iconEl.classList[i]; break; }
+    }
+  }
+  borrowWithToken('borrow-connected', token);
 }
 
 /* Navigate to a borrow screen with a specific token preselected.
