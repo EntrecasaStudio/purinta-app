@@ -42,6 +42,20 @@
       --mint-50: #F2F7F4; --mint-100: #E7F4EC; --mint-200: #DCF0E0;
       --mint-300: #C8E6D0; --mint-400: #A8D8B8; --mint-500: #8DC8A0;
       --mint-600: #69AA8A; --mint-700: #498A70; --mint-800: #2D6050; --mint-900: #194030;
+      /* Feedback — DS Primitives (sourced from Figma DS file o40i1qyM node 38:6051,
+         which is the source of truth; local JSON ds-color-primitives.json was stale) */
+      --success-50: #F2F8F7; --success-100: #E0F0EF; --success-200: #BFE3E0;
+      --success-300: #97D8D3; --success-400: #6ECFC6; --success-500: #41C8BD;
+      --success-600: #36BAAF; --success-700: #2C968D; --success-800: #227770; --success-900: #195752;
+      --warning-50: #FFF5ED; --warning-100: #FFECDB; --warning-200: #FFD7B2;
+      --warning-300: #FFC080; --warning-400: #FFA466; --warning-500: #F98C4B;
+      --warning-600: #E5722E; --warning-700: #BD5E26; --warning-800: #A35121; --warning-900: #8C451C;
+      --info-50: #EDF4FF; --info-100: #E0ECFF; --info-200: #B2D0FF;
+      --info-300: #80B4FF; --info-400: #669FFF; --info-500: #4B89FA;
+      --info-600: #2E69E5; --info-700: #2657BD; --info-800: #214BA3; --info-900: #1C418C;
+      --error-50: #FFEDF9; --error-100: #FFDBF3; --error-200: #FFB2E6;
+      --error-300: #FF80D6; --error-400: #FF66CF; --error-500: #FA4BBE;
+      --error-600: #E52E9D; --error-700: #BD267F; --error-800: #A3216F; --error-900: #8C1C5F;
       /* Neutrals */
       --neutral-50: #FEFEFE;
       --neutral-900: #333333;
@@ -243,6 +257,15 @@
     i.btn-icon, i.btn-icon-lg { width: auto; height: auto; display: inline-flex; align-items: center; }
     i.btn-icon { font-size: 20px; }
     i.btn-icon-lg { font-size: 24px; }
+    /* Disabled state for primary buttons (used by Modify CTA when deltas=0) */
+    .btn-primary:disabled, .btn-primary[disabled] {
+      background: var(--mint-100) !important;
+      color: var(--green-200) !important;
+      cursor: not-allowed;
+      pointer-events: none;
+      box-shadow: none !important;
+      filter: none !important;
+    }
     /* :hover gated to desktop phones — mobile shows :active only as tap feedback.
        :not(:disabled) stays defensive in case we add [disabled] buttons later. */
     .phone.desktop .btn:hover:not(:disabled) { transform: translateY(-3px); }
@@ -738,6 +761,404 @@
     .app-footer a:active { transform: scale(0.95); filter: brightness(0.9); }
 
     /* Bottom navigation bar */
+    /* Quick Repay modal (triggered from position cards' "Quick Repay" button) */
+    .quick-repay-overlay {
+      position: absolute; inset: 0;    /* scoped to the host phone, not the browser viewport */
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 10000;
+      background: var(--scrim-commit);                            /* match #confirm */
+      backdrop-filter: var(--scrim-commit-blur);
+      -webkit-backdrop-filter: var(--scrim-commit-blur);
+      padding: 20px;
+    }
+    .quick-repay-overlay.is-open { display: flex; animation: qr-fade 180ms ease-out; }
+    @keyframes qr-fade { from { opacity: 0; } to { opacity: 1; } }
+    .quick-repay-dialog {
+      background: var(--neutral-50);
+      border-radius: 32px;
+      padding: 32px 24px 24px;
+      width: 100%; max-width: 320px;
+      box-shadow: 0 8px 32px rgba(20, 77, 38, 0.18);
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      animation: qr-pop 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+    }
+    @keyframes qr-pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    .quick-repay-close {
+      position: absolute; top: 14px; right: 14px;
+      width: 32px; height: 32px;
+      background: transparent; border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      border-radius: 50%;
+      font-size: var(--ds-md);
+    }
+    .phone.desktop .quick-repay-close:hover { background: var(--cream-100); color: var(--text-primary); }
+    .quick-repay-mascot {
+      width: 96px; height: 96px;
+      border-radius: 50%;
+      background: var(--mint-200);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .quick-repay-mascot img { width: 76px; height: 76px; object-fit: contain; }
+    .quick-repay-meta {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+    }
+    .quick-repay-meta .qr-label {
+      font-family: var(--font-ui); font-size: var(--ds-xs);
+      color: var(--text-secondary); letter-spacing: 0.26px;
+    }
+    .quick-repay-meta .qr-amount {
+      /* match .modal-amount from #confirm — weight 400, letter-spacing 0.5 */
+      font-family: var(--font-display);
+      font-size: var(--ds-2xl); font-weight: 400; letter-spacing: 0.5px;
+      color: var(--text-primary);
+      line-height: 1.15;
+      margin: 2px 0;
+    }
+    .quick-repay-meta .qr-caption {
+      font-family: var(--font-ui); font-size: var(--ds-xs);
+      color: var(--text-primary); letter-spacing: 0.26px;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .quick-repay-meta .qr-caption .mini-icon {
+      width: 18px; height: 18px;
+    }
+    .quick-repay-message {
+      background: var(--cream-100);
+      border: 1px solid var(--cream-300);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-family: var(--font-ui); font-size: var(--ds-xs);
+      color: var(--text-secondary);
+      text-align: left;
+      width: 100%; box-sizing: border-box;
+      line-height: 1.4;
+    }
+    .quick-repay-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
+    .quick-repay-cta { width: 100%; }
+    .quick-repay-modify {
+      background: transparent; border: none; padding: 6px 12px;
+      font-family: var(--font-display); font-size: var(--ds-xs);
+      color: var(--text-primary); cursor: pointer;
+    }
+    /* Bundle modal (Modify Position confirm) — Figma node 1126:87586.
+       Uses the same overlay tokens + dialog shell as Quick Repay; internals are
+       the two-row bundle summary + numbered stepper + "Proceed in wallet" box. */
+    .bundle-modal-overlay {
+      position: absolute; inset: 0;     /* scoped to the host phone, not the browser viewport */
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 10000;
+      background: var(--scrim-commit);
+      backdrop-filter: var(--scrim-commit-blur);
+      -webkit-backdrop-filter: var(--scrim-commit-blur);
+      padding: 20px;
+    }
+    .bundle-modal-overlay.is-open { display: flex; animation: qr-fade 180ms ease-out; }
+    .bundle-modal-dialog {
+      background: var(--neutral-50);
+      border-radius: 32px;
+      padding: 48px 24px 24px;
+      width: 100%; max-width: 360px;
+      box-shadow: 0 8px 32px rgba(20, 77, 38, 0.18);
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      animation: qr-pop 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+    }
+    .bundle-modal-close {
+      position: absolute; top: 14px; right: 14px;
+      width: 32px; height: 32px;
+      background: transparent; border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      border-radius: 50%;
+      font-size: var(--ds-md);
+    }
+    .phone.desktop .bundle-modal-close:hover { background: var(--cream-100); color: var(--text-primary); }
+    /* Mascot appears only on Done — the celebration moment. Hidden by default
+       (max-height:0); on .is-done grows to 96px with a spring-in pop + gentle
+       wobble + sparkle burst drifting outward. Modal breathes up around it. */
+    .bundle-modal-mascot {
+      max-height: 0; opacity: 0; overflow: visible;
+      width: 180px; margin: 0;                         /* matches #confirm hero (180px) */
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; position: relative;
+      transition: max-height 520ms cubic-bezier(0.22, 1, 0.36, 1),
+                  opacity 360ms ease;
+    }
+    /* Organic blob background pulled from the home hero — softer + brand-consistent shape.
+       Animated gentle float + breath so it feels alive without pulling focus. */
+    .bundle-mascot-blob {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+      transform-origin: 50% 50%;
+    }
+    .bundle-mascot-blob path { fill: var(--mint-200); }
+    .bundle-modal-overlay.is-done .bundle-mascot-blob {
+      animation: bundle-blob-float 5s ease-in-out 900ms infinite;
+    }
+    @keyframes bundle-blob-float {
+      0%, 100% { transform: scale(1)    rotate(0deg); }
+      25%      { transform: scale(1.03) rotate(-1.5deg); }
+      50%      { transform: scale(1.05) rotate(1deg); }
+      75%      { transform: scale(1.02) rotate(0.5deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bundle-modal-overlay.is-done .bundle-mascot-blob { animation: none; }
+    }
+    .bundle-modal-mascot img {
+      position: relative; z-index: 1;
+      width: 120px; height: 120px; object-fit: contain;   /* matches #confirm mascot scale */
+    }
+
+    .bundle-modal-overlay.is-done .bundle-modal-mascot {
+      max-height: 140px; opacity: 1;                       /* 180×(108/140)≈139 blob aspect */
+      /* Gelatinous bubble-rebound entry — squish/stretch oscillates before settling */
+      animation: bundle-mascot-pop 1600ms cubic-bezier(0.45, 0, 0.55, 1) both;
+    }
+    @keyframes bundle-mascot-pop {
+      0%   { transform: scale(0.6); }
+      22%  { transform: scaleX(1.14) scaleY(0.88); }   /* lands wide — bubble squish */
+      40%  { transform: scaleX(0.90) scaleY(1.10); }   /* rebounds tall */
+      56%  { transform: scaleX(1.06) scaleY(0.96); }   /* smaller squish */
+      70%  { transform: scaleX(0.97) scaleY(1.03); }   /* smaller stretch */
+      82%  { transform: scale(1)    rotate(3deg);  }   /* settle + wobble */
+      92%  { transform: scale(1)    rotate(-1.5deg); }
+      100% { transform: scale(1)    rotate(0deg);  }
+    }
+
+    /* 5 drifting sparkle particles around the mascot on Done — mirrors the #confirm hero */
+    .bundle-mascot-sparkle {
+      position: absolute; width: 16px; height: 16px;
+      color: var(--green-400);
+      opacity: 0; pointer-events: none;
+    }
+    .bundle-mascot-sparkle::before {
+      content: ''; display: block; width: 100%; height: 100%;
+      background: currentColor;
+      clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
+    }
+    .bms-1 { top: 6px;   right: 14px; width: 18px; height: 18px; }
+    .bms-2 { top: 34px;  left: 8px;   width: 14px; height: 14px; color: var(--green-300); }
+    .bms-3 { bottom: 28px; right: 4px; width: 12px; height: 12px; color: var(--green-500); }
+    .bms-4 { top: 66px;  right: -4px; width: 10px; height: 10px; color: var(--green-300); }
+    .bms-5 { bottom: 40px; left: 14px; width: 16px; height: 16px; }
+    /* Two-phase animation per sparkle: drift burst settles at 0.35 opacity, then
+       each sparkle twinkles independently with desynced periods (Notion-shimmer style).
+       Alive but not needy — opacity-only, no position change, low amplitude. */
+    .bundle-modal-overlay.is-done .bms-1 {
+      animation: bundle-sparkle-drift 1.8s ease-out 650ms  both,
+                 bundle-sparkle-idle  2.4s ease-in-out 2450ms infinite;
+    }
+    .bundle-modal-overlay.is-done .bms-2 {
+      animation: bundle-sparkle-drift 1.8s ease-out 820ms  both,
+                 bundle-sparkle-idle  2.6s ease-in-out 2620ms infinite;
+    }
+    .bundle-modal-overlay.is-done .bms-3 {
+      animation: bundle-sparkle-drift 1.8s ease-out 980ms  both,
+                 bundle-sparkle-idle  2.8s ease-in-out 2780ms infinite;
+    }
+    .bundle-modal-overlay.is-done .bms-4 {
+      animation: bundle-sparkle-drift 1.8s ease-out 1140ms both,
+                 bundle-sparkle-idle  3.0s ease-in-out 2940ms infinite;
+    }
+    .bundle-modal-overlay.is-done .bms-5 {
+      animation: bundle-sparkle-drift 1.8s ease-out 1300ms both,
+                 bundle-sparkle-idle  3.2s ease-in-out 3100ms infinite;
+    }
+    @keyframes bundle-sparkle-drift {
+      0%   { opacity: 0;    transform: scale(0)   rotate(0deg)  translate(0,  0); }
+      35%  { opacity: 1;    transform: scale(1)   rotate(10deg) translate(0, -2px); }
+      100% { opacity: 0.35; transform: scale(0.9) rotate(-5deg) translate(3px, -10px); }
+    }
+    @keyframes bundle-sparkle-idle {
+      0%, 100% { opacity: 0.25; }
+      50%      { opacity: 0.55; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bundle-modal-overlay.is-done .bundle-mascot-sparkle {
+        animation: none; opacity: 0.35;
+      }
+    }
+    .bundle-modal-rows {
+      display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%;
+      transition: gap 720ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .bundle-row { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .bundle-row-label {
+      font-family: var(--font-ui); font-size: var(--ds-xs);
+      color: var(--text-secondary); letter-spacing: 0.26px;
+    }
+    .bundle-row-value {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      transition: gap 720ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .bundle-row-amount {
+      font-family: var(--font-display);
+      font-size: var(--ds-2xl); font-weight: 400; letter-spacing: 0.5px;
+      color: var(--text-primary); line-height: 1.15;
+      transition: font-size 720ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .bundle-row-token {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-ui); font-size: var(--ds-xs);
+      color: var(--text-primary); letter-spacing: 0.26px;
+    }
+    .bundle-row-token .mini-icon { width: 18px; height: 18px; }
+    /* Done state: compact summary — rows tighter, amount smaller, token inline, "&" gone */
+    .bundle-modal-overlay.is-done .bundle-modal-rows { gap: 4px; }
+    .bundle-modal-overlay.is-done .bundle-row-value {
+      flex-direction: row; align-items: baseline; gap: 8px;
+    }
+    .bundle-modal-overlay.is-done .bundle-row-amount { font-size: var(--ds-xl); }   /* 31 — legible for screenshots, space for the mascot hero */
+    .bundle-modal-overlay.is-done .bundle-sep {
+      max-height: 0; opacity: 0; margin: 0;
+    }
+    .bundle-sep {
+      font-family: var(--font-display); font-size: var(--ds-sm);
+      color: var(--text-secondary);
+      position: relative; width: 100%; text-align: center;
+      height: 20px; max-height: 20px; opacity: 1; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      transition: max-height 600ms cubic-bezier(0.22, 1, 0.36, 1),
+                  opacity 500ms ease,
+                  margin 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .bundle-sep::before, .bundle-sep::after {
+      content: ''; position: absolute; top: 50%;
+      width: 38%; height: 1px; background: var(--cream-300);
+    }
+    .bundle-sep::before { left: 0; }
+    .bundle-sep::after  { right: 0; }
+    .bundle-steps {
+      list-style: none; padding: 0; margin: 16px 0;
+      width: 100%;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .bundle-step {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      font-family: var(--font-ui); font-size: var(--ds-xs);
+      color: var(--text-primary); letter-spacing: 0.26px;
+    }
+    .bundle-step-text { flex: 1; text-align: left; }
+    .bundle-step-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--cream-300); color: var(--green-700);     /* pending */
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: var(--ds-2xs); font-weight: 500; flex-shrink: 0;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+    /* Active: green-600 bg (AA contrast with white), mint-300 ring for emphasis */
+    .bundle-step.is-active .bundle-step-num {
+      background: var(--green-600); color: #fff;
+      box-shadow: 0 0 0 2px var(--mint-300);
+    }
+    /* Done: mint-200 bg + green check replacing the number (handled in JS) */
+    .bundle-step.is-done .bundle-step-num {
+      background: var(--mint-200); color: var(--green-700);
+    }
+    .bundle-step.is-done .bundle-step-text { color: var(--text-secondary); }
+    /* The check glyph is added via class; pointer + bigger than the numeral */
+    .bundle-step-num .ph-check { font-size: 14px; line-height: 1; }
+    .bundle-message {
+      display: flex; align-items: flex-start; gap: 8px;
+      /* Ready state default: info blue — "here's what will happen".
+         100 bg + 400 border pattern matches .supply-warning-banner convention. */
+      background: var(--info-100); border: 1px solid var(--info-400);
+      border-radius: 12px; padding: 12px 14px;
+      font-family: var(--font-ui); font-size: var(--ds-xs);
+      color: var(--text-primary); line-height: 1.4;
+      text-align: left; width: 100%; box-sizing: border-box;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .bundle-message strong { font-weight: 500; }
+    .bundle-message-icon {
+      font-size: 16px; flex-shrink: 0; margin-top: 2px;
+      display: none;
+      color: var(--info-700);                      /* ready default */
+      transition: color 200ms ease;
+    }
+    /* State-specific icon swap: info for ready/processing, seal-check for done */
+    .bundle-modal-overlay .bmi-ready { display: inline-block; }
+    .bundle-modal-overlay.is-processing .bmi-ready,
+    .bundle-modal-overlay.is-done .bmi-ready { display: none; }
+    .bundle-modal-overlay.is-processing .bmi-processing { display: inline-block; }
+    .bundle-modal-overlay.is-done .bmi-processing { display: none; }
+    .bundle-modal-overlay.is-done .bmi-done { display: inline-block; color: var(--green-600); }
+    /* 3 message variants show/hide by overlay state */
+    .bundle-message-body > * { display: none; }
+    .bundle-modal-overlay .bundle-message-ready { display: block; }
+    .bundle-modal-overlay.is-processing .bundle-message-ready,
+    .bundle-modal-overlay.is-done .bundle-message-ready { display: none; }
+    .bundle-modal-overlay.is-processing .bundle-message-processing { display: block; }
+    .bundle-modal-overlay.is-done .bundle-message-done { display: block; }
+    .bundle-modal-overlay.is-processing .bundle-message {
+      background: var(--warning-100); border-color: var(--warning-400);
+    }
+    .bundle-modal-overlay.is-processing .bundle-message-icon { color: var(--warning-700); }
+    .bundle-modal-overlay.is-done .bundle-message {
+      background: var(--success-100); border-color: var(--success-400);
+    }
+    .bundle-modal-overlay.is-done .bundle-message-icon { color: var(--success-700); }
+
+    .bundle-modal-cta { width: 100%; transition: all 0.2s ease; margin-top: 4px; }  /* parent gap 16 + 4 = 20 */
+
+    /* Desktop: wider dialog (matches legacy #confirm), horizontal bundle rows. */
+    .phone.desktop .bundle-modal-dialog {
+      max-width: 480px; padding: 48px 32px 32px; border-radius: 56px;
+    }
+    .phone.desktop .bundle-modal-rows {
+      flex-direction: row; justify-content: center; align-items: center; gap: 16px;
+    }
+    .phone.desktop .bundle-sep {
+      width: auto; height: auto; font-size: var(--ds-md);
+      align-self: center; padding: 0 4px;
+    }
+    .phone.desktop .bundle-sep::before,
+    .phone.desktop .bundle-sep::after { display: none; }
+
+    /* Success toast — appears top-right of the phone viewport on Done state,
+       mirrors the native wallet "✓ Success!" toast from the reference flow. */
+    .bundle-toast {
+      position: absolute; top: 16px; right: 16px;
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 12px; border-radius: 12px;
+      background: var(--mint-100); border: 1px solid var(--green-300);
+      color: var(--green-700);
+      font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 500;
+      box-shadow: 0 4px 12px rgba(20, 77, 38, 0.15);
+      opacity: 0; transform: translateY(-8px);
+      transition: opacity 220ms ease, transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      z-index: 10001;
+    }
+    .bundle-toast i { font-size: var(--ds-sm); }
+    .bundle-modal-overlay.is-done .bundle-toast {
+      opacity: 1; transform: translateY(0);
+    }
+    /* 3 button variants show/hide by overlay state */
+    .bundle-cta-ready, .bundle-cta-processing, .bundle-cta-done {
+      display: none; align-items: center; justify-content: center; gap: 8px;
+    }
+    .bundle-modal-overlay .bundle-cta-ready { display: inline-flex; }
+    .bundle-modal-overlay.is-processing .bundle-cta-ready,
+    .bundle-modal-overlay.is-done .bundle-cta-ready { display: none; }
+    .bundle-modal-overlay.is-processing .bundle-cta-processing { display: inline-flex; }
+    .bundle-modal-overlay.is-done .bundle-cta-done { display: inline-flex; }
+    .bundle-modal-overlay.is-processing .bundle-modal-cta { pointer-events: none; opacity: 0.85; }
+    .bundle-spin { display: inline-block; animation: bundle-spin 1s linear infinite; }
+    @keyframes bundle-spin { to { transform: rotate(360deg); } }
+
     .bottom-nav {
       position: sticky; bottom: 0; z-index: 10;
       display: flex; justify-content: space-around; align-items: center;
@@ -2109,6 +2530,7 @@
           <button onclick="showScreen('positions')">Positions</button>
           <button onclick="showScreen('positions-empty')">Pos Empty</button>
           <button onclick="showScreen('update')">Modify</button>
+          <button onclick="devOpenQuickRepay()">Quick Repay</button>
         </div>
         <div style="display:flex;gap:4px;">
           <button onclick="showScreen('error-404')">404</button>
@@ -2118,7 +2540,6 @@
     <div class="dev-nav-section">
       <div class="dev-nav-label">Icons</div>
       <div class="dev-nav-group">
-        <button onclick="var p=document.getElementById('icon-picker');p.style.display=p.style.display==='none'?'block':'none';">Positions Icons</button>
         <button onclick="var p=document.getElementById('borrow-icon-picker');p.style.display=p.style.display==='none'?'block':'none';">Borrow Icons</button>
         <button onclick="var p=document.getElementById('disconnect-icon-picker');p.style.display=p.style.display==='none'?'block':'none';">Disconnect Icons</button>
       </div>
@@ -2175,8 +2596,6 @@
 (function(){
   var icons = [
     {id:'ph-currency-circle-dollar', label:'Dollar Circle'},
-    {id:'ph-coin', label:'Single Coin'},
-    {id:'ph-coins', label:'Coins (2 stacked)'},
     {id:'ph-money', label:'Bills'},
   ];
   var container = document.getElementById('borrow-icon-options');
@@ -2702,13 +3121,13 @@
           </div>
         </div>
         <div class="borrow-cta-inner">
-          <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('confirm')"><i class="ph-light ph-currency-circle-dollar btn-icon-lg"></i> Borrow Now</button>
+          <button class="btn btn-primary btn-full btn-lg" onclick="commitBorrow(this)"><i class="ph-light ph-currency-circle-dollar btn-icon-lg"></i> Borrow Now</button>
         </div>
         </div>
       </div>
     </div>
     <div class="borrow-cta">
-      <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('confirm')"><i class="ph-light ph-currency-circle-dollar btn-icon-lg"></i> Borrow Now</button>
+      <button class="btn btn-primary btn-full btn-lg" onclick="commitBorrow(this)"><i class="ph-light ph-currency-circle-dollar btn-icon-lg"></i> Borrow Now</button>
     </div>
     <div class="app-footer">
       <a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a>
@@ -2814,7 +3233,7 @@
               <div class="health-hearts"></div>
             </div>
             <div class="position-buttons">
-              <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
+              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
               <button class="btn btn-secondary"><i class="ph ph-arrow-circle-up btn-icon"></i> Quick Withdraw</button>
             </div>
           </div>
@@ -2828,7 +3247,7 @@
           <div style="text-align: right;"><div class="stat-big accent">—<span style="font-size: var(--ds-xs); color: var(--text-secondary);"> /yr</span></div><div class="stat-label">Borrow Rate</div></div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
+          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
           <button class="btn btn-secondary"><i class="ph ph-arrow-circle-up btn-icon"></i> Quick Withdraw</button>
         </div>
       </div>
@@ -2885,8 +3304,8 @@
                             </div>
             </div>
             <div class="position-buttons">
-              <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-              <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
+              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
             </div>
           </div>
         </div>
@@ -2917,8 +3336,8 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
+          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
 
@@ -2974,8 +3393,8 @@
                             </div>
             </div>
             <div class="position-buttons">
-              <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-              <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
+              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
             </div>
           </div>
         </div>
@@ -3006,8 +3425,8 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
+          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
 
@@ -3063,8 +3482,8 @@
                             </div>
             </div>
             <div class="position-buttons">
-              <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-              <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
+              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
             </div>
           </div>
         </div>
@@ -3095,8 +3514,8 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
+          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
 
@@ -3152,8 +3571,8 @@
                             </div>
             </div>
             <div class="position-buttons">
-              <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-              <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
+              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
             </div>
           </div>
         </div>
@@ -3184,8 +3603,8 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="showScreen('update')"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-secondary"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
+          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
         </div>
       </div>
 
@@ -3380,16 +3799,84 @@
           </div>
         </div>
         <div class="borrow-cta-inner">
-          <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('confirm')"><i class="ph-light ph-sliders-horizontal btn-icon-lg"></i> Modify Position</button>
+          <button class="btn btn-primary btn-full btn-lg" onclick="commitModify(this)"><i class="ph-light ph-sliders-horizontal btn-icon-lg"></i> Modify Position</button>
         </div>
         </div>
       </div>
     </div>
     <div class="borrow-cta">
-      <button class="btn btn-primary btn-full btn-lg" onclick="showScreen('confirm')"><i class="ph-light ph-sliders-horizontal btn-icon-lg"></i> Modify Position</button>
+      <button class="btn btn-primary btn-full btn-lg" onclick="commitModify(this)"><i class="ph-light ph-sliders-horizontal btn-icon-lg"></i> Modify Position</button>
     </div>
     <div class="app-footer">
       <a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a>
+    </div>
+  </div>
+
+  <!-- Bundle modal — Modify Position confirmation (phone-a / Option A only) -->
+  <div class="bundle-modal-overlay" id="bundle-modal-overlay" role="dialog" aria-modal="true" aria-hidden="true" onclick="if(event.target===this)closeBundleModal()">
+    <div class="bundle-toast"><i class="ph-fill ph-check-circle"></i>Success!</div>
+    <div class="bundle-modal-dialog">
+      <button class="bundle-modal-close" onclick="closeBundleModal()" aria-label="Close"><i class="ph ph-x"></i></button>
+      <div class="bundle-modal-mascot">
+        <svg class="bundle-mascot-blob" viewBox="0 0 140 108" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M122 17C132 42 114 72 82 85C50 97 16 87 7 62C-3 37 14 42 46 30C78 17 113 -8 122 17Z"/></svg>
+        <img src="assets/mascot-base.svg" alt="" aria-hidden="true">
+        <span class="bundle-mascot-sparkle bms-1"></span>
+        <span class="bundle-mascot-sparkle bms-2"></span>
+        <span class="bundle-mascot-sparkle bms-3"></span>
+        <span class="bundle-mascot-sparkle bms-4"></span>
+        <span class="bundle-mascot-sparkle bms-5"></span>
+      </div>
+      <div class="bundle-modal-rows">
+        <div class="bundle-row">
+          <div class="bundle-row-label">Supply</div>
+          <div class="bundle-row-amount" id="bm-supply-amount">—</div>
+          <div class="bundle-row-token" id="bm-supply-token"><span class="mini-icon pepe"></span>PEPE</div>
+        </div>
+        <div class="bundle-sep">&amp;</div>
+        <div class="bundle-row">
+          <div class="bundle-row-label">Repay</div>
+          <div class="bundle-row-amount" id="bm-repay-amount">—</div>
+          <div class="bundle-row-token"><span class="mini-icon usdc"></span>USDC</div>
+        </div>
+      </div>
+      <ol class="bundle-steps">
+        <li class="bundle-step"><span class="bundle-step-text">Sign approval for transferring <span id="bm-step-token">PEPE</span></span><span class="bundle-step-num">1</span></li>
+        <li class="bundle-step"><span class="bundle-step-text">Sign approval for transferring USDC</span><span class="bundle-step-num">2</span></li>
+        <li class="bundle-step"><span class="bundle-step-text">Execute the bundle</span><span class="bundle-step-num">3</span></li>
+      </ol>
+      <div class="bundle-message">
+        <i class="ph ph-info bundle-message-icon bmi-ready" aria-hidden="true"></i>
+        <i class="ph ph-info bundle-message-icon bmi-processing" aria-hidden="true"></i>
+        <i class="ph-fill ph-seal-check bundle-message-icon bmi-done" aria-hidden="true"></i>
+        <div class="bundle-message-body">
+          <div class="bundle-message-ready"><strong>Ready to go</strong><br>Initiate the transaction by clicking the button below.</div>
+          <div class="bundle-message-processing"><strong>Proceed in wallet</strong><br>Continue your transaction in your connected wallet.</div>
+          <div class="bundle-message-done"><strong>Done!</strong><br>Transaction completed successfully.</div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full bundle-modal-cta" onclick="bundleModalCtaClick()">
+        <span class="bundle-cta-ready">Begin</span>
+        <span class="bundle-cta-processing"><i class="ph-light ph-circle-notch bundle-spin"></i> Processing</span>
+        <span class="bundle-cta-done"><i class="ph ph-cards-three btn-icon"></i> View Positions</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Repay modal — triggered from the "Quick Repay" button on position cards -->
+  <div class="quick-repay-overlay" id="quick-repay-overlay" role="dialog" aria-modal="true" aria-labelledby="qr-amount-text" aria-hidden="true" onclick="if(event.target===this)closeQuickRepay()">
+    <div class="quick-repay-dialog">
+      <button class="quick-repay-close" onclick="closeQuickRepay()" aria-label="Close repay dialog"><i class="ph ph-x"></i></button>
+      <div class="quick-repay-mascot"><img src="assets/mascot-base.svg" alt="" aria-hidden="true"></div>
+      <div class="quick-repay-meta">
+        <div class="qr-label">Repay</div>
+        <div class="qr-amount" id="qr-amount-text">$0</div>
+        <div class="qr-caption"><span class="mini-icon usdc"></span>USDC</div>
+      </div>
+      <div class="quick-repay-message" id="qr-message">Review the amount, then confirm to repay the position from your wallet.</div>
+      <div class="quick-repay-actions">
+        <button class="btn btn-primary quick-repay-cta" onclick="confirmQuickRepay()"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Repay</button>
+        <button class="quick-repay-modify" onclick="quickRepayGoModify()">Modify Positions</button>
+      </div>
     </div>
   </div>
 
@@ -3604,6 +4091,7 @@ function initPhoneB() {
   // Sparkle IntersectionObserver wasn't attached to phone-b at DOMContentLoaded
   // (it was empty then). Now that the clone is in place, wire its boosted badges.
   if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
+  if (typeof rewritePositionTokenLabels === 'function') rewritePositionTokenLabels(phoneB);
 }
 
 /* Option C = old Option B variant (CTA card visible, restored title/total layout) */
@@ -3612,6 +4100,7 @@ function initPhoneC() {
   if (!phoneC) return;
   clonePhoneFromSnapshot(phoneC, 'c');
   if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
+  if (typeof rewritePositionTokenLabels === 'function') rewritePositionTokenLabels(phoneC);
   // Positions screen tweaks specific to Option C
   var phoneCPositions = document.getElementById('positions-c');
   if (phoneCPositions) {
@@ -4069,7 +4558,8 @@ function borrowWithToken(target, token) {
       // Connected path: full selectToken flow (updates trigger, no-funds, banner, mascot)
       selectToken(row);
     } else {
-      // Disconnected path (no dropdown rows): just update the trigger display
+      // Disconnected path (no dropdown rows): update trigger AND the Op2
+      // slider-token-badge that static-labels the Supply section.
       var trigger = screen.querySelector('.token-select-trigger');
       if (trigger) {
         var iconEl = trigger.querySelector('.mini-icon');
@@ -4077,8 +4567,407 @@ function borrowWithToken(target, token) {
         if (iconEl) iconEl.className = 'mini-icon ' + token;
         if (nameEl) nameEl.textContent = token.toUpperCase();
       }
+      var badge = screen.querySelector('.slider-token-badge');
+      if (badge) {
+        badge.innerHTML = '<span class="mini-icon ' + token + '"></span>' + token.toUpperCase();
+      }
     }
   });
+}
+
+// Called from the "Modify Position" button on each My Positions card.
+// Reads the card's token + all position-specific values (supply/borrow/rate/prices)
+// and applies them to the Modify screen's summary rows, so the open state matches
+// the position the user tapped instead of showing the generic PEPE defaults.
+// Quick Repay modal — opens on position card "Quick Repay" button, pre-fills
+// the amount from the card's borrowing value, and offers Modify Positions
+// as the escape route (opens the full Modify flow for that same position).
+var _quickRepayCard = null;
+function openQuickRepay(btn) {
+  var card = btn.closest('.position-card, .position-card-inner');
+  if (!card) return;
+  _quickRepayCard = card;
+  var borrowingEl = card.querySelector('.stat-big:not(.accent)');
+  var amount = borrowingEl ? borrowingEl.textContent.trim() : '$0';
+  // Quick Repay = one-op bundle: approve USDC → execute. Shares the modal
+  // pattern with Modify so users see one consistent confirmation surface.
+  openBundleModal({
+    operations: [{ label: 'Repay', amount: amount, token: 'USDC', tokenClass: 'usdc' }],
+    steps: ['Sign approval for transferring USDC', 'Execute the repayment']
+  }, btn);
+}
+function closeQuickRepay() {
+  var overlay = document.getElementById('quick-repay-overlay');
+  if (!overlay) return;
+  _releaseHostPhoneScroll(overlay);
+  overlay.classList.remove('is-open');
+  overlay.setAttribute('aria-hidden', 'true');
+}
+function confirmQuickRepay() {
+  // Demo: just close and show confirm screen briefly.
+  closeQuickRepay();
+  if (typeof showScreen === 'function') showScreen('confirm');
+}
+function quickRepayGoModify() {
+  var card = _quickRepayCard;
+  closeQuickRepay();
+  if (card) {
+    var modifyBtn = card.querySelector('button[onclick*="modifyFromPosition"]');
+    if (modifyBtn) { modifyFromPosition(modifyBtn); return; }
+  }
+  if (typeof showScreen === 'function') showScreen('update');
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && document.getElementById('quick-repay-overlay')?.classList.contains('is-open')) {
+    closeQuickRepay();
+  }
+});
+
+// Replace "(Token) Price" labels in position cards with the actual token name
+// (e.g. "PEPE Price", "ETH Price"). Runs on mount AND after phone-b/c clone,
+// so simulators inherit the same correction.
+function rewritePositionTokenLabels(root) {
+  root = root || document;
+  var KNOWN = ['pepe','eth','doge','shib','comp','morpho','syrup','wif'];
+  root.querySelectorAll('.position-card, .position-card-inner').forEach(function(card) {
+    var icon = card.querySelector('.mini-icon, .token-icon');
+    var token = null;
+    if (icon) {
+      for (var i = 0; i < KNOWN.length; i++) {
+        if (icon.classList.contains(KNOWN[i])) { token = KNOWN[i].toUpperCase(); break; }
+      }
+    }
+    if (!token) return;
+    card.querySelectorAll('.detail-item-label, .summary-row-label').forEach(function(lbl) {
+      if (lbl.textContent.trim() === '(Token) Price') lbl.textContent = token + ' Price';
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded', function() { rewritePositionTokenLabels(); });
+
+// Bundle modal for Modify Position — Option A (phone-a) only. Other phones
+// fall back to the legacy #confirm screen so the patterns can be compared.
+function _attachOverlayToHostPhone(overlay, btn) {
+  var host = (btn && btn.closest('.phone')) || document.getElementById('phone-a');
+  if (host && overlay.parentElement !== host) host.appendChild(overlay);
+  // If phone is scrolled (e.g. Modify button at the bottom), snap to the top so
+  // the modal lands in view, and lock scroll while it's open.
+  if (host && host.classList.contains('phone')) {
+    host.scrollTop = 0;
+    host.dataset.prevOverflow = host.style.overflow || '';
+    host.style.overflow = 'hidden';
+  }
+}
+function _releaseHostPhoneScroll(overlay) {
+  var host = overlay && overlay.parentElement;
+  if (host && host.classList.contains('phone')) {
+    host.style.overflow = host.dataset.prevOverflow || '';
+    delete host.dataset.prevOverflow;
+  }
+}
+function openBundleModal(data, btn) {
+  data = data || {};
+  var overlay = document.getElementById('bundle-modal-overlay');
+  if (!overlay) return;
+  _attachOverlayToHostPhone(overlay, btn);
+  // Reset to "ready" state each time it opens
+  overlay.classList.remove('is-processing', 'is-done');
+  overlay.classList.add('is-ready');
+  // Render the summary rows dynamically — one per non-zero operation, with "&"
+  // separators between them. An empty bundle (no changes) shows a single "—" row.
+  var rowsWrap = overlay.querySelector('.bundle-modal-rows');
+  var operations = (data.operations || []).filter(function(op) { return op && op.amount && op.amount !== '—'; });
+  if (!operations.length) operations = [{ label: 'No changes', amount: '—', token: '', tokenClass: '' }];
+  rowsWrap.innerHTML = operations.map(function(op, idx) {
+    var iconHtml = op.tokenClass ? '<span class="mini-icon ' + op.tokenClass + '"></span>' : '';
+    // amount + token wrapped in .bundle-row-value so Done state can morph them
+    // from stacked (column) → inline (row) + shrink the amount in one FLIP.
+    var row = '<div class="bundle-row"><div class="bundle-row-label">' + op.label + '</div>' +
+              '<div class="bundle-row-value">' +
+                '<span class="bundle-row-amount">' + op.amount + '</span>' +
+                '<span class="bundle-row-token">' + iconHtml + (op.token || '') + '</span>' +
+              '</div></div>';
+    if (idx < operations.length - 1) row += '<div class="bundle-sep">&amp;</div>';
+    return row;
+  }).join('');
+  // Render steps dynamically — only the approvals that are actually needed + execute
+  var stepsWrap = overlay.querySelector('.bundle-steps');
+  var steps = (data.steps && data.steps.length) ? data.steps : ['Execute the bundle'];
+  stepsWrap.innerHTML = steps.map(function(s, i) {
+    return '<li class="bundle-step"><span class="bundle-step-num">' + (i + 1) + '</span>' +
+           '<span class="bundle-step-text">' + s + '</span></li>';
+  }).join('');
+  overlay.classList.add('is-open');
+  overlay.setAttribute('aria-hidden', 'false');
+}
+function closeBundleModal() {
+  var overlay = document.getElementById('bundle-modal-overlay');
+  if (!overlay) return;
+  // Route to Positions ONLY if the operation started (processing or done) — the
+  // underlying screen then shows stale sliders, forward is the right call.
+  // In the ready state, user hasn't committed anything, so dismissing should
+  // return them to the Modify/Borrow screen they came from.
+  var started = overlay.classList.contains('is-processing') || overlay.classList.contains('is-done');
+  _releaseHostPhoneScroll(overlay);
+  overlay.classList.remove('is-open');
+  overlay.setAttribute('aria-hidden', 'true');
+  if (started && typeof showScreen === 'function') showScreen('positions');
+}
+function closeBundleModalAndFinish() {
+  closeBundleModal();
+  if (typeof showScreen === 'function') showScreen('positions');
+}
+
+// CTA routes based on state: ready → start sequence; processing → disabled;
+// done → close + go to positions.
+function bundleModalCtaClick() {
+  var overlay = document.getElementById('bundle-modal-overlay');
+  if (!overlay) return;
+  if (overlay.classList.contains('is-done')) { closeBundleModalAndFinish(); return; }
+  if (overlay.classList.contains('is-processing')) return;
+  runBundleSequence();
+}
+
+// Walks the stepper: each step goes active → done in turn. Total ~1.4s per step.
+// Final state: all done + overlay in is-done state → CTA becomes "View Positions".
+function runBundleSequence() {
+  var overlay = document.getElementById('bundle-modal-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('is-ready');
+  overlay.classList.add('is-processing');
+  var steps = overlay.querySelectorAll('.bundle-step');
+  steps.forEach(function(s, idx) {
+    s.classList.remove('is-active', 'is-done');
+    // Reset numeric glyph for re-runs
+    var numEl = s.querySelector('.bundle-step-num');
+    if (numEl) numEl.innerHTML = String(idx + 1);
+  });
+  var i = 0;
+  function advance() {
+    if (i > 0) {
+      var prev = steps[i-1];
+      prev.classList.remove('is-active');
+      prev.classList.add('is-done');
+      // Replace the number with a check glyph on completion
+      var numEl = prev.querySelector('.bundle-step-num');
+      if (numEl) numEl.innerHTML = '<i class="ph ph-check"></i>';
+    }
+    if (i >= steps.length) {
+      overlay.classList.remove('is-processing');
+      overlay.classList.add('is-done');
+      return;
+    }
+    steps[i].classList.add('is-active');
+    i++;
+    setTimeout(advance, 1400);
+  }
+  advance();
+}
+// Borrow commit — Option A (phone-a) opens the new bundle modal with
+// [Supply collateral, Borrow USDC]; only the collateral needs approval
+// (the protocol sends USDC TO the user). Phone-b/c keep the legacy #confirm.
+function commitBorrow(btn) {
+  var phone = btn ? btn.closest('.phone') : null;
+  if (!phone || phone.id !== 'phone-a') { showScreen('confirm'); return; }
+  var screen = btn.closest('.screen') || document.getElementById('borrow-connected');
+  if (!screen) { showScreen('confirm'); return; }
+  var pcts = getSliderPcts(screen.id);
+  var tokenEl = screen.querySelector('.token-select-trigger .token-name')
+             || screen.querySelector('.slider-token-badge');
+  var supplyToken = tokenEl ? tokenEl.textContent.trim() : 'PEPE';
+  var tokenKey = supplyToken.toLowerCase();
+  var td = (typeof tokenData !== 'undefined') ? tokenData[tokenKey] : null;
+  var supplyAmount = td ? td.maxSupply * (pcts.supply / 100) : 0;
+  var supplyUSD = supplyAmount * (td ? td.price : 0);
+  var borrowUSD = supplyUSD * (typeof maxLTV !== 'undefined' ? maxLTV : 0.75) * (pcts.borrow / 100);
+  var fmt = (typeof formatCompact === 'function') ? formatCompact : String;
+  var fmtUSD = (typeof formatUSD === 'function') ? formatUSD : function(n){ return '$' + n.toFixed(2); };
+  var ops = [];
+  if (supplyAmount > 0) ops.push({ label: 'Supply', amount: fmt(supplyAmount), token: supplyToken.toUpperCase(), tokenClass: tokenKey });
+  if (borrowUSD > 0)    ops.push({ label: 'Borrow', amount: fmtUSD(borrowUSD), token: 'USDC', tokenClass: 'usdc' });
+  var steps = [];
+  if (supplyAmount > 0) steps.push('Sign approval for transferring ' + supplyToken.toUpperCase());
+  steps.push('Execute the bundle');
+  openBundleModal({ operations: ops, steps: steps }, btn);
+}
+
+function commitModify(btn) {
+  var phone = btn ? btn.closest('.phone') : null;
+  if (!phone || phone.id !== 'phone-a') { showScreen('confirm'); return; }
+  var screen = btn.closest('.screen') || document.getElementById('update');
+  if (!screen) { showScreen('confirm'); return; }
+
+  // Compute deltas from the seeded starting positions
+  var pcts = getSliderPcts(screen.id);
+  var tracks = screen.querySelectorAll('.slider-track');
+  var supplyStart = tracks[0] ? parseFloat(tracks[0].dataset.startPct) || 0 : 0;
+  var borrowStart = tracks[1] ? parseFloat(tracks[1].dataset.startPct) || 0 : 0;
+  var supplyDelta = pcts.supply - supplyStart;
+  var borrowDelta = pcts.borrow - borrowStart;
+
+  // Derive token + USD values from the screen context
+  var tokenEl = screen.querySelector('.token-select-trigger .token-name')
+             || screen.querySelector('.slider-token-badge');
+  var supplyToken = tokenEl ? tokenEl.textContent.trim() : 'PEPE';
+  var tokenKey = supplyToken.toLowerCase();
+  var td = (typeof tokenData !== 'undefined') ? tokenData[tokenKey] : null;
+  var supplyTotal = td ? td.maxSupply : 0;
+  var supplyAmountAbs = Math.abs((supplyDelta / 100) * supplyTotal);
+  var borrowUSDAbs = Math.abs((borrowDelta / 100) * (supplyTotal * (td ? td.price : 0) * (typeof maxLTV !== 'undefined' ? maxLTV : 0.75)));
+
+  // Build bundle: a "supply" op if supplyDelta > 0, "withdraw" if < 0; same for borrow
+  var fmt = (typeof formatCompact === 'function') ? formatCompact : String;
+  var fmtUSD = (typeof formatUSD === 'function') ? formatUSD : function(n){ return '$' + n.toFixed(2); };
+  var ops = [];
+  if (Math.abs(supplyDelta) > 0.5) {
+    ops.push({
+      label: supplyDelta > 0 ? 'Supply' : 'Withdraw',
+      amount: fmt(supplyAmountAbs),
+      token: supplyToken.toUpperCase(),
+      tokenClass: tokenKey,
+    });
+  }
+  if (Math.abs(borrowDelta) > 0.5) {
+    ops.push({
+      label: borrowDelta > 0 ? 'Borrow' : 'Repay',
+      amount: fmtUSD(borrowUSDAbs),
+      token: 'USDC',
+      tokenClass: 'usdc',
+    });
+  }
+  // Build steps based on which tokens need user approval
+  var steps = [];
+  if (supplyDelta > 0) steps.push('Sign approval for transferring ' + supplyToken.toUpperCase());
+  if (borrowDelta < 0) steps.push('Sign approval for transferring USDC');
+  steps.push('Execute the bundle');
+  openBundleModal({ operations: ops, steps: steps }, btn);
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && document.getElementById('bundle-modal-overlay')?.classList.contains('is-open')) {
+    closeBundleModal();
+  }
+});
+
+// Dev-nav shortcut: open Quick Repay with demo amount without needing a position card.
+function devOpenQuickRepay() {
+  _quickRepayCard = null;
+  openBundleModal({
+    operations: [{ label: 'Repay', amount: '$25,240K', token: 'USDC', tokenClass: 'usdc' }],
+    steps: ['Sign approval for transferring USDC', 'Execute the repayment']
+  }, null);
+}
+
+function modifyFromPosition(btn) {
+  var KNOWN = ['pepe','morpho','comp','syrup','doge','eth','shib','wif','dai','usdc','usdt'];
+  var card = btn.closest('.position-card, .position-card-inner');
+  if (!card) { showScreen('update'); return; }
+  var icon = card.querySelector('.mini-icon, .token-icon');
+  var token = null;
+  if (icon) {
+    for (var i = 0; i < KNOWN.length; i++) {
+      if (icon.classList.contains(KNOWN[i])) { token = KNOWN[i]; break; }
+    }
+  }
+  var data = extractPositionData(card, token);
+  if (token) borrowWithToken('update', token);
+  else { showScreen('update'); return; }
+  // Apply overrides AFTER showScreen's updateBorrowValues has run, then seed the
+  // sliders to represent the position's current state so deltas can be computed
+  // (user drags UP or DOWN from here = supply more/withdraw / repay/borrow more).
+  // Decide seed pcts from the position's actual state — supply-only positions
+  // (no borrow, like COMP) seed borrow slider at 0 so the Modify screen opens
+  // coherent with "you have no debt" instead of a bogus 50% pre-fill.
+  var seed = computeSeedPctsFromPosition(card);
+  ['update','update-b','update-c'].forEach(function(sid) {
+    var screen = document.getElementById(sid);
+    if (!screen) return;
+    seedModifySliders(screen, seed.supply, seed.borrow);
+    applyPositionDataToModify(screen, data);
+  });
+}
+
+function computeSeedPctsFromPosition(card) {
+  var borrowingEl = card.querySelector('.stat-big:not(.accent)');
+  var borrowText = borrowingEl ? borrowingEl.textContent.trim() : '';
+  // "$0" / "—" / empty → supply-only position, no debt
+  var isSupplyOnly = !borrowText || /^(\$0|—|-|0)(?:\s|$)/.test(borrowText);
+  return {
+    supply: 50,           // arbitrary mid-range starting point for supply
+    borrow: isSupplyOnly ? 0 : 50,
+  };
+}
+
+// Seed both sliders to a starting % that represents the position's current state.
+// Stores the starting pct on the track's dataset so commitModify can compute deltas.
+function seedModifySliders(screen, supplyStart, borrowStart) {
+  var tracks = screen.querySelectorAll('.slider-track');
+  if (tracks[0]) { setSliderPct(tracks[0], supplyStart); tracks[0].dataset.startPct = supplyStart; }
+  if (tracks[1]) { setSliderPct(tracks[1], borrowStart); tracks[1].dataset.startPct = borrowStart; }
+  updateModifyCtaState(screen);   /* deltas = 0 on seed → disables the Modify CTA */
+}
+
+// Disables the "Modify Position" button whenever sliders match the seeded start
+// state (no deltas to commit). Prevents opening the bundle modal with a
+// "No changes" row.
+function updateModifyCtaState(screen) {
+  if (!screen || !/^update/.test(screen.id)) return;
+  var tracks = screen.querySelectorAll('.slider-track');
+  if (!tracks[0] || !tracks[1]) return;
+  var pcts = getSliderPcts(screen.id);
+  var supplyStart = parseFloat(tracks[0].dataset.startPct || '0') || 0;
+  var borrowStart = parseFloat(tracks[1].dataset.startPct || '0') || 0;
+  var hasChange = Math.abs(pcts.supply - supplyStart) > 0.5
+               || Math.abs(pcts.borrow - borrowStart) > 0.5;
+  var cta = screen.querySelector('.btn-primary.btn-full.btn-lg');
+  if (cta) cta.disabled = !hasChange;
+}
+
+function extractPositionData(card, token) {
+  var d = { token: token, tokenName: token ? token.toUpperCase() : '' };
+  var supplyLine = card.querySelector('.position-supply-line');
+  if (supplyLine) {
+    var priceEl = supplyLine.querySelector('.price');
+    d.supplyUSD = priceEl ? priceEl.textContent.trim() : '';
+    var txt = supplyLine.textContent.replace(d.supplyUSD, '').trim();
+    var parts = txt.split(/\s+/);
+    // txt is "0.059 PEPE" — token is the last word, amount is the rest
+    if (parts.length >= 2) d.supplyAmount = parts.slice(0, -1).join(' ');
+  }
+  var borrowingEl = card.querySelector('.stat-big:not(.accent)');
+  if (borrowingEl) d.borrowing = borrowingEl.textContent.trim();
+  var rateEl = card.querySelector('.stat-big.accent');
+  if (rateEl) d.borrowRate = rateEl.textContent.replace(/\s+/g, ' ').trim();
+  var details = card.querySelectorAll('.detail-row .detail-item-value, .price-row .detail-item-value');
+  if (details[0]) d.tokenPrice = details[0].textContent.trim();
+  if (details[1]) d.liqPrice = details[1].textContent.trim();
+  return d;
+}
+
+function applyPositionDataToModify(screen, data) {
+  // Summary rows: [0]=You supply, [1]=You repay, [2]=Borrow Rate, [3]=Price, [4]=Liquidation
+  var rows = screen.querySelectorAll('.summary-row-value');
+  if (rows[0] && data.supplyAmount) {
+    var oldSpan = rows[0].querySelector('.old');
+    var newSpan = rows[0].querySelector('.new');
+    if (oldSpan) oldSpan.textContent = data.supplyAmount;
+    if (newSpan) newSpan.textContent = data.supplyAmount + ' ' + data.tokenName;
+    if (!oldSpan && !newSpan) rows[0].textContent = data.supplyAmount + ' ' + data.tokenName;
+  }
+  if (rows[1] && data.borrowing) {
+    rows[1].textContent = data.borrowing + ' USDC';
+  }
+  if (rows[2] && data.borrowRate) {
+    var ratePart = data.borrowRate.replace(/\s*\/\s*yr\s*$/i, '');
+    rows[2].innerHTML = ratePart + '<span class="rate-suffix">/yr</span>';
+  }
+  if (rows[3] && data.tokenPrice) {
+    rows[3].textContent = data.tokenPrice;
+  }
+  if (rows[4] && data.liqPrice) {
+    var newLiq = rows[4].querySelector('.new');
+    if (newLiq) newLiq.textContent = data.liqPrice;
+    else rows[4].textContent = data.liqPrice;
+  }
 }
 
 function showScreen(id) {
@@ -4471,6 +5360,7 @@ function setSliderPct(track, pct) {
     if (sid === 'borrow-connected' || sid === 'update') { updateHealthMascot && updateHealthMascot(); updateBorrowValues && updateBorrowValues(sid); }
     if (sid === 'borrow-connected-b' || sid === 'update-b') { updateHealthMascotB && updateHealthMascotB(); updateBorrowValues && updateBorrowValues(sid); }
     if (sid === 'borrow-connected-c' || sid === 'update-c') { updateHealthMascotC && updateHealthMascotC(); updateBorrowValues && updateBorrowValues(sid); }
+    if (typeof updateModifyCtaState === 'function') updateModifyCtaState(screen);
   }
 }
 
@@ -4538,6 +5428,7 @@ document.addEventListener('click', function(e) {
     if (sid === 'borrow-connected' || sid === 'update') { updateHealthMascot(); updateBorrowValues(sid); }
     if (sid === 'borrow-connected-b' || sid === 'update-b') { updateHealthMascotB(); updateBorrowValues(sid); }
     if (sid === 'borrow-connected-c' || sid === 'update-c') { updateHealthMascotC(); updateBorrowValues(sid); }
+    if (typeof updateModifyCtaState === 'function') updateModifyCtaState(screen);
   }
 });
 
@@ -4736,11 +5627,18 @@ function getSliderPcts(screenId) {
   var tracks = screen.querySelectorAll('.slider-track');
   var groups = screen.querySelectorAll('.pct-buttons');
   function readTrack(i) {
-    // Prefer actual fill width (reflects drag/click anywhere on track)
+    // Prefer actual fill width (reflects drag/click anywhere on track).
+    // fill.style.width is a calc() expression. Browsers simplify the original
+    // `calc((100% - 32px) * N / 100 + 16px)` to `calc(N% + 0px)`, so match BOTH
+    // forms: the `* N / 100` subexpression OR the leading `calc(N%`.
     if (tracks[i]) {
       var fill = tracks[i].querySelector('.slider-track-fill');
       if (fill && fill.style.width) {
-        var w = parseFloat(fill.style.width);
+        var raw = fill.style.width;
+        var m = raw.match(/\*\s*([0-9.]+)\s*\/\s*100/)
+             || raw.match(/calc\(\s*([0-9.]+)%/);
+        if (m) return parseFloat(m[1]);
+        var w = parseFloat(raw);
         if (!isNaN(w)) return w;
       }
     }
