@@ -3811,13 +3811,13 @@
           </div>
         </div>
         <div class="borrow-cta-inner">
-          <button class="btn btn-primary btn-full btn-lg" onclick="commitModify(this)"><i class="ph-light ph-sliders-horizontal btn-icon-lg"></i> Modify Position</button>
+          <button class="btn btn-primary btn-full btn-lg" disabled onclick="commitModify(this)"><i class="ph-light ph-sliders-horizontal btn-icon-lg"></i> Modify Position</button>
         </div>
         </div>
       </div>
     </div>
     <div class="borrow-cta">
-      <button class="btn btn-primary btn-full btn-lg" onclick="commitModify(this)"><i class="ph-light ph-sliders-horizontal btn-icon-lg"></i> Modify Position</button>
+      <button class="btn btn-primary btn-full btn-lg" disabled onclick="commitModify(this)"><i class="ph-light ph-sliders-horizontal btn-icon-lg"></i> Modify Position</button>
     </div>
     <div class="app-footer">
       <a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a>
@@ -4926,8 +4926,13 @@ function updateModifyCtaState(screen) {
   var tracks = screen.querySelectorAll('.slider-track');
   if (!tracks[0] || !tracks[1]) return;
   var pcts = getSliderPcts(screen.id);
-  var supplyStart = parseFloat(tracks[0].dataset.startPct || '0') || 0;
-  var borrowStart = parseFloat(tracks[1].dataset.startPct || '0') || 0;
+  // Anchor startPct to current value if it hasn't been seeded yet (e.g. dev-nav
+  // entry, back-button return). Without this, the default slider position
+  // registers as a delta against startPct=0 and the CTA opens enabled.
+  if (!tracks[0].dataset.startPct) tracks[0].dataset.startPct = String(pcts.supply);
+  if (!tracks[1].dataset.startPct) tracks[1].dataset.startPct = String(pcts.borrow);
+  var supplyStart = parseFloat(tracks[0].dataset.startPct) || 0;
+  var borrowStart = parseFloat(tracks[1].dataset.startPct) || 0;
   var hasChange = Math.abs(pcts.supply - supplyStart) > 0.5
                || Math.abs(pcts.borrow - borrowStart) > 0.5;
   var cta = screen.querySelector('.btn-primary.btn-full.btn-lg');
@@ -5024,6 +5029,16 @@ function showScreen(id) {
   var navBtn = document.querySelectorAll('.screen-nav button')[labels[id]];
   if (navBtn) navBtn.classList.add('active');
   document.querySelectorAll('.phone').forEach(function(p) { p.scrollTop = 0; if (p._navShadowUpdate) p._navShadowUpdate(); }); window.scrollTo(0, 0);
+  // Modify screen: anchor CTA disabled on every entry path. Runs in rAF so the
+  // active screen is laid out first (slider fills readable) before we read pcts.
+  if (/^update/.test(id)) {
+    requestAnimationFrame(function() {
+      ['update','update-b','update-c'].forEach(function(sid) {
+        var s = document.getElementById(sid);
+        if (s && typeof updateModifyCtaState === 'function') updateModifyCtaState(s);
+      });
+    });
+  }
   localStorage.setItem('purinta-screen', id);
   history.replaceState({ screen: id }, '', location.pathname + location.search);
   // Play loading intro on homepage navigation
