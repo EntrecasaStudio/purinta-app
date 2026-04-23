@@ -235,6 +235,7 @@
       cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       text-transform: none;
+      touch-action: manipulation;  /* kills iOS ~300ms tap delay / double-tap zoom */
     }
     .btn-icon { width: 20px; height: 20px; flex-shrink: 0; }
     .btn-icon-lg { width: 24px; height: 24px; flex-shrink: 0; }
@@ -242,8 +243,10 @@
     i.btn-icon, i.btn-icon-lg { width: auto; height: auto; display: inline-flex; align-items: center; }
     i.btn-icon { font-size: 20px; }
     i.btn-icon-lg { font-size: 24px; }
-    .btn:hover { transform: translateY(-3px); }
-    .btn:active { transform: translateY(1px) scale(0.96); filter: brightness(0.95); }
+    /* :hover gated to desktop phones — mobile shows :active only as tap feedback.
+       :not(:disabled) stays defensive in case we add [disabled] buttons later. */
+    .phone.desktop .btn:hover:not(:disabled) { transform: translateY(-3px); }
+    .btn:active:not(:disabled) { transform: translateY(1px) scale(0.96); filter: brightness(0.95); }
     .btn-primary {
       background: linear-gradient(160deg, var(--green-200), var(--green-300)); color: var(--green-700);
       box-shadow: none;
@@ -252,7 +255,7 @@
       letter-spacing: 0.5px;
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .btn-primary:hover {
+    .phone.desktop .btn-primary:hover:not(:disabled) {
       transform: translateY(-2px) scale(1.03);
       box-shadow: 0 6px 0 0 var(--green-500), 0 10px 20px rgba(57,118,61,0.12);
     }
@@ -272,7 +275,15 @@
       box-shadow: 0 0 0 0 var(--green-300);
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .btn-secondary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
+    .phone.desktop .btn-secondary:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
+    /* Respect OS motion-reduce: kill the hover/active transforms for users with vestibular sensitivity. */
+    @media (prefers-reduced-motion: reduce) {
+      .phone.desktop .btn:hover,
+      .phone.desktop .btn-primary:hover,
+      .phone.desktop .btn-secondary:hover,
+      .btn:active,
+      .btn-primary:active { transform: none; box-shadow: none; filter: none; }
+    }
     .btn-secondary:active { transform: translateY(1px) scale(0.96); box-shadow: 0 0 0 0 var(--green-300); filter: brightness(0.95); }
     .btn-connect { background: white; color: var(--text-primary); border: 1.5px solid var(--cream-400); font-size: var(--ds-xs); padding: 9.5px 16px; } /* 40px ×4 */
     .btn-full { width: 100%; justify-content: center; }
@@ -297,7 +308,7 @@
       display: flex; align-items: center; justify-content: center; gap: 6px;
       font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 400; letter-spacing: 0.26px;
       background: var(--cream-50); color: var(--text-secondary); transition: all 0.15s; }
-    .disconnect-dropdown .btn-disconnect:hover { background: var(--cream-100); color: var(--green-700); border-color: var(--green-300); }
+    .phone.desktop .disconnect-dropdown .btn-disconnect:hover { background: var(--cream-100); color: var(--green-700); border-color: var(--green-300); }
     .disconnect-dropdown .btn-disconnect:active { transform: scale(0.97); background: var(--cream-100); }
     .wallet-positions {
       width: 32px; height: 32px; padding: 0; border-radius: 50%; border: none;
@@ -434,7 +445,7 @@
     .token-action { width: 100%; }
     .token-action .btn { padding: 12px 20px; width: 100%; } /* 44px ×4 — inherits default 16px */
 
-    /* Home card: borrow rate badge (Op2) with Merkl-boost tooltip on hover.
+    /* Home card: borrow rate badge (Op2) with rewards tooltip on hover.
        Default (standard rate): cream bg + grey number.
        Boosted (negative net): mint bg + green number + decorative sparkles overlay.
        Height is fixed at 50px for BOTH variants — sparkles are an absolute overlay, never affect layout. */
@@ -450,8 +461,13 @@
     /* Boosted steps up a tonal notch so the semantic survives the unified palette —
        same family (mint), higher saturation + darker text. */
     .token-rate-badge--boosted {
-      background: var(--mint-200);
+      background: var(--mint-300);
     }
+    /* Option A (phone-a) uses mint-100 as the non-boosted base — a touch warmer
+       than mint-50, keeping more tonal distance from the card's near-white bg.
+       Boosted bumps to mint-300 so the hierarchy survives the low-opacity sparkles. */
+    #phone-a .token-rate-badge { background: var(--mint-100); }
+    #phone-a .token-rate-badge--boosted { background: var(--mint-300); }
     /* Home "Option B" (phone-b) — variation for comparison vs Option A:
        · Flat background: all badges on mint-50 (boosted bg override to match non-boosted)
        · Sparkles still animate on viewport entry, but STAY visible at the end
@@ -542,6 +558,48 @@
       42%  { opacity: .9; transform: scale(1.15); }
       58%  { opacity: .9; transform: scale(1); animation-timing-function: ease-out; }
       100% { opacity: 0; transform: scale(0.9); }
+    }
+    /* DESKTOP variant — pulses from 0.4 baseline up to 1, settles back at 0.4.
+       Stars stay visible at low-opacity after animation (persistent signal),
+       without the Morpho-cheap look of full-opacity always-on. */
+    @keyframes sparkle-burst-persist {
+      0%   { opacity: 0.4; transform: scale(1); }
+      14%  { opacity: 1;   transform: scale(1.3); }
+      28%  { opacity: 1;   transform: scale(1); }
+      42%  { opacity: 1;   transform: scale(1.25); }
+      58%  { opacity: 1;   transform: scale(1); animation-timing-function: ease-out; }
+      100% { opacity: 0.4; transform: scale(1); }
+    }
+    @keyframes sparkle-burst-small-persist {
+      0%   { opacity: 0.36; transform: scale(1); }
+      14%  { opacity: .9;   transform: scale(1.2); }
+      28%  { opacity: .9;   transform: scale(1); }
+      42%  { opacity: .9;   transform: scale(1.15); }
+      58%  { opacity: .9;   transform: scale(1); animation-timing-function: ease-out; }
+      100% { opacity: 0.36; transform: scale(1); }
+    }
+    /* Desktop-only: persistent low-opacity baseline + hybrid keyframes (not phone-b,
+       which has its own full-opacity -stay experiment). Full animation shorthand
+       re-specified in the override to avoid any shorthand/longhand merge issues. */
+    .phone.desktop .token-rate-sparkles .sparkle { opacity: 0.4; }
+    .phone.desktop:not(#phone-b) .token-rate-badge--boosted.is-animating .sparkle-2 {
+      animation: sparkle-burst-persist 1600ms 80ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    .phone.desktop:not(#phone-b) .token-rate-badge--boosted.is-animating .sparkle-1 {
+      animation: sparkle-burst-persist 1650ms 200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .phone.desktop:not(#phone-b) .token-rate-badge--boosted.is-animating .sparkle-3 {
+      animation: sparkle-burst-small-persist 1600ms 320ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    /* Hover re-pulse on desktop — rewards the user returning to the card without a timer. */
+    .phone.desktop:not(#phone-b) .token-card:hover .token-rate-badge--boosted .sparkle-2 {
+      animation: sparkle-burst-persist 1400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    .phone.desktop:not(#phone-b) .token-card:hover .token-rate-badge--boosted .sparkle-1 {
+      animation: sparkle-burst-persist 1450ms 100ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .phone.desktop:not(#phone-b) .token-card:hover .token-rate-badge--boosted .sparkle-3 {
+      animation: sparkle-burst-small-persist 1400ms 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     @keyframes number-pulse {
       0%   { transform: scale(1); }
@@ -2226,7 +2284,7 @@
           <span class="token-rate-sparkles" aria-hidden="true"><svg viewBox="0 0 36.8457 37.5039" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path class="sparkle sparkle-1" d="M32.1324 27.7153C32.1045 27.6416 32.0004 27.6416 31.9725 27.7153L30.7098 31.055C30.7015 31.0771 30.6843 31.0948 30.6624 31.1038L27.4512 32.4249C27.3807 32.4539 27.3807 32.5539 27.4512 32.5829L30.6624 33.904C30.6843 33.913 30.7015 33.9307 30.7098 33.9528L31.9725 37.2926C32.0004 37.3662 32.1045 37.3662 32.1324 37.2926L33.3951 33.9528C33.4034 33.9307 33.4206 33.913 33.4425 33.904L36.6537 32.5829C36.7242 32.5539 36.7242 32.4539 36.6537 32.4249L33.4425 31.1038C33.4206 31.0948 33.4034 31.0771 33.3951 31.055L32.1324 27.7153Z"/><path class="sparkle sparkle-2" d="M14.1814 0.2536C14.2148 0.1653 14.3398 0.1653 14.3732 0.2536L15.8885 4.2613C15.8985 4.2879 15.9191 4.3091 15.9453 4.3199L19.7988 5.9052C19.8835 5.94 19.8834 6.06 19.7988 6.0948L15.9453 7.6801C15.9191 7.6909 15.8985 7.7121 15.8885 7.7387L14.3732 11.7464C14.3398 11.8347 14.2148 11.8347 14.1814 11.7464L12.6662 7.7387C12.6561 7.7121 12.6355 7.6909 12.6093 7.6801L8.7558 6.0948C8.6712 6.06 8.6712 5.94 8.7558 5.9052L12.6093 4.3199C12.6355 4.3091 12.6561 4.2879 12.6662 4.2613L14.1814 0.2536Z"/><path class="sparkle sparkle-3" d="M2.828 5.2323C2.8447 5.1881 2.9072 5.1881 2.9239 5.2323L3.6815 7.2361C3.6866 7.2494 3.6968 7.26 3.71 7.2654L5.6367 8.0581C5.679 8.0755 5.679 8.1354 5.6367 8.1529L3.71 8.9455C3.6968 8.9509 3.6866 8.9615 3.6815 8.9748L2.9239 10.9787C2.9072 11.0228 2.8447 11.0228 2.828 10.9787L2.0704 8.9748C2.0654 8.9615 2.0551 8.9509 2.0419 8.9455L0.1152 8.1529C0.0729 8.1354 0.0729 8.0755 0.1152 8.0581L2.0419 7.2654C2.0551 7.26 2.0654 7.2494 2.0704 7.2361L2.828 5.2323Z"/></svg></span>
           <span class="token-rate-num">5.25%</span>
           <div class="token-rate-tooltip" role="tooltip">
-            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</div>
+            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include token rewards.</div>
           </div>
         </div>
         <div class="token-icons"><div class="token-icon pepe"></div></div>
@@ -2234,14 +2292,14 @@
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow', 'morpho')">
-        <div class="token-rate-badge token-rate-badge--boosted" aria-label="Boosted borrow rate -2.40% (native 4.80%, Merkl boost -7.20%)">
+        <div class="token-rate-badge token-rate-badge--boosted" aria-label="Boosted borrow rate -2.40% (native 4.80%, Rewards -7.20%)">
           <span class="token-rate-sparkles" aria-hidden="true"><svg viewBox="0 0 36.8457 37.5039" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path class="sparkle sparkle-1" d="M32.1324 27.7153C32.1045 27.6416 32.0004 27.6416 31.9725 27.7153L30.7098 31.055C30.7015 31.0771 30.6843 31.0948 30.6624 31.1038L27.4512 32.4249C27.3807 32.4539 27.3807 32.5539 27.4512 32.5829L30.6624 33.904C30.6843 33.913 30.7015 33.9307 30.7098 33.9528L31.9725 37.2926C32.0004 37.3662 32.1045 37.3662 32.1324 37.2926L33.3951 33.9528C33.4034 33.9307 33.4206 33.913 33.4425 33.904L36.6537 32.5829C36.7242 32.5539 36.7242 32.4539 36.6537 32.4249L33.4425 31.1038C33.4206 31.0948 33.4034 31.0771 33.3951 31.055L32.1324 27.7153Z"/><path class="sparkle sparkle-2" d="M14.1814 0.2536C14.2148 0.1653 14.3398 0.1653 14.3732 0.2536L15.8885 4.2613C15.8985 4.2879 15.9191 4.3091 15.9453 4.3199L19.7988 5.9052C19.8835 5.94 19.8834 6.06 19.7988 6.0948L15.9453 7.6801C15.9191 7.6909 15.8985 7.7121 15.8885 7.7387L14.3732 11.7464C14.3398 11.8347 14.2148 11.8347 14.1814 11.7464L12.6662 7.7387C12.6561 7.7121 12.6355 7.6909 12.6093 7.6801L8.7558 6.0948C8.6712 6.06 8.6712 5.94 8.7558 5.9052L12.6093 4.3199C12.6355 4.3091 12.6561 4.2879 12.6662 4.2613L14.1814 0.2536Z"/><path class="sparkle sparkle-3" d="M2.828 5.2323C2.8447 5.1881 2.9072 5.1881 2.9239 5.2323L3.6815 7.2361C3.6866 7.2494 3.6968 7.26 3.71 7.2654L5.6367 8.0581C5.679 8.0755 5.679 8.1354 5.6367 8.1529L3.71 8.9455C3.6968 8.9509 3.6866 8.9615 3.6815 8.9748L2.9239 10.9787C2.9072 11.0228 2.8447 11.0228 2.828 10.9787L2.0704 8.9748C2.0654 8.9615 2.0551 8.9509 2.0419 8.9455L0.1152 8.1529C0.0729 8.1354 0.0729 8.0755 0.1152 8.0581L2.0419 7.2654C2.0551 7.26 2.0654 7.2494 2.0704 7.2361L2.828 5.2323Z"/></svg></span>
           <span class="token-rate-num">-2.40%</span>
           <div class="token-rate-tooltip" role="tooltip">
-            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</div>
+            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include token rewards.</div>
             <div class="token-rate-breakdown">
               <div class="token-rate-row"><span>Native</span><span>4.80%</span></div>
-              <div class="token-rate-row token-rate-row--boost"><span>Merkl boost</span><span>-7.20%</span></div>
+              <div class="token-rate-row token-rate-row--boost"><span>Rewards</span><span>-7.20%</span></div>
               <div class="token-rate-row token-rate-row--net"><span>Net</span><span>-2.40%</span></div>
             </div>
           </div>
@@ -2255,7 +2313,7 @@
           <span class="token-rate-sparkles" aria-hidden="true"><svg viewBox="0 0 36.8457 37.5039" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path class="sparkle sparkle-1" d="M32.1324 27.7153C32.1045 27.6416 32.0004 27.6416 31.9725 27.7153L30.7098 31.055C30.7015 31.0771 30.6843 31.0948 30.6624 31.1038L27.4512 32.4249C27.3807 32.4539 27.3807 32.5539 27.4512 32.5829L30.6624 33.904C30.6843 33.913 30.7015 33.9307 30.7098 33.9528L31.9725 37.2926C32.0004 37.3662 32.1045 37.3662 32.1324 37.2926L33.3951 33.9528C33.4034 33.9307 33.4206 33.913 33.4425 33.904L36.6537 32.5829C36.7242 32.5539 36.7242 32.4539 36.6537 32.4249L33.4425 31.1038C33.4206 31.0948 33.4034 31.0771 33.3951 31.055L32.1324 27.7153Z"/><path class="sparkle sparkle-2" d="M14.1814 0.2536C14.2148 0.1653 14.3398 0.1653 14.3732 0.2536L15.8885 4.2613C15.8985 4.2879 15.9191 4.3091 15.9453 4.3199L19.7988 5.9052C19.8835 5.94 19.8834 6.06 19.7988 6.0948L15.9453 7.6801C15.9191 7.6909 15.8985 7.7121 15.8885 7.7387L14.3732 11.7464C14.3398 11.8347 14.2148 11.8347 14.1814 11.7464L12.6662 7.7387C12.6561 7.7121 12.6355 7.6909 12.6093 7.6801L8.7558 6.0948C8.6712 6.06 8.6712 5.94 8.7558 5.9052L12.6093 4.3199C12.6355 4.3091 12.6561 4.2879 12.6662 4.2613L14.1814 0.2536Z"/><path class="sparkle sparkle-3" d="M2.828 5.2323C2.8447 5.1881 2.9072 5.1881 2.9239 5.2323L3.6815 7.2361C3.6866 7.2494 3.6968 7.26 3.71 7.2654L5.6367 8.0581C5.679 8.0755 5.679 8.1354 5.6367 8.1529L3.71 8.9455C3.6968 8.9509 3.6866 8.9615 3.6815 8.9748L2.9239 10.9787C2.9072 11.0228 2.8447 11.0228 2.828 10.9787L2.0704 8.9748C2.0654 8.9615 2.0551 8.9509 2.0419 8.9455L0.1152 8.1529C0.0729 8.1354 0.0729 8.0755 0.1152 8.0581L2.0419 7.2654C2.0551 7.26 2.0654 7.2494 2.0704 7.2361L2.828 5.2323Z"/></svg></span>
           <span class="token-rate-num">3.95%</span>
           <div class="token-rate-tooltip" role="tooltip">
-            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</div>
+            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include token rewards.</div>
           </div>
         </div>
         <div class="token-icons"><div class="token-icon comp"></div></div>
@@ -2267,7 +2325,7 @@
           <span class="token-rate-sparkles" aria-hidden="true"><svg viewBox="0 0 36.8457 37.5039" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path class="sparkle sparkle-1" d="M32.1324 27.7153C32.1045 27.6416 32.0004 27.6416 31.9725 27.7153L30.7098 31.055C30.7015 31.0771 30.6843 31.0948 30.6624 31.1038L27.4512 32.4249C27.3807 32.4539 27.3807 32.5539 27.4512 32.5829L30.6624 33.904C30.6843 33.913 30.7015 33.9307 30.7098 33.9528L31.9725 37.2926C32.0004 37.3662 32.1045 37.3662 32.1324 37.2926L33.3951 33.9528C33.4034 33.9307 33.4206 33.913 33.4425 33.904L36.6537 32.5829C36.7242 32.5539 36.7242 32.4539 36.6537 32.4249L33.4425 31.1038C33.4206 31.0948 33.4034 31.0771 33.3951 31.055L32.1324 27.7153Z"/><path class="sparkle sparkle-2" d="M14.1814 0.2536C14.2148 0.1653 14.3398 0.1653 14.3732 0.2536L15.8885 4.2613C15.8985 4.2879 15.9191 4.3091 15.9453 4.3199L19.7988 5.9052C19.8835 5.94 19.8834 6.06 19.7988 6.0948L15.9453 7.6801C15.9191 7.6909 15.8985 7.7121 15.8885 7.7387L14.3732 11.7464C14.3398 11.8347 14.2148 11.8347 14.1814 11.7464L12.6662 7.7387C12.6561 7.7121 12.6355 7.6909 12.6093 7.6801L8.7558 6.0948C8.6712 6.06 8.6712 5.94 8.7558 5.9052L12.6093 4.3199C12.6355 4.3091 12.6561 4.2879 12.6662 4.2613L14.1814 0.2536Z"/><path class="sparkle sparkle-3" d="M2.828 5.2323C2.8447 5.1881 2.9072 5.1881 2.9239 5.2323L3.6815 7.2361C3.6866 7.2494 3.6968 7.26 3.71 7.2654L5.6367 8.0581C5.679 8.0755 5.679 8.1354 5.6367 8.1529L3.71 8.9455C3.6968 8.9509 3.6866 8.9615 3.6815 8.9748L2.9239 10.9787C2.9072 11.0228 2.8447 11.0228 2.828 10.9787L2.0704 8.9748C2.0654 8.9615 2.0551 8.9509 2.0419 8.9455L0.1152 8.1529C0.0729 8.1354 0.0729 8.0755 0.1152 8.0581L2.0419 7.2654C2.0551 7.26 2.0654 7.2494 2.0704 7.2361L2.828 5.2323Z"/></svg></span>
           <span class="token-rate-num">6.10%</span>
           <div class="token-rate-tooltip" role="tooltip">
-            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</div>
+            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include token rewards.</div>
           </div>
         </div>
         <div class="token-icons"><div class="token-icon syrup"></div></div>
@@ -2275,14 +2333,14 @@
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow', 'doge')">
-        <div class="token-rate-badge token-rate-badge--boosted" aria-label="Boosted borrow rate -4.20% (native 5.20%, Merkl boost -9.40%)">
+        <div class="token-rate-badge token-rate-badge--boosted" aria-label="Boosted borrow rate -4.20% (native 5.20%, Rewards -9.40%)">
           <span class="token-rate-sparkles" aria-hidden="true"><svg viewBox="0 0 36.8457 37.5039" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path class="sparkle sparkle-1" d="M32.1324 27.7153C32.1045 27.6416 32.0004 27.6416 31.9725 27.7153L30.7098 31.055C30.7015 31.0771 30.6843 31.0948 30.6624 31.1038L27.4512 32.4249C27.3807 32.4539 27.3807 32.5539 27.4512 32.5829L30.6624 33.904C30.6843 33.913 30.7015 33.9307 30.7098 33.9528L31.9725 37.2926C32.0004 37.3662 32.1045 37.3662 32.1324 37.2926L33.3951 33.9528C33.4034 33.9307 33.4206 33.913 33.4425 33.904L36.6537 32.5829C36.7242 32.5539 36.7242 32.4539 36.6537 32.4249L33.4425 31.1038C33.4206 31.0948 33.4034 31.0771 33.3951 31.055L32.1324 27.7153Z"/><path class="sparkle sparkle-2" d="M14.1814 0.2536C14.2148 0.1653 14.3398 0.1653 14.3732 0.2536L15.8885 4.2613C15.8985 4.2879 15.9191 4.3091 15.9453 4.3199L19.7988 5.9052C19.8835 5.94 19.8834 6.06 19.7988 6.0948L15.9453 7.6801C15.9191 7.6909 15.8985 7.7121 15.8885 7.7387L14.3732 11.7464C14.3398 11.8347 14.2148 11.8347 14.1814 11.7464L12.6662 7.7387C12.6561 7.7121 12.6355 7.6909 12.6093 7.6801L8.7558 6.0948C8.6712 6.06 8.6712 5.94 8.7558 5.9052L12.6093 4.3199C12.6355 4.3091 12.6561 4.2879 12.6662 4.2613L14.1814 0.2536Z"/><path class="sparkle sparkle-3" d="M2.828 5.2323C2.8447 5.1881 2.9072 5.1881 2.9239 5.2323L3.6815 7.2361C3.6866 7.2494 3.6968 7.26 3.71 7.2654L5.6367 8.0581C5.679 8.0755 5.679 8.1354 5.6367 8.1529L3.71 8.9455C3.6968 8.9509 3.6866 8.9615 3.6815 8.9748L2.9239 10.9787C2.9072 11.0228 2.8447 11.0228 2.828 10.9787L2.0704 8.9748C2.0654 8.9615 2.0551 8.9509 2.0419 8.9455L0.1152 8.1529C0.0729 8.1354 0.0729 8.0755 0.1152 8.0581L2.0419 7.2654C2.0551 7.26 2.0654 7.2494 2.0704 7.2361L2.828 5.2323Z"/></svg></span>
           <span class="token-rate-num">-4.20%</span>
           <div class="token-rate-tooltip" role="tooltip">
-            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</div>
+            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include token rewards.</div>
             <div class="token-rate-breakdown">
               <div class="token-rate-row"><span>Native</span><span>5.20%</span></div>
-              <div class="token-rate-row token-rate-row--boost"><span>Merkl boost</span><span>-9.40%</span></div>
+              <div class="token-rate-row token-rate-row--boost"><span>Rewards</span><span>-9.40%</span></div>
               <div class="token-rate-row token-rate-row--net"><span>Net</span><span>-4.20%</span></div>
             </div>
           </div>
@@ -2335,7 +2393,7 @@
           <span class="token-rate-sparkles" aria-hidden="true"><svg viewBox="0 0 36.8457 37.5039" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path class="sparkle sparkle-1" d="M32.1324 27.7153C32.1045 27.6416 32.0004 27.6416 31.9725 27.7153L30.7098 31.055C30.7015 31.0771 30.6843 31.0948 30.6624 31.1038L27.4512 32.4249C27.3807 32.4539 27.3807 32.5539 27.4512 32.5829L30.6624 33.904C30.6843 33.913 30.7015 33.9307 30.7098 33.9528L31.9725 37.2926C32.0004 37.3662 32.1045 37.3662 32.1324 37.2926L33.3951 33.9528C33.4034 33.9307 33.4206 33.913 33.4425 33.904L36.6537 32.5829C36.7242 32.5539 36.7242 32.4539 36.6537 32.4249L33.4425 31.1038C33.4206 31.0948 33.4034 31.0771 33.3951 31.055L32.1324 27.7153Z"/><path class="sparkle sparkle-2" d="M14.1814 0.2536C14.2148 0.1653 14.3398 0.1653 14.3732 0.2536L15.8885 4.2613C15.8985 4.2879 15.9191 4.3091 15.9453 4.3199L19.7988 5.9052C19.8835 5.94 19.8834 6.06 19.7988 6.0948L15.9453 7.6801C15.9191 7.6909 15.8985 7.7121 15.8885 7.7387L14.3732 11.7464C14.3398 11.8347 14.2148 11.8347 14.1814 11.7464L12.6662 7.7387C12.6561 7.7121 12.6355 7.6909 12.6093 7.6801L8.7558 6.0948C8.6712 6.06 8.6712 5.94 8.7558 5.9052L12.6093 4.3199C12.6355 4.3091 12.6561 4.2879 12.6662 4.2613L14.1814 0.2536Z"/><path class="sparkle sparkle-3" d="M2.828 5.2323C2.8447 5.1881 2.9072 5.1881 2.9239 5.2323L3.6815 7.2361C3.6866 7.2494 3.6968 7.26 3.71 7.2654L5.6367 8.0581C5.679 8.0755 5.679 8.1354 5.6367 8.1529L3.71 8.9455C3.6968 8.9509 3.6866 8.9615 3.6815 8.9748L2.9239 10.9787C2.9072 11.0228 2.8447 11.0228 2.828 10.9787L2.0704 8.9748C2.0654 8.9615 2.0551 8.9509 2.0419 8.9455L0.1152 8.1529C0.0729 8.1354 0.0729 8.0755 0.1152 8.0581L2.0419 7.2654C2.0551 7.26 2.0654 7.2494 2.0704 7.2361L2.828 5.2323Z"/></svg></span>
           <span class="token-rate-num">5.25%</span>
           <div class="token-rate-tooltip" role="tooltip">
-            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</div>
+            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include token rewards.</div>
           </div>
         </div>
         <div class="token-icons"><div class="token-icon pepe"></div></div>
@@ -2343,14 +2401,14 @@
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow-connected', 'morpho')">
-        <div class="token-rate-badge token-rate-badge--boosted" aria-label="Boosted borrow rate -2.40% (native 4.80%, Merkl boost -7.20%)">
+        <div class="token-rate-badge token-rate-badge--boosted" aria-label="Boosted borrow rate -2.40% (native 4.80%, Rewards -7.20%)">
           <span class="token-rate-sparkles" aria-hidden="true"><svg viewBox="0 0 36.8457 37.5039" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path class="sparkle sparkle-1" d="M32.1324 27.7153C32.1045 27.6416 32.0004 27.6416 31.9725 27.7153L30.7098 31.055C30.7015 31.0771 30.6843 31.0948 30.6624 31.1038L27.4512 32.4249C27.3807 32.4539 27.3807 32.5539 27.4512 32.5829L30.6624 33.904C30.6843 33.913 30.7015 33.9307 30.7098 33.9528L31.9725 37.2926C32.0004 37.3662 32.1045 37.3662 32.1324 37.2926L33.3951 33.9528C33.4034 33.9307 33.4206 33.913 33.4425 33.904L36.6537 32.5829C36.7242 32.5539 36.7242 32.4539 36.6537 32.4249L33.4425 31.1038C33.4206 31.0948 33.4034 31.0771 33.3951 31.055L32.1324 27.7153Z"/><path class="sparkle sparkle-2" d="M14.1814 0.2536C14.2148 0.1653 14.3398 0.1653 14.3732 0.2536L15.8885 4.2613C15.8985 4.2879 15.9191 4.3091 15.9453 4.3199L19.7988 5.9052C19.8835 5.94 19.8834 6.06 19.7988 6.0948L15.9453 7.6801C15.9191 7.6909 15.8985 7.7121 15.8885 7.7387L14.3732 11.7464C14.3398 11.8347 14.2148 11.8347 14.1814 11.7464L12.6662 7.7387C12.6561 7.7121 12.6355 7.6909 12.6093 7.6801L8.7558 6.0948C8.6712 6.06 8.6712 5.94 8.7558 5.9052L12.6093 4.3199C12.6355 4.3091 12.6561 4.2879 12.6662 4.2613L14.1814 0.2536Z"/><path class="sparkle sparkle-3" d="M2.828 5.2323C2.8447 5.1881 2.9072 5.1881 2.9239 5.2323L3.6815 7.2361C3.6866 7.2494 3.6968 7.26 3.71 7.2654L5.6367 8.0581C5.679 8.0755 5.679 8.1354 5.6367 8.1529L3.71 8.9455C3.6968 8.9509 3.6866 8.9615 3.6815 8.9748L2.9239 10.9787C2.9072 11.0228 2.8447 11.0228 2.828 10.9787L2.0704 8.9748C2.0654 8.9615 2.0551 8.9509 2.0419 8.9455L0.1152 8.1529C0.0729 8.1354 0.0729 8.0755 0.1152 8.0581L2.0419 7.2654C2.0551 7.26 2.0654 7.2494 2.0704 7.2361L2.828 5.2323Z"/></svg></span>
           <span class="token-rate-num">-2.40%</span>
           <div class="token-rate-tooltip" role="tooltip">
-            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</div>
+            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include token rewards.</div>
             <div class="token-rate-breakdown">
               <div class="token-rate-row"><span>Native</span><span>4.80%</span></div>
-              <div class="token-rate-row token-rate-row--boost"><span>Merkl boost</span><span>-7.20%</span></div>
+              <div class="token-rate-row token-rate-row--boost"><span>Rewards</span><span>-7.20%</span></div>
               <div class="token-rate-row token-rate-row--net"><span>Net</span><span>-2.40%</span></div>
             </div>
           </div>
@@ -2364,7 +2422,7 @@
           <span class="token-rate-sparkles" aria-hidden="true"><svg viewBox="0 0 36.8457 37.5039" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path class="sparkle sparkle-1" d="M32.1324 27.7153C32.1045 27.6416 32.0004 27.6416 31.9725 27.7153L30.7098 31.055C30.7015 31.0771 30.6843 31.0948 30.6624 31.1038L27.4512 32.4249C27.3807 32.4539 27.3807 32.5539 27.4512 32.5829L30.6624 33.904C30.6843 33.913 30.7015 33.9307 30.7098 33.9528L31.9725 37.2926C32.0004 37.3662 32.1045 37.3662 32.1324 37.2926L33.3951 33.9528C33.4034 33.9307 33.4206 33.913 33.4425 33.904L36.6537 32.5829C36.7242 32.5539 36.7242 32.4539 36.6537 32.4249L33.4425 31.1038C33.4206 31.0948 33.4034 31.0771 33.3951 31.055L32.1324 27.7153Z"/><path class="sparkle sparkle-2" d="M14.1814 0.2536C14.2148 0.1653 14.3398 0.1653 14.3732 0.2536L15.8885 4.2613C15.8985 4.2879 15.9191 4.3091 15.9453 4.3199L19.7988 5.9052C19.8835 5.94 19.8834 6.06 19.7988 6.0948L15.9453 7.6801C15.9191 7.6909 15.8985 7.7121 15.8885 7.7387L14.3732 11.7464C14.3398 11.8347 14.2148 11.8347 14.1814 11.7464L12.6662 7.7387C12.6561 7.7121 12.6355 7.6909 12.6093 7.6801L8.7558 6.0948C8.6712 6.06 8.6712 5.94 8.7558 5.9052L12.6093 4.3199C12.6355 4.3091 12.6561 4.2879 12.6662 4.2613L14.1814 0.2536Z"/><path class="sparkle sparkle-3" d="M2.828 5.2323C2.8447 5.1881 2.9072 5.1881 2.9239 5.2323L3.6815 7.2361C3.6866 7.2494 3.6968 7.26 3.71 7.2654L5.6367 8.0581C5.679 8.0755 5.679 8.1354 5.6367 8.1529L3.71 8.9455C3.6968 8.9509 3.6866 8.9615 3.6815 8.9748L2.9239 10.9787C2.9072 11.0228 2.8447 11.0228 2.828 10.9787L2.0704 8.9748C2.0654 8.9615 2.0551 8.9509 2.0419 8.9455L0.1152 8.1529C0.0729 8.1354 0.0729 8.0755 0.1152 8.0581L2.0419 7.2654C2.0551 7.26 2.0654 7.2494 2.0704 7.2361L2.828 5.2323Z"/></svg></span>
           <span class="token-rate-num">3.95%</span>
           <div class="token-rate-tooltip" role="tooltip">
-            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</div>
+            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include token rewards.</div>
           </div>
         </div>
         <div class="token-icons"><div class="token-icon comp"></div></div>
@@ -2376,7 +2434,7 @@
           <span class="token-rate-sparkles" aria-hidden="true"><svg viewBox="0 0 36.8457 37.5039" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path class="sparkle sparkle-1" d="M32.1324 27.7153C32.1045 27.6416 32.0004 27.6416 31.9725 27.7153L30.7098 31.055C30.7015 31.0771 30.6843 31.0948 30.6624 31.1038L27.4512 32.4249C27.3807 32.4539 27.3807 32.5539 27.4512 32.5829L30.6624 33.904C30.6843 33.913 30.7015 33.9307 30.7098 33.9528L31.9725 37.2926C32.0004 37.3662 32.1045 37.3662 32.1324 37.2926L33.3951 33.9528C33.4034 33.9307 33.4206 33.913 33.4425 33.904L36.6537 32.5829C36.7242 32.5539 36.7242 32.4539 36.6537 32.4249L33.4425 31.1038C33.4206 31.0948 33.4034 31.0771 33.3951 31.055L32.1324 27.7153Z"/><path class="sparkle sparkle-2" d="M14.1814 0.2536C14.2148 0.1653 14.3398 0.1653 14.3732 0.2536L15.8885 4.2613C15.8985 4.2879 15.9191 4.3091 15.9453 4.3199L19.7988 5.9052C19.8835 5.94 19.8834 6.06 19.7988 6.0948L15.9453 7.6801C15.9191 7.6909 15.8985 7.7121 15.8885 7.7387L14.3732 11.7464C14.3398 11.8347 14.2148 11.8347 14.1814 11.7464L12.6662 7.7387C12.6561 7.7121 12.6355 7.6909 12.6093 7.6801L8.7558 6.0948C8.6712 6.06 8.6712 5.94 8.7558 5.9052L12.6093 4.3199C12.6355 4.3091 12.6561 4.2879 12.6662 4.2613L14.1814 0.2536Z"/><path class="sparkle sparkle-3" d="M2.828 5.2323C2.8447 5.1881 2.9072 5.1881 2.9239 5.2323L3.6815 7.2361C3.6866 7.2494 3.6968 7.26 3.71 7.2654L5.6367 8.0581C5.679 8.0755 5.679 8.1354 5.6367 8.1529L3.71 8.9455C3.6968 8.9509 3.6866 8.9615 3.6815 8.9748L2.9239 10.9787C2.9072 11.0228 2.8447 11.0228 2.828 10.9787L2.0704 8.9748C2.0654 8.9615 2.0551 8.9509 2.0419 8.9455L0.1152 8.1529C0.0729 8.1354 0.0729 8.0755 0.1152 8.0581L2.0419 7.2654C2.0551 7.26 2.0654 7.2494 2.0704 7.2361L2.828 5.2323Z"/></svg></span>
           <span class="token-rate-num">6.10%</span>
           <div class="token-rate-tooltip" role="tooltip">
-            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</div>
+            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include token rewards.</div>
           </div>
         </div>
         <div class="token-icons"><div class="token-icon syrup"></div></div>
@@ -2384,14 +2442,14 @@
         <div class="token-action"><button class="btn btn-primary"><i class="ph ph-currency-circle-dollar btn-icon"></i> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow-connected', 'doge')">
-        <div class="token-rate-badge token-rate-badge--boosted" aria-label="Boosted borrow rate -4.20% (native 5.20%, Merkl boost -9.40%)">
+        <div class="token-rate-badge token-rate-badge--boosted" aria-label="Boosted borrow rate -4.20% (native 5.20%, Rewards -9.40%)">
           <span class="token-rate-sparkles" aria-hidden="true"><svg viewBox="0 0 36.8457 37.5039" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path class="sparkle sparkle-1" d="M32.1324 27.7153C32.1045 27.6416 32.0004 27.6416 31.9725 27.7153L30.7098 31.055C30.7015 31.0771 30.6843 31.0948 30.6624 31.1038L27.4512 32.4249C27.3807 32.4539 27.3807 32.5539 27.4512 32.5829L30.6624 33.904C30.6843 33.913 30.7015 33.9307 30.7098 33.9528L31.9725 37.2926C32.0004 37.3662 32.1045 37.3662 32.1324 37.2926L33.3951 33.9528C33.4034 33.9307 33.4206 33.913 33.4425 33.904L36.6537 32.5829C36.7242 32.5539 36.7242 32.4539 36.6537 32.4249L33.4425 31.1038C33.4206 31.0948 33.4034 31.0771 33.3951 31.055L32.1324 27.7153Z"/><path class="sparkle sparkle-2" d="M14.1814 0.2536C14.2148 0.1653 14.3398 0.1653 14.3732 0.2536L15.8885 4.2613C15.8985 4.2879 15.9191 4.3091 15.9453 4.3199L19.7988 5.9052C19.8835 5.94 19.8834 6.06 19.7988 6.0948L15.9453 7.6801C15.9191 7.6909 15.8985 7.7121 15.8885 7.7387L14.3732 11.7464C14.3398 11.8347 14.2148 11.8347 14.1814 11.7464L12.6662 7.7387C12.6561 7.7121 12.6355 7.6909 12.6093 7.6801L8.7558 6.0948C8.6712 6.06 8.6712 5.94 8.7558 5.9052L12.6093 4.3199C12.6355 4.3091 12.6561 4.2879 12.6662 4.2613L14.1814 0.2536Z"/><path class="sparkle sparkle-3" d="M2.828 5.2323C2.8447 5.1881 2.9072 5.1881 2.9239 5.2323L3.6815 7.2361C3.6866 7.2494 3.6968 7.26 3.71 7.2654L5.6367 8.0581C5.679 8.0755 5.679 8.1354 5.6367 8.1529L3.71 8.9455C3.6968 8.9509 3.6866 8.9615 3.6815 8.9748L2.9239 10.9787C2.9072 11.0228 2.8447 11.0228 2.828 10.9787L2.0704 8.9748C2.0654 8.9615 2.0551 8.9509 2.0419 8.9455L0.1152 8.1529C0.0729 8.1354 0.0729 8.0755 0.1152 8.0581L2.0419 7.2654C2.0551 7.26 2.0654 7.2494 2.0704 7.2361L2.828 5.2323Z"/></svg></span>
           <span class="token-rate-num">-4.20%</span>
           <div class="token-rate-tooltip" role="tooltip">
-            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</div>
+            <div class="token-rate-blurb">Variable rate that changes with market conditions. Negative rates include token rewards.</div>
             <div class="token-rate-breakdown">
               <div class="token-rate-row"><span>Native</span><span>5.20%</span></div>
-              <div class="token-rate-row token-rate-row--boost"><span>Merkl boost</span><span>-9.40%</span></div>
+              <div class="token-rate-row token-rate-row--boost"><span>Rewards</span><span>-9.40%</span></div>
               <div class="token-rate-row token-rate-row--net"><span>Net</span><span>-4.20%</span></div>
             </div>
           </div>
@@ -2489,7 +2547,7 @@
           <div class="summary-details">
             <div class="summary-row"><span class="summary-row-label">You supply</span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
             <div class="summary-row"><span class="summary-row-label">You repay</span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
-            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><i class="ph ph-info summary-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</span></span></span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
+            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><i class="ph ph-info summary-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span></span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
             <div class="summary-row"><span class="summary-row-label">(Token) Price</span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
             <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
           </div>
@@ -2638,7 +2696,7 @@
           <div class="summary-details">
             <div class="summary-row"><span class="summary-row-label">Your supply</span><span class="summary-row-value">—</span></div>
             <div class="summary-row"><span class="summary-row-label">You repay</span><span class="summary-row-value">—</span></div>
-            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><i class="ph ph-info summary-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</span></span></span><span class="summary-row-value">5.25%<span class="rate-suffix">/yr</span></span></div>
+            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><i class="ph ph-info summary-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span></span><span class="summary-row-value">5.25%<span class="rate-suffix">/yr</span></span></div>
             <div class="summary-row"><span class="summary-row-label">(Token) Price</span><span class="summary-row-value">$0.041200</span></div>
             <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value">$0.05714 <span style="font-size: var(--ds-2xs); font-weight: 400; color: var(--text-secondary);">(-38.6%)</span></span></div>
           </div>
@@ -3316,7 +3374,7 @@
           <div class="summary-details">
             <div class="summary-row"><span class="summary-row-label">You supply</span><span class="summary-row-value"><span class="update-arrow"><span class="old">1000</span> <span class="arr">→</span> <span class="new">1500 PEPE</span></span></span></div>
             <div class="summary-row"><span class="summary-row-label">You repay</span><span class="summary-row-value">700,000 USDC</span></div>
-            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><i class="ph ph-info summary-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</span></span></span><span class="summary-row-value">5.25%<span class="rate-suffix">/yr</span></span></div>
+            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><i class="ph ph-info summary-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span></span><span class="summary-row-value">5.25%<span class="rate-suffix">/yr</span></span></div>
             <div class="summary-row"><span class="summary-row-label">(Token) Price</span><span class="summary-row-value">$0.041200</span></div>
             <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value liq-arrow"><span class="old"><span class="liq-price">$0.05714</span><span class="liq-pct">(-38.6%)</span></span><span class="arr">→</span><span class="new"><span class="liq-price">$0.05714</span><span class="liq-pct">(-42.1%)</span></span></span></div>
           </div>
@@ -4100,7 +4158,7 @@ function showScreen(id) {
 // Auto-inject the info tooltip next to every "Borrow Rate" stat-label (My Positions screen).
 // Idempotent — skips labels that already have it.
 document.addEventListener('DOMContentLoaded', function() {
-  var INFO_HTML = ' <span class="rate-info-wrap"><i class="ph ph-info rate-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include a Merkl boost.</span></span>';
+  var INFO_HTML = ' <span class="rate-info-wrap"><i class="ph ph-info rate-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span>';
   document.querySelectorAll('.stat-label').forEach(function(el) {
     if (el.textContent.trim() === 'Borrow Rate' && !el.querySelector('.rate-info-wrap')) {
       el.insertAdjacentHTML('beforeend', INFO_HTML);
@@ -4227,11 +4285,11 @@ function setupBoostAttentionObservers() {
     var badges = phone.querySelectorAll('.token-rate-badge--boosted');
     if (!badges.length || phone.__boostIO) return;
     // First batch of entries = "initial evaluation" — cards already in viewport
-    // when the observer starts. Delay their animation so the user's gaze has time
-    // to arrive. Subsequent intersections (scroll-in after exit) fire instantly.
+    // when the observer starts. Small 200ms delay so the page is painted and the
+    // user's gaze is on the viewport; keep it short so the pulse isn't missed.
     var isInitial = true;
     var io = new IntersectionObserver(function(entries) {
-      var delay = isInitial ? 500 : 0;
+      var delay = isInitial ? 200 : 0;
       entries.forEach(function(entry) {
         var badge = entry.target;
         if (entry.isIntersecting) {
