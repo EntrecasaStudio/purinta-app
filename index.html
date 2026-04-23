@@ -903,8 +903,18 @@
       transform-origin: 50% 50%;
     }
     .bundle-mascot-blob path { fill: var(--mint-200); }
+    /* Blob enters first with a wider, looser rebound, then hands off to the idle float */
     .bundle-modal-overlay.is-done .bundle-mascot-blob {
-      animation: bundle-blob-float 5s ease-in-out 900ms infinite;
+      animation: bundle-blob-pop   1400ms cubic-bezier(0.45, 0, 0.55, 1)   0ms both,
+                 bundle-blob-float 5s    ease-in-out                    1400ms infinite;
+    }
+    @keyframes bundle-blob-pop {
+      0%   { transform: scale(0.55); }
+      20%  { transform: scaleX(1.18) scaleY(0.84); }   /* heavy squish — blob is squishier */
+      38%  { transform: scaleX(0.86) scaleY(1.14); }   /* tall rebound */
+      55%  { transform: scaleX(1.08) scaleY(0.94); }
+      72%  { transform: scaleX(0.96) scaleY(1.04); }
+      100% { transform: scale(1) rotate(0deg); }
     }
     @keyframes bundle-blob-float {
       0%, 100% { transform: scale(1)    rotate(0deg); }
@@ -921,18 +931,20 @@
     }
 
     .bundle-modal-overlay.is-done .bundle-modal-mascot {
-      max-height: 140px; opacity: 1;                       /* 180×(108/140)≈139 blob aspect */
-      /* Gelatinous bubble-rebound entry — squish/stretch oscillates before settling */
-      animation: bundle-mascot-pop 1600ms cubic-bezier(0.45, 0, 0.55, 1) both;
+      max-height: 140px; opacity: 1;                       /* 180×(108/140)≈139 blob aspect — reveal only */
+    }
+    /* Mascot enters after the blob and rebounds on its own beat */
+    .bundle-modal-overlay.is-done .bundle-modal-mascot img {
+      animation: bundle-mascot-pop 1700ms cubic-bezier(0.45, 0, 0.55, 1) 220ms both;
     }
     @keyframes bundle-mascot-pop {
       0%   { transform: scale(0.6); }
-      22%  { transform: scaleX(1.14) scaleY(0.88); }   /* lands wide — bubble squish */
-      40%  { transform: scaleX(0.90) scaleY(1.10); }   /* rebounds tall */
-      56%  { transform: scaleX(1.06) scaleY(0.96); }   /* smaller squish */
-      70%  { transform: scaleX(0.97) scaleY(1.03); }   /* smaller stretch */
-      82%  { transform: scale(1)    rotate(3deg);  }   /* settle + wobble */
-      92%  { transform: scale(1)    rotate(-1.5deg); }
+      24%  { transform: scaleX(1.12) scaleY(0.90); }   /* softer squish — mascot is tighter */
+      42%  { transform: scaleX(0.92) scaleY(1.08); }
+      58%  { transform: scaleX(1.05) scaleY(0.97); }
+      72%  { transform: scaleX(0.98) scaleY(1.02); }
+      84%  { transform: scale(1)    rotate(3deg);  }
+      93%  { transform: scale(1)    rotate(-1.5deg); }
       100% { transform: scale(1)    rotate(0deg);  }
     }
 
