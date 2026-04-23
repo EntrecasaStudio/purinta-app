@@ -399,7 +399,8 @@
       align-items: center; gap: 12px; transition: all 0.25s ease; cursor: pointer;
       text-align: center;
     }
-    .token-card:hover { border-color: var(--green-300); box-shadow: var(--shadow-card); transform: translateY(-2px); }
+    /* Hover effects only on desktop-mode phone simulators — mobile uses tap (no sticky hover). */
+    .phone.desktop .token-card:hover { border-color: var(--green-300); box-shadow: var(--shadow-card); transform: translateY(-2px); }
     .token-card:active { transform: scale(0.97); filter: brightness(0.97); }
     .token-icons { display: flex; align-items: center; flex-shrink: 0; }
     .token-icon {
@@ -439,28 +440,55 @@
        Height is fixed at 50px for BOTH variants — sparkles are an absolute overlay, never affect layout. */
     .token-rate-badge {
       position: absolute; top: 0; right: 0;
-      height: 50px; box-sizing: border-box;
-      background: var(--cream-50);
+      height: 42px; box-sizing: border-box;
+      background: var(--mint-50);       /* hybrid: unified mint family across all rates */
       border-radius: 0 32px 0 32px;
-      padding: 0 24px;
+      padding: 0 20px;
       display: flex; align-items: center; justify-content: center;
       z-index: 2;
     }
-    .token-rate-badge--boosted { background: var(--mint-50); }
-    /* Home "Option A" (phone-a) — Figma node 1854:220523. Only bottom + left
-       borders on the badge: its top and right edges sit on the card's own border
-       (same colour), so adding them there would double up. */
-    #phone-a .token-rate-badge {
-      border-bottom: 1px solid var(--cream-400);
-      border-left: 1px solid var(--cream-400);
+    /* Boosted steps up a tonal notch so the semantic survives the unified palette —
+       same family (mint), higher saturation + darker text. */
+    .token-rate-badge--boosted {
+      background: var(--mint-200);
+    }
+    /* Home "Option B" (phone-b) — variation for comparison vs Option A:
+       · Flat background: all badges on mint-50 (boosted bg override to match non-boosted)
+       · Sparkles still animate on viewport entry, but STAY visible at the end
+         (no fade-out in the last keyframe). Option A keeps the fade. */
+    #phone-b .token-rate-badge--boosted { background: var(--mint-50); }
+    #phone-b .token-rate-badge--boosted.is-animating .sparkle-2 {
+      animation-name: sparkle-burst-stay;
+    }
+    #phone-b .token-rate-badge--boosted.is-animating .sparkle-1 {
+      animation-name: sparkle-burst-stay;
+    }
+    #phone-b .token-rate-badge--boosted.is-animating .sparkle-3 {
+      animation-name: sparkle-burst-small-stay;
+    }
+    @keyframes sparkle-burst-stay {
+      0%   { opacity: 0; transform: scale(0); }
+      14%  { opacity: 1; transform: scale(1.3); }
+      28%  { opacity: 1; transform: scale(1); }
+      42%  { opacity: 1; transform: scale(1.25); }
+      58%  { opacity: 1; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1); }   /* stay visible — no fade */
+    }
+    @keyframes sparkle-burst-small-stay {
+      0%   { opacity: 0; transform: scale(0); }
+      14%  { opacity: .9; transform: scale(1.2); }
+      28%  { opacity: .9; transform: scale(1); }
+      42%  { opacity: .9; transform: scale(1.15); }
+      58%  { opacity: .9; transform: scale(1); }
+      100% { opacity: .9; transform: scale(1); }
     }
     .token-rate-num {
       position: relative; z-index: 1;
       font-family: var(--font-ui);
-      font-weight: 400; font-size: 16px; line-height: 26px; letter-spacing: 0.16px;
-      color: var(--text-secondary);
+      font-weight: 400; font-size: 13px; line-height: 21px; letter-spacing: 0.26px;
+      color: var(--text-secondary);   /* neutral grey for standard rates */
     }
-    .token-rate-badge--boosted .token-rate-num { color: var(--green-600); }
+    .token-rate-badge--boosted .token-rate-num { color: var(--green-700); }
 
     /* Sparkles SVG overlay — exact Figma asset (3 stars), positioned to sit over/around the number.
        Absolute, pointer-events none — never affects badge size or blocks the underlying click. */
@@ -471,7 +499,7 @@
       color: var(--green-300);
     }
     .token-rate-badge:not(.token-rate-badge--boosted) .token-rate-sparkles { display: none; }
-    .token-rate-sparkles svg { width: auto; height: 38px; overflow: visible; }
+    .token-rate-sparkles svg { width: auto; height: 32px; overflow: visible; }
     /* Sparkles hidden by default — they only appear during the attention animation,
        pop in, hold briefly, then fade out. Badge afterwards sits at its plain
        resting state (just the number). This makes the animation obvious. */
@@ -486,33 +514,33 @@
     /* Gated on .is-animating — triggered on first paint + arrivals to home
        (see playBoostAttention). */
     .token-rate-badge--boosted.is-animating .sparkle-2 {
-      animation: sparkle-burst 1400ms 80ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation: sparkle-burst 1600ms 80ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     .token-rate-badge--boosted.is-animating .sparkle-1 {
-      animation: sparkle-burst 1450ms 180ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation: sparkle-burst 1650ms 200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
     .token-rate-badge--boosted.is-animating .sparkle-3 {
-      animation: sparkle-burst-small 1400ms 280ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation: sparkle-burst-small 1600ms 320ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     .token-rate-badge--boosted.is-animating .token-rate-num {
       animation: number-pulse 600ms 380ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
-    /* Two grow→shrink pulses, then a smooth fade-out. ease-out on the final
-       segment so opacity glides to 0 instead of snapping. */
+    /* Two continuous grow→shrink pulses then ease-out fade — no static hold,
+       the motion flows uninterrupted which reads more natural. */
     @keyframes sparkle-burst {
       0%   { opacity: 0; transform: scale(0); }
-      13%  { opacity: 1; transform: scale(1.3); }    /* pulse 1 grow */
-      26%  { opacity: 1; transform: scale(1); }      /* pulse 1 shrink */
-      39%  { opacity: 1; transform: scale(1.25); }   /* pulse 2 grow */
-      55%  { opacity: 1; transform: scale(1); animation-timing-function: ease-out; }
-      100% { opacity: 0; transform: scale(0.9); }    /* fade out */
+      14%  { opacity: 1; transform: scale(1.3); }     /* pulse 1 grow */
+      28%  { opacity: 1; transform: scale(1); }       /* pulse 1 shrink */
+      42%  { opacity: 1; transform: scale(1.25); }    /* pulse 2 grow */
+      58%  { opacity: 1; transform: scale(1); animation-timing-function: ease-out; }
+      100% { opacity: 0; transform: scale(0.9); }     /* fade out (~670ms runway) */
     }
     @keyframes sparkle-burst-small {
       0%   { opacity: 0; transform: scale(0); }
-      13%  { opacity: .9; transform: scale(1.2); }
-      26%  { opacity: .9; transform: scale(1); }
-      39%  { opacity: .9; transform: scale(1.15); }
-      55%  { opacity: .9; transform: scale(1); animation-timing-function: ease-out; }
+      14%  { opacity: .9; transform: scale(1.2); }
+      28%  { opacity: .9; transform: scale(1); }
+      42%  { opacity: .9; transform: scale(1.15); }
+      58%  { opacity: .9; transform: scale(1); animation-timing-function: ease-out; }
       100% { opacity: 0; transform: scale(0.9); }
     }
     @keyframes number-pulse {
@@ -1502,7 +1530,7 @@
       border: 1px solid var(--cream-400); margin-bottom: 12px;
       transition: all 0.25s ease;
     }
-    .position-card:hover { border-color: var(--green-200); }
+    .phone.desktop .position-card:hover { border-color: var(--green-200); }
     .position-card.supply-only { background: var(--cream-100); }
     .position-card.supply-only:hover { border-color: var(--green-200); }
     /* Supply-only desktop card: simplified layout per Figma 951:54420 */
@@ -1597,7 +1625,7 @@
       color: var(--green-700); letter-spacing: 0.39px;
     }
     .position-card { position: relative; z-index: 1; box-shadow: 0 12px 0 0 var(--cream-50); }
-    .position-card:hover { box-shadow: var(--shadow-card), 0 12px 0 0 var(--cream-50); }
+    .phone.desktop .position-card:hover { box-shadow: var(--shadow-card), 0 12px 0 0 var(--cream-50); }
     /* Option B: CTA card at bottom */
     .new-borrow-cta {
       background: linear-gradient(135deg, var(--green-50) 0%, var(--cream-100) 100%);
@@ -2003,6 +2031,7 @@
         <button class="opt-toggle active" onclick="setOption('a')">A</button>
         <button class="opt-toggle" onclick="setOption('b')">B</button>
         <button class="opt-toggle" onclick="setOption('c')">C</button>
+        <button class="opt-toggle" onclick="setOption('ab')">AB</button>
         <button class="opt-toggle" onclick="setOption('abc')">ABC</button>
       </div>
     </div>
@@ -3355,10 +3384,10 @@ function setOption(mode, save) {
   var wrapC = document.getElementById('wrap-c');
   var btns = document.querySelectorAll('.opt-toggle');
   btns.forEach(function(b) { b.classList.remove('active'); });
-  var idx = { a: 0, b: 1, c: 2, abc: 3 }[mode];
+  var idx = { a: 0, b: 1, c: 2, ab: 3, abc: 4 }[mode];
   if (btns[idx]) btns[idx].classList.add('active');
-  var showA = mode === 'a' || mode === 'abc';
-  var showB = mode === 'b' || mode === 'abc';
+  var showA = mode === 'a' || mode === 'ab' || mode === 'abc';
+  var showB = mode === 'b' || mode === 'ab' || mode === 'abc';
   var showC = mode === 'c' || mode === 'abc';
   wrapA.classList.toggle('hidden', !showA);
   wrapB.classList.toggle('hidden', !showB);
@@ -3514,6 +3543,9 @@ function initPhoneB() {
   var phoneB = document.getElementById('phone-b');
   if (!phoneB) return;
   clonePhoneFromSnapshot(phoneB, 'b');
+  // Sparkle IntersectionObserver wasn't attached to phone-b at DOMContentLoaded
+  // (it was empty then). Now that the clone is in place, wire its boosted badges.
+  if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
 }
 
 /* Option C = old Option B variant (CTA card visible, restored title/total layout) */
@@ -3521,6 +3553,7 @@ function initPhoneC() {
   var phoneC = document.getElementById('phone-c');
   if (!phoneC) return;
   clonePhoneFromSnapshot(phoneC, 'c');
+  if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
   // Positions screen tweaks specific to Option C
   var phoneCPositions = document.getElementById('positions-c');
   if (phoneCPositions) {
@@ -4193,18 +4226,27 @@ function setupBoostAttentionObservers() {
   document.querySelectorAll('.phone').forEach(function(phone) {
     var badges = phone.querySelectorAll('.token-rate-badge--boosted');
     if (!badges.length || phone.__boostIO) return;
+    // First batch of entries = "initial evaluation" — cards already in viewport
+    // when the observer starts. Delay their animation so the user's gaze has time
+    // to arrive. Subsequent intersections (scroll-in after exit) fire instantly.
+    var isInitial = true;
     var io = new IntersectionObserver(function(entries) {
+      var delay = isInitial ? 500 : 0;
       entries.forEach(function(entry) {
         var badge = entry.target;
         if (entry.isIntersecting) {
-          badge.classList.remove('is-animating');
-          void badge.offsetHeight;
-          badge.classList.add('is-animating');
+          setTimeout(function() {
+            if (!badge.isConnected) return;
+            badge.classList.remove('is-animating');
+            void badge.offsetHeight;
+            badge.classList.add('is-animating');
+          }, delay);
         } else {
           badge.classList.remove('is-animating');
         }
       });
-    }, { root: phone, threshold: 0.4 });
+      isInitial = false;
+    }, { root: phone, threshold: 0.6 });
     badges.forEach(function(b) { io.observe(b); });
     phone.__boostIO = io;
   });
@@ -5126,9 +5168,7 @@ function playLoadingIntro(phone) {
   var savedBp = parseInt(localStorage.getItem('purinta-bp'));
   if (savedBp) setBreakpoint(savedBp); else setBreakpoint(360, false);
   var savedOpt = localStorage.getItem('purinta-opt');
-  // Map legacy 'ab' mode (old A/B toggle) to 'abc'
-  if (savedOpt === 'ab') savedOpt = 'abc';
-  if (savedOpt && (savedOpt === 'a' || savedOpt === 'b' || savedOpt === 'c' || savedOpt === 'abc')) {
+  if (savedOpt && ['a', 'b', 'c', 'ab', 'abc'].indexOf(savedOpt) !== -1) {
     setOption(savedOpt, false);
   }
   // Copy wordmark SVG to homepage-connected (avoids duplicating huge inline SVG)
