@@ -1138,6 +1138,14 @@
     }
     .phone.desktop .bundle-sep::before,
     .phone.desktop .bundle-sep::after { display: none; }
+    /* Desktop: 48px between token values and stepper (dialog gap 16 + margin-top 32) */
+    .phone.desktop .bundle-steps { margin-top: 32px; }
+    /* Desktop: bump bundle row typography one DS step up (label/amount/token + icon) */
+    .phone.desktop .bundle-row-label { font-size: var(--ds-sm); }
+    .phone.desktop .bundle-row-amount { font-size: var(--ds-3xl); }
+    .phone.desktop .bundle-row-token { font-size: var(--ds-sm); }
+    .phone.desktop .bundle-row-token .mini-icon { width: 22px; height: 22px; }
+    .phone.desktop .bundle-modal-overlay.is-done .bundle-row-amount { font-size: var(--ds-2xl); }
 
     /* Success toast — appears top-right of the phone viewport on Done state,
        mirrors the native wallet "✓ Success!" toast from the reference flow. */
