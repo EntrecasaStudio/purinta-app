@@ -787,7 +787,7 @@
     }
     @keyframes qr-pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
     .quick-repay-close {
-      position: absolute; top: 14px; right: 14px;
+      position: absolute; top: 24px; right: 24px;
       width: 32px; height: 32px;
       background: transparent; border: none;
       display: flex; align-items: center; justify-content: center;
@@ -873,7 +873,7 @@
       text-align: center;
     }
     .bundle-modal-close {
-      position: absolute; top: 14px; right: 14px;
+      position: absolute; top: 24px; right: 24px;
       width: 32px; height: 32px;
       background: transparent; border: none;
       display: flex; align-items: center; justify-content: center;
@@ -1365,6 +1365,17 @@
       content: ''; position: absolute; top: 0; left: 0; width: 16px; height: 16px;
       background: url("assets/check-icon.svg") center/contain no-repeat;
     }
+
+    /* Desktop — token dropdown row hover spans edge-to-edge with square corners.
+       The .token-select wrapper has overflow: hidden + border-radius: 22px, so the
+       last row's bottom corners get clipped naturally to round, while every other
+       hover edge stays sharp (matching the Figma desktop spec). Uses #phone-X.desktop
+       so it wins specificity against the existing #phone-a/b token-dropdown rules. */
+    #phone-a.desktop .token-dropdown , #phone-b.desktop .token-dropdown { padding: 0; }
+    #phone-a.desktop .token-dropdown-row , #phone-b.desktop .token-dropdown-row { margin: 0; border-radius: 0; }
+    #phone-a.desktop .token-dropdown-row:first-child , #phone-b.desktop .token-dropdown-row:first-child { margin-top: 0; }
+    #phone-a.desktop .token-dropdown-row:last-child , #phone-b.desktop .token-dropdown-row:last-child { margin-bottom: 0; }
+    #phone-a.desktop .token-dropdown-row.selected , #phone-b.desktop .token-dropdown-row.selected { margin: 0; border-radius: 0; }
 
     /* ═══ BOTTOM SHEET (Option A mobile only) ═══
        Replaces the dropdown when tapping the market selector in the OP2 title.
