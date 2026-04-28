@@ -64,7 +64,7 @@
       --text-secondary: #666666;  /* Figma Raven darkened, 4.78:1 — AA pass */
       --text-heading: var(--green-700);    /* Figma heading green, 9.22:1 */
       --text-muted: #B2B2B2;     /* Figma muted — decorative only */
-      --font-display: 'ohno-softie-variable', 'Fredoka', 'Nunito', sans-serif;
+      --font-display: 'ohno-softie-variable', sans-serif;
       --font-ui: 'Rubik', sans-serif;
       --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-full: 9999px;
       --shadow-sm: 0 1px 3px rgba(26,58,42,0.06);
@@ -701,6 +701,9 @@
       cursor: help;
       vertical-align: middle;
     }
+    /* Option A positions cards: nudge the "i" up 1px and tighten 2px to the
+       label on its left. Position: relative is layout-neutral so neighbors stay. */
+    #phone-a .position-card .rate-info-icon { position: relative; top: -1px; margin-left: 2px; }
     /* Tooltip uses position: fixed so it escapes parent stacking contexts
        (position-card has z-index:1 → next card would otherwise cover the tooltip).
        JS positions it on hover/open via --tooltip-top and --tooltip-left
@@ -1034,7 +1037,8 @@
       max-height: 0; opacity: 0; margin: 0;
     }
     .bundle-sep {
-      font-family: var(--font-display); font-size: var(--ds-sm);
+      font-family: var(--font-ui); font-size: var(--ds-sm); font-weight: 400;
+      letter-spacing: 0.16px; line-height: 26px;
       color: var(--text-secondary);
       position: relative; width: 100%; text-align: center;
       height: 20px; max-height: 20px; opacity: 1; overflow: hidden;
@@ -1056,8 +1060,9 @@
     }
     .bundle-step {
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      font-family: var(--font-ui); font-size: var(--ds-xs);
-      color: var(--text-primary); letter-spacing: 0.26px;
+      font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 400;
+      line-height: 21px; letter-spacing: 0.26px;
+      color: var(--text-secondary);
     }
     .bundle-step-text { flex: 1; text-align: left; }
     .bundle-step-num {
@@ -1131,11 +1136,21 @@
       flex-direction: row; justify-content: center; align-items: center; gap: 16px;
     }
     .phone.desktop .bundle-sep {
-      width: auto; height: auto; font-size: var(--ds-md);
+      width: auto; height: auto; font-size: var(--ds-sm);
       align-self: center; padding: 0 4px;
+      position: relative; overflow: visible;
     }
+    /* Desktop: replace mobile's horizontal lines with vertical strokes above
+       and below the "&" — matches the Figma divider that separates the two
+       value columns. */
     .phone.desktop .bundle-sep::before,
-    .phone.desktop .bundle-sep::after { display: none; }
+    .phone.desktop .bundle-sep::after {
+      content: ''; display: block; position: absolute; left: 50%;
+      width: 1px; height: 28px; background: var(--cream-400);
+      transform: translateX(-50%); top: auto; right: auto;
+    }
+    .phone.desktop .bundle-sep::before { bottom: 100%; margin-bottom: 8px; }
+    .phone.desktop .bundle-sep::after  { top: 100%; margin-top: 8px; }
     /* Desktop: 48px between token values and stepper (dialog gap 16 + margin-top 32) */
     .phone.desktop .bundle-steps { margin-top: 32px; }
     /* Desktop: bump bundle row typography one DS step up (label/amount/token + icon) */
@@ -1151,6 +1166,64 @@
     .phone.desktop .bundle-modal-overlay.is-done .bundle-row-value {
       flex-direction: column; align-items: center; gap: 2px;
     }
+
+    /* ─── Option A redesign — only #phone-a ───
+       New flow per Figma 2006:151140 (desktop) / 2006:158406 (mobile):
+       · Mascot is visible from the start (happy variant), swaps to the bills
+         variant only on transaction complete (.is-done).
+       · Numbers stay the same size and stacked layout across all states.
+       · Desktop reverts to the column rows + horizontal "&" lines (mobile-style)
+         since the new design treats desktop and mobile identically. */
+    /* Two mascot variants: default (happy) → swaps to done (bills) on .is-done */
+    .bundle-mascot-default { display: none; }
+    .bundle-mascot-done    { display: block; }
+    #phone-a .bundle-mascot-default { display: block; }
+    #phone-a .bundle-mascot-done    { display: none; }
+    #phone-a .bundle-modal-overlay.is-done .bundle-mascot-default { display: none; }
+    #phone-a .bundle-modal-overlay.is-done .bundle-mascot-done    { display: block; }
+    /* Mascot container always open in option A, no max-height collapse */
+    #phone-a .bundle-modal-mascot { max-height: 168px; opacity: 1; }
+    /* Mascot heights for option A — height drives the size, width auto-scales
+       by SVG aspect. Confirmed (step 3) is larger than Begin to celebrate
+       the success state. */
+    #phone-a .bundle-mascot-img  { width: auto; height: 118px; }
+    #phone-a .bundle-mascot-done { height: 144px; }
+    /* Re-fire the entry-pop on the done variant when it appears — same
+       gelatinous rebound as option B, reinforcing the swap moment. The default
+       mascot (already on screen) doesn't animate. */
+    #phone-a .bundle-modal-overlay.is-done .bundle-mascot-default { animation: none; }
+    #phone-a .bundle-modal-overlay.is-done .bundle-mascot-done {
+      animation: bundle-mascot-pop 1700ms cubic-bezier(0.45, 0, 0.55, 1) 0ms both;
+    }
+    /* Blob also re-pops to amplify the moment, then settles into the idle float */
+    #phone-a .bundle-modal-overlay.is-done .bundle-mascot-blob {
+      animation: bundle-blob-pop   1400ms cubic-bezier(0.45, 0, 0.55, 1)   0ms both,
+                 bundle-blob-float 5s    ease-in-out                    1400ms infinite;
+    }
+    /* Numbers don't morph between states — keep column layout + ds-2xl size */
+    #phone-a .bundle-modal-overlay.is-done .bundle-row-value {
+      flex-direction: column; align-items: center; gap: 2px;
+    }
+    #phone-a .bundle-modal-overlay.is-done .bundle-row-amount { font-size: var(--ds-2xl); }
+    #phone-a .bundle-modal-overlay.is-done .bundle-modal-rows { gap: 8px; }
+    /* Keep the "&" separator visible in done state too (default hides it) */
+    #phone-a .bundle-modal-overlay.is-done .bundle-sep {
+      max-height: 20px; opacity: 1; margin: initial;
+    }
+    /* Desktop: revert to column rows (mobile-style) + horizontal "&" lines */
+    #phone-a.desktop .bundle-modal-rows { flex-direction: column; gap: 8px; }
+    #phone-a.desktop .bundle-sep {
+      width: 100%; height: 20px; max-height: 20px; padding: 0;
+      font-size: var(--ds-sm);
+    }
+    #phone-a.desktop .bundle-sep::before,
+    #phone-a.desktop .bundle-sep::after {
+      content: ''; position: absolute; top: 50%; left: auto; bottom: auto;
+      width: 38%; height: 1px; background: var(--cream-300);
+      transform: none; margin: 0;
+    }
+    #phone-a.desktop .bundle-sep::before { left: 0; }
+    #phone-a.desktop .bundle-sep::after  { right: 0; }
 
     /* Success toast — appears top-right of the phone viewport on Done state,
        mirrors the native wallet "✓ Success!" toast from the reference flow. */
@@ -2420,9 +2493,15 @@
     .phone.desktop #borrow .borrow-content,
     .phone.desktop #borrow-b .borrow-content,
     .phone.desktop #borrow-c .borrow-content,
-    #phone-a.desktop #positions .positions-content, #phone-b.desktop #positions .positions-content,
-    #phone-a.desktop #positions-empty .positions-content, #phone-b.desktop #positions-empty .positions-content,
-    #phone-a.desktop #error-404 .positions-content , #phone-b.desktop #error-404 .positions-content { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }
+    #phone-a.desktop #positions .positions-content,
+    #phone-b.desktop #positions-b .positions-content,
+    #phone-c.desktop #positions-c .positions-content,
+    #phone-a.desktop #positions-empty .positions-content,
+    #phone-b.desktop #positions-empty-b .positions-content,
+    #phone-c.desktop #positions-empty-c .positions-content,
+    #phone-a.desktop #error-404 .positions-content,
+    #phone-b.desktop #error-404-b .positions-content,
+    #phone-c.desktop #error-404-c .positions-content { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }
     .phone.desktop #borrow .borrow-content,
     .phone.desktop #borrow-b .borrow-content,
     .phone.desktop #borrow-c .borrow-content,
@@ -3855,7 +3934,8 @@
       <button class="bundle-modal-close" onclick="closeBundleModal()" aria-label="Close"><i class="ph ph-x"></i></button>
       <div class="bundle-modal-mascot">
         <svg class="bundle-mascot-blob" viewBox="0 0 140 108" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M122 17C132 42 114 72 82 85C50 97 16 87 7 62C-3 37 14 42 46 30C78 17 113 -8 122 17Z"/></svg>
-        <img src="assets/Purinta-Confirmed.svg" alt="" aria-hidden="true">
+        <img class="bundle-mascot-img bundle-mascot-default" src="assets/Purinta-Begin.svg" alt="" aria-hidden="true">
+        <img class="bundle-mascot-img bundle-mascot-done" src="assets/Purinta-Confirmed.svg" alt="" aria-hidden="true">
         <span class="bundle-mascot-sparkle bms-1"></span>
         <span class="bundle-mascot-sparkle bms-2"></span>
         <span class="bundle-mascot-sparkle bms-3"></span>
@@ -4624,7 +4704,9 @@ function openQuickRepay(btn) {
   if (!card) return;
   _quickRepayCard = card;
   var borrowingEl = card.querySelector('.stat-big:not(.accent)');
-  var amount = borrowingEl ? borrowingEl.textContent.trim() : '$0';
+  // Strip leading $ — the modal already shows USDC as the token, so the
+  // dollar sign is redundant on the amount itself.
+  var amount = borrowingEl ? borrowingEl.textContent.trim().replace(/^\$\s*/, '') : '0';
   // Quick Repay = one-op bundle: approve USDC → execute. Shares the modal
   // pattern with Modify so users see one consistent confirmation surface.
   openBundleModal({
@@ -4716,11 +4798,14 @@ function openBundleModal(data, btn) {
   if (!operations.length) operations = [{ label: 'No changes', amount: '—', token: '', tokenClass: '' }];
   rowsWrap.innerHTML = operations.map(function(op, idx) {
     var iconHtml = op.tokenClass ? '<span class="mini-icon ' + op.tokenClass + '"></span>' : '';
+    // Strip leading "$" — the token name + icon already convey the currency,
+    // so the dollar prefix is redundant on the amount.
+    var amountText = String(op.amount || '').replace(/^\$\s*/, '');
     // amount + token wrapped in .bundle-row-value so Done state can morph them
     // from stacked (column) → inline (row) + shrink the amount in one FLIP.
     var row = '<div class="bundle-row"><div class="bundle-row-label">' + op.label + '</div>' +
               '<div class="bundle-row-value">' +
-                '<span class="bundle-row-amount">' + op.amount + '</span>' +
+                '<span class="bundle-row-amount">' + amountText + '</span>' +
                 '<span class="bundle-row-token">' + iconHtml + (op.token || '') + '</span>' +
               '</div></div>';
     if (idx < operations.length - 1) row += '<div class="bundle-sep">&amp;</div>';
@@ -4799,12 +4884,12 @@ function runBundleSequence() {
   }
   advance();
 }
-// Borrow commit — Option A (phone-a) opens the new bundle modal with
-// [Supply collateral, Borrow USDC]; only the collateral needs approval
-// (the protocol sends USDC TO the user). Phone-b/c keep the legacy #confirm.
+// Borrow commit — opens the bundle modal with [Supply collateral, Borrow USDC];
+// only the collateral needs approval (the protocol sends USDC TO the user).
+// Same flow across phone-a/b/c so all simulators use Option A's confirmation.
 function commitBorrow(btn) {
   var phone = btn ? btn.closest('.phone') : null;
-  if (!phone || phone.id !== 'phone-a') { showScreen('confirm'); return; }
+  if (!phone) { showScreen('confirm'); return; }
   var screen = btn.closest('.screen') || document.getElementById('borrow-connected');
   if (!screen) { showScreen('confirm'); return; }
   var pcts = getSliderPcts(screen.id);
@@ -4816,8 +4901,8 @@ function commitBorrow(btn) {
   var supplyAmount = td ? td.maxSupply * (pcts.supply / 100) : 0;
   var supplyUSD = supplyAmount * (td ? td.price : 0);
   var borrowUSD = supplyUSD * (typeof maxLTV !== 'undefined' ? maxLTV : 0.75) * (pcts.borrow / 100);
-  var fmt = (typeof formatCompact === 'function') ? formatCompact : String;
-  var fmtUSD = (typeof formatUSD === 'function') ? formatUSD : function(n){ return '$' + n.toFixed(2); };
+  var fmt = (typeof formatFull === 'function') ? formatFull : String;
+  var fmtUSD = (typeof formatUSDFull === 'function') ? formatUSDFull : function(n){ return '$' + n.toFixed(2); };
   var ops = [];
   if (supplyAmount > 0) ops.push({ label: 'Supply', amount: fmt(supplyAmount), token: supplyToken.toUpperCase(), tokenClass: tokenKey });
   if (borrowUSD > 0)    ops.push({ label: 'Borrow', amount: fmtUSD(borrowUSD), token: 'USDC', tokenClass: 'usdc' });
@@ -4829,7 +4914,7 @@ function commitBorrow(btn) {
 
 function commitModify(btn) {
   var phone = btn ? btn.closest('.phone') : null;
-  if (!phone || phone.id !== 'phone-a') { showScreen('confirm'); return; }
+  if (!phone) { showScreen('confirm'); return; }
   var screen = btn.closest('.screen') || document.getElementById('update');
   if (!screen) { showScreen('confirm'); return; }
 
@@ -4852,8 +4937,8 @@ function commitModify(btn) {
   var borrowUSDAbs = Math.abs((borrowDelta / 100) * (supplyTotal * (td ? td.price : 0) * (typeof maxLTV !== 'undefined' ? maxLTV : 0.75)));
 
   // Build bundle: a "supply" op if supplyDelta > 0, "withdraw" if < 0; same for borrow
-  var fmt = (typeof formatCompact === 'function') ? formatCompact : String;
-  var fmtUSD = (typeof formatUSD === 'function') ? formatUSD : function(n){ return '$' + n.toFixed(2); };
+  var fmt = (typeof formatFull === 'function') ? formatFull : String;
+  var fmtUSD = (typeof formatUSDFull === 'function') ? formatUSDFull : function(n){ return '$' + n.toFixed(2); };
   var ops = [];
   if (Math.abs(supplyDelta) > 0.5) {
     ops.push({
@@ -4959,8 +5044,11 @@ function updateModifyCtaState(screen) {
   var borrowStart = parseFloat(tracks[1].dataset.startPct) || 0;
   var hasChange = Math.abs(pcts.supply - supplyStart) > 0.5
                || Math.abs(pcts.borrow - borrowStart) > 0.5;
-  var cta = screen.querySelector('.btn-primary.btn-full.btn-lg');
-  if (cta) cta.disabled = !hasChange;
+  // Toggle ALL matching CTAs — desktop renders the inner one, mobile the outer
+  // one. querySelector would only catch the first, leaving the visible button
+  // stuck in its HTML disabled state.
+  var ctas = screen.querySelectorAll('.btn-primary.btn-full.btn-lg');
+  ctas.forEach(function(cta) { cta.disabled = !hasChange; });
 }
 
 function extractPositionData(card, token) {
@@ -5279,6 +5367,16 @@ function formatCompact(n) {
   if (n >= 1e3)  return (n / 1e3).toFixed(n >= 1e4 ? 1 : 2) + 'K';
   if (n >= 1)    return n.toFixed(2);
   return n.toPrecision(4);
+}
+
+// Full-precision formatters — used in the bundle confirmation modal where the
+// user expects to see the exact transaction amount, not an abbreviation.
+function formatFull(n) {
+  if (n >= 1) return n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return n.toPrecision(4);
+}
+function formatUSDFull(n) {
+  return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 function formatUSD(n) {
