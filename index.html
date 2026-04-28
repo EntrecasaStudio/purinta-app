@@ -1151,6 +1151,50 @@
     }
     .phone.desktop .bundle-sep::before { bottom: 100%; margin-bottom: 8px; }
     .phone.desktop .bundle-sep::after  { top: 100%; margin-top: 8px; }
+    /* When the row layout would overflow the dialog (long numbers), JS toggles
+       .is-stacked on .bundle-modal-rows. Switch to column with mobile-style
+       horizontal lines flanking the "&". */
+    .phone.desktop .bundle-modal-rows.is-stacked {
+      flex-direction: column; gap: 8px;
+    }
+    .phone.desktop .bundle-modal-rows.is-stacked .bundle-sep {
+      width: 100%; height: 20px; max-height: 20px; padding: 0;
+    }
+    .phone.desktop .bundle-modal-rows.is-stacked .bundle-sep::before,
+    .phone.desktop .bundle-modal-rows.is-stacked .bundle-sep::after {
+      content: ''; position: absolute; top: 50%; left: auto; bottom: auto;
+      width: 38%; height: 1px; background: var(--cream-300);
+      transform: none; margin: 0;
+    }
+    .phone.desktop .bundle-modal-rows.is-stacked .bundle-sep::before { left: 0; }
+    .phone.desktop .bundle-modal-rows.is-stacked .bundle-sep::after  { right: 0; }
+    /* Option B desktop done: stack the rows so the "&" divider can span the
+       full content width (mobile-style horizontal lines). Phone-a has its own
+       done-state rules. */
+    #phone-b.desktop .bundle-modal-overlay.is-done .bundle-modal-rows,
+    #phone-c.desktop .bundle-modal-overlay.is-done .bundle-modal-rows {
+      flex-direction: column; gap: 8px;
+    }
+    #phone-b.desktop .bundle-modal-overlay.is-done .bundle-sep,
+    #phone-c.desktop .bundle-modal-overlay.is-done .bundle-sep {
+      max-height: 20px; opacity: 1; margin: initial;
+      width: 100%; height: 20px; padding: 0;
+      position: relative; overflow: visible;
+    }
+    #phone-b.desktop .bundle-modal-overlay.is-done .bundle-sep::before,
+    #phone-c.desktop .bundle-modal-overlay.is-done .bundle-sep::before {
+      content: ''; position: absolute; top: 50%; bottom: auto;
+      left: 0; right: auto; margin: 0;
+      width: 38%; height: 1px; background: var(--cream-300);
+      transform: none;
+    }
+    #phone-b.desktop .bundle-modal-overlay.is-done .bundle-sep::after,
+    #phone-c.desktop .bundle-modal-overlay.is-done .bundle-sep::after {
+      content: ''; position: absolute; top: 50%; bottom: auto;
+      right: 0; left: auto; margin: 0;
+      width: 38%; height: 1px; background: var(--cream-300);
+      transform: none;
+    }
     /* Desktop: 48px between token values and stepper (dialog gap 16 + margin-top 32) */
     .phone.desktop .bundle-steps { margin-top: 32px; }
     /* Desktop: bump bundle row typography one DS step up (label/amount/token + icon) */
@@ -4820,7 +4864,27 @@ function openBundleModal(data, btn) {
   }).join('');
   overlay.classList.add('is-open');
   overlay.setAttribute('aria-hidden', 'false');
+  // After paint, check if the row layout overflows the dialog width — if so,
+  // stack the values column-style (mobile layout) so long numbers don't clip.
+  requestAnimationFrame(function() { adjustBundleRowsLayout(overlay); });
 }
+
+// Toggle .is-stacked on .bundle-modal-rows when the natural row width exceeds
+// the dialog's content area. Phone-a is already column-only so the class is a
+// no-op there; phone-b/c get the flip from row → column on overflow.
+function adjustBundleRowsLayout(overlay) {
+  if (!overlay) overlay = document.getElementById('bundle-modal-overlay');
+  if (!overlay) return;
+  var rows = overlay.querySelector('.bundle-modal-rows');
+  if (!rows) return;
+  rows.classList.remove('is-stacked');
+  // scrollWidth reflects content; clientWidth reflects available. +1 tolerance
+  // for subpixel layout.
+  if (rows.scrollWidth > rows.clientWidth + 1) {
+    rows.classList.add('is-stacked');
+  }
+}
+window.addEventListener('resize', function() { adjustBundleRowsLayout(); });
 function closeBundleModal() {
   var overlay = document.getElementById('bundle-modal-overlay');
   if (!overlay) return;
