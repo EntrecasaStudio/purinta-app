@@ -481,16 +481,16 @@
       display: flex; align-items: center; justify-content: center;
       z-index: 2;
     }
-    /* Boosted steps up a tonal notch so the semantic survives the unified palette —
-       same family (mint), higher saturation + darker text. */
+    /* Unified palette: boosted matches the base mint tint (no tonal step-up).
+       The text color + sparkles still differentiate boosted; the bg stays light. */
     .token-rate-badge--boosted {
-      background: var(--mint-300);
+      background: var(--mint-50);
     }
     /* Option A (phone-a) uses mint-100 as the non-boosted base — a touch warmer
        than mint-50, keeping more tonal distance from the card's near-white bg.
-       Boosted bumps to mint-300 so the hierarchy survives the low-opacity sparkles. */
+       Boosted matches the same tint to keep "only the lighter green" across all rates. */
     #phone-a .token-rate-badge { background: var(--mint-100); }
-    #phone-a .token-rate-badge--boosted { background: var(--mint-300); }
+    #phone-a .token-rate-badge--boosted { background: var(--mint-100); }
     /* Home "Option B" (phone-b) — variation for comparison vs Option A:
        · Flat background: all badges on mint-50 (boosted bg override to match non-boosted)
        · Sparkles still animate on viewport entry, but STAY visible at the end
@@ -527,7 +527,7 @@
       font-weight: 400; font-size: 13px; line-height: 21px; letter-spacing: 0.26px;
       color: var(--text-secondary);   /* neutral grey for standard rates */
     }
-    .token-rate-badge--boosted .token-rate-num { color: var(--green-700); }
+    .token-rate-badge--boosted .token-rate-num { color: var(--text-secondary); }
 
     /* Sparkles SVG overlay — exact Figma asset (3 stars), positioned to sit over/around the number.
        Absolute, pointer-events none — never affects badge size or blocks the underlying click. */
@@ -564,42 +564,40 @@
     .token-rate-badge--boosted.is-animating .token-rate-num {
       animation: number-pulse 600ms 380ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
-    /* Two continuous grow→shrink pulses then ease-out fade — no static hold,
-       the motion flows uninterrupted which reads more natural. */
+    /* Two continuous grow→shrink pulses then settle at full opacity — sparkles
+       stay lit after the burst so the boosted/negative rate keeps signaling. */
     @keyframes sparkle-burst {
       0%   { opacity: 0; transform: scale(0); }
       14%  { opacity: 1; transform: scale(1.3); }     /* pulse 1 grow */
       28%  { opacity: 1; transform: scale(1); }       /* pulse 1 shrink */
       42%  { opacity: 1; transform: scale(1.25); }    /* pulse 2 grow */
       58%  { opacity: 1; transform: scale(1); animation-timing-function: ease-out; }
-      100% { opacity: 0; transform: scale(0.9); }     /* fade out (~670ms runway) */
+      100% { opacity: 1; transform: scale(1); }       /* stay visible at full opacity */
     }
     @keyframes sparkle-burst-small {
       0%   { opacity: 0; transform: scale(0); }
-      14%  { opacity: .9; transform: scale(1.2); }
-      28%  { opacity: .9; transform: scale(1); }
-      42%  { opacity: .9; transform: scale(1.15); }
-      58%  { opacity: .9; transform: scale(1); animation-timing-function: ease-out; }
-      100% { opacity: 0; transform: scale(0.9); }
+      14%  { opacity: 1; transform: scale(1.2); }
+      28%  { opacity: 1; transform: scale(1); }
+      42%  { opacity: 1; transform: scale(1.15); }
+      58%  { opacity: 1; transform: scale(1); animation-timing-function: ease-out; }
+      100% { opacity: 1; transform: scale(1); }       /* stay visible at full opacity */
     }
-    /* DESKTOP variant — pulses from 0.4 baseline up to 1, settles back at 0.4.
-       Stars stay visible at low-opacity after animation (persistent signal),
-       without the Morpho-cheap look of full-opacity always-on. */
+    /* DESKTOP variant — settles at full opacity after the burst (matches mobile/phone-b). */
     @keyframes sparkle-burst-persist {
       0%   { opacity: 0.4; transform: scale(1); }
       14%  { opacity: 1;   transform: scale(1.3); }
       28%  { opacity: 1;   transform: scale(1); }
       42%  { opacity: 1;   transform: scale(1.25); }
       58%  { opacity: 1;   transform: scale(1); animation-timing-function: ease-out; }
-      100% { opacity: 0.4; transform: scale(1); }
+      100% { opacity: 1;   transform: scale(1); }
     }
     @keyframes sparkle-burst-small-persist {
       0%   { opacity: 0.36; transform: scale(1); }
-      14%  { opacity: .9;   transform: scale(1.2); }
-      28%  { opacity: .9;   transform: scale(1); }
-      42%  { opacity: .9;   transform: scale(1.15); }
-      58%  { opacity: .9;   transform: scale(1); animation-timing-function: ease-out; }
-      100% { opacity: 0.36; transform: scale(1); }
+      14%  { opacity: 1;    transform: scale(1.2); }
+      28%  { opacity: 1;    transform: scale(1); }
+      42%  { opacity: 1;    transform: scale(1.15); }
+      58%  { opacity: 1;    transform: scale(1); animation-timing-function: ease-out; }
+      100% { opacity: 1;    transform: scale(1); }
     }
     /* Desktop-only: persistent low-opacity baseline + hybrid keyframes (not phone-b,
        which has its own full-opacity -stay experiment). Full animation shorthand
