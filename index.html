@@ -57,7 +57,8 @@
       --error-300: #FF80D6; --error-400: #FF66CF; --error-500: #FA4BBE;
       --error-600: #E52E9D; --error-700: #BD267F; --error-800: #A3216F; --error-900: #8C1C5F;
       /* Neutrals */
-      --neutral-50: #FEFEFE;
+      --neutral-50: #FEFEFE; --neutral-100: #F5F5F5; --neutral-200: #E5E5E5;
+      --neutral-300: #D4D4D4; --neutral-700: #666666;
       --neutral-900: #333333;
       /* Semantic text — from Figma + WCAG accessible */
       --text-primary: #333333;    /* Figma body text, 12.63:1 on white */
@@ -1526,13 +1527,14 @@
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
       background: var(--neutral-50);
       /* Top: rounded sheet handle. Bottom: match phone's 32px border-radius
-         so corners follow the device frame's curvature. */
+         so corners follow the device frame's curvature. Horizontal padding
+         removed so selected/active rows can fill edge-to-edge like desktop. */
       border-radius: 28px 28px 32px 32px;
-      padding: 12px 16px 24px;
+      padding: 12px 0 24px;
       box-shadow: 0 -8px 32px rgba(24, 82, 41, 0.12);
       transform: translateY(100%);
       transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
-      max-height: 70%; overflow-y: auto;
+      max-height: 70%; overflow: hidden auto;
     }
     .token-sheet.open { transform: translateY(0); }
     .token-sheet-handle {
@@ -1544,22 +1546,29 @@
       color: var(--text-heading); text-align: center;
       padding: 0 20px 20px;
     }
+    /* Rows match the desktop dropdown style: edge-to-edge, no border-radius,
+       cream-300 tap fill, cream-50 selected fill framed by top/bottom borders. */
     .token-sheet-row {
       display: flex; align-items: center; gap: 12px;
       padding: 14px 20px;
-      border-radius: 16px;
+      border-radius: 0;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       transition: background 0.12s ease;
     }
-    .token-sheet-row:active { background: var(--cream-100); }
+    .token-sheet-row:active { background: var(--cream-300); }
     .token-sheet-row .mini-icon { width: 32px; height: 32px; flex-shrink: 0; }
     .token-sheet-row .token-name {
       font-family: var(--font-display); font-size: var(--ds-sm);
       color: var(--text-primary); flex: 1;
     }
-    .token-sheet-row.selected { background: var(--cream-50); }
-    .token-sheet-row.selected .token-name { color: var(--green-700); }
+    .token-sheet-row.selected {
+      background: var(--cream-50);
+      border-top: 1px solid var(--cream-300);
+      border-bottom: 1px solid var(--cream-300);
+    }
+    .token-sheet-row.selected .token-name { color: var(--cream-600); }
+    .token-sheet-row.selected .mini-icon { opacity: 0.5; }
     .token-sheet-row .check-icon {
       width: 20px; height: 20px; flex-shrink: 0;
       background: url("assets/check-icon.svg") center/contain no-repeat;
@@ -2522,7 +2531,12 @@
     .phone.desktop #positions-empty,
     .phone.desktop #error-404 { max-width: none; padding: 0 40px; }
     /* positions-empty and error-404 inherit the universal flex-column + margin-top:auto
-       pattern from .phone.desktop .screen.active — no special positioning needed */
+       pattern from .phone.desktop .screen.active — but the #positions-empty.active /
+       #error-404.active rule set min-height: 100% (for the mobile fixed-height phone),
+       which beats .phone.desktop .screen.active's min-height: 100vh by specificity.
+       Restore 100vh on desktop so the footer pushes to the viewport bottom. */
+    .phone.desktop #positions-empty.active,
+    .phone.desktop #error-404.active { min-height: 100vh; }
     .phone.desktop #positions-empty .positions-content,
     .phone.desktop #error-404 .positions-content { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }
     .phone.desktop #borrow,
@@ -2715,6 +2729,41 @@
     .phone.desktop #skel-positions, .phone.desktop #skel-positions-b, .phone.desktop #skel-positions-c {
       max-width: none; padding: 0 40px;
     }
+    /* Skel home: turn the entire token-rate-badge corner into a skeleton —
+       keeps its curved shape (0 32px 0 32px) and Figma width (~77px) but
+       overrides the mint fill with the shimmer gradient. Op B (phone-b/c)
+       uses neutral via the cascade. */
+    #skel-home .token-rate-badge,
+    #skel-home-b .token-rate-badge,
+    #skel-home-c .token-rate-badge {
+      background: linear-gradient(90deg,
+        var(--cream-200) 0%, var(--cream-300) 50%, var(--cream-200) 100%);
+      background-size: 200% 100%;
+      animation: skel-shimmer 1.7s ease-in-out infinite;
+      box-shadow: none;
+      min-width: 77px;
+    }
+    #phone-b #skel-home-b .token-rate-badge,
+    #phone-c #skel-home-c .token-rate-badge {
+      background: linear-gradient(90deg,
+        var(--neutral-200) 0%, var(--neutral-300) 50%, var(--neutral-200) 100%);
+      background-size: 200% 100%;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #skel-home .token-rate-badge,
+      #skel-home-b .token-rate-badge,
+      #skel-home-c .token-rate-badge { animation: none; background: var(--cream-200); }
+      #phone-b #skel-home-b .token-rate-badge,
+      #phone-c #skel-home-c .token-rate-badge { background: var(--neutral-200); }
+    }
+    /* All buttons inside skeleton screens read as disabled — most :disabled
+       styles are scoped to .btn-primary, so this also covers btn-secondary
+       (Modify Position, Quick Repay) on My Positions. */
+    #skel-home   .btn:disabled, #skel-borrow   .btn:disabled, #skel-positions   .btn:disabled,
+    #skel-home-b .btn:disabled, #skel-borrow-b .btn:disabled, #skel-positions-b .btn:disabled,
+    #skel-home-c .btn:disabled, #skel-borrow-c .btn:disabled, #skel-positions-c .btn:disabled {
+      opacity: 0.5; cursor: not-allowed; pointer-events: none; filter: none !important;
+    }
   </style>
 </head>
 <body>
@@ -2758,6 +2807,11 @@
           <button onclick="showScreen('positions-empty')">Pos Empty</button>
           <button onclick="showScreen('update')">Modify</button>
           <button onclick="devOpenQuickRepay()">Quick Repay</button>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <button onclick="showScreen('skel-home')">Skel Home</button>
+          <button onclick="showScreen('skel-borrow')">Skel Borrow</button>
+          <button onclick="showScreen('skel-positions')">Skel Positions</button>
         </div>
         <div style="display:flex;gap:4px;">
           <button onclick="showScreen('error-404')">404</button>
@@ -4061,6 +4115,147 @@
     </div>
   </div>
 
+  <!-- ═══ SKELETON SCREENS ═══
+       Standalone loading states for Home, Borrow, and My Positions. Static
+       UI chrome (header, footer, titles, mascot illustration) renders normally;
+       dynamic content slots show animated .skel-block placeholders that loop
+       indefinitely. Phone-a uses the Cream palette (Op A); phone-b/c use
+       Neutral (Op B) — see CSS overrides under #phone-b .skel-block. -->
+
+  <!-- Skeleton: Home — clones #homepage-connected's structure on init.
+       The only on-chain data on this screen is the per-market borrow rate
+       (top-right of each token card). Everything else (icons, names, CTA,
+       header, hero, footer) is hardcoded and renders normally. -->
+  <div id="skel-home" class="screen"></div>
+
+  <!-- Skeleton: Borrow -->
+  <div id="skel-borrow" class="screen">
+    <div class="app-header">
+      <span class="app-logo" aria-hidden="true">
+        <svg class="logo-symbol" viewBox="0 0 184 208" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="184" height="208" fill="#39763D"/></svg>
+      </span>
+      <nav class="top-nav">
+        <button class="top-nav-link"><i class="ph-light ph-house"></i> Home</button>
+        <button class="top-nav-link"><i class="ph-light ph-cards-three"></i> My Positions</button>
+        <button class="top-nav-link active"><i class="ph-light ph-currency-circle-dollar"></i> Borrow</button>
+      </nav>
+      <div class="header-right">
+        <div class="wallet-badge"><span class="wallet-dot"></span><span class="wallet-address-text">0x23k...4534</span></div>
+      </div>
+    </div>
+    <div class="borrow-content">
+      <div class="borrow-header" style="display:flex;align-items:center;gap:8px;padding:16px 20px 8px;">
+        <span class="skel-block" style="width:140px;height:24px;"></span>
+        <span class="skel-block skel-pill" style="width:120px;height:36px;"></span>
+      </div>
+      <div class="slider-section" style="margin: 12px 20px;">
+        <div class="skel-slider">
+          <div class="skel-slider-label-row">
+            <span class="skel-block" style="width:60px;height:16px;"></span>
+            <span class="skel-block skel-pill" style="width:90px;height:32px;"></span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <span class="skel-block skel-pill" style="flex:1;height:36px;"></span>
+            <span class="skel-block skel-pill" style="flex:1;height:36px;"></span>
+            <span class="skel-block skel-pill" style="flex:1;height:36px;"></span>
+            <span class="skel-block skel-pill" style="flex:1;height:36px;"></span>
+          </div>
+          <span class="skel-block skel-pill" style="width:100%;height:8px;"></span>
+          <div class="skel-slider-label-row"><span class="skel-block" style="width:80px;height:14px;"></span><span class="skel-block" style="width:90px;height:14px;"></span></div>
+        </div>
+        <div style="height: 1px; background: var(--cream-300); margin: 20px 0;"></div>
+        <div class="skel-slider">
+          <div class="skel-slider-label-row">
+            <span class="skel-block" style="width:60px;height:16px;"></span>
+            <span class="skel-block skel-pill" style="width:90px;height:32px;"></span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <span class="skel-block skel-pill" style="flex:1;height:36px;"></span>
+            <span class="skel-block skel-pill" style="flex:1;height:36px;"></span>
+            <span class="skel-block skel-pill" style="flex:1;height:36px;"></span>
+            <span class="skel-block skel-pill" style="flex:1;height:36px;"></span>
+          </div>
+          <span class="skel-block skel-pill" style="width:100%;height:8px;"></span>
+          <div class="skel-slider-label-row"><span class="skel-block" style="width:80px;height:14px;"></span><span class="skel-block" style="width:90px;height:14px;"></span></div>
+        </div>
+      </div>
+      <div class="skel-summary" style="padding: 0 20px;">
+        <div class="skel-summary-row"><span class="skel-block" style="width:120px;height:14px;"></span><span class="skel-block" style="width:80px;height:14px;"></span></div>
+        <div class="skel-summary-row"><span class="skel-block" style="width:100px;height:14px;"></span><span class="skel-block" style="width:100px;height:14px;"></span></div>
+        <div class="skel-summary-row"><span class="skel-block" style="width:140px;height:14px;"></span><span class="skel-block" style="width:70px;height:14px;"></span></div>
+        <div class="skel-summary-row"><span class="skel-block" style="width:90px;height:14px;"></span><span class="skel-block" style="width:90px;height:14px;"></span></div>
+      </div>
+    </div>
+    <div class="borrow-cta" style="padding: 16px 20px;">
+      <span class="skel-block skel-pill" style="display:block;width:100%;height:48px;"></span>
+    </div>
+    <div class="app-footer"><a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a></div>
+  </div>
+
+  <!-- Skeleton: My Positions -->
+  <div id="skel-positions" class="screen">
+    <div class="app-header">
+      <span class="app-logo" aria-hidden="true">
+        <svg class="logo-symbol" viewBox="0 0 184 208" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="184" height="208" fill="#39763D"/></svg>
+      </span>
+      <nav class="top-nav">
+        <button class="top-nav-link"><i class="ph-light ph-house"></i> Home</button>
+        <button class="top-nav-link active"><i class="ph-light ph-cards-three"></i> My Positions</button>
+        <button class="top-nav-link"><i class="ph-light ph-currency-circle-dollar"></i> Borrow</button>
+      </nav>
+      <div class="header-right">
+        <div class="wallet-badge"><span class="wallet-dot"></span><span class="wallet-address-text">0x23k...4534</span></div>
+      </div>
+    </div>
+    <div class="positions-content">
+      <div class="positions-title-row" style="padding: 16px 20px 12px;">
+        <div class="positions-header-line">
+          <div class="positions-title">My Positions</div>
+        </div>
+      </div>
+      <!-- 3 position card skeletons -->
+      <div style="padding: 0 20px;">
+        <div class="skel-position-card">
+          <div class="skel-position-row">
+            <span class="skel-block skel-circle" style="width:42px;height:42px;"></span>
+            <span class="skel-block" style="width:120px;height:18px;"></span>
+            <span class="skel-block" style="width:60px;height:14px;margin-left:auto;"></span>
+          </div>
+          <div class="skel-position-row">
+            <div style="display:flex;flex-direction:column;gap:4px;flex:1;"><span class="skel-block" style="width:60px;height:12px;"></span><span class="skel-block" style="width:100px;height:20px;"></span></div>
+            <div style="display:flex;flex-direction:column;gap:4px;flex:1;align-items:flex-end;"><span class="skel-block" style="width:80px;height:12px;"></span><span class="skel-block" style="width:90px;height:20px;"></span></div>
+          </div>
+          <span class="skel-block skel-pill" style="height:36px;"></span>
+        </div>
+        <div class="skel-position-card">
+          <div class="skel-position-row">
+            <span class="skel-block skel-circle" style="width:42px;height:42px;"></span>
+            <span class="skel-block" style="width:140px;height:18px;"></span>
+            <span class="skel-block" style="width:60px;height:14px;margin-left:auto;"></span>
+          </div>
+          <div class="skel-position-row">
+            <div style="display:flex;flex-direction:column;gap:4px;flex:1;"><span class="skel-block" style="width:60px;height:12px;"></span><span class="skel-block" style="width:110px;height:20px;"></span></div>
+            <div style="display:flex;flex-direction:column;gap:4px;flex:1;align-items:flex-end;"><span class="skel-block" style="width:80px;height:12px;"></span><span class="skel-block" style="width:90px;height:20px;"></span></div>
+          </div>
+          <span class="skel-block skel-pill" style="height:36px;"></span>
+        </div>
+        <div class="skel-position-card">
+          <div class="skel-position-row">
+            <span class="skel-block skel-circle" style="width:42px;height:42px;"></span>
+            <span class="skel-block" style="width:130px;height:18px;"></span>
+            <span class="skel-block" style="width:60px;height:14px;margin-left:auto;"></span>
+          </div>
+          <div class="skel-position-row">
+            <div style="display:flex;flex-direction:column;gap:4px;flex:1;"><span class="skel-block" style="width:60px;height:12px;"></span><span class="skel-block" style="width:100px;height:20px;"></span></div>
+            <div style="display:flex;flex-direction:column;gap:4px;flex:1;align-items:flex-end;"><span class="skel-block" style="width:80px;height:12px;"></span><span class="skel-block" style="width:90px;height:20px;"></span></div>
+          </div>
+          <span class="skel-block skel-pill" style="height:36px;"></span>
+        </div>
+      </div>
+    </div>
+    <div class="app-footer"><a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a></div>
+  </div>
+
   <!-- Quick Repay modal — triggered from the "Quick Repay" button on position cards -->
   <div class="quick-repay-overlay" id="quick-repay-overlay" role="dialog" aria-modal="true" aria-labelledby="qr-amount-text" aria-hidden="true" onclick="if(event.target===this)closeQuickRepay()">
     <div class="quick-repay-dialog">
@@ -4282,6 +4477,11 @@ function initPhoneB() {
   // (it was empty then). Now that the clone is in place, wire its boosted badges.
   if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
   if (typeof rewritePositionTokenLabels === 'function') rewritePositionTokenLabels(phoneB);
+  // Snapshot was captured before DOMContentLoaded fired → skel-* clones are
+  // empty. Re-populate them now that the cloned source screens are in place.
+  if (typeof populateSkeletonHome === 'function') populateSkeletonHome('-b');
+  if (typeof populateSkeletonBorrow === 'function') populateSkeletonBorrow('-b');
+  if (typeof populateSkeletonPositions === 'function') populateSkeletonPositions('-b');
 }
 
 /* Option C = old Option B variant (CTA card visible, restored title/total layout) */
@@ -4291,6 +4491,9 @@ function initPhoneC() {
   clonePhoneFromSnapshot(phoneC, 'c');
   if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
   if (typeof rewritePositionTokenLabels === 'function') rewritePositionTokenLabels(phoneC);
+  if (typeof populateSkeletonHome === 'function') populateSkeletonHome('-c');
+  if (typeof populateSkeletonBorrow === 'function') populateSkeletonBorrow('-c');
+  if (typeof populateSkeletonPositions === 'function') populateSkeletonPositions('-c');
   // Positions screen tweaks specific to Option C
   var phoneCPositions = document.getElementById('positions-c');
   if (phoneCPositions) {
@@ -5240,7 +5443,7 @@ function showScreen(id) {
   // Note: index 4 is the "Confirmation modal" dev-nav button which doesn't
   // map to a screen — it opens openBundleModal directly. Same for "Quick Repay"
   // at index 8. Skipped indexes are intentional.
-  const labels = { homepage:0, 'homepage-connected':1, borrow:2, 'borrow-connected':3, positions:5, 'positions-empty':6, update:7, 'error-404':9 };
+  const labels = { homepage:0, 'homepage-connected':1, borrow:2, 'borrow-connected':3, positions:5, 'positions-empty':6, update:7, 'skel-home':9, 'skel-borrow':10, 'skel-positions':11, 'error-404':12 };
   var navBtn = document.querySelectorAll('.screen-nav button')[labels[id]];
   if (navBtn) navBtn.classList.add('active');
   document.querySelectorAll('.phone').forEach(function(p) { p.scrollTop = 0; if (p._navShadowUpdate) p._navShadowUpdate(); }); window.scrollTo(0, 0);
@@ -5295,7 +5498,175 @@ document.addEventListener('DOMContentLoaded', function() {
       el.insertAdjacentHTML('beforeend', INFO_HTML);
     }
   });
+  // Populate skeleton screens by cloning the populated counterparts and
+  // skeletonizing only the on-chain / DB-fetched data slots. Hardcoded UI
+  // (icons, labels, CTAs, hero, header) renders normally.
+  populateSkeletonHome('');
+  populateSkeletonBorrow('');
+  populateSkeletonPositions('');
 });
+
+// Per-phone populator. Pass '' for phone-a, '-b' / '-c' for clones — they
+// snapshot phone-a EARLY (before DOMContentLoaded fires) so this needs to be
+// called again after initPhoneB / initPhoneC to fill their skel screens.
+function populateSkeletonHome(suffix) {
+  suffix = suffix || '';
+  var src = document.getElementById('homepage-connected' + suffix);
+  var dst = document.getElementById('skel-home' + suffix);
+  if (!src || !dst) return;
+  dst.innerHTML = src.innerHTML;
+  // Re-suffix any IDs we just inherited so they don't collide with the source.
+  if (suffix) {
+    dst.querySelectorAll('[id]').forEach(function(el) {
+      if (!el.id.endsWith(suffix)) el.id = el.id + suffix;
+    });
+  }
+  // Empty each rate badge — its curved corner shape stays via .token-rate-badge
+  // CSS, and a dedicated shimmer rule turns the whole badge into a skeleton
+  // block (see "#skel-home .token-rate-badge" in the SKELETONS CSS).
+  dst.querySelectorAll('.token-rate-badge').forEach(function(badge) {
+    badge.classList.remove('token-rate-badge--boosted');
+    badge.removeAttribute('aria-label');
+    badge.innerHTML = '';
+  });
+  disableSkeletonCtas(dst);
+  // Token cards themselves are clickable on the populated home — block that too.
+  dst.querySelectorAll('.token-card').forEach(function(c) {
+    c.removeAttribute('onclick');
+    c.style.pointerEvents = 'none';
+  });
+}
+
+// Skeletonize the borrow-connected layout. The dynamic slots are:
+//   1. The right-side value of "Supplying" / "Borrowing" under each slider
+//      (computed from slider × token price → on-chain oracle).
+//   2. The 5 right-side values in the summary block (Your supply / You repay /
+//      Borrow Rate / Token Price / Liquidation Price).
+// Everything else (sliders, mascot, banner, CTA) is hardcoded UI chrome.
+function populateSkeletonBorrow(suffix) {
+  suffix = suffix || '';
+  var src = document.getElementById('borrow-connected' + suffix);
+  var dst = document.getElementById('skel-borrow' + suffix);
+  if (!src || !dst) return;
+  dst.innerHTML = src.innerHTML;
+  if (suffix) {
+    dst.querySelectorAll('[id]').forEach(function(el) {
+      if (!el.id.endsWith(suffix)) el.id = el.id + suffix;
+    });
+  }
+  // Use taller, less-rounded rectangles (per Figma) instead of the default
+  // pill shape — radius 4px reads as a placeholder, not a button.
+  var SKEL_RECT = 'display:inline-block;width:80px;height:20px;border-radius:4px;vertical-align:middle;';
+  // Slider info values (right side of "Supplying" / "Borrowing")
+  dst.querySelectorAll('.slider-info-value').forEach(function(v) {
+    v.innerHTML = '<span class="skel-block" style="' + SKEL_RECT + '"></span>';
+  });
+  // Summary values (Your supply, You repay, Borrow Rate, Token Price, Liq Price)
+  dst.querySelectorAll('.summary-row-value').forEach(function(v) {
+    v.innerHTML = '<span class="skel-block" style="' + SKEL_RECT + '"></span>';
+    v.removeAttribute('style');
+  });
+  // Slider tracks: drag interaction is wired via JS (mousedown/touchstart),
+  // not via inline onclicks — block pointer events so the user can't drag
+  // a slider whose underlying token data hasn't loaded yet.
+  dst.querySelectorAll('.slider-track').forEach(function(t) {
+    t.style.pointerEvents = 'none';
+  });
+  disableSkeletonCtas(dst);
+}
+
+// Skeletonize the My Positions screen. Each position card has these dynamic
+// slots (everything else — labels, icon, health hearts, CTAs — is hardcoded):
+//   1. Supply value (amount + USD)
+//   2. Borrowing value (stat-big)
+//   3. Borrow Rate value (stat-big.accent)
+//   4. (Token) Price (detail-item-value)
+//   5. Liquidation Price (detail-item-value)
+// Both layouts ship inside the same card (mobile-only and desktop-only blocks),
+// so we hit every dynamic node regardless of which one is currently visible.
+function populateSkeletonPositions(suffix) {
+  suffix = suffix || '';
+  var src = document.getElementById('positions' + suffix);
+  var dst = document.getElementById('skel-positions' + suffix);
+  if (!src || !dst) return;
+  dst.innerHTML = src.innerHTML;
+  if (suffix) {
+    dst.querySelectorAll('[id]').forEach(function(el) {
+      if (!el.id.endsWith(suffix)) el.id = el.id + suffix;
+    });
+  }
+  var SKEL_RECT = 'display:inline-block;width:80px;height:20px;border-radius:4px;vertical-align:middle;';
+  var SKEL_RECT_WIDE = 'display:inline-block;width:120px;height:20px;border-radius:4px;vertical-align:middle;';
+  // Supply value (desktop layout — supply-row right side)
+  dst.querySelectorAll('.supply-value').forEach(function(v) {
+    v.innerHTML = '<span class="skel-block" style="' + SKEL_RECT_WIDE + '"></span>';
+  });
+  // Supply line (mobile layout — text "84.5 COMP $3,840" replaced)
+  dst.querySelectorAll('.position-supply-line').forEach(function(v) {
+    v.innerHTML = '<span class="skel-block" style="' + SKEL_RECT_WIDE + '"></span>';
+  });
+  // Borrowing & Borrow Rate values
+  dst.querySelectorAll('.stat-big').forEach(function(v) {
+    v.innerHTML = '<span class="skel-block" style="' + SKEL_RECT + '"></span>';
+  });
+  // Token Price + Liquidation Price (desktop detail-row)
+  dst.querySelectorAll('.detail-item-value').forEach(function(v) {
+    v.innerHTML = '<span class="skel-block" style="' + SKEL_RECT + '"></span>';
+  });
+  // Token icons — which markets the user holds is on-chain data, so the icon
+  // itself is unknown until the fetch resolves. Replace with a circular skel.
+  dst.querySelectorAll('.position-card .mini-icon, .position-card .card-icon').forEach(function(ic) {
+    var w = ic.style.width || (ic.classList.contains('card-icon') ? '42px' : '');
+    var h = ic.style.height || w;
+    ic.removeAttribute('class');
+    ic.className = 'skel-block skel-circle';
+    ic.style.width = w || '42px';
+    ic.style.height = h || '42px';
+    ic.style.borderRadius = '50%';
+    ic.innerHTML = '';
+  });
+  // Disable health hearts in BOTH layouts (mobile uses .health-section, desktop
+  // uses .health-hearts). Health level is derived from the still-loading
+  // supply/borrow values — fully-saturated hearts would lie about the position's
+  // health, so we dim them. Op A (phone-a / suffix '') keeps the pink tint
+  // for warmth; Op B/C (phone-b/c) goes grayscale for a stricter loading look.
+  var dimGrayscale = (suffix !== '');
+  dst.querySelectorAll('.health-hearts, .health-section').forEach(function(h) {
+    if (dimGrayscale) h.style.filter = 'grayscale(1)';
+    h.style.opacity = '0.4';
+  });
+  // Some hearts are pre-marked as "empty":
+  //   · Desktop uses <span style="opacity: 0.5"><svg/></span> — and a !important
+  //     CSS rule re-asserts that 0.5, so we unwrap the span entirely.
+  //   · Mobile applies style="opacity: 0.3" directly on the SVG — clear it
+  //     so all 5+ hearts in the skeleton look identically inactive instead
+  //     of mixing two faded levels.
+  dst.querySelectorAll('.health-hearts span[style*="opacity"]').forEach(function(s) {
+    var svg = s.querySelector('svg');
+    if (svg) s.replaceWith(svg); else s.remove();
+  });
+  dst.querySelectorAll('.health-section svg[style*="opacity"]').forEach(function(s) {
+    s.removeAttribute('style');
+  });
+  disableSkeletonCtas(dst);
+}
+
+// Disable any clickable controls inside a skeleton screen — the data they
+// operate on isn't ready yet, so taps would either no-op or fire with stale
+// context. Strips inline onclicks and adds the disabled attribute so the
+// existing :disabled styles (mint-100 bg, no shadow) kick in for free.
+function disableSkeletonCtas(root) {
+  if (!root) return;
+  root.querySelectorAll('button').forEach(function(b) {
+    b.removeAttribute('onclick');
+    b.disabled = true;
+  });
+  root.querySelectorAll('a').forEach(function(a) {
+    a.removeAttribute('href');
+    a.style.pointerEvents = 'none';
+    a.style.opacity = '0.5';
+  });
+}
 
 // Tap-to-toggle info tooltip on mobile (mobile phone simulators have no hover).
 document.addEventListener('click', function(e) {
