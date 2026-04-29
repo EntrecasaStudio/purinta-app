@@ -97,6 +97,16 @@
       0%, 80%, 100% { opacity: 0.4; transform: scale(0.85); }
       40% { opacity: 1; transform: scale(1); }
     }
+    /* Turntable mascot — 13-frame strip (front → left → back), JS-driven so the
+       reverse half (back → right → front) reuses the same frames mirrored. */
+    .loading-screen-overlay .loading-mascot {
+      width: 200px; height: 143px;
+      background-image: url('assets/turntable-v3/Mascot-Loading-2026_04_28.svg');
+      background-repeat: no-repeat;
+      background-size: auto 143px;
+      background-position: 0 0;
+      will-change: background-position, transform;
+    }
 
     /* STAGGERED FADE-IN after loading */
     .reveal-in {
@@ -6558,36 +6568,24 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
 </script>
 
 <script>
-// ═══ LOADING SCREEN — 3D TURNTABLE (reusable) ═══
-var _turntableImages = {};
-var _turntableXAngles = [];
-var _turntableYAngles = [-30, 0, 30];
-(function() {
-  for (var a = -180; a <= 180; a += 15) _turntableXAngles.push(a);
-  var SVG_BASE = 'assets/turntable/';
-  // Preload all 75 frames once
-  _turntableXAngles.forEach(function(x) {
-    _turntableYAngles.forEach(function(y) {
-      var key = x + ',' + y;
-      var img = new Image();
-      img.src = SVG_BASE + 'Generative Object (' + x + ', ' + y + ').svg';
-      _turntableImages[key] = img;
-    });
-  });
-})();
+// ═══ LOADING SCREEN — turntable mascot ═══
+// The source SVG holds half a rotation. Native frame x-centers run back→front
+// in the strip, so we reverse them: index 0 = front (first frame shown),
+// index 12 = back. We complete the full 360° by ping-ponging the index and
+// mirroring the return leg so it reads as the mascot's other side.
+var LOADING_MASCOT_FRAMES = [5164, 4696, 4227, 3792, 3374, 2988, 2626, 2283, 1924, 1532, 1114, 661, 176];
+var LOADING_MASCOT_SCALE = 143 / 287; // native viewBox height → display height
+var LOADING_MASCOT_DISPLAY_W = 200;
 
 function playLoadingIntro(phone) {
   if (!phone) return;
-  // Find the homepage screen inside this phone
   var homepage = phone.querySelector('[id^="homepage"]');
   if (!homepage) return;
 
-  // Reset reveal-in sections
   homepage.querySelectorAll('.reveal-in').forEach(function(el) {
     el.classList.remove('revealed');
   });
 
-  // Create loading screen overlay
   var ls = document.createElement('div');
   ls.className = 'loading-screen-overlay';
   ls.setAttribute('style',
@@ -6598,22 +6596,12 @@ function playLoadingIntro(phone) {
   );
 
   var mascotWrap = document.createElement('div');
-  mascotWrap.style.cssText = 'width:226px;height:196px;display:flex;align-items:center;justify-content:center;position:relative;';
-  var mascotFrame = document.createElement('div');
-  mascotFrame.style.cssText = 'width:160px;height:140px;position:relative;';
-
-  // Show static front-facing SVG immediately (no flash)
-  var staticImg = document.createElement('img');
-  staticImg.src = 'assets/turntable/Generative Object (0, 0).svg';
-  staticImg.style.cssText = 'width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none;';
-  staticImg.draggable = false;
-  staticImg.alt = '';
-  mascotFrame.appendChild(staticImg);
-
-  mascotWrap.appendChild(mascotFrame);
+  mascotWrap.style.cssText = 'width:226px;height:196px;display:flex;align-items:center;justify-content:center;';
+  var mascot = document.createElement('div');
+  mascot.className = 'loading-mascot';
+  mascotWrap.appendChild(mascot);
   ls.appendChild(mascotWrap);
 
-  // Loading row
   var row = document.createElement('div');
   row.style.cssText = 'display:flex;align-items:center;gap:16px;';
   row.innerHTML = '<span style="font-family:var(--font-display);font-size:16px;color:var(--text-primary);letter-spacing:0.128px;line-height:22px;">Loading</span>' +
@@ -6622,105 +6610,31 @@ function playLoadingIntro(phone) {
 
   phone.appendChild(ls);
 
-  // Animation state
-  var activeImg = null;
-  var currentXIndex = 0;
-  var currentYAngle = 0;
-  var isHovering = false;
-  var animId;
-  var localImages = {};
-  var animStartTime = null;
-
-  function showFrame(xIdx, yAngle) {
-    var x = _turntableXAngles[xIdx % _turntableXAngles.length];
-    var key = x + ',' + yAngle;
-    var img = localImages[key];
-    if (img === activeImg) return;
-    if (img) {
-      img.style.opacity = '1'; img.style.zIndex = '1';
-      if (activeImg) { activeImg.style.opacity = '0'; activeImg.style.zIndex = ''; }
-      activeImg = img;
-    }
+  function setFrame(idx, mirrored) {
+    var bgX = -(LOADING_MASCOT_FRAMES[idx] * LOADING_MASCOT_SCALE - LOADING_MASCOT_DISPLAY_W / 2);
+    mascot.style.backgroundPosition = bgX + 'px 0';
+    mascot.style.transform = mirrored ? 'scaleX(-1)' : 'none';
   }
+  setFrame(0, false);
 
-  var lastTime = 0;
-  var FRAME_INTERVAL = 100;
-  function animate(time) {
-    if (time - lastTime >= FRAME_INTERVAL) {
-      lastTime = time;
-      currentXIndex = (currentXIndex + 1) % _turntableXAngles.length;
-      showFrame(currentXIndex, currentYAngle);
-    }
-    animId = requestAnimationFrame(animate);
-  }
-
-  function onEnter() { isHovering = true; }
-  function onLeave() { isHovering = false; currentYAngle = 0; }
-  function onMove(e) {
-    if (!isHovering) return;
-    var rect = phone.getBoundingClientRect();
-    var relY = (e.clientY - rect.top) / rect.height;
-    if (relY < 0.33) currentYAngle = -30;
-    else if (relY > 0.66) currentYAngle = 30;
-    else currentYAngle = 0;
-  }
-
-  phone.addEventListener('mouseenter', onEnter);
-  phone.addEventListener('mouseleave', onLeave);
-  phone.addEventListener('mousemove', onMove);
-
-  // Check if all turntable frames are loaded, then start animation
-  function checkAllLoaded() {
-    var allReady = true;
-    _turntableXAngles.forEach(function(x) {
-      _turntableYAngles.forEach(function(y) {
-        var key = x + ',' + y;
-        if (!_turntableImages[key].complete || _turntableImages[key].naturalWidth === 0) {
-          allReady = false;
-        }
-      });
-    });
-    return allReady;
-  }
-
-  function startTurntable() {
-    // Clone all turntable frames into the mascot frame
-    _turntableXAngles.forEach(function(x) {
-      _turntableYAngles.forEach(function(y) {
-        var key = x + ',' + y;
-        var img = _turntableImages[key].cloneNode(false);
-        img.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;opacity:0;pointer-events:none;user-select:none;-webkit-user-drag:none;will-change:opacity;';
-        img.draggable = false;
-        img.alt = '';
-        localImages[key] = img;
-        mascotFrame.appendChild(img);
-      });
-    });
-    // Remove static placeholder and start rotating
-    staticImg.remove();
-    showFrame(0, 0);
-    animStartTime = performance.now();
-    animId = requestAnimationFrame(animate);
-  }
-
-  if (checkAllLoaded()) {
-    startTurntable();
-  } else {
-    // Poll until all images are loaded (check every 50ms)
-    var loadCheckId = setInterval(function() {
-      if (checkAllLoaded()) {
-        clearInterval(loadCheckId);
-        startTurntable();
+  var raf = null;
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var FRAME_INTERVAL = 100;
+    var LAST = LOADING_MASCOT_FRAMES.length - 1;
+    var i = 0, dir = 1, mirrored = false, lastT = 0;
+    var tick = function(t) {
+      if (t - lastT >= FRAME_INTERVAL) {
+        lastT = t;
+        i += dir;
+        if (i >= LAST) { i = LAST; dir = -1; mirrored = true; }
+        else if (i <= 0) { i = 0; dir = 1; mirrored = false; }
+        setFrame(i, mirrored);
       }
-    }, 50);
-    // Safety: if still not loaded after 2.5s, start anyway
-    setTimeout(function() {
-      clearInterval(loadCheckId);
-      if (!animStartTime) startTurntable();
-    }, 2500);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
   }
 
-  // Fade out after 3 seconds
   setTimeout(function() {
     ls.style.opacity = '0';
     ls.style.transform = 'scale(1.05)';
@@ -6728,11 +6642,7 @@ function playLoadingIntro(phone) {
     ls.style.pointerEvents = 'none';
     setTimeout(function() {
       ls.remove();
-      cancelAnimationFrame(animId);
-      phone.removeEventListener('mouseenter', onEnter);
-      phone.removeEventListener('mouseleave', onLeave);
-      phone.removeEventListener('mousemove', onMove);
-      // Stagger-reveal homepage sections
+      if (raf) cancelAnimationFrame(raf);
       var sections = homepage.querySelectorAll('.reveal-in');
       sections.forEach(function(el, i) {
         setTimeout(function() { el.classList.add('revealed'); }, i * 150);
