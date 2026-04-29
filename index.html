@@ -5664,8 +5664,13 @@ function populateSkeletonPositions(suffix) {
   });
   // Token icons — which markets the user holds is on-chain data, so the icon
   // itself is unknown until the fetch resolves. Replace with a circular skel.
-  dst.querySelectorAll('.position-card .mini-icon, .position-card .card-icon').forEach(function(ic) {
-    var w = ic.style.width || (ic.classList.contains('card-icon') ? '42px' : '');
+  // Hide the decorative .card-icon at the corner (desktop layout) so we don't
+  // render a double skel circle next to the main supply-row icon.
+  dst.querySelectorAll('.position-card .card-icon').forEach(function(ic) {
+    ic.style.display = 'none';
+  });
+  dst.querySelectorAll('.position-card .mini-icon').forEach(function(ic) {
+    var w = ic.style.width || '';
     var h = ic.style.height || w;
     ic.removeAttribute('class');
     ic.className = 'skel-block skel-circle';
