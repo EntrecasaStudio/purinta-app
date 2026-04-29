@@ -2826,6 +2826,9 @@
         <div style="display:flex;gap:4px;">
           <button onclick="showScreen('error-404')">404</button>
         </div>
+        <div style="display:flex;gap:4px;">
+          <button onclick="showScreen('loading-loop')">Loading</button>
+        </div>
       </div>
     </div>
     <div class="dev-nav-section">
@@ -3952,6 +3955,22 @@
     </div>
     <div class="app-footer">
       <a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a>
+    </div>
+  </div>
+
+  <!-- ═══ SCREEN 8: LOADING LOOP (dev-only) ═══
+       Bare loading state used to iterate on the loading animation without
+       bouncing back to homepage. Mascot spins forever; nothing else happens.
+       Wired into the dev-nav under "Loading". -->
+  <div id="loading-loop" class="screen">
+    <div class="loading-screen-overlay" style="position:absolute;inset:0;z-index:100;background:var(--cream-50);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding-bottom:120px;">
+      <div style="width:226px;height:196px;display:flex;align-items:center;justify-content:center;">
+        <div class="loading-mascot"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span style="font-family:var(--font-display);font-size:16px;color:var(--text-primary);letter-spacing:0.128px;line-height:22px;">Loading</span>
+        <div class="dots" style="display:flex;gap:6px;"><span></span><span></span><span></span></div>
+      </div>
     </div>
   </div>
 
@@ -5453,7 +5472,7 @@ function showScreen(id) {
   // Note: index 4 is the "Confirmation modal" dev-nav button which doesn't
   // map to a screen — it opens openBundleModal directly. Same for "Quick Repay"
   // at index 8. Skipped indexes are intentional.
-  const labels = { homepage:0, 'homepage-connected':1, borrow:2, 'borrow-connected':3, positions:5, 'positions-empty':6, update:7, 'skel-home':9, 'skel-borrow':10, 'skel-positions':11, 'error-404':12 };
+  const labels = { homepage:0, 'homepage-connected':1, borrow:2, 'borrow-connected':3, positions:5, 'positions-empty':6, update:7, 'skel-home':9, 'skel-borrow':10, 'skel-positions':11, 'error-404':12, 'loading-loop':13 };
   var navBtn = document.querySelectorAll('.screen-nav button')[labels[id]];
   if (navBtn) navBtn.classList.add('active');
   document.querySelectorAll('.phone').forEach(function(p) { p.scrollTop = 0; if (p._navShadowUpdate) p._navShadowUpdate(); }); window.scrollTo(0, 0);
@@ -5477,6 +5496,12 @@ function showScreen(id) {
         playLoadingIntro(document.getElementById('phone-' + sfx));
       }
     });
+  }
+  // Loading-loop dev screen: keep the mascot spinning while it's active, stop on exit
+  if (_loadingLoopStop) { _loadingLoopStop(); _loadingLoopStop = null; }
+  if (id === 'loading-loop') {
+    var loopMascot = document.querySelector('#loading-loop .loading-mascot');
+    if (loopMascot) _loadingLoopStop = startLoadingMascotSpin(loopMascot);
   }
   // Restart the one-pass boost-rate attention animation on every arrival to a home screen
   if (id === 'homepage' || id === 'homepage-connected') {
@@ -6577,6 +6602,38 @@ var LOADING_MASCOT_FRAMES = [5164, 4696, 4227, 3792, 3374, 2988, 2626, 2283, 192
 var LOADING_MASCOT_SCALE = 143 / 287; // native viewBox height → display height
 var LOADING_MASCOT_DISPLAY_W = 200;
 
+// Drives the ping-pong spin on a .loading-mascot element. Returns a stop fn.
+function startLoadingMascotSpin(mascotEl) {
+  function setFrame(idx, mirrored) {
+    var bgX = -(LOADING_MASCOT_FRAMES[idx] * LOADING_MASCOT_SCALE - LOADING_MASCOT_DISPLAY_W / 2);
+    mascotEl.style.backgroundPosition = bgX + 'px 0';
+    mascotEl.style.transform = mirrored ? 'scaleX(-1)' : 'none';
+  }
+  setFrame(0, false);
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return function() {};
+  }
+  var FRAME_INTERVAL = 100;
+  var LAST = LOADING_MASCOT_FRAMES.length - 1;
+  var i = 0, dir = 1, mirrored = false, lastT = 0, raf = null;
+  var tick = function(t) {
+    if (t - lastT >= FRAME_INTERVAL) {
+      lastT = t;
+      i += dir;
+      if (i >= LAST) { i = LAST; dir = -1; mirrored = true; }
+      else if (i <= 0) { i = 0; dir = 1; mirrored = false; }
+      setFrame(i, mirrored);
+    }
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+  return function() { if (raf) cancelAnimationFrame(raf); };
+}
+
+// Holds the stop fn for the dev-only #loading-loop screen so showScreen can
+// cancel it when the user navigates elsewhere.
+var _loadingLoopStop = null;
+
 function playLoadingIntro(phone) {
   if (!phone) return;
   var homepage = phone.querySelector('[id^="homepage"]');
@@ -6610,30 +6667,7 @@ function playLoadingIntro(phone) {
 
   phone.appendChild(ls);
 
-  function setFrame(idx, mirrored) {
-    var bgX = -(LOADING_MASCOT_FRAMES[idx] * LOADING_MASCOT_SCALE - LOADING_MASCOT_DISPLAY_W / 2);
-    mascot.style.backgroundPosition = bgX + 'px 0';
-    mascot.style.transform = mirrored ? 'scaleX(-1)' : 'none';
-  }
-  setFrame(0, false);
-
-  var raf = null;
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    var FRAME_INTERVAL = 100;
-    var LAST = LOADING_MASCOT_FRAMES.length - 1;
-    var i = 0, dir = 1, mirrored = false, lastT = 0;
-    var tick = function(t) {
-      if (t - lastT >= FRAME_INTERVAL) {
-        lastT = t;
-        i += dir;
-        if (i >= LAST) { i = LAST; dir = -1; mirrored = true; }
-        else if (i <= 0) { i = 0; dir = 1; mirrored = false; }
-        setFrame(i, mirrored);
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-  }
+  var stopSpin = startLoadingMascotSpin(mascot);
 
   setTimeout(function() {
     ls.style.opacity = '0';
@@ -6642,7 +6676,7 @@ function playLoadingIntro(phone) {
     ls.style.pointerEvents = 'none';
     setTimeout(function() {
       ls.remove();
-      if (raf) cancelAnimationFrame(raf);
+      stopSpin();
       var sections = homepage.querySelectorAll('.reveal-in');
       sections.forEach(function(el, i) {
         setTimeout(function() { el.classList.add('revealed'); }, i * 150);
