@@ -379,7 +379,7 @@
       0%, 100% { transform: scaleX(1); opacity: 1; }
       50% { transform: scaleX(0.7); opacity: 0.4; }
     }
-    .hero-mascot img {
+    .hero-mascot > img {
       width: 100%; height: auto; display: block; position: relative; z-index: 1;
       filter: drop-shadow(0 4px 12px rgba(8, 60, 32, 0.15));
     }
@@ -387,11 +387,11 @@
     .hero-blob {
       position: absolute;
       top: 50%; left: 50%;
-      width: 264px; height: 309px;
-      transform: translate(-50%, -45%);
+      width: 201px; height: 200px;             /* matches Mascot-Blobs1.svg viewBox */
+      transform: translate(-50%, -50%);
       z-index: 0; opacity: 0.8;
     }
-    .hero-blob svg {
+    .hero-blob img, .hero-blob svg {
       width: 100%; height: 100%;
       animation: blob-drift 18s ease-in-out infinite;
     }
@@ -2966,7 +2966,7 @@
       <div class="hero-section">
         <div class="hero-mascot-wrap">
           <div class="hero-mascot" id="heroMascot">
-            <div class="hero-blob"><svg viewBox="0 0 140 108" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M122 17C132 42 114 72 82 85C50 97 16 87 7 62C-3 37 14 42 46 30C78 17 113 -8 122 17Z" fill="white"/></svg></div>
+            <div class="hero-blob"><img src="assets/Mascot-Blobs1.svg" alt="" aria-hidden="true"></div>
             <img id="mascotStatic" src="assets/mascot-base.svg" alt="Purinta-chan" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity 0.5s ease-out; z-index: 1;">
             <div id="mascotAnimated" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.5s ease-out 0.1s; z-index: 1;"></div>
           </div>
@@ -3076,7 +3076,7 @@
       <div class="hero-section">
         <div class="hero-mascot-wrap">
           <div class="hero-mascot">
-            <div class="hero-blob"><svg viewBox="0 0 140 108" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M122 17C132 42 114 72 82 85C50 97 16 87 7 62C-3 37 14 42 46 30C78 17 113 -8 122 17Z" fill="white"/></svg></div>
+            <div class="hero-blob"><img src="assets/Mascot-Blobs1.svg" alt="" aria-hidden="true"></div>
             <img src="assets/mascot-base.svg" alt="Purinta-chan" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;">
           </div>
           <span class="hero-mascot-shadow"></span>
@@ -5566,11 +5566,25 @@ function populateSkeletonBorrow(suffix) {
     v.innerHTML = '<span class="skel-block" style="' + SKEL_RECT + '"></span>';
     v.removeAttribute('style');
   });
+  // Pct buttons: drop the active selection and add the .disabled class so
+  // they pick up the existing DS disabled style (white fill, gray text).
+  dst.querySelectorAll('.pct-btn').forEach(function(b) {
+    b.classList.remove('active');
+    b.classList.add('disabled');
+  });
   // Slider tracks: drag interaction is wired via JS (mousedown/touchstart),
-  // not via inline onclicks — block pointer events so the user can't drag
-  // a slider whose underlying token data hasn't loaded yet.
+  // not via inline onclicks — block pointer events AND grey out the visuals
+  // so the user can't drag a slider whose underlying token data hasn't loaded.
   dst.querySelectorAll('.slider-track').forEach(function(t) {
     t.style.pointerEvents = 'none';
+    var bg = t.querySelector('.slider-track-bg');
+    if (bg) bg.style.background = '#F0F0F0';
+    var fill = t.querySelector('.slider-track-fill');
+    if (fill) fill.style.background = 'transparent';
+    // Hide the thumb entirely — there's no value to mark on a loading slider.
+    t.querySelectorAll('.slider-thumb').forEach(function(th) {
+      th.style.display = 'none';
+    });
   });
   disableSkeletonCtas(dst);
 }
