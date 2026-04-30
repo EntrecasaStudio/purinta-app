@@ -151,6 +151,27 @@
     .dev-nav-group button.bp-secondary.active { opacity: 1; background: var(--green-600); }
     .dev-nav-group button.opt-toggle { position: relative; }
     .dev-nav-group button.opt-toggle.active { background: var(--green-700); }
+    /* Collapsible folders for Screens — native <details>/<summary> */
+    .dev-folder { border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; }
+    .dev-folder > summary {
+      list-style: none; cursor: pointer;
+      padding: 6px 8px; font-family: 'SF Mono', 'Menlo', monospace;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.04);
+      display: flex; align-items: center; gap: 6px; user-select: none;
+    }
+    .dev-folder > summary::-webkit-details-marker { display: none; }
+    .dev-folder > summary::before {
+      content: '▶'; font-size: 8px; transition: transform 0.15s ease;
+      color: rgba(255,255,255,0.45);
+    }
+    .dev-folder[open] > summary::before { transform: rotate(90deg); }
+    .dev-folder > summary:hover { background: rgba(255,255,255,0.08); }
+    .dev-folder .folder-items {
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 6px; background: rgba(255,255,255,0.02);
+    }
+    .dev-folder .folder-items button { width: 100%; text-align: left; }
     .phones-container { display: flex; gap: 96px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
     .phone-label { font-family: 'SF Mono', 'Menlo', monospace; font-size: 20px; font-weight: 500;
       color: rgba(255,255,255,0.6); background: rgba(30,30,30,0.85); border: 1px solid rgba(255,255,255,0.1);
@@ -2158,12 +2179,28 @@
       text-align: center;
     }
     .empty-state-cta .btn { width: 100%; max-width: 260px; }
-    #positions-empty.active, #error-404.active { display: flex; flex-direction: column; min-height: 100%; }
-    #positions-empty .mascot-area.happy img.mascot-illustration { width: 158px; top: 40px; }
-    .phone.desktop #positions-empty .mascot-area.happy { background: transparent !important; border: none !important; }
-    .phone.desktop #positions-empty .mascot-area.happy .mascot-blob { display: none; }
-    .phone.desktop #positions-empty .mascot-area.happy img.mascot-illustration { width: 173px; top: 56px; }
+    #positions-empty.active, #positions-disconnected.active, #error-404.active { display: flex; flex-direction: column; min-height: 100%; }
+    #positions-empty .mascot-area.happy img.mascot-illustration,
+    #positions-disconnected .mascot-area.happy img.mascot-illustration { width: 158px; top: 40px; }
+    /* Old white .mascot-blob and new SVG blob: drop the old one entirely;
+       show the new gradient blob only on desktop (mobile renders mascot
+       without a blob backdrop). Applies to both empty and disconnected. */
+    #positions-empty .mascot-area.happy .mascot-blob,
+    #positions-disconnected .mascot-area.happy .mascot-blob { display: none; }
+    #positions-empty .mascot-area.happy .mypositions-blob-img,
+    #positions-disconnected .mascot-area.happy .mypositions-blob-img { display: none; }
+    .phone.desktop #positions-empty .mascot-area.happy,
+    .phone.desktop #positions-disconnected .mascot-area.happy { background: transparent !important; border: none !important; }
+    .phone.desktop #positions-empty .mascot-area.happy .mypositions-blob-img,
+    .phone.desktop #positions-disconnected .mascot-area.happy .mypositions-blob-img {
+      display: block; position: absolute; left: 50%; top: 50%;
+      width: 185px; height: 160px; transform: translate(-50%, -50%);
+      pointer-events: none; z-index: 0;
+    }
+    .phone.desktop #positions-empty .mascot-area.happy img.mascot-illustration,
+    .phone.desktop #positions-disconnected .mascot-area.happy img.mascot-illustration { width: 173px; top: 56px; }
     #positions-empty .app-footer,
+    #positions-disconnected .app-footer,
     #error-404 .app-footer { margin-top: auto; }
     .positions-content { padding: 20px; }
     .positions-title {
@@ -2539,6 +2576,7 @@
     .phone.desktop #positions-b,
     .phone.desktop #positions-c,
     .phone.desktop #positions-empty,
+    .phone.desktop #positions-disconnected,
     .phone.desktop #error-404 { max-width: none; padding: 0 40px; }
     /* positions-empty and error-404 inherit the universal flex-column + margin-top:auto
        pattern from .phone.desktop .screen.active — but the #positions-empty.active /
@@ -2546,8 +2584,10 @@
        which beats .phone.desktop .screen.active's min-height: 100vh by specificity.
        Restore 100vh on desktop so the footer pushes to the viewport bottom. */
     .phone.desktop #positions-empty.active,
+    .phone.desktop #positions-disconnected.active,
     .phone.desktop #error-404.active { min-height: 100vh; }
     .phone.desktop #positions-empty .positions-content,
+    .phone.desktop #positions-disconnected .positions-content,
     .phone.desktop #error-404 .positions-content { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }
     .phone.desktop #borrow,
     .phone.desktop #borrow-b,
@@ -2673,13 +2713,13 @@
 
     /* ═══ SKELETONS ═══
        Loading-state placeholders for the home, borrow, and my-positions screens.
-       Phone-a renders Op A (Cream palette), phone-b/c render Op B (Neutral).
+       Phone-a renders Op A (Neutral palette), phone-b/c render Op B (Cream).
        Shimmer sweeps a lighter band (300) across a base (200) every 1.7s. */
     .skel-block {
       background: linear-gradient(90deg,
-        var(--cream-200) 0%,
-        var(--cream-300) 50%,
-        var(--cream-200) 100%);
+        var(--neutral-200) 0%,
+        var(--neutral-300) 50%,
+        var(--neutral-200) 100%);
       background-size: 200% 100%;
       animation: skel-shimmer 1.7s ease-in-out infinite;
       border-radius: 8px;
@@ -2687,12 +2727,12 @@
     }
     .skel-circle { border-radius: 50%; }
     .skel-pill   { border-radius: 9999px; }
-    /* Op B (phone-b/c) — Neutral palette */
+    /* Op B (phone-b/c) — Cream palette */
     #phone-b .skel-block, #phone-c .skel-block {
       background: linear-gradient(90deg,
-        var(--neutral-200) 0%,
-        var(--neutral-300) 50%,
-        var(--neutral-200) 100%);
+        var(--cream-200) 0%,
+        var(--cream-300) 50%,
+        var(--cream-200) 100%);
       background-size: 200% 100%;
     }
     @keyframes skel-shimmer {
@@ -2700,8 +2740,8 @@
       100% { background-position: -200% 0; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .skel-block { animation: none; background: var(--cream-200); }
-      #phone-b .skel-block, #phone-c .skel-block { background: var(--neutral-200); }
+      .skel-block { animation: none; background: var(--neutral-200); }
+      #phone-b .skel-block, #phone-c .skel-block { background: var(--cream-200); }
     }
     /* Skel screen layouts — reuse padding/typography from real screens; only
        the dynamic content swaps to skeleton placeholders. */
@@ -2739,15 +2779,73 @@
     .phone.desktop #skel-positions, .phone.desktop #skel-positions-b, .phone.desktop #skel-positions-c {
       max-width: none; padding: 0 40px;
     }
+    /* Switch Network — modal screen with dimmed backdrop and centered card.
+       Hide the bottom-nav while it's active so the modal feels like an
+       overlay rather than another routable page. */
+    #switch-network.active {
+      display: flex; align-items: center; justify-content: center;
+      position: relative; padding: 20px;
+    }
+    .phone:has(#switch-network.active) .bottom-nav { display: none; }
+    .switch-network-scrim {
+      position: absolute; inset: 0;
+      background: rgba(24, 82, 41, 0.6);
+      pointer-events: none;
+    }
+    .switch-network-card {
+      position: relative; z-index: 1;
+      background: var(--neutral-50);
+      border-radius: 32px;
+      padding: 40px 24px 24px;
+      width: 100%; max-width: 320px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(20, 77, 38, 0.18);
+    }
+    .switch-network-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      background: transparent; border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: var(--ds-md);
+    }
+    .switch-network-mascot {
+      width: 180px; height: 180px; object-fit: contain;
+      margin: 0 0 8px;
+    }
+    .switch-network-title {
+      font-family: var(--font-display); font-weight: 600; font-size: var(--ds-lg);
+      color: var(--text-primary); margin: 0; line-height: 1.25;
+    }
+    .switch-network-sub {
+      font-family: var(--font-ui); font-size: var(--ds-xs);
+      color: var(--text-secondary); margin: 0 0 16px; line-height: 1.5;
+    }
+    .switch-network-cta { width: 100%; margin-bottom: 4px; }
+    .switch-network-disconnect {
+      width: 100%; padding: 12px 20px; border-radius: 9999px;
+      background: var(--blush-200); color: var(--blush-600);
+      border: none; font-family: var(--font-display); font-weight: 500;
+      font-size: var(--ds-sm); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.15s ease;
+    }
+    .switch-network-disconnect:hover { background: var(--blush-300); }
+    .switch-network-disconnect:active { transform: scale(0.97); }
+    .phone.desktop .switch-network-card { max-width: 480px; padding: 48px 32px 32px; border-radius: 56px; }
+    .phone.desktop .switch-network-mascot { width: 220px; height: 220px; }
+
     /* Skel home: turn the entire token-rate-badge corner into a skeleton —
        keeps its curved shape (0 32px 0 32px) and Figma width (~77px) but
-       overrides the mint fill with the shimmer gradient. Op B (phone-b/c)
-       uses neutral via the cascade. */
+       overrides the mint fill with the shimmer gradient. Op A (phone-a) is
+       neutral; Op B (phone-b/c) is cream. */
     #skel-home .token-rate-badge,
     #skel-home-b .token-rate-badge,
     #skel-home-c .token-rate-badge {
       background: linear-gradient(90deg,
-        var(--cream-200) 0%, var(--cream-300) 50%, var(--cream-200) 100%);
+        var(--neutral-200) 0%, var(--neutral-300) 50%, var(--neutral-200) 100%);
       background-size: 200% 100%;
       animation: skel-shimmer 1.7s ease-in-out infinite;
       box-shadow: none;
@@ -2756,15 +2854,15 @@
     #phone-b #skel-home-b .token-rate-badge,
     #phone-c #skel-home-c .token-rate-badge {
       background: linear-gradient(90deg,
-        var(--neutral-200) 0%, var(--neutral-300) 50%, var(--neutral-200) 100%);
+        var(--cream-200) 0%, var(--cream-300) 50%, var(--cream-200) 100%);
       background-size: 200% 100%;
     }
     @media (prefers-reduced-motion: reduce) {
       #skel-home .token-rate-badge,
       #skel-home-b .token-rate-badge,
-      #skel-home-c .token-rate-badge { animation: none; background: var(--cream-200); }
+      #skel-home-c .token-rate-badge { animation: none; background: var(--neutral-200); }
       #phone-b #skel-home-b .token-rate-badge,
-      #phone-c #skel-home-c .token-rate-badge { background: var(--neutral-200); }
+      #phone-c #skel-home-c .token-rate-badge { background: var(--cream-200); }
     }
     /* All buttons inside skeleton screens read as disabled — most :disabled
        styles are scoped to .btn-primary, so this also covers btn-secondary
@@ -2802,33 +2900,53 @@
     </div>
     <div class="dev-nav-section">
       <div class="dev-nav-label">Screens</div>
-      <div class="dev-nav-group screen-nav" style="flex-direction:column;gap:4px;">
-        <div style="display:flex;gap:4px;">
-          <button class="active" onclick="showScreen('homepage')">Home</button>
-          <button onclick="showScreen('homepage-connected')">Home+</button>
-        </div>
-        <div style="display:flex;gap:4px;">
-          <button onclick="showScreen('borrow')">Borrow</button>
-          <button onclick="showScreen('borrow-connected')">Borrow+</button>
-          <button onclick="devOpenBundle()">Confirmation modal</button>
-        </div>
-        <div style="display:flex;gap:4px;">
-          <button onclick="showScreen('positions')">Positions</button>
-          <button onclick="showScreen('positions-empty')">Pos Empty</button>
-          <button onclick="showScreen('update')">Modify</button>
-          <button onclick="devOpenQuickRepay()">Quick Repay</button>
-        </div>
-        <div style="display:flex;gap:4px;">
-          <button onclick="showScreen('skel-home')">Skel Home</button>
-          <button onclick="showScreen('skel-borrow')">Skel Borrow</button>
-          <button onclick="showScreen('skel-positions')">Skel Positions</button>
-        </div>
-        <div style="display:flex;gap:4px;">
-          <button onclick="showScreen('error-404')">404</button>
-        </div>
-        <div style="display:flex;gap:4px;">
-          <button onclick="showScreen('loading-loop')">Loading</button>
-        </div>
+      <div class="dev-nav-group screen-nav" style="flex-direction:column;gap:6px;">
+        <details class="dev-folder" open>
+          <summary>Home</summary>
+          <div class="folder-items">
+            <button class="active" onclick="showScreen('homepage')">Home</button>
+            <button onclick="showScreen('homepage-connected')">Home+</button>
+            <button onclick="showScreen('skel-home')">Skel</button>
+          </div>
+        </details>
+        <details class="dev-folder">
+          <summary>Borrow</summary>
+          <div class="folder-items">
+            <button onclick="showScreen('borrow')">Borrow</button>
+            <button onclick="showScreen('borrow-connected')">Borrow+</button>
+            <button onclick="setBorrowHealth('ultra-safe')">Ultra Safe</button>
+            <button onclick="setBorrowHealth('looking-good')">Looking Good</button>
+            <button onclick="setBorrowHealth('getting-risky')">Getting Risky</button>
+            <button onclick="setBorrowHealth('danger-zone')">Danger Zone</button>
+            <button onclick="setBorrowHealth('meltdown')">Meltdown</button>
+            <button onclick="devOpenBundle()">Confirmation modal</button>
+            <button onclick="showScreen('skel-borrow')">Skel</button>
+          </div>
+        </details>
+        <details class="dev-folder">
+          <summary>Positions</summary>
+          <div class="folder-items">
+            <button onclick="showScreen('positions')">My Positions</button>
+            <button onclick="showScreen('positions-empty')">Empty</button>
+            <button onclick="showScreen('positions-disconnected')">Empty · Disconnected</button>
+            <button onclick="showScreen('update')">Modify</button>
+            <button onclick="setModifyHealth('ultra-safe')">Modify · Ultra Safe</button>
+            <button onclick="setModifyHealth('looking-good')">Modify · Looking Good</button>
+            <button onclick="setModifyHealth('getting-risky')">Modify · Getting Risky</button>
+            <button onclick="setModifyHealth('danger-zone')">Modify · Danger Zone</button>
+            <button onclick="setModifyHealth('meltdown')">Modify · Meltdown</button>
+            <button onclick="devOpenQuickRepay()">Quick Repay</button>
+            <button onclick="showScreen('skel-positions')">Skel</button>
+          </div>
+        </details>
+        <details class="dev-folder">
+          <summary>System</summary>
+          <div class="folder-items">
+            <button onclick="showScreen('loading-loop')">Loading</button>
+            <button onclick="showScreen('switch-network')">Switch Network</button>
+            <button onclick="showScreen('error-404')">404</button>
+          </div>
+        </details>
       </div>
     </div>
     <div class="dev-nav-section">
@@ -3909,6 +4027,7 @@
       </div>
       <div class="mascot-area happy" style="margin-top:8px; width:100%; border-radius:32px;">
         <div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none"><path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/></svg></div>
+        <img class="mypositions-blob-img" src="assets/mypositions-blob.svg" alt="" aria-hidden="true">
         <img class="mascot-illustration" src="assets/empty-state-mascot.png" alt="Purinta sad - no active positions" style="pointer-events:none;">
       </div>
       <div class="empty-state-cta">
@@ -3921,6 +4040,26 @@
     </div>
     <div class="app-footer">
       <a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a>
+    </div>
+  </div>
+
+  <!-- Positions — wallet disconnected state. Same layout/graphic as empty,
+       different copy + Connect CTA. Populated via JS by cloning #positions-empty
+       to keep the markup single-sourced. -->
+  <div id="positions-disconnected" class="screen"></div>
+
+  <!-- Switch Network — full-screen modal that prompts the user to switch chains
+       before continuing. Shown when the connected wallet is on the wrong
+       network. -->
+  <div id="switch-network" class="screen">
+    <div class="switch-network-scrim"></div>
+    <div class="switch-network-card">
+      <button class="switch-network-close" aria-label="Close" onclick="showScreen('homepage')"><i class="ph ph-x"></i></button>
+      <img class="switch-network-mascot" src="assets/purinta-chan-confirm.png" alt="" aria-hidden="true">
+      <h2 class="switch-network-title">Switch your network to Ethereum</h2>
+      <p class="switch-network-sub">Purinta's markets are only available on Ethereum</p>
+      <button class="btn btn-primary btn-full switch-network-cta" onclick="showScreen('homepage-connected')"><i class="ph-light ph-shuffle btn-icon"></i> Switch to Ethereum</button>
+      <button class="btn switch-network-disconnect" onclick="showScreen('homepage')"><i class="ph-light ph-power btn-icon"></i> Disconnect</button>
     </div>
   </div>
 
@@ -5319,6 +5458,51 @@ function devOpenBundle() {
   }, null);
 }
 
+// Health-state presets — dev-nav shortcuts that navigate to the screen and
+// pre-set sliders to a (supply, borrow) pair that lands the mascot in the
+// requested level. Sliders remain interactive so the dev can fine-tune from
+// the preset onwards.
+//   Health score = supply - borrow:
+//     >= 75  ultra-safe        (e.g. 90 / 10)
+//     >= 50  looking-good      (e.g. 80 / 25)
+//     >  0   getting-risky     (e.g. 65 / 50)
+//     > -50  danger-zone       (e.g. 50 / 75)
+//     else   meltdown          (e.g. 30 / 95)
+var HEALTH_PRESETS = {
+  'ultra-safe':    { supply: 90, borrow: 10 },
+  'looking-good':  { supply: 80, borrow: 25 },
+  'getting-risky': { supply: 65, borrow: 50 },
+  'danger-zone':   { supply: 50, borrow: 75 },
+  'meltdown':      { supply: 30, borrow: 95 }
+};
+function _applyHealthPreset(screenId, level) {
+  var preset = HEALTH_PRESETS[level];
+  if (!preset) return;
+  // Defer one frame so showScreen layout settles before we touch sliders.
+  requestAnimationFrame(function() {
+    var screen = document.getElementById(screenId);
+    if (!screen) return;
+    var tracks = screen.querySelectorAll('.slider-track');
+    if (typeof setSliderPct === 'function') {
+      if (tracks[0]) setSliderPct(tracks[0], preset.supply);
+      if (tracks[1]) setSliderPct(tracks[1], preset.borrow);
+    }
+    // Re-sync derived UI: mascot, summary, banner, modify CTA disabled state.
+    if (typeof updateBorrowValues === 'function') updateBorrowValues(screenId);
+    if (screenId === 'borrow-connected' && typeof updateHealthMascot === 'function') updateHealthMascot();
+    if (screenId === 'update' && typeof updateHealthMascot === 'function') updateHealthMascot();
+    if (screenId.indexOf('update') === 0 && typeof updateModifyCtaState === 'function') updateModifyCtaState(screen);
+  });
+}
+function setBorrowHealth(level) {
+  showScreen('borrow-connected');
+  _applyHealthPreset('borrow-connected', level);
+}
+function setModifyHealth(level) {
+  showScreen('update');
+  _applyHealthPreset('update', level);
+}
+
 function modifyFromPosition(btn) {
   var KNOWN = ['pepe','morpho','comp','syrup','doge','eth','shib','wif','dai','usdc','usdt'];
   var card = btn.closest('.position-card, .position-card-inner');
@@ -5469,12 +5653,18 @@ function showScreen(id) {
     if (target) target.classList.add('active');
   });
   document.querySelectorAll('.screen-nav button').forEach(b => b.classList.remove('active'));
-  // Note: index 4 is the "Confirmation modal" dev-nav button which doesn't
-  // map to a screen — it opens openBundleModal directly. Same for "Quick Repay"
-  // at index 8. Skipped indexes are intentional.
-  const labels = { homepage:0, 'homepage-connected':1, borrow:2, 'borrow-connected':3, positions:5, 'positions-empty':6, update:7, 'skel-home':9, 'skel-borrow':10, 'skel-positions':11, 'error-404':12, 'loading-loop':13 };
-  var navBtn = document.querySelectorAll('.screen-nav button')[labels[id]];
-  if (navBtn) navBtn.classList.add('active');
+  document.querySelectorAll('.screen-nav .dev-folder').forEach(d => d.classList.remove('has-active'));
+  // Match by onclick payload — folder layout means index-based lookup is
+  // brittle. querySelector returns the FIRST matching button so health-state
+  // shortcuts (e.g. "Modify · Ultra Safe") don't all light up alongside the
+  // base "Modify" entry when navigating to #update.
+  var navBtn = document.querySelector(".screen-nav button[onclick*=\"showScreen('" + id + "')\"]");
+  if (navBtn) {
+    navBtn.classList.add('active');
+    // Auto-open the parent folder so the active item is visible.
+    var parentFolder = navBtn.closest('.dev-folder');
+    if (parentFolder) { parentFolder.open = true; parentFolder.classList.add('has-active'); }
+  }
   document.querySelectorAll('.phone').forEach(function(p) { p.scrollTop = 0; if (p._navShadowUpdate) p._navShadowUpdate(); }); window.scrollTo(0, 0);
   // Modify screen: anchor CTA disabled on every entry path. Runs in rAF so the
   // active screen is laid out first (slider fills readable) before we read pcts.
@@ -5488,12 +5678,14 @@ function showScreen(id) {
   }
   localStorage.setItem('purinta-screen', id);
   history.replaceState({ screen: id }, '', location.pathname + location.search);
-  // Play loading intro on homepage navigation
-  if (id === 'homepage' && typeof playLoadingIntro === 'function') {
+  // Homepage entry: skip the full-screen Loading overlay (now lives only in
+  // the dev-nav "Loading" screen) but keep the cascading reveal-in animation
+  // for hero + cards so the entry still feels alive.
+  if (id === 'homepage' && typeof revealHomepageElements === 'function') {
     ['a', 'b', 'c'].forEach(function(sfx) {
       var w = document.getElementById('wrap-' + sfx);
       if (w && !w.classList.contains('hidden')) {
-        playLoadingIntro(document.getElementById('phone-' + sfx));
+        revealHomepageElements(document.getElementById('phone-' + sfx));
       }
     });
   }
@@ -5539,7 +5731,38 @@ document.addEventListener('DOMContentLoaded', function() {
   populateSkeletonHome('');
   populateSkeletonBorrow('');
   populateSkeletonPositions('');
+  populatePositionsDisconnected();
 });
+
+// Wallet-disconnected state for #positions — same layout/graphic as empty,
+// different copy + Connect CTA, and a disconnected header (Connect button in
+// place of the wallet-address badge).
+function populatePositionsDisconnected() {
+  var src = document.getElementById('positions-empty');
+  var dst = document.getElementById('positions-disconnected');
+  if (!src || !dst) return;
+  dst.innerHTML = src.innerHTML;
+  // Swap the header's connected widget (wallet-badge + power button) for the
+  // disconnected Connect CTA used on #homepage.
+  var headerRight = dst.querySelector('.app-header .header-right');
+  if (headerRight) {
+    var connectBtn = document.createElement('button');
+    connectBtn.className = 'btn btn-connect';
+    connectBtn.setAttribute('onclick', "showScreen('homepage-connected')");
+    connectBtn.textContent = 'Connect';
+    headerRight.replaceWith(connectBtn);
+  }
+  // Empty-state copy + CTA
+  var heading = dst.querySelector('.empty-state-cta h2');
+  var sub = dst.querySelector('.empty-state-cta p');
+  var cta = dst.querySelector('.empty-state-cta .btn');
+  if (heading) heading.textContent = 'Wallet not connected';
+  if (sub) sub.textContent = 'Connect your wallet to view your positions';
+  if (cta) {
+    cta.innerHTML = '<i class="ph-light ph-power btn-icon"></i> Connect';
+    cta.setAttribute('onclick', "showScreen('homepage-connected')");
+  }
+}
 
 // Per-phone populator. Pass '' for phone-a, '-b' / '-c' for clones — they
 // snapshot phone-a EARLY (before DOMContentLoaded fires) so this needs to be
@@ -5682,9 +5905,9 @@ function populateSkeletonPositions(suffix) {
   // Disable health hearts in BOTH layouts (mobile uses .health-section, desktop
   // uses .health-hearts). Health level is derived from the still-loading
   // supply/borrow values — fully-saturated hearts would lie about the position's
-  // health, so we dim them. Op A (phone-a / suffix '') keeps the pink tint
-  // for warmth; Op B/C (phone-b/c) goes grayscale for a stricter loading look.
-  var dimGrayscale = (suffix !== '');
+  // health, so we dim them. Op A (phone-a / suffix '') goes grayscale to match
+  // its neutral palette; Op B/C (phone-b/c, cream) keeps the pink tint.
+  var dimGrayscale = (suffix === '');
   dst.querySelectorAll('.health-hearts, .health-section').forEach(function(h) {
     if (dimGrayscale) h.style.filter = 'grayscale(1)';
     h.style.opacity = '0.4';
@@ -6652,6 +6875,20 @@ function startLoadingMascotSpin(mascotEl) {
 // Holds the stop fn for the dev-only #loading-loop screen so showScreen can
 // cancel it when the user navigates elsewhere.
 var _loadingLoopStop = null;
+
+// Cascade reveal of homepage elements without the loading overlay — used on
+// regular home navigation now that the full Loading screen lives in dev-nav.
+function revealHomepageElements(phone) {
+  if (!phone) return;
+  var homepage = phone.querySelector('[id^="homepage"]');
+  if (!homepage) return;
+  var sections = homepage.querySelectorAll('.reveal-in');
+  sections.forEach(function(el) { el.classList.remove('revealed'); });
+  // 80ms per section gives a perceptible cascade without dragging the entry.
+  sections.forEach(function(el, i) {
+    setTimeout(function() { el.classList.add('revealed'); }, i * 80);
+  });
+}
 
 function playLoadingIntro(phone) {
   if (!phone) return;
