@@ -2934,15 +2934,20 @@
       text-align: center;
       box-shadow: 0 8px 32px rgba(20, 77, 38, 0.18);
     }
+    /* Match the bundle-modal / quick-repay close button position so all
+       three modals agree: 24px from top-right, 32x32 hit-target, rounded
+       hover background on desktop. */
     .switch-network-close {
-      position: absolute; top: 16px; right: 16px;
+      position: absolute; top: 24px; right: 24px;
       width: 32px; height: 32px;
       background: transparent; border: none;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       color: var(--text-secondary);
+      border-radius: 50%;
       font-size: var(--ds-md);
     }
+    .phone.desktop .switch-network-close:hover { background: var(--cream-100); color: var(--text-primary); }
     /* Illustration is intentionally NOT square (208 × 171, ratio ~1.217)
        and stays the same size on both breakpoints per Figma node 1995-206305. */
     .switch-network-mascot {
