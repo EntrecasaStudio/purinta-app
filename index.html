@@ -2684,6 +2684,9 @@
     .phone.desktop #skel-borrow,
     .phone.desktop #skel-borrow-b,
     .phone.desktop #skel-borrow-c,
+    .phone.desktop #skel-update,
+    .phone.desktop #skel-update-b,
+    .phone.desktop #skel-update-c,
     .phone.desktop #update,
     .phone.desktop #update-b { max-width: none; padding: 0 40px; }
     .phone.desktop #update-c { max-width: none; padding: 0 40px; }
@@ -2708,6 +2711,9 @@
     .phone.desktop #skel-borrow .borrow-content,
     .phone.desktop #skel-borrow-b .borrow-content,
     .phone.desktop #skel-borrow-c .borrow-content,
+    .phone.desktop #skel-update .borrow-content,
+    .phone.desktop #skel-update-b .borrow-content,
+    .phone.desktop #skel-update-c .borrow-content,
     .phone.desktop #update .borrow-content,
     .phone.desktop #update-b .borrow-content { max-width: 720px; width: 100%; margin-left: auto; margin-right: auto; }
     .phone.desktop #update-c .borrow-content { max-width: 720px; width: 100%; margin-left: auto; margin-right: auto; }
@@ -2748,14 +2754,20 @@
     .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-area.happy .mascot-illustration,
     .phone.desktop #skel-borrow .borrow-col-sidebar .mascot-area.happy .mascot-illustration,
     .phone.desktop #skel-borrow-b .borrow-col-sidebar .mascot-area.happy .mascot-illustration,
-    .phone.desktop #skel-borrow-c .borrow-col-sidebar .mascot-area.happy .mascot-illustration {
+    .phone.desktop #skel-borrow-c .borrow-col-sidebar .mascot-area.happy .mascot-illustration,
+    .phone.desktop #skel-update .borrow-col-sidebar .mascot-area.happy .mascot-illustration,
+    .phone.desktop #skel-update-b .borrow-col-sidebar .mascot-area.happy .mascot-illustration,
+    .phone.desktop #skel-update-c .borrow-col-sidebar .mascot-area.happy .mascot-illustration {
       width: 111px; max-width: 111px; max-height: 120px;
     }
     .phone.desktop #borrow .borrow-col-sidebar .mascot-area.happy .mascot-blob,
     .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-area.happy .mascot-blob,
     .phone.desktop #skel-borrow .borrow-col-sidebar .mascot-area.happy .mascot-blob,
     .phone.desktop #skel-borrow-b .borrow-col-sidebar .mascot-area.happy .mascot-blob,
-    .phone.desktop #skel-borrow-c .borrow-col-sidebar .mascot-area.happy .mascot-blob {
+    .phone.desktop #skel-borrow-c .borrow-col-sidebar .mascot-area.happy .mascot-blob,
+    .phone.desktop #skel-update .borrow-col-sidebar .mascot-area.happy .mascot-blob,
+    .phone.desktop #skel-update-b .borrow-col-sidebar .mascot-area.happy .mascot-blob,
+    .phone.desktop #skel-update-c .borrow-col-sidebar .mascot-area.happy .mascot-blob {
       width: 112px; height: 86px;
     }
     /* Meltdown mascot is 10% smaller than the rest — beats the sidebar's 139px
@@ -2937,13 +2949,19 @@
       width: 208px; height: 171px; object-fit: contain;
       margin: 16px 0 0;
     }
+    /* Title: Display/lg-regular (Ohno Softie Variable, 25/33, weight 400,
+       letter-spacing 0.5px = 2% of 25px). Same style on mobile + desktop. */
     .switch-network-title {
-      font-family: var(--font-display); font-weight: 600; font-size: var(--ds-lg);
-      color: var(--text-primary); margin: 16px 0 0; line-height: 1.25;
+      font-family: var(--font-display); font-weight: 400;
+      font-size: var(--ds-lg); line-height: 33px; letter-spacing: 0.5px;
+      color: var(--text-primary); margin: 16px 0 0; text-align: center;
     }
+    /* Subtitle: UI/xs-regular (Rubik, 13/21, weight 400, letter-spacing
+       0.26px = 2% of 13px). */
     .switch-network-sub {
-      font-family: var(--font-ui); font-size: var(--ds-xs);
-      color: var(--text-secondary); margin: 4px 0 0; line-height: 1.5;
+      font-family: var(--font-ui); font-weight: 400;
+      font-size: var(--ds-xs); line-height: 21px; letter-spacing: 0.26px;
+      color: var(--text-secondary); margin: 4px 0 0; text-align: center;
     }
     .switch-network-cta { width: 100%; margin-top: 20px; }
     .switch-network-disconnect {
@@ -2989,9 +3007,9 @@
     /* All buttons inside skeleton screens read as disabled — most :disabled
        styles are scoped to .btn-primary, so this also covers btn-secondary
        (Modify Position, Quick Repay) on My Positions. */
-    #skel-home   .btn:disabled, #skel-borrow   .btn:disabled, #skel-positions   .btn:disabled,
-    #skel-home-b .btn:disabled, #skel-borrow-b .btn:disabled, #skel-positions-b .btn:disabled,
-    #skel-home-c .btn:disabled, #skel-borrow-c .btn:disabled, #skel-positions-c .btn:disabled {
+    #skel-home   .btn:disabled, #skel-borrow   .btn:disabled, #skel-update   .btn:disabled, #skel-positions   .btn:disabled,
+    #skel-home-b .btn:disabled, #skel-borrow-b .btn:disabled, #skel-update-b .btn:disabled, #skel-positions-b .btn:disabled,
+    #skel-home-c .btn:disabled, #skel-borrow-c .btn:disabled, #skel-update-c .btn:disabled, #skel-positions-c .btn:disabled {
       opacity: 0.5; cursor: not-allowed; pointer-events: none; filter: none !important;
     }
   </style>
@@ -3058,6 +3076,7 @@
             <button onclick="setModifyHealth('danger-zone')">Modify · Danger Zone</button>
             <button onclick="setModifyHealth('meltdown')">Modify · Meltdown</button>
             <button onclick="devOpenQuickRepay()">Quick Repay</button>
+            <button onclick="showScreen('skel-update')">Modify · Skel</button>
             <button onclick="showScreen('skel-positions')">Skel</button>
           </div>
         </details>
@@ -4488,6 +4507,10 @@
     <div class="app-footer"><a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a></div>
   </div>
 
+  <!-- Skeleton: Modify Position. Empty shell — populateSkeletonUpdate clones
+       #update at runtime, so the static markup here is just a placeholder. -->
+  <div id="skel-update" class="screen"></div>
+
   <!-- Skeleton: My Positions -->
   <div id="skel-positions" class="screen">
     <div class="app-header">
@@ -4777,6 +4800,7 @@ function initPhoneB() {
   // empty. Re-populate them now that the cloned source screens are in place.
   if (typeof populateSkeletonHome === 'function') populateSkeletonHome('-b');
   if (typeof populateSkeletonBorrow === 'function') populateSkeletonBorrow('-b');
+  if (typeof populateSkeletonUpdate === 'function') populateSkeletonUpdate('-b');
   if (typeof populateSkeletonPositions === 'function') populateSkeletonPositions('-b');
 }
 
@@ -4789,6 +4813,7 @@ function initPhoneC() {
   if (typeof rewritePositionTokenLabels === 'function') rewritePositionTokenLabels(phoneC);
   if (typeof populateSkeletonHome === 'function') populateSkeletonHome('-c');
   if (typeof populateSkeletonBorrow === 'function') populateSkeletonBorrow('-c');
+  if (typeof populateSkeletonUpdate === 'function') populateSkeletonUpdate('-c');
   if (typeof populateSkeletonPositions === 'function') populateSkeletonPositions('-c');
   // Positions screen tweaks specific to Option C
   var phoneCPositions = document.getElementById('positions-c');
@@ -5846,10 +5871,21 @@ function showScreen(id) {
       }
     });
   }
+  // Same dance for skel-update — clone fresh from #update on every entry so
+  // the SMIL bill animation in the static <img> mascot starts cleanly.
+  if (id === 'skel-update') {
+    if (typeof populateSkeletonUpdate === 'function') populateSkeletonUpdate('');
+    ['b', 'c'].forEach(function(sfx) {
+      var ph = document.getElementById('phone-' + sfx);
+      if (ph && ph.hasChildNodes() && typeof populateSkeletonUpdate === 'function') {
+        populateSkeletonUpdate('-' + sfx);
+      }
+    });
+  }
   // Update bottom nav + top nav active state + fill icons
   document.querySelectorAll('.bottom-nav-item, .top-nav-link').forEach(function(btn) {
     var screen = btn.getAttribute('data-screen');
-    var isActive = screen === id || (screen === 'homepage-connected' && id === 'homepage') || (screen === 'homepage' && id === 'homepage-connected') || (screen === 'borrow-connected' && (id === 'borrow' || id === 'skel-borrow')) || (screen === 'positions' && (id === 'update' || id === 'positions-empty' || id === 'positions-disconnected'));
+    var isActive = screen === id || (screen === 'homepage-connected' && id === 'homepage') || (screen === 'homepage' && id === 'homepage-connected') || (screen === 'borrow-connected' && (id === 'borrow' || id === 'skel-borrow')) || (screen === 'positions' && (id === 'update' || id === 'skel-update' || id === 'positions-empty' || id === 'positions-disconnected'));
     btn.classList.toggle('active', isActive);
     var icon = btn.querySelector('i');
     if (icon) {
@@ -5872,6 +5908,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // (icons, labels, CTAs, hero, header) renders normally.
   populateSkeletonHome('');
   populateSkeletonBorrow('');
+  populateSkeletonUpdate('');
   populateSkeletonPositions('');
   populatePositionsDisconnected();
 });
@@ -6015,6 +6052,70 @@ function populateSkeletonBorrow(suffix) {
   // Replace the primary CTA(s) with a skel-block so the button loads alongside
   // the data instead of sitting half-disabled. Same treatment as the cards in
   // skel-positions — pill shape, full width, 56px tall (matching .btn-lg).
+  dst.querySelectorAll('.btn-primary.btn-full.btn-lg').forEach(function(btn) {
+    var skel = document.createElement('span');
+    skel.className = 'skel-block skel-pill';
+    skel.style.cssText = 'display:block;width:100%;height:56px;border-radius:9999px;';
+    btn.replaceWith(skel);
+  });
+  disableSkeletonCtas(dst);
+}
+
+// Skeletonize the Modify Position (#update) layout. Same recipe as
+// populateSkeletonBorrow — #update uses the same borrow-col-sliders +
+// borrow-col-sidebar layout with the same V2 health mascot, so we can
+// reuse the cloning + skeletonization steps verbatim, just sourcing
+// the markup from #update instead of #borrow-connected.
+function populateSkeletonUpdate(suffix) {
+  suffix = suffix || '';
+  var src = document.getElementById('update' + suffix);
+  var dst = document.getElementById('skel-update' + suffix);
+  if (!src || !dst) return;
+  dst.innerHTML = src.innerHTML;
+  if (suffix) {
+    dst.querySelectorAll('[id]').forEach(function(el) {
+      if (!el.id.endsWith(suffix)) el.id = el.id + suffix;
+    });
+  }
+  // Same mascot swap as populateSkeletonBorrow — drop the V2 emote
+  // stack (whose SMIL bill animation freezes when cloned via innerHTML)
+  // for the static <img> from #borrow that re-runs cleanly on every
+  // attach.
+  var mascotArea = dst.querySelector('.borrow-col-sidebar .mascot-area');
+  if (mascotArea) {
+    var existingText = mascotArea.querySelector('.mascot-text');
+    var textHtml = existingText ? existingText.outerHTML : '';
+    mascotArea.className = 'mascot-area happy';
+    mascotArea.removeAttribute('id');
+    mascotArea.innerHTML =
+      '<div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none">' +
+        '<path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/>' +
+      '</svg></div>' +
+      '<img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="" style="pointer-events:none;">' +
+      textHtml;
+  }
+  var SKEL_RECT = 'display:inline-block;width:80px;height:20px;border-radius:4px;vertical-align:middle;';
+  dst.querySelectorAll('.slider-info-value').forEach(function(v) {
+    v.innerHTML = '<span class="skel-block" style="' + SKEL_RECT + '"></span>';
+  });
+  dst.querySelectorAll('.summary-row-value').forEach(function(v) {
+    v.innerHTML = '<span class="skel-block" style="' + SKEL_RECT + '"></span>';
+    v.removeAttribute('style');
+  });
+  dst.querySelectorAll('.pct-btn').forEach(function(b) {
+    b.classList.remove('active');
+    b.classList.add('disabled');
+  });
+  dst.querySelectorAll('.slider-track').forEach(function(t) {
+    t.style.pointerEvents = 'none';
+    var bg = t.querySelector('.slider-track-bg');
+    if (bg) bg.style.background = '#F0F0F0';
+    var fill = t.querySelector('.slider-track-fill');
+    if (fill) fill.style.background = 'transparent';
+    t.querySelectorAll('.slider-thumb').forEach(function(th) {
+      th.style.display = 'none';
+    });
+  });
   dst.querySelectorAll('.btn-primary.btn-full.btn-lg').forEach(function(btn) {
     var skel = document.createElement('span');
     skel.className = 'skel-block skel-pill';
