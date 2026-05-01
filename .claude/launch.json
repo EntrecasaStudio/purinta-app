@@ -4,8 +4,8 @@
     {
       "name": "purinta",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "-l", "3000", "-s", "."],
-      "port": 3000
+      "runtimeArgs": ["serve", "-s", "."],
+      "autoPort": true
     }
   ]
 }
