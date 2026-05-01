@@ -2739,22 +2739,23 @@
     .phone.desktop .borrow-col-sidebar .mascot-illustration {
       width: 139px; max-width: 139px; max-height: 150px;
     }
-    /* Borrow desktop (both disconnected and connected health emote): shrink
-       the mascot pair (illustration + blob) by 20% to give the column more
-       breathing room. Higher specificity (1 ID + 4 classes) beats both the
-       generic .borrow-col-sidebar rule and the .meltdown override above. */
-    .phone.desktop #borrow .borrow-col-sidebar .mascot-illustration,
-    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-illustration,
-    .phone.desktop #skel-borrow .borrow-col-sidebar .mascot-illustration,
-    .phone.desktop #skel-borrow-b .borrow-col-sidebar .mascot-illustration,
-    .phone.desktop #skel-borrow-c .borrow-col-sidebar .mascot-illustration {
+    /* Borrow desktop initial state ONLY (the basic-money / .happy mascot with
+       the bill graphic): shrink the mascot pair by 20% to give the column
+       more breathing room. Health-state mascots (ultra-safe / looking-good /
+       getting-risky / danger-zone / meltdown) keep their original sizes.
+       Scoped to .mascot-area.happy so health emotes are unaffected. */
+    .phone.desktop #borrow .borrow-col-sidebar .mascot-area.happy .mascot-illustration,
+    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-area.happy .mascot-illustration,
+    .phone.desktop #skel-borrow .borrow-col-sidebar .mascot-area.happy .mascot-illustration,
+    .phone.desktop #skel-borrow-b .borrow-col-sidebar .mascot-area.happy .mascot-illustration,
+    .phone.desktop #skel-borrow-c .borrow-col-sidebar .mascot-area.happy .mascot-illustration {
       width: 111px; max-width: 111px; max-height: 120px;
     }
-    .phone.desktop #borrow .borrow-col-sidebar .mascot-blob,
-    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-blob,
-    .phone.desktop #skel-borrow .borrow-col-sidebar .mascot-blob,
-    .phone.desktop #skel-borrow-b .borrow-col-sidebar .mascot-blob,
-    .phone.desktop #skel-borrow-c .borrow-col-sidebar .mascot-blob {
+    .phone.desktop #borrow .borrow-col-sidebar .mascot-area.happy .mascot-blob,
+    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-area.happy .mascot-blob,
+    .phone.desktop #skel-borrow .borrow-col-sidebar .mascot-area.happy .mascot-blob,
+    .phone.desktop #skel-borrow-b .borrow-col-sidebar .mascot-area.happy .mascot-blob,
+    .phone.desktop #skel-borrow-c .borrow-col-sidebar .mascot-area.happy .mascot-blob {
       width: 112px; height: 86px;
     }
     /* Meltdown mascot is 10% smaller than the rest — beats the sidebar's 139px
@@ -2907,13 +2908,17 @@
       background: rgba(24, 82, 41, 0.6);
       pointer-events: none;
     }
+    /* On desktop the .phone container is fixed-width (~720px) but the modal
+       backdrop should cover the full viewport — match the bundle-modal
+       overlay treatment and switch to position: fixed in desktop mode. */
+    .phone.desktop .switch-network-scrim { position: fixed; inset: 0; }
     .switch-network-card {
       position: relative; z-index: 1;
       background: var(--neutral-50);
-      border-radius: 32px;
-      padding: 40px 24px 24px;
+      border-radius: 40px;
+      padding: 20px 20px 32px;
       width: 100%; max-width: 320px;
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      display: flex; flex-direction: column; align-items: center;
       text-align: center;
       box-shadow: 0 8px 32px rgba(20, 77, 38, 0.18);
     }
@@ -2926,19 +2931,21 @@
       color: var(--text-secondary);
       font-size: var(--ds-md);
     }
+    /* Illustration is intentionally NOT square (208 × 171, ratio ~1.217)
+       and stays the same size on both breakpoints per Figma node 1995-206305. */
     .switch-network-mascot {
-      width: 180px; height: 180px; object-fit: contain;
-      margin: 0 0 8px;
+      width: 208px; height: 171px; object-fit: contain;
+      margin: 16px 0 0;
     }
     .switch-network-title {
       font-family: var(--font-display); font-weight: 600; font-size: var(--ds-lg);
-      color: var(--text-primary); margin: 0; line-height: 1.25;
+      color: var(--text-primary); margin: 16px 0 0; line-height: 1.25;
     }
     .switch-network-sub {
       font-family: var(--font-ui); font-size: var(--ds-xs);
-      color: var(--text-secondary); margin: 0 0 16px; line-height: 1.5;
+      color: var(--text-secondary); margin: 4px 0 0; line-height: 1.5;
     }
-    .switch-network-cta { width: 100%; margin-bottom: 4px; }
+    .switch-network-cta { width: 100%; margin-top: 20px; }
     .switch-network-disconnect {
       width: 100%; padding: 12px 20px; border-radius: 9999px;
       background: var(--blush-200); color: var(--blush-600);
@@ -2946,11 +2953,11 @@
       font-size: var(--ds-sm); cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       transition: background 0.15s ease;
+      margin-top: 8px;
     }
     .switch-network-disconnect:hover { background: var(--blush-300); }
     .switch-network-disconnect:active { transform: scale(0.97); }
-    .phone.desktop .switch-network-card { max-width: 480px; padding: 48px 32px 32px; border-radius: 56px; }
-    .phone.desktop .switch-network-mascot { width: 220px; height: 220px; }
+    .phone.desktop .switch-network-card { max-width: 480px; padding: 32px; border-radius: 56px; }
 
     /* Skel home: turn the entire token-rate-badge corner into a skeleton —
        keeps its curved shape (0 32px 0 32px) and Figma width (~77px) but
@@ -4170,7 +4177,7 @@
     <div class="switch-network-scrim"></div>
     <div class="switch-network-card">
       <button class="switch-network-close" aria-label="Close" onclick="showScreen('homepage')"><i class="ph ph-x"></i></button>
-      <img class="switch-network-mascot" src="assets/purinta-chan-confirm.png" alt="" aria-hidden="true">
+      <img class="switch-network-mascot" src="assets/Graphic-Switch-Network.svg" alt="" aria-hidden="true">
       <h2 class="switch-network-title">Switch your network to Ethereum</h2>
       <p class="switch-network-sub">Purinta's markets are only available on Ethereum</p>
       <button class="btn btn-primary btn-full switch-network-cta" onclick="showScreen('homepage-connected')"><i class="ph-light ph-shuffle btn-icon"></i> Switch to Ethereum</button>
@@ -6004,6 +6011,15 @@ function populateSkeletonBorrow(suffix) {
     t.querySelectorAll('.slider-thumb').forEach(function(th) {
       th.style.display = 'none';
     });
+  });
+  // Replace the primary CTA(s) with a skel-block so the button loads alongside
+  // the data instead of sitting half-disabled. Same treatment as the cards in
+  // skel-positions — pill shape, full width, 56px tall (matching .btn-lg).
+  dst.querySelectorAll('.btn-primary.btn-full.btn-lg').forEach(function(btn) {
+    var skel = document.createElement('span');
+    skel.className = 'skel-block skel-pill';
+    skel.style.cssText = 'display:block;width:100%;height:56px;border-radius:9999px;';
+    btn.replaceWith(skel);
   });
   disableSkeletonCtas(dst);
 }
