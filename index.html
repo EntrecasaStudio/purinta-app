@@ -884,7 +884,7 @@
        Uses the same overlay tokens + dialog shell as Quick Repay; internals are
        the two-row bundle summary + numbered stepper + "Proceed in wallet" box. */
     .bundle-modal-overlay {
-      position: absolute; inset: 0;     /* scoped to the host phone, not the browser viewport */
+      position: absolute; inset: 0;     /* scoped to the host phone on mobile */
       display: none;
       align-items: center; justify-content: center;
       z-index: 10000;
@@ -893,6 +893,11 @@
       -webkit-backdrop-filter: var(--scrim-commit-blur);
       padding: 20px;
     }
+    /* Desktop: pin to the viewport instead of the (possibly very-tall) phone
+       so the modal is always centered on what the user is looking at —
+       triggering Quick Repay from a position card mid-page used to drop
+       the modal at the phone's vertical center, requiring a scroll. */
+    .phone.desktop .bundle-modal-overlay { position: fixed; }
     .bundle-modal-overlay.is-open { display: flex; animation: qr-fade 180ms ease-out; }
     .bundle-modal-dialog {
       background: var(--neutral-50);
@@ -1088,35 +1093,66 @@
     .bundle-steps {
       list-style: none; padding: 0; margin: 16px 0;
       width: 100%;
-      display: flex; flex-direction: column; gap: 10px;
+      display: flex; flex-direction: column; gap: 16px;
     }
+    /* Stepper (Figma 2237:249617 / 253548 / 255500): 24px dots with a 1px ×
+       12px cream-400 connector centered in the 16px row gap. Default = 2px
+       cream-400 ring on cream-200 fill; active = same ring + 16px cream-300
+       inner disc + Medium-weight text; done = mint-200 fill, green-600 check
+       (DS check-icon.svg masked to green-600). Connector color is uniform
+       across all three states — verified against Figma. */
     .bundle-step {
-      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      display: flex; align-items: center; gap: 10px;
       font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 400;
       line-height: 21px; letter-spacing: 0.26px;
       color: var(--text-secondary);
+      position: relative;
     }
     .bundle-step-text { flex: 1; text-align: left; }
     .bundle-step-num {
       width: 24px; height: 24px; border-radius: 50%;
-      background: var(--cream-300); color: var(--green-700);     /* pending */
+      background: var(--cream-200);
+      border: 2px solid var(--cream-400);
       display: inline-flex; align-items: center; justify-content: center;
-      font-size: var(--ds-2xs); font-weight: 500; flex-shrink: 0;
-      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-      position: relative;
+      font-size: 0; color: transparent;
+      flex-shrink: 0; position: relative; z-index: 1;
+      transition: background 0.2s ease, border-color 0.2s ease;
     }
-    /* Active: green-600 bg (AA contrast with white), mint-300 ring for emphasis */
+    /* Connector — 12px segment in the 16px row gap, centered on the dot column */
+    .bundle-step:not(:last-child)::before {
+      content: ''; position: absolute;
+      left: 12px; transform: translateX(-50%);
+      top: calc(100% + 2px);
+      width: 1px; height: 12px;
+      background: var(--cream-400);
+    }
+    /* Active: same outer ring + 16px cream-300 inner disc + Medium-weight text.
+       Use -webkit-text-stroke to fake the bold so the row doesn't reflow when
+       a long label (e.g. "Sign approval for transferring MORPHO") wraps. */
     .bundle-step.is-active .bundle-step-num {
-      background: var(--green-600); color: #fff;
-      box-shadow: 0 0 0 2px var(--mint-300);
+      background: var(--cream-200);
+      border-color: var(--cream-400);
     }
-    /* Done: mint-200 bg + green check replacing the number (handled in JS) */
+    .bundle-step.is-active .bundle-step-num::after {
+      content: ''; width: 16px; height: 16px; border-radius: 50%;
+      background: var(--cream-300);
+    }
+    .bundle-step.is-active .bundle-step-text {
+      color: var(--text-primary);
+      -webkit-text-stroke: 0.4px currentColor;
+    }
+    /* Done: mint-200 fill, no stroke, green-600 check (DS asset, masked) */
     .bundle-step.is-done .bundle-step-num {
-      background: var(--mint-200); color: var(--green-700);
+      background: var(--mint-200);
+      border-color: transparent;
+    }
+    .bundle-step.is-done .bundle-step-num::after {
+      content: ''; width: 16px; height: 16px;
+      background: var(--green-600);
+      -webkit-mask: url("assets/check-icon.svg") center/contain no-repeat;
+              mask: url("assets/check-icon.svg") center/contain no-repeat;
     }
     .bundle-step.is-done .bundle-step-text { color: var(--text-secondary); }
-    /* The check glyph is added via class; pointer + bigger than the numeral */
-    .bundle-step-num .ph-check { font-size: 14px; line-height: 1; }
     .bundle-message {
       display: flex; align-items: flex-start; gap: 8px;
       /* Ready state default: info blue — "here's what will happen".
@@ -1160,29 +1196,55 @@
 
     .bundle-modal-cta { width: 100%; transition: all 0.2s ease; margin-top: 4px; }  /* parent gap 16 + 4 = 20 */
 
-    /* Desktop: wider dialog (matches legacy #confirm), horizontal bundle rows. */
+    /* Mobile / phone-b/c default: column wrappers flatten so children stack
+       vertically as before. Display: contents removes the wrapper from layout. */
+    .bundle-modal-col, .bundle-modal-divider { display: contents; }
+    /* Desktop: 720px dialog with horizontal split — values | divider | actions */
     .phone.desktop .bundle-modal-dialog {
-      max-width: 480px; padding: 48px 32px 32px; border-radius: 56px;
+      max-width: 720px; padding: 48px; border-radius: 56px;
+      flex-direction: row; align-items: stretch; gap: 32px;
+    }
+    .phone.desktop .bundle-modal-col {
+      display: flex; flex-direction: column; flex: 1; min-width: 0;
+    }
+    .phone.desktop .bundle-modal-col-values {
+      align-items: center; justify-content: center;
+    }
+    .phone.desktop .bundle-modal-col-actions {
+      gap: 16px; justify-content: center;
+    }
+    /* Desktop: keep the mascot centered horizontally in its column. The col
+       is flex-direction: column with default cross-axis alignment (start);
+       the mascot's intrinsic width (216px) is narrower than the column so
+       it would otherwise stick to the left edge. */
+    .phone.desktop .bundle-modal-col-actions .bundle-modal-mascot {
+      align-self: center;
+    }
+    .phone.desktop .bundle-modal-divider {
+      display: block; width: 1px; background: var(--cream-300);
+      align-self: stretch;
     }
     .phone.desktop .bundle-modal-rows {
-      flex-direction: row; justify-content: center; align-items: center; gap: 16px;
+      flex-direction: column; justify-content: center; align-items: center; gap: 24px;
     }
+    /* Sep box matches Figma: 16px tall, 16px horizontal padding, lines flank
+       the "&" with 12px gap on each side. Rows sit edge-to-edge against it
+       (gap: 0 above) — the breathing room comes from the sep's own height. */
     .phone.desktop .bundle-sep {
-      width: auto; height: auto; font-size: var(--ds-sm);
-      align-self: center; padding: 0 4px;
+      width: 100%; height: 16px; max-height: 16px; padding: 0 16px;
+      font-size: var(--ds-sm);
       position: relative; overflow: visible;
+      box-sizing: border-box;
     }
-    /* Desktop: replace mobile's horizontal lines with vertical strokes above
-       and below the "&" — matches the Figma divider that separates the two
-       value columns. */
     .phone.desktop .bundle-sep::before,
     .phone.desktop .bundle-sep::after {
-      content: ''; display: block; position: absolute; left: 50%;
-      width: 1px; height: 28px; background: var(--cream-400);
-      transform: translateX(-50%); top: auto; right: auto;
+      content: ''; display: block; position: absolute; top: 50%; bottom: auto;
+      height: 1px; background: var(--cream-300);
+      transform: none; margin: 0;
+      width: calc(50% - 28px);    /* 16px sep padding + 12px gap to "&" */
     }
-    .phone.desktop .bundle-sep::before { bottom: 100%; margin-bottom: 8px; }
-    .phone.desktop .bundle-sep::after  { top: 100%; margin-top: 8px; }
+    .phone.desktop .bundle-sep::before { left: 16px; }
+    .phone.desktop .bundle-sep::after  { right: 16px; }
     /* When the row layout would overflow the dialog (long numbers), JS toggles
        .is-stacked on .bundle-modal-rows. Switch to column with mobile-style
        horizontal lines flanking the "&". */
@@ -1258,12 +1320,15 @@
     #phone-a .bundle-modal-overlay.is-done .bundle-mascot-default { display: none; }
     #phone-a .bundle-modal-overlay.is-done .bundle-mascot-done    { display: block; }
     /* Mascot container always open in option A, no max-height collapse */
-    #phone-a .bundle-modal-mascot { max-height: 168px; opacity: 1; }
+    #phone-a .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
     /* Mascot heights for option A — height drives the size, width auto-scales
        by SVG aspect. Confirmed (step 3) is larger than Begin to celebrate
        the success state. */
-    #phone-a .bundle-mascot-img  { width: auto; height: 118px; }
-    #phone-a .bundle-mascot-done { height: 144px; }
+    /* Both mascot variants render at the same intrinsic height so the modal
+       doesn't grow or shift on Done. Container is pinned (above) for the same
+       reason — swap is purely artwork, layout is locked. */
+    #phone-a .bundle-mascot-img  { width: auto; height: 131px; max-height: 131px; }
+    #phone-a .bundle-mascot-done { height: 131px; }
     /* Re-fire the entry-pop on the done variant when it appears — same
        gelatinous rebound as option B, reinforcing the swap moment. The default
        mascot (already on screen) doesn't animate. */
@@ -1281,25 +1346,12 @@
       flex-direction: column; align-items: center; gap: 2px;
     }
     #phone-a .bundle-modal-overlay.is-done .bundle-row-amount { font-size: var(--ds-2xl); }
-    #phone-a .bundle-modal-overlay.is-done .bundle-modal-rows { gap: 8px; }
-    /* Keep the "&" separator visible in done state too (default hides it) */
+    /* Done state on phone-a: keep the "&" separator visible (default hides it
+       on .is-done). Sizing comes from the generic .phone.desktop .bundle-sep
+       rule above (16px tall, 16px padding, 12px gap to "&"). */
     #phone-a .bundle-modal-overlay.is-done .bundle-sep {
-      max-height: 20px; opacity: 1; margin: initial;
+      max-height: 16px; opacity: 1; margin: initial;
     }
-    /* Desktop: revert to column rows (mobile-style) + horizontal "&" lines */
-    #phone-a.desktop .bundle-modal-rows { flex-direction: column; gap: 8px; }
-    #phone-a.desktop .bundle-sep {
-      width: 100%; height: 20px; max-height: 20px; padding: 0;
-      font-size: var(--ds-sm);
-    }
-    #phone-a.desktop .bundle-sep::before,
-    #phone-a.desktop .bundle-sep::after {
-      content: ''; position: absolute; top: 50%; left: auto; bottom: auto;
-      width: 38%; height: 1px; background: var(--cream-300);
-      transform: none; margin: 0;
-    }
-    #phone-a.desktop .bundle-sep::before { left: 0; }
-    #phone-a.desktop .bundle-sep::after  { right: 0; }
 
     /* Success toast — appears top-right of the phone viewport on Done state,
        mirrors the native wallet "✓ Success!" toast from the reference flow. */
@@ -2595,6 +2647,9 @@
     .phone.desktop #borrow-connected,
     .phone.desktop #borrow-connected-b,
     .phone.desktop #borrow-connected-c,
+    .phone.desktop #skel-borrow,
+    .phone.desktop #skel-borrow-b,
+    .phone.desktop #skel-borrow-c,
     .phone.desktop #update,
     .phone.desktop #update-b { max-width: none; padding: 0 40px; }
     .phone.desktop #update-c { max-width: none; padding: 0 40px; }
@@ -2616,6 +2671,9 @@
     .phone.desktop #borrow-connected .borrow-content,
     .phone.desktop #borrow-connected-b .borrow-content,
     .phone.desktop #borrow-connected-c .borrow-content,
+    .phone.desktop #skel-borrow .borrow-content,
+    .phone.desktop #skel-borrow-b .borrow-content,
+    .phone.desktop #skel-borrow-c .borrow-content,
     .phone.desktop #update .borrow-content,
     .phone.desktop #update-b .borrow-content { max-width: 720px; width: 100%; margin-left: auto; margin-right: auto; }
     .phone.desktop #update-c .borrow-content { max-width: 720px; width: 100%; margin-left: auto; margin-right: auto; }
@@ -4234,37 +4292,42 @@
 
   <!-- Bundle modal — Modify Position confirmation (phone-a / Option A only) -->
   <div class="bundle-modal-overlay" id="bundle-modal-overlay" role="dialog" aria-modal="true" aria-hidden="true" onclick="if(event.target===this)closeBundleModal()">
-    <div class="bundle-toast"><i class="ph-fill ph-check-circle"></i>Success!</div>
     <div class="bundle-modal-dialog">
       <button class="bundle-modal-close" onclick="closeBundleModal()" aria-label="Close"><i class="ph ph-x"></i></button>
-      <div class="bundle-modal-mascot">
-        <svg class="bundle-mascot-blob" viewBox="0 0 140 108" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M122 17C132 42 114 72 82 85C50 97 16 87 7 62C-3 37 14 42 46 30C78 17 113 -8 122 17Z"/></svg>
-        <img class="bundle-mascot-img bundle-mascot-default" src="assets/Purinta-Begin.svg" alt="" aria-hidden="true">
-        <img class="bundle-mascot-img bundle-mascot-done" src="assets/Purinta-Confirmed.svg" alt="" aria-hidden="true">
-        <span class="bundle-mascot-sparkle bms-1"></span>
-        <span class="bundle-mascot-sparkle bms-2"></span>
-        <span class="bundle-mascot-sparkle bms-3"></span>
-        <span class="bundle-mascot-sparkle bms-4"></span>
-        <span class="bundle-mascot-sparkle bms-5"></span>
-      </div>
-      <div class="bundle-modal-rows">
-        <div class="bundle-row">
-          <div class="bundle-row-label">Supply</div>
-          <div class="bundle-row-amount" id="bm-supply-amount">—</div>
-          <div class="bundle-row-token" id="bm-supply-token"><span class="mini-icon pepe"></span>PEPE</div>
-        </div>
-        <div class="bundle-sep">&amp;</div>
-        <div class="bundle-row">
-          <div class="bundle-row-label">Repay</div>
-          <div class="bundle-row-amount" id="bm-repay-amount">—</div>
-          <div class="bundle-row-token"><span class="mini-icon usdc"></span>USDC</div>
+      <!-- Two-column layout on desktop: values | divider | mascot+stepper+banner+CTA.
+           Wrappers use display: contents on mobile so children flow vertically as before. -->
+      <div class="bundle-modal-col bundle-modal-col-values">
+        <div class="bundle-modal-rows">
+          <div class="bundle-row">
+            <div class="bundle-row-label">Supply</div>
+            <div class="bundle-row-amount" id="bm-supply-amount">—</div>
+            <div class="bundle-row-token" id="bm-supply-token"><span class="mini-icon pepe"></span>PEPE</div>
+          </div>
+          <div class="bundle-sep">&amp;</div>
+          <div class="bundle-row">
+            <div class="bundle-row-label">Repay</div>
+            <div class="bundle-row-amount" id="bm-repay-amount">—</div>
+            <div class="bundle-row-token"><span class="mini-icon usdc"></span>USDC</div>
+          </div>
         </div>
       </div>
-      <ol class="bundle-steps">
-        <li class="bundle-step"><span class="bundle-step-text">Sign approval for transferring <span id="bm-step-token">PEPE</span></span><span class="bundle-step-num">1</span></li>
-        <li class="bundle-step"><span class="bundle-step-text">Sign approval for transferring USDC</span><span class="bundle-step-num">2</span></li>
-        <li class="bundle-step"><span class="bundle-step-text">Execute the bundle</span><span class="bundle-step-num">3</span></li>
-      </ol>
+      <div class="bundle-modal-divider"></div>
+      <div class="bundle-modal-col bundle-modal-col-actions">
+        <div class="bundle-modal-mascot">
+          <svg class="bundle-mascot-blob" viewBox="0 0 140 108" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M122 17C132 42 114 72 82 85C50 97 16 87 7 62C-3 37 14 42 46 30C78 17 113 -8 122 17Z"/></svg>
+          <img class="bundle-mascot-img bundle-mascot-default" src="assets/Purinta-Begin.svg" alt="" aria-hidden="true">
+          <img class="bundle-mascot-img bundle-mascot-done" src="assets/Purinta-Confirmed.svg" alt="" aria-hidden="true">
+          <span class="bundle-mascot-sparkle bms-1"></span>
+          <span class="bundle-mascot-sparkle bms-2"></span>
+          <span class="bundle-mascot-sparkle bms-3"></span>
+          <span class="bundle-mascot-sparkle bms-4"></span>
+          <span class="bundle-mascot-sparkle bms-5"></span>
+        </div>
+        <ol class="bundle-steps">
+          <li class="bundle-step"><span class="bundle-step-num"></span><span class="bundle-step-text">Sign approval for transferring <span id="bm-step-token">PEPE</span></span></li>
+          <li class="bundle-step"><span class="bundle-step-num"></span><span class="bundle-step-text">Sign approval for transferring USDC</span></li>
+          <li class="bundle-step"><span class="bundle-step-num"></span><span class="bundle-step-text">Execute the bundle</span></li>
+        </ol>
       <div class="bundle-message">
         <i class="ph ph-info bundle-message-icon bmi-ready" aria-hidden="true"></i>
         <i class="ph ph-info bundle-message-icon bmi-processing" aria-hidden="true"></i>
@@ -4275,11 +4338,12 @@
           <div class="bundle-message-done"><strong>Done!</strong><br>Transaction completed successfully.</div>
         </div>
       </div>
-      <button class="btn btn-primary btn-full bundle-modal-cta" onclick="bundleModalCtaClick()">
-        <span class="bundle-cta-ready">Begin</span>
-        <span class="bundle-cta-processing"><i class="ph-light ph-circle-notch bundle-spin"></i> Processing</span>
-        <span class="bundle-cta-done"><i class="ph ph-cards-three btn-icon"></i> View Positions</span>
-      </button>
+        <button class="btn btn-primary btn-full bundle-modal-cta" onclick="bundleModalCtaClick()">
+          <span class="bundle-cta-ready">Begin</span>
+          <span class="bundle-cta-processing"><i class="ph-light ph-circle-notch bundle-spin"></i> Processing</span>
+          <span class="bundle-cta-done"><i class="ph ph-cards-three btn-icon"></i> View Positions</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -5258,8 +5322,9 @@ function openBundleModal(data, btn) {
   // Render steps dynamically — only the approvals that are actually needed + execute
   var stepsWrap = overlay.querySelector('.bundle-steps');
   var steps = (data.steps && data.steps.length) ? data.steps : ['Execute the bundle'];
-  stepsWrap.innerHTML = steps.map(function(s, i) {
-    return '<li class="bundle-step"><span class="bundle-step-num">' + (i + 1) + '</span>' +
+  stepsWrap.innerHTML = steps.map(function(s) {
+    // New stepper: dot + text. The dot fills with a check on done state.
+    return '<li class="bundle-step"><span class="bundle-step-num"></span>' +
            '<span class="bundle-step-text">' + s + '</span></li>';
   }).join('');
   overlay.classList.add('is-open');
@@ -5323,9 +5388,9 @@ function runBundleSequence() {
   var steps = overlay.querySelectorAll('.bundle-step');
   steps.forEach(function(s, idx) {
     s.classList.remove('is-active', 'is-done');
-    // Reset numeric glyph for re-runs
+    // Empty the dot — the new stepper has no numbers, just the dot/check.
     var numEl = s.querySelector('.bundle-step-num');
-    if (numEl) numEl.innerHTML = String(idx + 1);
+    if (numEl) numEl.innerHTML = '';
   });
   var i = 0;
   function advance() {
@@ -5707,7 +5772,7 @@ function showScreen(id) {
   // Update bottom nav + top nav active state + fill icons
   document.querySelectorAll('.bottom-nav-item, .top-nav-link').forEach(function(btn) {
     var screen = btn.getAttribute('data-screen');
-    var isActive = screen === id || (screen === 'homepage-connected' && id === 'homepage') || (screen === 'homepage' && id === 'homepage-connected') || (screen === 'borrow-connected' && id === 'borrow') || (screen === 'positions' && (id === 'update' || id === 'positions-empty'));
+    var isActive = screen === id || (screen === 'homepage-connected' && id === 'homepage') || (screen === 'homepage' && id === 'homepage-connected') || (screen === 'borrow-connected' && id === 'borrow') || (screen === 'positions' && (id === 'update' || id === 'positions-empty' || id === 'positions-disconnected'));
     btn.classList.toggle('active', isActive);
     var icon = btn.querySelector('i');
     if (icon) {
@@ -5812,6 +5877,16 @@ function populateSkeletonBorrow(suffix) {
       if (!el.id.endsWith(suffix)) el.id = el.id + suffix;
     });
   }
+  // The borrow-connected mascot uses the V2 emote system: a stack of feet/
+  // body/face/melt divs that JS fills with inline SVG. innerHTML cloning
+  // copies those divs but the cloned SVGs don't re-trigger their internal
+  // animations (e.g. the bill emerging from the slot via <animateTransform>).
+  // Re-apply the basic-money expression so the V2 system re-injects fresh
+  // SVG markup and the bill animation restarts cleanly.
+  var v2 = dst.querySelector('.emote-v2.mascot-illustration');
+  if (v2 && typeof applyV2Expression === 'function') {
+    applyV2Expression(v2, 'basic-money');
+  }
   // Use taller, less-rounded rectangles (per Figma) instead of the default
   // pill shape — radius 4px reads as a placeholder, not a button.
   var SKEL_RECT = 'display:inline-block;width:80px;height:20px;border-radius:4px;vertical-align:middle;';
@@ -5867,6 +5942,20 @@ function populateSkeletonPositions(suffix) {
       if (!el.id.endsWith(suffix)) el.id = el.id + suffix;
     });
   }
+  // Trim to a single card — drop the supply-only variant (cream fill) and any
+  // extras after the first regular position card. The skeleton is a loading
+  // state preview, one card is enough to communicate the pattern.
+  dst.querySelectorAll('.position-card.supply-only').forEach(function(c) { c.remove(); });
+  var cards = dst.querySelectorAll('.position-card');
+  cards.forEach(function(c, i) { if (i > 0) c.remove(); });
+  // Replace each card CTA with a pill-shaped skeleton block so the buttons
+  // load along with the data instead of sitting half-disabled.
+  dst.querySelectorAll('.position-card .position-buttons .btn, .position-card .position-actions .btn').forEach(function(btn) {
+    var skel = document.createElement('span');
+    skel.className = 'skel-block skel-pill';
+    skel.style.cssText = 'display:block;width:100%;height:40px;border-radius:9999px;';
+    btn.replaceWith(skel);
+  });
   var SKEL_RECT = 'display:inline-block;width:80px;height:20px;border-radius:4px;vertical-align:middle;';
   var SKEL_RECT_WIDE = 'display:inline-block;width:120px;height:20px;border-radius:4px;vertical-align:middle;';
   // Supply value (desktop layout — supply-row right side)
