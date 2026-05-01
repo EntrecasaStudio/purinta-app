@@ -2685,13 +2685,16 @@
     .phone.desktop .borrow-col-sidebar .mascot-illustration {
       width: 139px; max-width: 139px; max-height: 150px;
     }
-    /* Borrow disconnected desktop: mascot is purely decorative ("Connect your
-       wallet"), so shrink the whole pair (illustration + blob) by 20% to give
-       the column more breathing room without changing card dimensions. */
-    .phone.desktop #borrow .borrow-col-sidebar .mascot-illustration {
+    /* Borrow desktop (both disconnected and connected health emote): shrink
+       the mascot pair (illustration + blob) by 20% to give the column more
+       breathing room. Higher specificity (1 ID + 4 classes) beats both the
+       generic .borrow-col-sidebar rule and the .meltdown override above. */
+    .phone.desktop #borrow .borrow-col-sidebar .mascot-illustration,
+    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-illustration {
       width: 111px; max-width: 111px; max-height: 120px;
     }
-    .phone.desktop #borrow .borrow-col-sidebar .mascot-blob {
+    .phone.desktop #borrow .borrow-col-sidebar .mascot-blob,
+    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-blob {
       width: 112px; height: 86px;
     }
     /* Meltdown mascot is 10% smaller than the rest — beats the sidebar's 139px
