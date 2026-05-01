@@ -2744,11 +2744,17 @@
        breathing room. Higher specificity (1 ID + 4 classes) beats both the
        generic .borrow-col-sidebar rule and the .meltdown override above. */
     .phone.desktop #borrow .borrow-col-sidebar .mascot-illustration,
-    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-illustration {
+    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-illustration,
+    .phone.desktop #skel-borrow .borrow-col-sidebar .mascot-illustration,
+    .phone.desktop #skel-borrow-b .borrow-col-sidebar .mascot-illustration,
+    .phone.desktop #skel-borrow-c .borrow-col-sidebar .mascot-illustration {
       width: 111px; max-width: 111px; max-height: 120px;
     }
     .phone.desktop #borrow .borrow-col-sidebar .mascot-blob,
-    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-blob {
+    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-blob,
+    .phone.desktop #skel-borrow .borrow-col-sidebar .mascot-blob,
+    .phone.desktop #skel-borrow-b .borrow-col-sidebar .mascot-blob,
+    .phone.desktop #skel-borrow-c .borrow-col-sidebar .mascot-blob {
       width: 112px; height: 86px;
     }
     /* Meltdown mascot is 10% smaller than the rest — beats the sidebar's 139px
@@ -5819,6 +5825,19 @@ function showScreen(id) {
   if (id === 'borrow-connected' || id === 'update') {
     if (typeof updateHealthMascot === 'function') updateHealthMascot();
     if (typeof updateBorrowValues === 'function') updateBorrowValues(id);
+  }
+  // Skel-borrow: repopulate on every entry so the cloned V2 mascot picks up
+  // the current borrow-connected DOM (size + animation). The single
+  // DOMContentLoaded run snapshots whatever state borrow-connected was in at
+  // page load, which may not reflect later CSS/markup tweaks.
+  if (id === 'skel-borrow') {
+    if (typeof populateSkeletonBorrow === 'function') populateSkeletonBorrow('');
+    ['b', 'c'].forEach(function(sfx) {
+      var ph = document.getElementById('phone-' + sfx);
+      if (ph && ph.hasChildNodes() && typeof populateSkeletonBorrow === 'function') {
+        populateSkeletonBorrow('-' + sfx);
+      }
+    });
   }
   // Update bottom nav + top nav active state + fill icons
   document.querySelectorAll('.bottom-nav-item, .top-nav-link').forEach(function(btn) {
