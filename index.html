@@ -82,9 +82,11 @@
       --scrim-commit-underlay: brightness(0.7);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    /* Accessible focus styles */
-    :focus-visible { outline: 2px solid var(--green-600); outline-offset: 2px; border-radius: 4px; }
-    button:focus-visible { outline: 2px solid var(--green-600); outline-offset: 2px; }
+    /* Accessible focus styles — neutral-900 keeps the indicator readable on
+       any background (including future destructive variants) and avoids
+       blending with the green primary palette. */
+    :focus-visible { outline: 2px solid var(--neutral-900); outline-offset: 2px; border-radius: 4px; }
+    button:focus-visible { outline: 2px solid var(--neutral-900); outline-offset: 2px; }
     body { font-family: var(--font-ui); background: var(--neutral-900); display: flex; justify-content: center; padding: 0; min-height: 100vh; }
     @media (min-width: 1400px) { body { padding: 24px; } }
 
@@ -301,6 +303,10 @@
     /* :hover gated to desktop phones — mobile shows :active only as tap feedback.
        :not(:disabled) stays defensive in case we add [disabled] buttons later. */
     .phone.desktop .btn:hover:not(:disabled) { transform: translateY(-3px); }
+    /* :focus-visible mirrors :hover so keyboard users get the same affordance.
+       Not gated to desktop because focus-visible only fires on keyboard nav,
+       so touch users never see this stick after a tap. */
+    .btn:focus-visible:not(:disabled) { transform: translateY(-3px); }
     .btn:active:not(:disabled) { transform: translateY(1px) scale(0.96); filter: brightness(0.95); }
     .btn-primary {
       background: linear-gradient(160deg, var(--green-200), var(--green-300)); color: var(--green-700);
@@ -311,6 +317,10 @@
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .phone.desktop .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 0 0 var(--green-500), 0 10px 20px rgba(57,118,61,0.12);
+    }
+    .btn-primary:focus-visible:not(:disabled) {
       transform: translateY(-2px) scale(1.03);
       box-shadow: 0 6px 0 0 var(--green-500), 0 10px 20px rgba(57,118,61,0.12);
     }
@@ -331,11 +341,15 @@
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .phone.desktop .btn-secondary:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
-    /* Respect OS motion-reduce: kill the hover/active transforms for users with vestibular sensitivity. */
+    .btn-secondary:focus-visible:not(:disabled) { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
+    /* Respect OS motion-reduce: kill the hover/focus/active transforms for users with vestibular sensitivity. */
     @media (prefers-reduced-motion: reduce) {
       .phone.desktop .btn:hover,
       .phone.desktop .btn-primary:hover,
       .phone.desktop .btn-secondary:hover,
+      .btn:focus-visible,
+      .btn-primary:focus-visible,
+      .btn-secondary:focus-visible,
       .btn:active,
       .btn-primary:active { transform: none; box-shadow: none; filter: none; }
     }
