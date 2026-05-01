@@ -1532,13 +1532,9 @@
     .token-dropdown-row:last-child { margin-bottom: 6px; }
     .token-dropdown-row:hover { background: var(--cream-300); }
     .token-dropdown-row.selected { background: var(--cream-300); }
-    .token-select.open .token-dropdown-row.selected {
-      animation: row-bounce-in-muted 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-    @keyframes row-bounce-in-muted {
-      0%   { opacity: 0; transform: translateY(-6px) scale(0.97); }
-      100% { opacity: 0.55; transform: translateY(0) scale(1); }
-    }
+    /* Selected row uses the standard bounce-in (lands at opacity 1). Per-element
+       de-emphasis (cream-600 text + 0.5 icon) is applied below to match Figma —
+       no extra row-level opacity override needed. */
     .token-select.closing .token-dropdown-row {
       animation: row-fade-out 0.15s ease-out forwards;
     }
