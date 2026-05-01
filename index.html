@@ -2253,6 +2253,14 @@
     #positions-disconnected .mascot-area.happy .mypositions-blob-img { display: none; }
     .phone.desktop #positions-empty .mascot-area.happy,
     .phone.desktop #positions-disconnected .mascot-area.happy { background: transparent !important; border: none !important; }
+    /* Empty / Disconnected mascots are static "happy" — they never transition
+       between health states, so the inherited 0.5s border-color transition
+       just causes a dark-to-green flash when the breakpoint flips (desktop's
+       `border: none` is interpreted as currentColor, which animates back to
+       green-200 over half a second on mobile). Kill the transition for
+       these screens; the border lands at its final color immediately. */
+    #positions-empty .mascot-area.happy,
+    #positions-disconnected .mascot-area.happy { transition: none; }
     .phone.desktop #positions-empty .mascot-area.happy .mypositions-blob-img,
     .phone.desktop #positions-disconnected .mascot-area.happy .mypositions-blob-img {
       display: block; position: absolute; left: 50%; top: 50%;
