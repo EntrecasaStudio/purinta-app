@@ -5842,7 +5842,7 @@ function showScreen(id) {
   // Update bottom nav + top nav active state + fill icons
   document.querySelectorAll('.bottom-nav-item, .top-nav-link').forEach(function(btn) {
     var screen = btn.getAttribute('data-screen');
-    var isActive = screen === id || (screen === 'homepage-connected' && id === 'homepage') || (screen === 'homepage' && id === 'homepage-connected') || (screen === 'borrow-connected' && id === 'borrow') || (screen === 'positions' && (id === 'update' || id === 'positions-empty' || id === 'positions-disconnected'));
+    var isActive = screen === id || (screen === 'homepage-connected' && id === 'homepage') || (screen === 'homepage' && id === 'homepage-connected') || (screen === 'borrow-connected' && (id === 'borrow' || id === 'skel-borrow')) || (screen === 'positions' && (id === 'update' || id === 'positions-empty' || id === 'positions-disconnected'));
     btn.classList.toggle('active', isActive);
     var icon = btn.querySelector('i');
     if (icon) {
@@ -5947,15 +5947,31 @@ function populateSkeletonBorrow(suffix) {
       if (!el.id.endsWith(suffix)) el.id = el.id + suffix;
     });
   }
-  // The borrow-connected mascot uses the V2 emote system: a stack of feet/
-  // body/face/melt divs that JS fills with inline SVG. innerHTML cloning
-  // copies those divs but the cloned SVGs don't re-trigger their internal
-  // animations (e.g. the bill emerging from the slot via <animateTransform>).
-  // Re-apply the basic-money expression so the V2 system re-injects fresh
-  // SVG markup and the bill animation restarts cleanly.
-  var v2 = dst.querySelector('.emote-v2.mascot-illustration');
-  if (v2 && typeof applyV2Expression === 'function') {
-    applyV2Expression(v2, 'basic-money');
+  // Replace the borrow-connected dynamic health mascot with the static
+  // mascot from #borrow (disconnected). The connected screen uses the V2
+  // emote system (a feet/body/face/melt stack of inline SVGs whose
+  // <animateTransform> bill animation only plays once when first
+  // injected). Cloning that subtree via innerHTML produces a frozen
+  // snapshot — the bill ends up parked in front of the face instead of
+  // emerging from the slot. The disconnected #borrow uses a plain
+  // <img src="assets/v2-emote-00-basic-money.svg"> which the browser
+  // re-decodes (and re-runs SMIL animations on) every time the node is
+  // attached, so swapping to that markup gives us a clean, looping
+  // animation in the skeleton.
+  var mascotArea = dst.querySelector('.borrow-col-sidebar .mascot-area');
+  if (mascotArea) {
+    var existingText = mascotArea.querySelector('.mascot-text');
+    var textHtml = existingText ? existingText.outerHTML : '';
+    // Force `.happy` class so the skeleton picks up the static mascot
+    // sizing rules (matching the disconnected #borrow look).
+    mascotArea.className = 'mascot-area happy';
+    mascotArea.removeAttribute('id');
+    mascotArea.innerHTML =
+      '<div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none">' +
+        '<path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/>' +
+      '</svg></div>' +
+      '<img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="" style="pointer-events:none;">' +
+      textHtml;
   }
   // Use taller, less-rounded rectangles (per Figma) instead of the default
   // pill shape — radius 4px reads as a placeholder, not a button.
