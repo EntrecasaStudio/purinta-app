@@ -82,9 +82,11 @@
       --scrim-commit-underlay: brightness(0.7);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    /* Accessible focus styles */
-    :focus-visible { outline: 2px solid var(--green-600); outline-offset: 2px; border-radius: 4px; }
-    button:focus-visible { outline: 2px solid var(--green-600); outline-offset: 2px; }
+    /* Accessible focus styles — neutral-900 keeps the indicator readable on
+       any background (including future destructive variants) and avoids
+       blending with the green primary palette. */
+    :focus-visible { outline: 2px solid var(--neutral-900); outline-offset: 2px; border-radius: 4px; }
+    button:focus-visible { outline: 2px solid var(--neutral-900); outline-offset: 2px; }
     body { font-family: var(--font-ui); background: var(--neutral-900); display: flex; justify-content: center; padding: 0; min-height: 100vh; }
     @media (min-width: 1400px) { body { padding: 24px; } }
 
@@ -301,6 +303,10 @@
     /* :hover gated to desktop phones — mobile shows :active only as tap feedback.
        :not(:disabled) stays defensive in case we add [disabled] buttons later. */
     .phone.desktop .btn:hover:not(:disabled) { transform: translateY(-3px); }
+    /* :focus-visible mirrors :hover so keyboard users get the same affordance.
+       Not gated to desktop because focus-visible only fires on keyboard nav,
+       so touch users never see this stick after a tap. */
+    .btn:focus-visible:not(:disabled) { transform: translateY(-3px); }
     .btn:active:not(:disabled) { transform: translateY(1px) scale(0.96); filter: brightness(0.95); }
     .btn-primary {
       background: linear-gradient(160deg, var(--green-200), var(--green-300)); color: var(--green-700);
@@ -311,6 +317,10 @@
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .phone.desktop .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 0 0 var(--green-500), 0 10px 20px rgba(57,118,61,0.12);
+    }
+    .btn-primary:focus-visible:not(:disabled) {
       transform: translateY(-2px) scale(1.03);
       box-shadow: 0 6px 0 0 var(--green-500), 0 10px 20px rgba(57,118,61,0.12);
     }
@@ -331,11 +341,15 @@
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .phone.desktop .btn-secondary:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
-    /* Respect OS motion-reduce: kill the hover/active transforms for users with vestibular sensitivity. */
+    .btn-secondary:focus-visible:not(:disabled) { transform: translateY(-3px) scale(1.02); box-shadow: 0 7px 0 0 var(--green-300); }
+    /* Respect OS motion-reduce: kill the hover/focus/active transforms for users with vestibular sensitivity. */
     @media (prefers-reduced-motion: reduce) {
       .phone.desktop .btn:hover,
       .phone.desktop .btn-primary:hover,
       .phone.desktop .btn-secondary:hover,
+      .btn:focus-visible,
+      .btn-primary:focus-visible,
+      .btn-secondary:focus-visible,
       .btn:active,
       .btn-primary:active { transform: none; box-shadow: none; filter: none; }
     }
@@ -2022,7 +2036,7 @@
     .mascot-area.looking-good .mascot-illustration,
     .mascot-area.getting-risky .mascot-illustration,
     .mascot-area.danger-zone .mascot-illustration { width: 139px; position: relative; top: 23px; }
-    .mascot-area.meltdown .mascot-illustration { width: 131px; position: relative; top: 23px; }
+    .mascot-area.meltdown .mascot-illustration { width: 118px; position: relative; top: 23px; }
     /* Ultra-safe sparkles — sized & positioned from Figma ref, scaled 1.625x */
     .mascot-stars {
       position: absolute; z-index: 2; pointer-events: none;
@@ -2609,6 +2623,30 @@
     .phone.desktop #homepage-connected .token-card,
     .phone.desktop #homepage-connected-b .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
     .phone.desktop #homepage-connected-c .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
+    /* Skel-home clones #homepage-connected's markup at runtime, but the rules
+       above are ID-scoped — replicate them for #skel-home* so the loading
+       state matches the real desktop layout (horizontal hero, 3-col grid). */
+    .phone.desktop #skel-home,
+    .phone.desktop #skel-home-b,
+    .phone.desktop #skel-home-c { max-width: none; padding: 0 40px; }
+    .phone.desktop #skel-home .hero-wrap,
+    .phone.desktop #skel-home-b .hero-wrap,
+    .phone.desktop #skel-home-c .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .phone.desktop #skel-home .hero-wrap .hero-section:last-child,
+    .phone.desktop #skel-home-b .hero-wrap .hero-section:last-child,
+    .phone.desktop #skel-home-c .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
+    .phone.desktop #skel-home .hero-wrap .hero-title,
+    .phone.desktop #skel-home-b .hero-wrap .hero-title,
+    .phone.desktop #skel-home-c .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
+    .phone.desktop #skel-home .hero-title .mini-icon,
+    .phone.desktop #skel-home-b .hero-title .mini-icon,
+    .phone.desktop #skel-home-c .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
+    .phone.desktop #skel-home .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 32px; max-width: none; }
+    .phone.desktop #skel-home-b .token-list,
+    .phone.desktop #skel-home-c .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; max-width: none; }
+    .phone.desktop #skel-home .token-card,
+    .phone.desktop #skel-home-b .token-card,
+    .phone.desktop #skel-home-c .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
 
     .phone.desktop .app-header { height: 72px; box-sizing: border-box; padding-left: 0; padding-right: 0; }
     .phone.desktop .btn-connect { height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; font-size: var(--ds-sm); }
@@ -2700,6 +2738,23 @@
     }
     .phone.desktop .borrow-col-sidebar .mascot-illustration {
       width: 139px; max-width: 139px; max-height: 150px;
+    }
+    /* Borrow desktop (both disconnected and connected health emote): shrink
+       the mascot pair (illustration + blob) by 20% to give the column more
+       breathing room. Higher specificity (1 ID + 4 classes) beats both the
+       generic .borrow-col-sidebar rule and the .meltdown override above. */
+    .phone.desktop #borrow .borrow-col-sidebar .mascot-illustration,
+    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-illustration {
+      width: 111px; max-width: 111px; max-height: 120px;
+    }
+    .phone.desktop #borrow .borrow-col-sidebar .mascot-blob,
+    .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-blob {
+      width: 112px; height: 86px;
+    }
+    /* Meltdown mascot is 10% smaller than the rest — beats the sidebar's 139px
+       rule via higher specificity (5 classes vs 4). */
+    .phone.desktop .mascot-area.meltdown .mascot-illustration {
+      width: 125px; max-width: 125px;
     }
     .phone.desktop .borrow-col-sidebar .borrow-summary { padding-top: 0; padding-bottom: 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
     .phone.desktop .borrow-col-sidebar .borrow-summary .summary-row { border-bottom: 1px solid var(--cream-300); padding: 8px 0 9px; }
