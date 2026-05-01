@@ -2575,6 +2575,30 @@
     .phone.desktop #homepage-connected .token-card,
     .phone.desktop #homepage-connected-b .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
     .phone.desktop #homepage-connected-c .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
+    /* Skel-home clones #homepage-connected's markup at runtime, but the rules
+       above are ID-scoped — replicate them for #skel-home* so the loading
+       state matches the real desktop layout (horizontal hero, 3-col grid). */
+    .phone.desktop #skel-home,
+    .phone.desktop #skel-home-b,
+    .phone.desktop #skel-home-c { max-width: none; padding: 0 40px; }
+    .phone.desktop #skel-home .hero-wrap,
+    .phone.desktop #skel-home-b .hero-wrap,
+    .phone.desktop #skel-home-c .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .phone.desktop #skel-home .hero-wrap .hero-section:last-child,
+    .phone.desktop #skel-home-b .hero-wrap .hero-section:last-child,
+    .phone.desktop #skel-home-c .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
+    .phone.desktop #skel-home .hero-wrap .hero-title,
+    .phone.desktop #skel-home-b .hero-wrap .hero-title,
+    .phone.desktop #skel-home-c .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
+    .phone.desktop #skel-home .hero-title .mini-icon,
+    .phone.desktop #skel-home-b .hero-title .mini-icon,
+    .phone.desktop #skel-home-c .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
+    .phone.desktop #skel-home .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 32px; max-width: none; }
+    .phone.desktop #skel-home-b .token-list,
+    .phone.desktop #skel-home-c .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; max-width: none; }
+    .phone.desktop #skel-home .token-card,
+    .phone.desktop #skel-home-b .token-card,
+    .phone.desktop #skel-home-c .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
 
     .phone.desktop .app-header { height: 72px; box-sizing: border-box; padding-left: 0; padding-right: 0; }
     .phone.desktop .btn-connect { height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; font-size: var(--ds-sm); }
