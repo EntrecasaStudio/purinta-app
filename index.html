@@ -803,9 +803,21 @@
       font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary);
       position: relative; z-index: 1;
     }
-    .app-footer a { color: var(--text-secondary); text-decoration: none; }
-    .app-footer a:hover { color: var(--green-600); }
-    .app-footer a:active { transform: scale(0.95); filter: brightness(0.9); }
+    /* Link-style button — text-only affordance, color shift per state.
+       Spec: default neutral-700 → hover green-600 → active green-900 → disabled
+       neutral-300. No underline (focus outline carries the keyboard signal). */
+    .btn-link, .app-footer a {
+      font-family: var(--font-ui); font-weight: 500;
+      background: none; border: none; padding: 0;
+      cursor: pointer; color: var(--neutral-700);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .btn-link:hover:not(:disabled), .app-footer a:hover { color: var(--green-600); }
+    .btn-link:active:not(:disabled), .app-footer a:active { color: var(--green-900); }
+    .btn-link:disabled, .btn-link[disabled] {
+      color: var(--neutral-300); cursor: not-allowed; pointer-events: none;
+    }
 
     /* Bottom navigation bar */
     /* Quick Repay modal (triggered from position cards' "Quick Repay" button) */
