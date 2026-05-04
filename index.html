@@ -6304,11 +6304,30 @@ function populateSkeletonPositions(suffix) {
 // existing :disabled styles (mint-100 bg, no shadow) kick in for free.
 function disableSkeletonCtas(root) {
   if (!root) return;
+  // Skip buttons/links inside navigation containers — the user should still
+  // be able to navigate Home / Positions / Borrow / wallet-disconnect / app-logo
+  // while data loads on the current skel screen. Only block content CTAs
+  // (sliders, cards, primary actions inside the body of the screen).
+  var NAV_SELECTORS = [
+    '.app-header',          // top header (logo, top-nav, wallet badge, power btn)
+    '.bottom-nav',          // mobile bottom nav
+    '.top-nav',             // desktop top nav (just in case it's outside .app-header)
+    '.disconnect-dropdown', // wallet disconnect popup
+    '.dev-nav'              // dev-tools panel — never disable
+  ];
+  function isInsideNav(el) {
+    for (var i = 0; i < NAV_SELECTORS.length; i++) {
+      if (el.closest(NAV_SELECTORS[i])) return true;
+    }
+    return false;
+  }
   root.querySelectorAll('button').forEach(function(b) {
+    if (isInsideNav(b)) return;
     b.removeAttribute('onclick');
     b.disabled = true;
   });
   root.querySelectorAll('a').forEach(function(a) {
+    if (isInsideNav(a)) return;
     a.removeAttribute('href');
     a.style.pointerEvents = 'none';
     a.style.opacity = '0.5';
