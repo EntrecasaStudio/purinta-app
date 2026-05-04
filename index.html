@@ -5860,6 +5860,17 @@ function applyPositionDataToModify(screen, data) {
 }
 
 function showScreen(id) {
+  // Save the outgoing screen's scroll position so navigating back (or between
+  // sibling screens like the health-state variants of borrow-connected/update)
+  // doesn't yank the viewport to the top and hide the mascot on mobile.
+  var prevActive = document.querySelector('#phone-a .screen.active');
+  if (prevActive) {
+    showScreen._scroll = showScreen._scroll || {};
+    showScreen._scroll[prevActive.id] = {
+      phone: (document.getElementById('phone-a') || {}).scrollTop || 0,
+      window: window.scrollY
+    };
+  }
   // Close any open disconnect dropdowns on screen change
   document.querySelectorAll('.disconnect-dropdown.open').forEach(function(d) { d.classList.remove('open'); });
   // Collapse expanded wallet pills and freeze transitions during screen switch
@@ -5900,7 +5911,10 @@ function showScreen(id) {
     var parentFolder = navBtn.closest('.dev-folder');
     if (parentFolder) { parentFolder.open = true; parentFolder.classList.add('has-active'); }
   }
-  document.querySelectorAll('.phone').forEach(function(p) { p.scrollTop = 0; if (p._navShadowUpdate) p._navShadowUpdate(); }); window.scrollTo(0, 0);
+  // Restore the incoming screen's saved scroll (defaults to 0 on first visit).
+  var memo = (showScreen._scroll && showScreen._scroll[id]) || { phone: 0, window: 0 };
+  document.querySelectorAll('.phone').forEach(function(p) { p.scrollTop = memo.phone; if (p._navShadowUpdate) p._navShadowUpdate(); });
+  window.scrollTo(0, memo.window);
   // Modify screen: anchor CTA disabled on every entry path. Runs in rAF so the
   // active screen is laid out first (slider fills readable) before we read pcts.
   if (/^update/.test(id)) {
