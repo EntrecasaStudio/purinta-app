@@ -2336,6 +2336,31 @@
     .mascot-area.getting-risky .emote-v2-body svg .m-mouth-stroke {
       display: none;
     }
+    /* Wobby legs — undulating skew + slight Y squish reinforces the shaky
+       state. Each foot rotates around its own top-center; right foot is phase-
+       offset so they don't move in lockstep. */
+    @keyframes gr-foot-wobble-l {
+      0%, 100% { transform: skewX(0deg) scaleY(1); }
+      25%      { transform: skewX(-3deg) scaleY(0.98); }
+      50%      { transform: skewX(0deg) scaleY(1.02); }
+      75%      { transform: skewX(3deg) scaleY(0.98); }
+    }
+    @keyframes gr-foot-wobble-r {
+      0%, 100% { transform: skewX(0deg) scaleY(1); }
+      25%      { transform: skewX(2deg) scaleY(0.98); }
+      50%      { transform: skewX(0deg) scaleY(1.02); }
+      75%      { transform: skewX(-2deg) scaleY(0.98); }
+    }
+    .mascot-area.getting-risky .emote-v2-feet svg .m-foot-l {
+      animation: gr-foot-wobble-l 0.55s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: 50% 0%;
+    }
+    .mascot-area.getting-risky .emote-v2-feet svg .m-foot-r {
+      animation: gr-foot-wobble-r 0.55s ease-in-out infinite -0.18s;
+      transform-box: fill-box;
+      transform-origin: 50% 0%;
+    }
 
     @media (prefers-reduced-motion: reduce) {
       .mascot-area.is-punching .mascot-illustration { animation: none !important; }
@@ -2356,7 +2381,9 @@
       .mascot-area.getting-risky .emote-v2-face svg .m-eyebrow,
       .mascot-area.getting-risky .emote-v2-face svg .m-hand,
       .mascot-area.getting-risky .emote-v2-face svg .m-mouth-inner,
-      .mascot-area.getting-risky .emote-v2-face svg [class^="m-drop"] { animation: none; }
+      .mascot-area.getting-risky .emote-v2-face svg [class^="m-drop"],
+      .mascot-area.getting-risky .emote-v2-feet svg .m-foot-l,
+      .mascot-area.getting-risky .emote-v2-feet svg .m-foot-r { animation: none; }
       .mascot-area.looking-good .emote-v2-face svg .m-eye-open { opacity: 0; }
     }
     /* V2 full-body emote system (Option B) — static body + instant face swap */
