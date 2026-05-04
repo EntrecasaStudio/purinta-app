@@ -134,6 +134,15 @@
       display: flex; align-items: center; justify-content: center; backdrop-filter: blur(12px);
       box-shadow: 0 2px 12px rgba(0,0,0,0.3); transition: all 0.15s; }
     .dev-nav-toggle:hover { background: rgba(30,30,30,0.95); color: white; }
+    /* When the drawer is open the toggle sits over the drawer's near-black
+       background, where its own dark fill made it invisible. Brighten the
+       toggle and switch the glyph to an X via the parent's open state. */
+    .dev-nav:has(.dev-nav-panel.open) .dev-nav-toggle {
+      background: rgba(255,255,255,0.18); color: white;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .dev-nav:has(.dev-nav-panel.open) .dev-nav-toggle .toggle-glyph::before { content: '\00d7'; font-size: 22px; }
+    .dev-nav-toggle .toggle-glyph::before { content: '\2630'; }
     /* Slide-in drawer pinned to the left edge of the viewport with its own
        scroll. Was a floating dropdown anchored under the toggle, which forced
        collapsing folders to see lower content when everything was open. Now
@@ -3057,7 +3066,7 @@
 
 <!-- DEV NAV — floating panel -->
 <div class="dev-nav">
-  <button class="dev-nav-toggle" onclick="document.querySelector('.dev-nav-panel').classList.toggle('open')" title="Toggle navigation">&#9776;</button>
+  <button class="dev-nav-toggle" onclick="document.querySelector('.dev-nav-panel').classList.toggle('open')" title="Toggle navigation"><span class="toggle-glyph"></span></button>
   <div class="dev-nav-panel">
     <div class="dev-nav-section">
       <div class="dev-nav-label">Breakpoint</div>
