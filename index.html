@@ -2596,6 +2596,71 @@
       animation: md-tear-fall 3.6s ease-in 0.2s infinite;
       transform-box: fill-box; transform-origin: center;
     }
+    /* Hands hang limp and slowly droop — slight rotate down + small Y drift */
+    @keyframes md-hand-droop-l {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      50%      { transform: rotate(-5deg) translateY(1.5px); }
+    }
+    @keyframes md-hand-droop-r {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      50%      { transform: rotate(5deg) translateY(1.5px); }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-hand-l {
+      animation: md-hand-droop-l 3.8s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: 50% 0%;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-hand-r {
+      animation: md-hand-droop-r 3.8s ease-in-out infinite -1.4s;
+      transform-box: fill-box;
+      transform-origin: 50% 0%;
+    }
+    /* Legs barely holding up — slow lean / squash, weak. Both legs same phase
+       so it reads as the whole body slumping rather than dancing. */
+    @keyframes md-leg-give {
+      0%, 100% { transform: scaleY(1) skewX(0deg); }
+      40%      { transform: scaleY(0.96) skewX(-1.5deg); }
+      60%      { transform: scaleY(0.96) skewX(1deg); }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-foot-l,
+    .mascot-area.meltdown .emote-v2-melt svg .m-foot-r {
+      animation: md-leg-give 4s ease-in-out infinite;
+      transform-box: view-box;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-foot-l { transform-origin: 17px 60px; }
+    .mascot-area.meltdown .emote-v2-melt svg .m-foot-r { transform-origin: 97px 58px; }
+    /* X eye pulses (scale beat) — like the mascot's vital sign barely flickers */
+    @keyframes md-eye-x-pulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.18); }
+    }
+    /* Spiral eye rotates slowly — dizzy/passing-out vibe */
+    @keyframes md-eye-spiral {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    /* Eyebrows tremble subtly (slower than danger-zone, weaker overall) */
+    @keyframes md-eyebrow-tremor {
+      0%, 100% { translate: 0 0; }
+      25% { translate: -0.5px 0.3px; }
+      50% { translate: 0.4px -0.3px; }
+      75% { translate: -0.3px 0.4px; }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-eye-x {
+      animation: md-eye-x-pulse 1.4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-eye-spiral {
+      animation: md-eye-spiral 4s linear infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow {
+      animation: md-eyebrow-tremor 0.4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
 
     @media (prefers-reduced-motion: reduce) {
       .mascot-area.is-punching .mascot-illustration { animation: none !important; }
@@ -2636,7 +2701,14 @@
       .mascot-area.danger-zone .emote-v2-feet svg .m-foot-r,
       .mascot-area.meltdown .emote-v2-melt svg,
       .mascot-area.meltdown .emote-v2-melt svg .m-cheek,
-      .mascot-area.meltdown .emote-v2-melt svg [class^="m-drop"] { animation: none; }
+      .mascot-area.meltdown .emote-v2-melt svg [class^="m-drop"],
+      .mascot-area.meltdown .emote-v2-melt svg .m-hand-l,
+      .mascot-area.meltdown .emote-v2-melt svg .m-hand-r,
+      .mascot-area.meltdown .emote-v2-melt svg .m-foot-l,
+      .mascot-area.meltdown .emote-v2-melt svg .m-foot-r,
+      .mascot-area.meltdown .emote-v2-melt svg .m-eye-x,
+      .mascot-area.meltdown .emote-v2-melt svg .m-eye-spiral,
+      .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow { animation: none; }
       .mascot-area.looking-good .emote-v2-face svg .m-eye-open { opacity: 0; }
     }
     /* V2 full-body emote system (Option B) — static body + instant face swap */
@@ -6388,6 +6460,10 @@ function applyPositionDataToModify(screen, data) {
 }
 
 function showScreen(id) {
+  // Close any open dev-spawned modals (bundle confirmation / quick repay) so
+  // they don't keep covering the next screen we navigate to.
+  document.querySelectorAll('.bundle-modal-overlay.is-open').forEach(function(o) { o.classList.remove('is-open'); });
+  if (typeof closeQuickRepay === 'function') closeQuickRepay();
   // Save the outgoing screen's scroll position so navigating back (or between
   // sibling screens like the health-state variants of borrow-connected/update)
   // doesn't yank the viewport to the top and hide the mascot on mobile.
