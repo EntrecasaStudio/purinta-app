@@ -1834,8 +1834,12 @@
     #phone-a .pct-buttons.disabled .pct-btn.active , #phone-b .pct-buttons.disabled .pct-btn.active {
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
-    /* Phone A — token-select disabled state (disconnected wallet) */
-    #phone-a .token-select.disabled , #phone-b .token-select.disabled { border-color: #F0F0F0 !important; pointer-events: none; }
+    /* Phone A — token-select disabled state (disconnected wallet).
+       Border token bumped from hardcoded #F0F0F0 (basically invisible on
+       neutral-50 bg) to --neutral-200 so the pill outline reads at the
+       same size as the active state — without a visible boundary the
+       eye reads only the inner text/icon and the pill looks shorter. */
+    #phone-a .token-select.disabled , #phone-b .token-select.disabled { border-color: var(--neutral-200) !important; pointer-events: none; }
     #phone-a .token-select.disabled .mini-icon , #phone-b .token-select.disabled .mini-icon { opacity: 0.5; }
     #phone-a .token-select.disabled .token-name , #phone-b .token-select.disabled .token-name { color: var(--neutral-300); }
     #phone-a .token-select.disabled .chevron path , #phone-b .token-select.disabled .chevron path { fill: #D6D2B2 !important; stroke: #D6D2B2 !important; }
