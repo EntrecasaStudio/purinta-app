@@ -2329,6 +2329,13 @@
     .mascot-area.getting-risky .emote-v2-face svg .m-body-overlay {
       opacity: 0.75;
     }
+    /* Hide the V2-baked static mouth stroke — getting-risky uses the
+       conveyor wave inside the clip-path instead. */
+    .mascot-area.getting-risky .emote-v2-face svg .m-mouth-stroke,
+    .mascot-area.getting-risky .emote-v2-feet svg .m-mouth-stroke,
+    .mascot-area.getting-risky .emote-v2-body svg .m-mouth-stroke {
+      display: none;
+    }
 
     @media (prefers-reduced-motion: reduce) {
       .mascot-area.is-punching .mascot-illustration { animation: none !important; }
