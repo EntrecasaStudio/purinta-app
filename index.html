@@ -134,19 +134,22 @@
       display: flex; align-items: center; justify-content: center; backdrop-filter: blur(12px);
       box-shadow: 0 2px 12px rgba(0,0,0,0.3); transition: all 0.15s; }
     .dev-nav-toggle:hover { background: rgba(30,30,30,0.95); color: white; }
-    /* Slide-in drawer pinned to the right edge of the viewport with its own
+    /* Slide-in drawer pinned to the left edge of the viewport with its own
        scroll. Was a floating dropdown anchored under the toggle, which forced
        collapsing folders to see lower content when everything was open. Now
        the panel is a fixed drawer with `overflow-y: auto` so the user can
        scroll the full menu independently. */
     .dev-nav-panel {
-      position: fixed; top: 0; right: 0; bottom: 0; width: 320px;
+      position: fixed; top: 0; left: 0; bottom: 0; width: 320px;
       background: rgba(22,22,22,0.92); backdrop-filter: blur(16px);
-      padding: 16px; box-sizing: border-box;
-      box-shadow: -8px 0 32px rgba(0,0,0,0.4);
-      border-left: 1px solid rgba(255,255,255,0.08);
+      /* Top padding clears the 36x36 toggle button (top-left, 16px offset),
+         so the first content row isn't hidden behind it when the drawer
+         slides over the toggle. */
+      padding: 64px 16px 16px; box-sizing: border-box;
+      box-shadow: 8px 0 32px rgba(0,0,0,0.4);
+      border-right: 1px solid rgba(255,255,255,0.08);
       overflow-y: auto;
-      transform: translateX(100%);
+      transform: translateX(-100%);
       transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
       z-index: 9998;
     }
