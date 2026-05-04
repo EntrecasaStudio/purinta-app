@@ -2277,7 +2277,7 @@
     }
     @keyframes gr-mouth-wave {
       0% { transform: translateX(0); }
-      100% { transform: translateX(-4px); } /* one wave period */
+      100% { transform: translateX(-8px); } /* one full wave period (2 q-segments × 4 units) */
     }
     @keyframes gr-sweat-fall {
       0%   { opacity: 0; transform: translateY(-1px); }
@@ -2327,7 +2327,7 @@
        wash that's specific to this state. opacity stays modest so the cream
        body still reads through. */
     .mascot-area.getting-risky .emote-v2-face svg .m-body-overlay {
-      opacity: 0.55;
+      opacity: 0.75;
     }
 
     @media (prefers-reduced-motion: reduce) {
