@@ -2258,6 +2258,78 @@
       transform-box: fill-box;
       transform-origin: 50% 90%;
     }
+    /* GETTING-RISKY — anxious / worried personality. Body breathes anxiously
+       with a baseline tremor, eyes pulse + tremble, eyebrows tremble, hands
+       tremble, mouth wave loops via clip-path, sweat drops fall on staggered
+       cycles, and a celeste gradient overlays the body to read as "pale". */
+    @keyframes gr-body-breathe { 0%, 100% { scale: 1; } 50% { scale: 1.018 1.028; } }
+    @keyframes gr-tremor {
+      0%, 100% { translate: 0 0; }
+      20% { translate: -0.4px 0.2px; }
+      40% { translate: 0.3px -0.2px; }
+      60% { translate: -0.2px -0.3px; }
+      80% { translate: 0.4px 0.2px; }
+    }
+    @keyframes gr-eye-pulse {
+      0%, 30%, 60%, 100% { scale: 1; }
+      15% { scale: 1.10; }
+      45% { scale: 1.07; }
+    }
+    @keyframes gr-mouth-wave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-4px); } /* one wave period */
+    }
+    @keyframes gr-sweat-fall {
+      0%   { opacity: 0; transform: translateY(-1px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      45%  { opacity: 0.8; transform: translateY(3px); }
+      60%, 100% { opacity: 0; transform: translateY(4.5px); }
+    }
+    .mascot-area.getting-risky .emote-v2-body {
+      animation: gr-body-breathe 3s ease-in-out infinite, gr-tremor 0.32s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-eyes {
+      animation: gr-eye-pulse 1.8s ease-in-out infinite, gr-tremor 0.3s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-eyebrow {
+      animation: gr-tremor 0.28s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-hand {
+      animation: gr-tremor 0.26s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-mouth-inner {
+      animation: gr-mouth-wave 1.2s linear infinite;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-drop-1 {
+      animation: gr-sweat-fall 2.8s ease-in 0.2s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-drop-2 {
+      animation: gr-sweat-fall 2.8s ease-in 1.2s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-drop-3 {
+      animation: gr-sweat-fall 3.2s ease-in 0.7s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-drop-4 {
+      animation: gr-sweat-fall 2.5s ease-in 1.8s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    /* Body overlay sits on top of the shared body layer to add a "pale" celeste
+       wash that's specific to this state. opacity stays modest so the cream
+       body still reads through. */
+    .mascot-area.getting-risky .emote-v2-face svg .m-body-overlay {
+      opacity: 0.55;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .mascot-area.is-punching .mascot-illustration { animation: none !important; }
       .mascot-area.ultra-safe .emote-v2-body,
@@ -2271,7 +2343,13 @@
       .mascot-area.looking-good .emote-v2-face svg .m-eye,
       .mascot-area.looking-good .emote-v2-face svg .m-eye-open,
       .mascot-area.looking-good .emote-v2-face svg .m-hand-r,
-      .mascot-area.looking-good .emote-v2-face svg .m-hand-l { animation: none; }
+      .mascot-area.looking-good .emote-v2-face svg .m-hand-l,
+      .mascot-area.getting-risky .emote-v2-body,
+      .mascot-area.getting-risky .emote-v2-face svg .m-eyes,
+      .mascot-area.getting-risky .emote-v2-face svg .m-eyebrow,
+      .mascot-area.getting-risky .emote-v2-face svg .m-hand,
+      .mascot-area.getting-risky .emote-v2-face svg .m-mouth-inner,
+      .mascot-area.getting-risky .emote-v2-face svg [class^="m-drop"] { animation: none; }
       .mascot-area.looking-good .emote-v2-face svg .m-eye-open { opacity: 0; }
     }
     /* V2 full-body emote system (Option B) — static body + instant face swap */
