@@ -6194,14 +6194,26 @@ function _applyHealthPreset(screenId, level) {
     if (screenId.indexOf('update') === 0 && typeof updateModifyCtaState === 'function') updateModifyCtaState(screen);
   });
 }
+// Highlights the matching dev-nav state button (in addition to the screen
+// button that showScreen already activates). Re-applied after showScreen
+// because showScreen wipes .active across the screen-nav.
+function _markStateBtnActive(fn, level) {
+  var btn = document.querySelector(".screen-nav button[onclick*=\"" + fn + "('" + level + "')\"]");
+  if (!btn) return;
+  btn.classList.add('active');
+  var folder = btn.closest('.dev-folder');
+  if (folder) { folder.open = true; folder.classList.add('has-active'); }
+}
 function setBorrowHealth(level) {
   showScreen('borrow-connected');
   // Mirror the preset to phones B and C so multi-phone views stay in sync.
   ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('borrow-connected' + sfx, level); });
+  _markStateBtnActive('setBorrowHealth', level);
 }
 function setModifyHealth(level) {
   showScreen('update');
   ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('update' + sfx, level); });
+  _markStateBtnActive('setModifyHealth', level);
 }
 
 function modifyFromPosition(btn) {
