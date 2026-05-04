@@ -129,7 +129,12 @@
 
     /* DEV NAV — floating panel outside phone frame */
     .dev-nav { position: fixed; top: 16px; left: 16px; z-index: 9999; font-family: 'SF Mono', 'Menlo', monospace; }
-    .dev-nav-toggle { width: 36px; height: 36px; border-radius: 8px; border: none; cursor: pointer;
+    /* Position relative + z-index lifts the toggle above the .dev-nav-panel
+       (z-index 9998) inside the .dev-nav stacking context — without it the
+       panel covered the toggle once it slid in, leaving no way to click it
+       back closed. */
+    .dev-nav-toggle { position: relative; z-index: 10000;
+      width: 36px; height: 36px; border-radius: 8px; border: none; cursor: pointer;
       background: rgba(30,30,30,0.85); color: rgba(255,255,255,0.7); font-size: 18px;
       display: flex; align-items: center; justify-content: center; backdrop-filter: blur(12px);
       box-shadow: 0 2px 12px rgba(0,0,0,0.3); transition: all 0.15s; }
