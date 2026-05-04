@@ -2192,6 +2192,27 @@
       transform-box: fill-box;
       transform-origin: 50% 90%;
     }
+    /* Alternating heel-tap — adds the only rotation+lift in the leg system,
+       keeping it visually distinct from cheek/star/hand pulses while staying
+       energetic enough to read as celebrating. */
+    @keyframes us-heel-l {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      50%      { transform: rotate(-2deg) translateY(-1px); }
+    }
+    @keyframes us-heel-r {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      50%      { transform: rotate(2deg) translateY(-1px); }
+    }
+    .mascot-area.ultra-safe .emote-v2-feet svg .m-foot-l {
+      animation: us-heel-l 0.8s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 51px 75px;
+    }
+    .mascot-area.ultra-safe .emote-v2-feet svg .m-foot-r {
+      animation: us-heel-r 0.8s ease-in-out infinite -0.4s;
+      transform-box: view-box;
+      transform-origin: 86px 76px;
+    }
     /* LOOKING-GOOD — second-best state. Same naming scheme as ultra-safe, but
        a calmer personality: slower breathing, gentler cheek pulse, near-still
        hands. The SVG uses smile-curves for eyes (no eye-stars) so we don't
@@ -2257,6 +2278,23 @@
       animation: looking-good-hand-sway-l 2.5s ease-in-out infinite -0.6s;
       transform-box: fill-box;
       transform-origin: 50% 90%;
+    }
+    /* Calm sync-bounce: legs compress slightly during the body's inhale peak
+       (matches body-breathe 4.5s cycle). Both legs same phase — feels like
+       the whole figure pumps gently in unison rather than dancing. */
+    @keyframes lg-leg-pump {
+      0%, 100% { transform: scaleY(1); }
+      50%      { transform: scaleY(0.97); }
+    }
+    .mascot-area.looking-good .emote-v2-feet svg .m-foot-l {
+      animation: lg-leg-pump 4.5s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 51px 105px; /* bottom of foot — squash from below */
+    }
+    .mascot-area.looking-good .emote-v2-feet svg .m-foot-r {
+      animation: lg-leg-pump 4.5s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 86px 105px;
     }
     /* GETTING-RISKY — anxious / worried personality. Body breathes anxiously
        with a baseline tremor, eyes pulse + tremble, eyebrows tremble, hands
@@ -2385,12 +2423,16 @@
       .mascot-area.ultra-safe .emote-v2-face svg .m-eyebrow,
       .mascot-area.ultra-safe .emote-v2-face svg .m-hand-r,
       .mascot-area.ultra-safe .emote-v2-face svg .m-hand-l,
+      .mascot-area.ultra-safe .emote-v2-feet svg .m-foot-l,
+      .mascot-area.ultra-safe .emote-v2-feet svg .m-foot-r,
       .mascot-area.looking-good .emote-v2-body,
       .mascot-area.looking-good .emote-v2-face svg .m-cheek,
       .mascot-area.looking-good .emote-v2-face svg .m-eye,
       .mascot-area.looking-good .emote-v2-face svg .m-eye-open,
       .mascot-area.looking-good .emote-v2-face svg .m-hand-r,
       .mascot-area.looking-good .emote-v2-face svg .m-hand-l,
+      .mascot-area.looking-good .emote-v2-feet svg .m-foot-l,
+      .mascot-area.looking-good .emote-v2-feet svg .m-foot-r,
       .mascot-area.getting-risky .emote-v2-body,
       .mascot-area.getting-risky .emote-v2-face svg .m-eyes,
       .mascot-area.getting-risky .emote-v2-face svg .m-eyebrow,
