@@ -3077,19 +3077,6 @@
     #skel-home-c .btn:disabled, #skel-borrow-c .btn:disabled, #skel-update-c .btn:disabled, #skel-positions-c .btn:disabled {
       cursor: not-allowed; pointer-events: none; filter: none !important;
     }
-    /* Skel home: token cards must NOT be clickable while data is loading.
-       The JS populator strips onclick + sets inline pointer-events:none
-       per-card, but a CSS rule guarantees it even if a later DOM mutation
-       re-renders cards or restores listeners. Also kill cursor:pointer +
-       :hover/:active feedback so the cards visually read as "loading,
-       not interactive". */
-    #skel-home .token-card, #skel-home-b .token-card, #skel-home-c .token-card {
-      pointer-events: none !important; cursor: default !important;
-    }
-    #skel-home .token-card:hover, #skel-home-b .token-card:hover, #skel-home-c .token-card:hover,
-    #skel-home .token-card:active, #skel-home-b .token-card:active, #skel-home-c .token-card:active {
-      transform: none; box-shadow: none; border-color: var(--cream-400); filter: none;
-    }
   </style>
 </head>
 <body>
@@ -6045,11 +6032,10 @@ function populateSkeletonHome(suffix) {
     badge.innerHTML = '';
   });
   disableSkeletonCtas(dst);
-  // Token cards themselves are clickable on the populated home — block that too.
-  dst.querySelectorAll('.token-card').forEach(function(c) {
-    c.removeAttribute('onclick');
-    c.style.pointerEvents = 'none';
-  });
+  // Token cards stay clickable — the user can tap a card to navigate to
+  // its Borrow flow even while rates / badges are still loading. The
+  // disableSkeletonCtas pass above skips nav and only locks the inner
+  // CTA button, so the card-level onclick (borrowWithToken) survives.
 }
 
 // Skeletonize the borrow-connected layout. The dynamic slots are:
