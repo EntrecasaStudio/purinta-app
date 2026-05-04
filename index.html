@@ -2201,8 +2201,15 @@
       50%      { transform: scale(1.018, 1.028); }
     }
     @keyframes looking-good-cheek-pulse {
-      0%, 100% { transform: scale(1); }
-      50%      { transform: scale(1.08); }
+      0%, 100% { scale: 1; }
+      50%      { scale: 1.08; }
+    }
+    /* When the open-eyes flash (5s cycle, 92-97% window), the cheeks dip down
+       so they don't touch the now-taller eyes. translate is on its own CSS
+       property so it composes with cheek-pulse's scale without conflict. */
+    @keyframes looking-good-cheek-lower {
+      0%, 90%, 100% { translate: 0 0; }
+      92%, 97%      { translate: 0 1.8px; }
     }
     @keyframes looking-good-hand-sway-r {
       0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -2217,7 +2224,9 @@
       transform-origin: center bottom;
     }
     .mascot-area.looking-good .emote-v2-face svg .m-cheek {
-      animation: looking-good-cheek-pulse 2.4s ease-in-out infinite;
+      animation:
+        looking-good-cheek-pulse 2.4s ease-in-out infinite,
+        looking-good-cheek-lower 5s linear infinite;
       transform-box: fill-box;
       transform-origin: center;
     }
