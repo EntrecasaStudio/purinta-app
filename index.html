@@ -2127,8 +2127,44 @@
     .mascot-area.is-punching .mascot-illustration {
       animation: mascot-state-punch 250ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }
+
+    /* ULTRA-SAFE — internal animations on the live mascot. The body breathes
+       (printer torso only — feet & hands are in their own layers), the cheeks
+       beat like a heart, and the red sparkles in the eyes pulse. Eyebrows and
+       hand-celebration come once the SVGs are tagged with explicit classes. */
+    @keyframes ultra-safe-breathe {
+      0%, 100% { transform: scale(1, 1); }
+      50%      { transform: scale(1.025, 1.04); }
+    }
+    @keyframes ultra-safe-cheek-beat {
+      0%, 60%, 100% { transform: scale(1); }
+      15%           { transform: scale(1.18); }
+      30%           { transform: scale(0.95); }
+      45%           { transform: scale(1.10); }
+    }
+    @keyframes ultra-safe-star-grow {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.18); }
+    }
+    .mascot-area.ultra-safe .emote-v2-body {
+      animation: ultra-safe-breathe 3.5s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .mascot-area.ultra-safe .emote-v2-face svg path[fill="#FEAAA4"] {
+      animation: ultra-safe-cheek-beat 1.4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.ultra-safe .emote-v2-face svg path[fill="#FE1F1F"] {
+      animation: ultra-safe-star-grow 1.8s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
     @media (prefers-reduced-motion: reduce) {
       .mascot-area.is-punching .mascot-illustration { animation: none !important; }
+      .mascot-area.ultra-safe .emote-v2-body,
+      .mascot-area.ultra-safe .emote-v2-face svg path[fill="#FEAAA4"],
+      .mascot-area.ultra-safe .emote-v2-face svg path[fill="#FE1F1F"] { animation: none; }
     }
     /* V2 full-body emote system (Option B) — static body + instant face swap */
     .emote-v2 { position: relative; overflow: visible; aspect-ratio: 1 / 0.85; }
@@ -5724,18 +5760,25 @@ function _applyHealthPreset(screenId, level) {
     }
     // Re-sync derived UI: mascot, summary, banner, modify CTA disabled state.
     if (typeof updateBorrowValues === 'function') updateBorrowValues(screenId);
-    if (screenId === 'borrow-connected' && typeof updateHealthMascot === 'function') updateHealthMascot();
-    if (screenId === 'update' && typeof updateHealthMascot === 'function') updateHealthMascot();
+    // Pick the right mascot updater for the phone suffix. Each updater handles
+    // BOTH borrow-connected and update on its phone, so calling once per phone
+    // is enough.
+    var sfxMatch = screenId.match(/-([bc])$/);
+    var updater = sfxMatch
+      ? (sfxMatch[1] === 'b' ? window.updateHealthMascotB : window.updateHealthMascotC)
+      : window.updateHealthMascot;
+    if (typeof updater === 'function') updater();
     if (screenId.indexOf('update') === 0 && typeof updateModifyCtaState === 'function') updateModifyCtaState(screen);
   });
 }
 function setBorrowHealth(level) {
   showScreen('borrow-connected');
-  _applyHealthPreset('borrow-connected', level);
+  // Mirror the preset to phones B and C so multi-phone views stay in sync.
+  ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('borrow-connected' + sfx, level); });
 }
 function setModifyHealth(level) {
   showScreen('update');
-  _applyHealthPreset('update', level);
+  ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('update' + sfx, level); });
 }
 
 function modifyFromPosition(btn) {
