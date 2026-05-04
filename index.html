@@ -3017,13 +3017,23 @@
       #phone-b #skel-home-b .token-rate-badge,
       #phone-c #skel-home-c .token-rate-badge { background: var(--cream-200); }
     }
-    /* All buttons inside skeleton screens read as disabled — most :disabled
-       styles are scoped to .btn-primary, so this also covers btn-secondary
-       (Modify Position, Quick Repay) on My Positions. */
-    #skel-home   .btn:disabled, #skel-borrow   .btn:disabled, #skel-update   .btn:disabled, #skel-positions   .btn:disabled,
-    #skel-home-b .btn:disabled, #skel-borrow-b .btn:disabled, #skel-update-b .btn:disabled, #skel-positions-b .btn:disabled,
-    #skel-home-c .btn:disabled, #skel-borrow-c .btn:disabled, #skel-update-c .btn:disabled, #skel-positions-c .btn:disabled {
+    /* All buttons inside skeleton screens read as disabled. .btn-primary
+       already has a complete disabled palette (mint-100 bg + green-200
+       text) defined in the base rules, so we exclude it here — applying
+       opacity 0.5 on top would blend the green-200 text with the mint
+       bg and visually drop it to ~green-100. The `:not(.btn-primary)`
+       still catches btn-secondary and the rest. */
+    #skel-home   .btn:not(.btn-primary):disabled, #skel-borrow   .btn:not(.btn-primary):disabled, #skel-update   .btn:not(.btn-primary):disabled, #skel-positions   .btn:not(.btn-primary):disabled,
+    #skel-home-b .btn:not(.btn-primary):disabled, #skel-borrow-b .btn:not(.btn-primary):disabled, #skel-update-b .btn:not(.btn-primary):disabled, #skel-positions-b .btn:not(.btn-primary):disabled,
+    #skel-home-c .btn:not(.btn-primary):disabled, #skel-borrow-c .btn:not(.btn-primary):disabled, #skel-update-c .btn:not(.btn-primary):disabled, #skel-positions-c .btn:not(.btn-primary):disabled {
       opacity: 0.5; cursor: not-allowed; pointer-events: none; filter: none !important;
+    }
+    /* btn-primary in skel: no opacity reduction; just lock interaction so
+       the green-200 text stays at full strength on the mint-100 fill. */
+    #skel-home   .btn-primary:disabled, #skel-borrow   .btn-primary:disabled, #skel-update   .btn-primary:disabled, #skel-positions   .btn-primary:disabled,
+    #skel-home-b .btn-primary:disabled, #skel-borrow-b .btn-primary:disabled, #skel-update-b .btn-primary:disabled, #skel-positions-b .btn-primary:disabled,
+    #skel-home-c .btn-primary:disabled, #skel-borrow-c .btn-primary:disabled, #skel-update-c .btn-primary:disabled, #skel-positions-c .btn-primary:disabled {
+      cursor: not-allowed; pointer-events: none;
     }
   </style>
 </head>
