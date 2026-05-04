@@ -2192,6 +2192,45 @@
       transform-box: fill-box;
       transform-origin: 50% 90%;
     }
+    /* LOOKING-GOOD — second-best state. Same naming scheme as ultra-safe, but
+       a calmer personality: slower breathing, gentler cheek pulse, near-still
+       hands. The SVG uses smile-curves for eyes (no eye-stars) so we don't
+       animate those. Mouth and eyes left static for a relaxed feel. */
+    @keyframes looking-good-breathe {
+      0%, 100% { transform: scale(1, 1); }
+      50%      { transform: scale(1.018, 1.028); }
+    }
+    @keyframes looking-good-cheek-pulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.08); }
+    }
+    @keyframes looking-good-hand-sway-r {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-1.5px) rotate(3deg); }
+    }
+    @keyframes looking-good-hand-sway-l {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-1.5px) rotate(-3deg); }
+    }
+    .mascot-area.looking-good .emote-v2-body {
+      animation: looking-good-breathe 4.5s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .mascot-area.looking-good .emote-v2-face svg .m-cheek {
+      animation: looking-good-cheek-pulse 2.4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.looking-good .emote-v2-face svg .m-hand-r {
+      animation: looking-good-hand-sway-r 2.5s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: 50% 90%;
+    }
+    .mascot-area.looking-good .emote-v2-face svg .m-hand-l {
+      animation: looking-good-hand-sway-l 2.5s ease-in-out infinite -0.6s;
+      transform-box: fill-box;
+      transform-origin: 50% 90%;
+    }
     @media (prefers-reduced-motion: reduce) {
       .mascot-area.is-punching .mascot-illustration { animation: none !important; }
       .mascot-area.ultra-safe .emote-v2-body,
@@ -2199,7 +2238,11 @@
       .mascot-area.ultra-safe .emote-v2-face svg .m-eye-star,
       .mascot-area.ultra-safe .emote-v2-face svg .m-eyebrow,
       .mascot-area.ultra-safe .emote-v2-face svg .m-hand-r,
-      .mascot-area.ultra-safe .emote-v2-face svg .m-hand-l { animation: none; }
+      .mascot-area.ultra-safe .emote-v2-face svg .m-hand-l,
+      .mascot-area.looking-good .emote-v2-body,
+      .mascot-area.looking-good .emote-v2-face svg .m-cheek,
+      .mascot-area.looking-good .emote-v2-face svg .m-hand-r,
+      .mascot-area.looking-good .emote-v2-face svg .m-hand-l { animation: none; }
     }
     /* V2 full-body emote system (Option B) — static body + instant face swap */
     .emote-v2 { position: relative; overflow: visible; aspect-ratio: 1 / 0.85; }
