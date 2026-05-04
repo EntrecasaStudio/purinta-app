@@ -2351,15 +2351,30 @@
       50%      { transform: skewX(0deg) scaleY(1.02); }
       75%      { transform: skewX(-2deg) scaleY(0.98); }
     }
+    /* transform-box: view-box anchors every foot path to the SAME SVG point
+       (top of the foot in ultra-safe's coord space — feet are normalized to
+       ultra-safe across emotes), so the fill, outline and highlight on each
+       leg move as one piece instead of each path skewing around its own
+       bounding box and the stroke "thinning" against the fixed fill. */
     .mascot-area.getting-risky .emote-v2-feet svg .m-foot-l {
       animation: gr-foot-wobble-l 0.55s ease-in-out infinite;
-      transform-box: fill-box;
-      transform-origin: 50% 0%;
+      transform-box: view-box;
+      transform-origin: 51px 75px;
     }
     .mascot-area.getting-risky .emote-v2-feet svg .m-foot-r {
       animation: gr-foot-wobble-r 0.55s ease-in-out infinite -0.18s;
-      transform-box: fill-box;
-      transform-origin: 50% 0%;
+      transform-box: view-box;
+      transform-origin: 86px 76px;
+    }
+    /* Cheek flush: from the resting worried-pink to a stronger blush-500
+       coral, looping. Stays scoped to .getting-risky so other states keep
+       their own cheek treatment. */
+    @keyframes gr-cheek-flush {
+      0%, 100% { fill: #E9C9D3; }
+      50%      { fill: var(--blush-500); }
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-cheek {
+      animation: gr-cheek-flush 1.6s ease-in-out infinite;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -2382,6 +2397,7 @@
       .mascot-area.getting-risky .emote-v2-face svg .m-hand,
       .mascot-area.getting-risky .emote-v2-face svg .m-mouth-inner,
       .mascot-area.getting-risky .emote-v2-face svg [class^="m-drop"],
+      .mascot-area.getting-risky .emote-v2-face svg .m-cheek,
       .mascot-area.getting-risky .emote-v2-feet svg .m-foot-l,
       .mascot-area.getting-risky .emote-v2-feet svg .m-foot-r { animation: none; }
       .mascot-area.looking-good .emote-v2-face svg .m-eye-open { opacity: 0; }
