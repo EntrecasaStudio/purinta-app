@@ -2221,6 +2221,24 @@
       transform-box: fill-box;
       transform-origin: center;
     }
+    /* Eye blink-open: smile-eyes are the resting state, open-eyes (borrowed
+       from the basic-money emote) flash for ~250ms every 5s to read as the
+       mascot briefly opening its eyes — a small life-tic. */
+    .mascot-area.looking-good .emote-v2-face svg .m-eye {
+      animation: looking-good-eye-smile 5s linear infinite;
+    }
+    .mascot-area.looking-good .emote-v2-face svg .m-eye-open {
+      opacity: 0;
+      animation: looking-good-eye-open-flash 5s linear infinite;
+    }
+    @keyframes looking-good-eye-smile {
+      0%, 90%, 100% { opacity: 1; }
+      92%, 97%      { opacity: 0; }
+    }
+    @keyframes looking-good-eye-open-flash {
+      0%, 90%, 100% { opacity: 0; }
+      92%, 97%      { opacity: 1; }
+    }
     .mascot-area.looking-good .emote-v2-face svg .m-hand-r {
       animation: looking-good-hand-sway-r 2.5s ease-in-out infinite;
       transform-box: fill-box;
@@ -2241,8 +2259,11 @@
       .mascot-area.ultra-safe .emote-v2-face svg .m-hand-l,
       .mascot-area.looking-good .emote-v2-body,
       .mascot-area.looking-good .emote-v2-face svg .m-cheek,
+      .mascot-area.looking-good .emote-v2-face svg .m-eye,
+      .mascot-area.looking-good .emote-v2-face svg .m-eye-open,
       .mascot-area.looking-good .emote-v2-face svg .m-hand-r,
       .mascot-area.looking-good .emote-v2-face svg .m-hand-l { animation: none; }
+      .mascot-area.looking-good .emote-v2-face svg .m-eye-open { opacity: 0; }
     }
     /* V2 full-body emote system (Option B) — static body + instant face swap */
     .emote-v2 { position: relative; overflow: visible; aspect-ratio: 1 / 0.85; }
