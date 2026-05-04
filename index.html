@@ -134,10 +134,30 @@
       display: flex; align-items: center; justify-content: center; backdrop-filter: blur(12px);
       box-shadow: 0 2px 12px rgba(0,0,0,0.3); transition: all 0.15s; }
     .dev-nav-toggle:hover { background: rgba(30,30,30,0.95); color: white; }
-    .dev-nav-panel { display: none; margin-top: 8px; background: rgba(22,22,22,0.92); backdrop-filter: blur(16px);
-      border-radius: 12px; padding: 12px; min-width: 220px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      border: 1px solid rgba(255,255,255,0.08); }
-    .dev-nav-panel.open { display: block; }
+    /* Slide-in drawer pinned to the right edge of the viewport with its own
+       scroll. Was a floating dropdown anchored under the toggle, which forced
+       collapsing folders to see lower content when everything was open. Now
+       the panel is a fixed drawer with `overflow-y: auto` so the user can
+       scroll the full menu independently. */
+    .dev-nav-panel {
+      position: fixed; top: 0; right: 0; bottom: 0; width: 320px;
+      background: rgba(22,22,22,0.92); backdrop-filter: blur(16px);
+      padding: 16px; box-sizing: border-box;
+      box-shadow: -8px 0 32px rgba(0,0,0,0.4);
+      border-left: 1px solid rgba(255,255,255,0.08);
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+      z-index: 9998;
+    }
+    .dev-nav-panel.open { transform: translateX(0); }
+    /* Slim webkit scrollbar so the drawer doesn't get a chunky default bar */
+    .dev-nav-panel::-webkit-scrollbar { width: 6px; }
+    .dev-nav-panel::-webkit-scrollbar-track { background: transparent; }
+    .dev-nav-panel::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.12); border-radius: 3px;
+    }
+    .dev-nav-panel::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
     .dev-nav-section { margin-bottom: 10px; }
     .dev-nav-section:last-child { margin-bottom: 0; }
     .dev-nav-label { font-size: 9px; color: rgba(255,255,255,0.35); text-transform: uppercase;
