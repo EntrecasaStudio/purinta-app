@@ -2114,6 +2114,22 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
+    /* State change "punch": squash → swap SVG mid-squash → stretch → settle.
+       Sells the change as the character reacting (cartoon body language)
+       rather than as one image substituting another. JS toggles .is-punching
+       on the .mascot-area and times the swap to land at ~30% of this anim. */
+    @keyframes mascot-state-punch {
+      0%   { transform: scale(1, 1); }
+      30%  { transform: scale(1.08, 0.92); }
+      70%  { transform: scale(0.95, 1.05); }
+      100% { transform: scale(1, 1); }
+    }
+    .mascot-area.is-punching .mascot-illustration {
+      animation: mascot-state-punch 250ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .mascot-area.is-punching .mascot-illustration { animation: none !important; }
+    }
     /* V2 full-body emote system (Option B) — static body + instant face swap */
     .emote-v2 { position: relative; overflow: visible; aspect-ratio: 1 / 0.85; }
     .emote-v2 svg { overflow: visible; }
@@ -6879,12 +6895,27 @@ function applyV2Expression(container, emoteKey) {
   container.dataset.activeEmote = emoteKey;
 }
 
-/* Swap emote: instant expression change, static body */
+/* Swap emote: instant expression change, but the .mascot-area squashes around
+   the swap so it reads as a body reaction (cartoon-style "expression change")
+   instead of an image substitution. The bg gradient transition (0.5s) handles
+   the smoother part of the state change. */
 function swapEmote(containerId, emoteKey) {
   var container = document.getElementById(containerId);
   if (!container) return;
   if (container.dataset.activeEmote === emoteKey) return;
-  applyV2Expression(container, emoteKey);
+  var area = container.closest('.mascot-area');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!area || reduceMotion) {
+    applyV2Expression(container, emoteKey);
+    return;
+  }
+  // Restart the punch on rapid swaps via reflow.
+  area.classList.remove('is-punching');
+  void area.offsetWidth;
+  area.classList.add('is-punching');
+  // Land the SVG swap inside the squash phase (~30% into 250ms).
+  setTimeout(function() { applyV2Expression(container, emoteKey); }, 75);
+  setTimeout(function() { area.classList.remove('is-punching'); }, 260);
 }
 
 /* ═══ HEALTH MASCOT — 5 levels based on slider positions ═══ */
