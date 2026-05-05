@@ -310,11 +310,11 @@
       padding: 8px 14px; border-radius: var(--r-full);
       display: flex; align-items: center; gap: 6px;
     }
-    #phone-a .power-btn , #phone-b .power-btn { display: none; }
-    #phone-a .wallet-badge .wallet-dot , #phone-b .wallet-badge .wallet-dot { display: none; }
-    #phone-a .disconnect-dropdown , #phone-b .disconnect-dropdown { display: none !important; }
+    #phone-a .power-btn{ display: none; }
+    #phone-a .wallet-badge .wallet-dot{ display: none; }
+    #phone-a .disconnect-dropdown{ display: none !important; }
     /* Pill Expand — wallet badge becomes expandable pill */
-    #phone-a .wallet-badge , #phone-b .wallet-badge {
+    #phone-a .wallet-badge{
       padding: 8px 14px; border: 1px solid var(--cream-400);
       cursor: pointer; white-space: nowrap;
       display: flex; align-items: center; gap: 0;
@@ -322,51 +322,46 @@
       transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.25s ease-in;
       -webkit-tap-highlight-color: transparent;
     }
-    #phone-a .wallet-badge .wallet-address-text , #phone-b .wallet-badge .wallet-address-text {
+    #phone-a .wallet-badge .wallet-address-text{
       display: flex; align-items: center;
     }
-    #phone-a .wallet-badge .wallet-disconnect-zone , #phone-b .wallet-badge .wallet-disconnect-zone {
+    #phone-a .wallet-badge .wallet-disconnect-zone{
       display: flex; align-items: center; gap: 4px;
       max-width: 0; opacity: 0; overflow: hidden; padding: 0;
       color: var(--text-secondary); font-weight: 400; font-size: var(--ds-xs);
       cursor: pointer; white-space: nowrap;
       transition: max-width 0.3s ease-in, opacity 0.15s ease, padding 0.3s ease-in, color 0.2s ease;
     }
-    #phone-a .wallet-badge .wallet-divider , #phone-b .wallet-badge .wallet-divider {
+    #phone-a .wallet-badge .wallet-divider{
       width: 0; height: 16px; flex-shrink: 0;
       border-left: 1px solid transparent; margin-left: 0;
       transition: border-color 0.15s ease, margin-left 0.25s ease-in;
     }
-    #phone-a .wallet-badge.expanded , #phone-b .wallet-badge.expanded {
+    #phone-a .wallet-badge.expanded{
       background: white; border-color: var(--cream-400);
       box-shadow: var(--shadow-card);
     }
     #phone-a:not(.desktop) .wallet-badge.expanded,
-    #phone-b:not(.desktop) .wallet-badge.expanded {
-      position: absolute; top: 50%; right: 0; transform: translateY(-50%);
-      z-index: 50; padding-right: 0;
-      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out;
-    }
-    #phone-a .wallet-badge.expanded .wallet-divider , #phone-b .wallet-badge.expanded .wallet-divider {
+    #phone-a .wallet-badge.expanded .wallet-divider{
       border-left-color: var(--cream-400); margin-left: 12px;
       transition: border-color 0.25s ease 0.1s, margin-left 0.35s ease-out;
     }
-    #phone-a .wallet-badge.expanded .wallet-disconnect-zone , #phone-b .wallet-badge.expanded .wallet-disconnect-zone {
+    #phone-a .wallet-badge.expanded .wallet-disconnect-zone{
       max-width: 140px !important; opacity: 1 !important; padding: 0 16px 0 10px !important; overflow: hidden !important;
       transition: max-width 0.35s ease-out, opacity 0.25s ease 0.05s, padding 0.35s ease-out, color 0.2s ease;
     }
     /* Hover effects scoped to desktop-mode phones only. Mobile phones (touch)
        show no hover/sticky-hover state on the wallet badge; the tap still opens it. */
-    #phone-a.desktop .wallet-badge:has(.wallet-disconnect-zone:hover) , #phone-b.desktop .wallet-badge:has(.wallet-disconnect-zone:hover) {
+    #phone-a.desktop .wallet-badge:has(.wallet-disconnect-zone:hover){
       border-color: var(--cream-400);
       box-shadow: var(--shadow-card);
     }
-    #phone-a.desktop .wallet-badge .wallet-disconnect-zone:hover , #phone-b.desktop .wallet-badge .wallet-disconnect-zone:hover {
+    #phone-a.desktop .wallet-badge .wallet-disconnect-zone:hover{
       color: var(--green-700);
     }
     .wallet-badge.no-transition,
     .wallet-badge.no-transition * { transition: none !important; }
-    #phone-a.desktop .wallet-badge:hover:not(.expanded) , #phone-b.desktop .wallet-badge:hover:not(.expanded) { background: var(--mint-100) !important; color: var(--green-600) !important; border-color: var(--green-300) !important; box-shadow: var(--shadow-card) !important; }
+    #phone-a.desktop .wallet-badge:hover:not(.expanded){ background: var(--mint-100) !important; color: var(--green-600) !important; border-color: var(--green-300) !important; box-shadow: var(--shadow-card) !important; }
     /* All children pointer-events none when collapsed — click goes to badge */
     .wallet-badge:not(.expanded) > * { pointer-events: none; }
     .wallet-badge.expanded > .wallet-disconnect-zone { pointer-events: auto; }
@@ -640,16 +635,6 @@
        · Flat background: all badges on mint-50 (boosted bg override to match non-boosted)
        · Sparkles still animate on viewport entry, but STAY visible at the end
          (no fade-out in the last keyframe). Option A keeps the fade. */
-    #phone-b .token-rate-badge--boosted { background: var(--mint-50); }
-    #phone-b .token-rate-badge--boosted.is-animating .sparkle-2 {
-      animation-name: sparkle-burst-stay;
-    }
-    #phone-b .token-rate-badge--boosted.is-animating .sparkle-1 {
-      animation-name: sparkle-burst-stay;
-    }
-    #phone-b .token-rate-badge--boosted.is-animating .sparkle-3 {
-      animation-name: sparkle-burst-small-stay;
-    }
     @keyframes sparkle-burst-stay {
       0%   { opacity: 0; transform: scale(0); }
       14%  { opacity: 1; transform: scale(1.3); }
@@ -748,23 +733,23 @@
        which has its own full-opacity -stay experiment). Full animation shorthand
        re-specified in the override to avoid any shorthand/longhand merge issues. */
     .phone.desktop .token-rate-sparkles .sparkle { opacity: 0.4; }
-    .phone.desktop:not(#phone-b) .token-rate-badge--boosted.is-animating .sparkle-2 {
+    .phone.desktop .token-rate-badge--boosted.is-animating .sparkle-2 {
       animation: sparkle-burst-persist 1600ms 80ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
-    .phone.desktop:not(#phone-b) .token-rate-badge--boosted.is-animating .sparkle-1 {
+    .phone.desktop .token-rate-badge--boosted.is-animating .sparkle-1 {
       animation: sparkle-burst-persist 1650ms 200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-    .phone.desktop:not(#phone-b) .token-rate-badge--boosted.is-animating .sparkle-3 {
+    .phone.desktop .token-rate-badge--boosted.is-animating .sparkle-3 {
       animation: sparkle-burst-small-persist 1600ms 320ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     /* Hover re-pulse on desktop — rewards the user returning to the card without a timer. */
-    .phone.desktop:not(#phone-b) .token-card:hover .token-rate-badge--boosted .sparkle-2 {
+    .phone.desktop .token-card:hover .token-rate-badge--boosted .sparkle-2 {
       animation: sparkle-burst-persist 1400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
-    .phone.desktop:not(#phone-b) .token-card:hover .token-rate-badge--boosted .sparkle-1 {
+    .phone.desktop .token-card:hover .token-rate-badge--boosted .sparkle-1 {
       animation: sparkle-burst-persist 1450ms 100ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-    .phone.desktop:not(#phone-b) .token-card:hover .token-rate-badge--boosted .sparkle-3 {
+    .phone.desktop .token-card:hover .token-rate-badge--boosted .sparkle-3 {
       animation: sparkle-burst-small-persist 1400ms 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     @keyframes number-pulse {
@@ -1394,30 +1379,6 @@
     /* Option B desktop done: stack the rows so the "&" divider can span the
        full content width (mobile-style horizontal lines). Phone-a has its own
        done-state rules. */
-    #phone-b.desktop .bundle-modal-overlay.is-done .bundle-modal-rows,
-    #phone-c.desktop .bundle-modal-overlay.is-done .bundle-modal-rows {
-      flex-direction: column; gap: 8px;
-    }
-    #phone-b.desktop .bundle-modal-overlay.is-done .bundle-sep,
-    #phone-c.desktop .bundle-modal-overlay.is-done .bundle-sep {
-      max-height: 20px; opacity: 1; margin: initial;
-      width: 100%; height: 20px; padding: 0;
-      position: relative; overflow: visible;
-    }
-    #phone-b.desktop .bundle-modal-overlay.is-done .bundle-sep::before,
-    #phone-c.desktop .bundle-modal-overlay.is-done .bundle-sep::before {
-      content: ''; position: absolute; top: 50%; bottom: auto;
-      left: 0; right: auto; margin: 0;
-      width: 38%; height: 1px; background: var(--cream-300);
-      transform: none;
-    }
-    #phone-b.desktop .bundle-modal-overlay.is-done .bundle-sep::after,
-    #phone-c.desktop .bundle-modal-overlay.is-done .bundle-sep::after {
-      content: ''; position: absolute; top: 50%; bottom: auto;
-      right: 0; left: auto; margin: 0;
-      width: 38%; height: 1px; background: var(--cream-300);
-      transform: none;
-    }
     /* Desktop: 48px between token values and stepper (dialog gap 16 + margin-top 32) */
     .phone.desktop .bundle-steps { margin-top: 32px; }
     /* Desktop: bump bundle row typography one DS step up (label/amount/token + icon) */
@@ -1679,32 +1640,32 @@
     .token-dropdown-row .token-name { flex: 1; text-align: left; }
     .token-dropdown-row .check-icon { width: 16px; height: 16px; flex-shrink: 0; }
     /* === Phone A — smaller pill token dropdown === */
-    #phone-a .token-select-wrap , #phone-b .token-select-wrap { width: 136px; height: 46px; }
+    #phone-a .token-select-wrap{ width: 136px; height: 46px; }
     /* Vertical padding made symmetric (was 5/3 — the icon read closer to
        the bottom in disabled state where the chevron's visual weight isn't
        there to balance). 4/4 puts the 28px icon dead-centre in the 40px
        min-height box and looks identical between active and disabled. */
-    #phone-a .token-select-trigger , #phone-b .token-select-trigger { min-width: 136px; min-height: 40px; padding: 4px 12px 4px 8px; gap: 6px; }
-    #phone-a .token-select , #phone-b .token-select { font-size: var(--ds-sm); }
-    #phone-a .token-select .mini-icon , #phone-b .token-select .mini-icon { width: 28px; height: 28px; }
-    #phone-a .token-select .token-name , #phone-b .token-select .token-name { font-size: var(--ds-sm); line-height: 26px; }
-    #phone-a .token-select .chevron , #phone-b .token-select .chevron { width: 10px; height: 8px; }
-    #phone-a .token-dropdown , #phone-b .token-dropdown { padding: 2px 0 4px; }
-    #phone-a .token-dropdown-row , #phone-b .token-dropdown-row { padding: 5px 10px 5px 8px; font-size: var(--ds-xs); margin: 0 2px; gap: 6px; }
-    #phone-a .token-dropdown-row .mini-icon , #phone-b .token-dropdown-row .mini-icon { width: 24px; height: 24px; }
-    #phone-a .token-dropdown-row .token-name , #phone-b .token-dropdown-row .token-name { font-size: var(--ds-xs); line-height: 21px; }
-    #phone-a .token-dropdown-row.selected , #phone-b .token-dropdown-row.selected { background: var(--cream-50); border-top: 1px solid var(--cream-300); border-bottom: 1px solid var(--cream-300); border-radius: 0; margin: 0; padding-left: 10px; padding-right: 6px; color: var(--cream-600); }
-    #phone-a .token-dropdown-row.selected .mini-icon , #phone-b .token-dropdown-row.selected .mini-icon { opacity: 0.5; }
-    #phone-a .token-dropdown-row .check-icon , #phone-b .token-dropdown-row .check-icon { width: 14px; height: 14px; }
+    #phone-a .token-select-trigger{ min-width: 136px; min-height: 40px; padding: 4px 12px 4px 8px; gap: 6px; }
+    #phone-a .token-select{ font-size: var(--ds-sm); }
+    #phone-a .token-select .mini-icon{ width: 28px; height: 28px; }
+    #phone-a .token-select .token-name{ font-size: var(--ds-sm); line-height: 26px; }
+    #phone-a .token-select .chevron{ width: 10px; height: 8px; }
+    #phone-a .token-dropdown{ padding: 2px 0 4px; }
+    #phone-a .token-dropdown-row{ padding: 5px 10px 5px 8px; font-size: var(--ds-xs); margin: 0 2px; gap: 6px; }
+    #phone-a .token-dropdown-row .mini-icon{ width: 24px; height: 24px; }
+    #phone-a .token-dropdown-row .token-name{ font-size: var(--ds-xs); line-height: 21px; }
+    #phone-a .token-dropdown-row.selected{ background: var(--cream-50); border-top: 1px solid var(--cream-300); border-bottom: 1px solid var(--cream-300); border-radius: 0; margin: 0; padding-left: 10px; padding-right: 6px; color: var(--cream-600); }
+    #phone-a .token-dropdown-row.selected .mini-icon{ opacity: 0.5; }
+    #phone-a .token-dropdown-row .check-icon{ width: 14px; height: 14px; }
     /* Phone A — Borrow USDC badge text 16px */
-    #phone-a .slider-token-badge , #phone-b .slider-token-badge { font-size: var(--ds-sm); letter-spacing: 0.16px; }
+    #phone-a .slider-token-badge{ font-size: var(--ds-sm); letter-spacing: 0.16px; }
     /* Phone A — token-select bg white (not cream-200), chevron cream-900 */
-    #phone-a .token-select , #phone-b .token-select { background: var(--neutral-50); box-shadow: none; }
-    #phone-a .token-select.open , #phone-b .token-select.open { box-shadow: 2px 2px 4px 0 rgba(163,158,117,0.05); }
-    #phone-a .token-select .chevron path , #phone-b .token-select .chevron path { fill: #8B8765 !important; stroke: #8B8765 !important; }
+    #phone-a .token-select{ background: var(--neutral-50); box-shadow: none; }
+    #phone-a .token-select.open{ box-shadow: 2px 2px 4px 0 rgba(163,158,117,0.05); }
+    #phone-a .token-select .chevron path{ fill: #8B8765 !important; stroke: #8B8765 !important; }
     /* Phone A — hide phosphor check, use Figma check asset via ::after */
-    #phone-a .token-dropdown-row.selected .check-icon , #phone-b .token-dropdown-row.selected .check-icon { color: transparent !important; position: relative; width: 16px; height: 16px; }
-    #phone-a .token-dropdown-row.selected .check-icon::after , #phone-b .token-dropdown-row.selected .check-icon::after {
+    #phone-a .token-dropdown-row.selected .check-icon{ color: transparent !important; position: relative; width: 16px; height: 16px; }
+    #phone-a .token-dropdown-row.selected .check-icon::after{
       content: ''; position: absolute; top: 0; left: 0; width: 16px; height: 16px;
       background: url("assets/check-icon.svg") center/contain no-repeat;
     }
@@ -1714,11 +1675,11 @@
        last row's bottom corners get clipped naturally to round, while every other
        hover edge stays sharp (matching the Figma desktop spec). Uses #phone-X.desktop
        so it wins specificity against the existing #phone-a/b token-dropdown rules. */
-    #phone-a.desktop .token-dropdown , #phone-b.desktop .token-dropdown { padding: 0; }
-    #phone-a.desktop .token-dropdown-row , #phone-b.desktop .token-dropdown-row { margin: 0; border-radius: 0; }
-    #phone-a.desktop .token-dropdown-row:first-child , #phone-b.desktop .token-dropdown-row:first-child { margin-top: 0; }
-    #phone-a.desktop .token-dropdown-row:last-child , #phone-b.desktop .token-dropdown-row:last-child { margin-bottom: 0; }
-    #phone-a.desktop .token-dropdown-row.selected , #phone-b.desktop .token-dropdown-row.selected { margin: 0; border-radius: 0; }
+    #phone-a.desktop .token-dropdown{ padding: 0; }
+    #phone-a.desktop .token-dropdown-row{ margin: 0; border-radius: 0; }
+    #phone-a.desktop .token-dropdown-row:first-child{ margin-top: 0; }
+    #phone-a.desktop .token-dropdown-row:last-child{ margin-bottom: 0; }
+    #phone-a.desktop .token-dropdown-row.selected{ margin: 0; border-radius: 0; }
 
     /* ═══ BOTTOM SHEET (Option A mobile only) ═══
        Replaces the dropdown when tapping the market selector in the OP2 title.
@@ -1846,28 +1807,8 @@
       border-radius: var(--r-full) 0 0 var(--r-full); transition: width 0.3s ease, background 0.4s ease;
     }
     /* Option B: Borrow slider & pct buttons turn warm on danger/meltdown */
-    #phone-c .danger-zone .slider-divider ~ .slider-track .slider-track-fill {
-      background: linear-gradient(90deg, var(--green-200), var(--blush-500));
-    }
-    #phone-c .meltdown .slider-divider ~ .slider-track .slider-track-fill {
-      background: linear-gradient(90deg, var(--green-200), var(--blush-600));
-    }
-    #phone-c .danger-zone .slider-divider ~ .slider-track .slider-track-bg {
-      background: var(--blush-100);
-    }
-    #phone-c .meltdown .slider-divider ~ .slider-track .slider-track-bg {
-      background: var(--blush-200);
-    }
     /* Option B: Borrow pct buttons turn red on danger/meltdown — #B5403A passes 4.5:1 on blush-200 */
-    #phone-c .danger-zone .slider-divider ~ .pct-buttons .pct-btn.active,
-    #phone-c .meltdown .slider-divider ~ .pct-buttons .pct-btn.active {
-      background: var(--blush-200); color: #B5403A;
-    }
     /* Option B: Borrow thumb stroke turns red on danger/meltdown */
-    #phone-c .danger-zone .slider-divider ~ .slider-track .slider-thumb path,
-    #phone-c .meltdown .slider-divider ~ .slider-track .slider-thumb path {
-      stroke: #B5403A;
-    }
     .slider-thumb {
       position: absolute; width: 32px; height: 32px; top: 0; z-index: 2;
       background: none; border: none;
@@ -1911,14 +1852,14 @@
       opacity: 0.3; pointer-events: none; cursor: default;
     }
     /* Phone A — pct-btn disabled (default/unselected): white fill, cream-100 border, gray text */
-    #phone-a .pct-btn.disabled , #phone-b .pct-btn.disabled {
+    #phone-a .pct-btn.disabled{
       opacity: 1;
       border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
     }
     /* Phone A — pct-btn disabled + active (selected) per Figma node 1467:170139:
        solid gray fill, no border, medium weight */
-    #phone-a .pct-btn.disabled.active, #phone-b .pct-btn.disabled.active,
-    #phone-a .pct-buttons.disabled .pct-btn.active , #phone-b .pct-buttons.disabled .pct-btn.active {
+    #phone-a .pct-btn.disabled.active,
+    #phone-a .pct-buttons.disabled .pct-btn.active{
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
     /* Phone A — token-select disabled state (disconnected wallet).
@@ -1926,27 +1867,27 @@
        neutral-50 bg) to --neutral-200 so the pill outline reads at the
        same size as the active state — without a visible boundary the
        eye reads only the inner text/icon and the pill looks shorter. */
-    #phone-a .token-select.disabled , #phone-b .token-select.disabled { border-color: var(--neutral-200) !important; pointer-events: none; }
-    #phone-a .token-select.disabled .mini-icon , #phone-b .token-select.disabled .mini-icon { opacity: 0.5; }
-    #phone-a .token-select.disabled .token-name , #phone-b .token-select.disabled .token-name { color: var(--neutral-300); }
-    #phone-a .token-select.disabled .chevron path , #phone-b .token-select.disabled .chevron path { fill: #D6D2B2 !important; stroke: #D6D2B2 !important; }
+    #phone-a .token-select.disabled{ border-color: var(--neutral-200) !important; pointer-events: none; }
+    #phone-a .token-select.disabled .mini-icon{ opacity: 0.5; }
+    #phone-a .token-select.disabled .token-name{ color: var(--neutral-300); }
+    #phone-a .token-select.disabled .chevron path{ fill: #D6D2B2 !important; stroke: #D6D2B2 !important; }
     /* Phone A — slider disabled state (disconnected wallet in #borrow) */
-    #phone-a #borrow .slider-track-bg , #phone-b #borrow .slider-track-bg { background: #F0F0F0; }
-    #phone-a #borrow .slider-track-fill , #phone-b #borrow .slider-track-fill { display: none; }
-    #phone-a #borrow .slider-thumb , #phone-b #borrow .slider-thumb { display: none !important; }
+    #phone-a #borrow .slider-track-bg{ background: #F0F0F0; }
+    #phone-a #borrow .slider-track-fill{ display: none; }
+    #phone-a #borrow .slider-thumb{ display: none !important; }
     /* Phone A — borrow-connected: disable Borrow section when Supply=0 */
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn , #phone-b #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn {
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn{
       pointer-events: none; border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
     }
     /* Disabled + active variant in borrow-connected (solid gray, medium) */
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn.active , #phone-b #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn.active {
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn.active{
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track , #phone-b #borrow-connected.supply-zero .slider-divider ~ .slider-track { pointer-events: none; cursor: default; }
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-bg , #phone-b #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-bg { background: #F0F0F0; }
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-fill , #phone-b #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-fill { background: transparent; }
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb path , #phone-b #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb path { stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
-    #phone-a #borrow-connected.supply-zero .btn-primary , #phone-b #borrow-connected.supply-zero .btn-primary { pointer-events: none; background: var(--mint-100); color: var(--green-200); box-shadow: none !important; border-color: transparent; }
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track{ pointer-events: none; cursor: default; }
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-bg{ background: #F0F0F0; }
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-fill{ background: transparent; }
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb path{ stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
+    #phone-a #borrow-connected.supply-zero .btn-primary{ pointer-events: none; background: var(--mint-100); color: var(--green-200); box-shadow: none !important; border-color: transparent; }
     /* Icon inherits the green-200 color from the button — no opacity fade
        on disabled state, the color alone communicates the disabled look. */
     /* Supply thumb breathing glow — guides first action */
@@ -1954,13 +1895,13 @@
       0%, 100% { filter: drop-shadow(0 0 4px rgba(8,250,60,0.35)); transform: scale(1); }
       50%      { filter: drop-shadow(0 0 12px rgba(8,250,60,0.75)); transform: scale(1.06); }
     }
-    #phone-a #borrow-connected.supply-zero .slider-label + .pct-buttons + .slider-track .slider-thumb , #phone-b #borrow-connected.supply-zero .slider-label + .pct-buttons + .slider-track .slider-thumb {
+    #phone-a #borrow-connected.supply-zero .slider-label + .pct-buttons + .slider-track .slider-thumb{
       animation: supplyBreath 1.8s ease-in-out infinite;
       animation-delay: 1s;
       transform-origin: center;
     }
     /* Suppress breathing glow on Borrow slider thumb (only Supply should glow) */
-    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb , #phone-b #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb { animation: none !important; }
+    #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb{ animation: none !important; }
 
     /* ═══ SUPPLY WARNING BANNER — token not in wallet ═══ */
     .supply-warning-banner {
@@ -2036,7 +1977,7 @@
       z-index: 50;
     }
     /* Ensure slider-section never stacks above the sticky banner */
-    #phone-a #borrow-connected .slider-section , #phone-b #borrow-connected .slider-section { position: relative; z-index: 1; }
+    #phone-a #borrow-connected .slider-section{ position: relative; z-index: 1; }
 
     /* Top mask — sticky cream strip that hides scrolling content above AND behind
        the banner's rounded corner cavities. Height 48px = 16px top gap + 32px banner radius.
@@ -2086,19 +2027,19 @@
 
     /* ═══ NO-FUNDS state: disable Supply section too (on top of supply-zero styles)
            Uses :has() — targets elements BEFORE the .slider-divider (i.e. Supply side) ═══ */
-    #phone-a #borrow-connected.no-funds .pct-buttons:has(~ .slider-divider) .pct-btn , #phone-b #borrow-connected.no-funds .pct-buttons:has(~ .slider-divider) .pct-btn {
+    #phone-a #borrow-connected.no-funds .pct-buttons:has(~ .slider-divider) .pct-btn{
       pointer-events: none; border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
     }
-    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) , #phone-b #borrow-connected.no-funds .slider-track:has(~ .slider-divider) { pointer-events: none; cursor: default; }
-    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-bg , #phone-b #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-bg { background: #F0F0F0; }
-    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-fill , #phone-b #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-fill { background: transparent; }
-    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb path , #phone-b #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb path { stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
+    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider){ pointer-events: none; cursor: default; }
+    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-bg{ background: #F0F0F0; }
+    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-fill{ background: transparent; }
+    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb path{ stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
     /* Suppress breathing glow when Supply is disabled (no funds) */
-    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb , #phone-b #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb { animation: none !important; }
+    #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb{ animation: none !important; }
     /* State-driven: glow auto-stops when .supply-zero is removed (supply > 0)
        and resumes if supply returns to 0% — no .touched gating */
     @media (prefers-reduced-motion: reduce) {
-      #phone-a #borrow-connected.supply-zero .slider-thumb , #phone-b #borrow-connected.supply-zero .slider-thumb { animation: none !important; }
+      #phone-a #borrow-connected.supply-zero .slider-thumb{ animation: none !important; }
     }
     .slider-divider {
       height: 1px; background: var(--cream-400); margin: 20px 0;
@@ -3485,11 +3426,11 @@
     .position-card.supply-only { background: var(--cream-100); }
     .position-card.supply-only:hover { border-color: var(--green-200); }
     /* Supply-only desktop card: simplified layout per Figma 951:54420 */
-    #phone-a.desktop .position-card.supply-only .price-row , #phone-b.desktop .position-card.supply-only .price-row { display: none; }
-    #phone-a.desktop .position-card.supply-only .health-row , #phone-b.desktop .position-card.supply-only .health-row { display: none; }
-    #phone-a.desktop .position-card.supply-only .stats-row , #phone-b.desktop .position-card.supply-only .stats-row { border-bottom: none; padding-bottom: 0; }
-    #phone-a.desktop .position-card.supply-only .position-spacer-top , #phone-b.desktop .position-card.supply-only .position-spacer-top { border-bottom: none; }
-    #phone-a.desktop .position-card.supply-only .position-buttons , #phone-b.desktop .position-card.supply-only .position-buttons { justify-content: center; }
+    #phone-a.desktop .position-card.supply-only .price-row{ display: none; }
+    #phone-a.desktop .position-card.supply-only .health-row{ display: none; }
+    #phone-a.desktop .position-card.supply-only .stats-row{ border-bottom: none; padding-bottom: 0; }
+    #phone-a.desktop .position-card.supply-only .position-spacer-top{ border-bottom: none; }
+    #phone-a.desktop .position-card.supply-only .position-buttons{ justify-content: center; }
     .position-header {
       display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
     }
@@ -3654,116 +3595,27 @@
     .supply-label { letter-spacing: 0.3px; }                           /* Rubik 10px · 3% */
     .health-label { letter-spacing: 0.3px; }                           /* Rubik 10px · 3% */
     /* ── Phone B overrides: restore OLD styles for A/B comparison ── */
-    #phone-c .summary-label { letter-spacing: 0; }
-    #phone-c .slider-val { letter-spacing: 0; }
-    #phone-c .btn-disconnect { letter-spacing: 0.5px; }
-    #phone-c .slider-info-label { letter-spacing: 0; }
-    #phone-c .slider-info-value { letter-spacing: 0; }
-    #phone-c .summary-row-label { letter-spacing: 0; }
-    #phone-c .summary-row-value { letter-spacing: 0; }
-    #phone-c .detail-item-value { letter-spacing: 0; }
-    #phone-c .token-pair-amount { letter-spacing: 0; }
-    #phone-c .bottom-nav-item { letter-spacing: 0.3px; }
-    #phone-c .risk-label { letter-spacing: 1px; }
-    #phone-c .detail-item-label { letter-spacing: 0; }
-    #phone-c .stat-label { letter-spacing: 0; }
-    #phone-c .mascot-text { letter-spacing: 0; }
-    #phone-c .supply-label { letter-spacing: 0; }
-    #phone-c .health-label { letter-spacing: 0; }
-    #phone-c .btn { letter-spacing: 0.8px; }
-    #phone-c .btn-sm { letter-spacing: 0.65px; }
-    #phone-c .btn-lg { letter-spacing: 0.8px; }
-    #phone-c .modal-dots span { background: var(--green-400); border-radius: 50%; }
-    #phone-c .modal-progress-bar { background: linear-gradient(90deg, var(--green-300), var(--green-400)); }
-    #phone-c .modal-progress { background: var(--cream-400); }
-    #phone-c .modal-message-icon i { color: var(--green-600); }
-    #phone-c .modal-message-text strong { font-weight: 400; }
-    #phone-c .power-btn { display: none; }
-    #phone-c .disconnect-dropdown { display: none !important; }
-    #phone-c .app-header { overflow: visible; position: relative; z-index: 40; }
 
     /* ═══ PHONE B — WALLET PILL (Figma spec) ═══ */
 
     /* Header-right: reserves space for badge so nav links don't move */
-    #phone-c .header-right { position: relative; min-width: 120px; min-height: 34px; }
-    #phone-c.desktop .header-right { min-width: 160px; min-height: 52px; }
 
     /* Badge: absolute anchored top-right — grows downward without pushing anything */
-    #phone-c .wallet-badge {
-      position: absolute; top: 0; right: 0; z-index: 41;
-      background: var(--neutral-50); border: 1px solid var(--cream-400); border-radius: 22px;
-      cursor: pointer; white-space: nowrap; box-sizing: border-box;
-      display: flex; flex-direction: column; align-items: stretch; gap: 0;
-      overflow: hidden;
-      padding: 12px 20px;
-      font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 500;
-      color: var(--green-700); letter-spacing: 0.26px; line-height: 21px;
-      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      -webkit-tap-highlight-color: transparent;
-    }
 
-    #phone-c .wallet-badge .wallet-dot { display: none; }
 
     /* Address: stays at top (padding-top never changes) */
-    #phone-c .wallet-badge .wallet-address-text {
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
 
     /* Divider: separates address from disconnect, only when expanded */
-    #phone-c .wallet-badge .wallet-divider {
-      width: 44px; height: 0; flex-shrink: 0; align-self: center;
-      border: none; border-top: 1px solid var(--cream-400);
-      opacity: 0;
-      transition: opacity 0.15s ease;
-    }
 
     /* Disconnect: hidden by default via max-height */
-    #phone-c .wallet-badge .wallet-disconnect-zone {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      max-height: 0 !important; max-width: none !important;
-      opacity: 0 !important; overflow: hidden !important; padding: 0 !important;
-      color: var(--text-secondary); font-weight: 400; font-size: var(--ds-xs);
-      letter-spacing: 0.26px; line-height: 21px;
-      cursor: pointer; white-space: nowrap;
-      pointer-events: none;
-      transition: max-height 0.2s ease, opacity 0.15s ease, padding 0.2s ease;
-    }
 
     /* Hover collapsed */
-    #phone-c .wallet-badge:hover:not(.expanded) {
-      background: var(--mint-100); color: var(--green-600);
-      border-color: var(--green-300); box-shadow: var(--shadow-card);
-    }
 
     /* ─── EXPANDED: badge grows downward ─── */
-    #phone-c .wallet-badge.expanded {
-      box-shadow: var(--shadow-card);
-      padding-bottom: 12px;
-    }
-    #phone-c .wallet-badge.expanded .wallet-divider {
-      opacity: 1; margin-bottom: 8px;
-    }
-    #phone-c .wallet-badge.expanded .wallet-disconnect-zone {
-      max-height: 30px !important; opacity: 1 !important;
-      padding: 0 !important;
-      pointer-events: auto;
-    }
 
     /* Hover disconnect */
-    #phone-c .wallet-badge .wallet-disconnect-zone:hover { color: var(--green-700); }
-    #phone-c .wallet-badge:has(.wallet-disconnect-zone:hover) { border-color: var(--cream-400); }
 
     /* ─── DESKTOP B ─── */
-    #phone-c.desktop .wallet-badge {
-      min-height: 52px; padding: 0 32px; border-radius: 26px;
-    }
-    #phone-c.desktop .wallet-badge .wallet-address-text {
-      height: 50px; /* 52px - 2px border */
-    }
-    #phone-c.desktop .wallet-badge.expanded {
-      padding-bottom: 14px;
-    }
 
     /* Desktop responsive — applied when phone width >= 1280 via JS class */
     .phone.desktop { border-radius: 0; box-shadow: none; overflow: visible; height: auto !important; min-height: 100vh; }
@@ -3851,13 +3703,13 @@
 
     .phone.desktop .app-header { height: 72px; box-sizing: border-box; padding-left: 0; padding-right: 0; }
     .phone.desktop .btn-connect { height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; font-size: var(--ds-sm); }
-    #phone-a.desktop .wallet-badge , #phone-b.desktop .wallet-badge { height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.25s ease-in; }
-    #phone-a.desktop .wallet-badge.expanded , #phone-b.desktop .wallet-badge.expanded { padding-right: 0; transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out; }
-    #phone-a.desktop .wallet-badge.expanded .wallet-disconnect-zone , #phone-b.desktop .wallet-badge.expanded .wallet-disconnect-zone { padding-right: 24px !important; }
+    #phone-a.desktop .wallet-badge{ height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.25s ease-in; }
+    #phone-a.desktop .wallet-badge.expanded{ padding-right: 0; transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out; }
+    #phone-a.desktop .wallet-badge.expanded .wallet-disconnect-zone{ padding-right: 24px !important; }
     .phone.desktop .hero { padding: 24px 0; }
     .phone.desktop .token-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 0; }
     
-    #phone-a.desktop .positions-content , #phone-b.desktop .positions-content { padding-left: 0; padding-right: 0; }
+    #phone-a.desktop .positions-content{ padding-left: 0; padding-right: 0; }
     
     .phone.desktop #positions,
     .phone.desktop #positions-b,
@@ -3895,14 +3747,8 @@
     .phone.desktop #borrow-b .borrow-content,
     .phone.desktop #borrow-c .borrow-content,
     #phone-a.desktop #positions .positions-content,
-    #phone-b.desktop #positions-b .positions-content,
-    #phone-c.desktop #positions-c .positions-content,
     #phone-a.desktop #positions-empty .positions-content,
-    #phone-b.desktop #positions-empty-b .positions-content,
-    #phone-c.desktop #positions-empty-c .positions-content,
     #phone-a.desktop #error-404 .positions-content,
-    #phone-b.desktop #error-404-b .positions-content,
-    #phone-c.desktop #error-404-c .positions-content { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }
     .phone.desktop #borrow .borrow-content,
     .phone.desktop #borrow-b .borrow-content,
     .phone.desktop #borrow-c .borrow-content,
@@ -3986,17 +3832,17 @@
     .borrow-cta-inner { display: none; }
     /* Desktop horizontal position cards — v4 layout (phone-a only) */
     .position-card-inner { display: none; }
-    #phone-a.desktop .position-card-inner , #phone-b.desktop .position-card-inner { display: flex; align-items: flex-start; }
+    #phone-a.desktop .position-card-inner{ display: flex; align-items: flex-start; }
     .position-card-inner > .card-icon { display: none; }
-    #phone-a.desktop .position-card-inner > .card-icon , #phone-b.desktop .position-card-inner > .card-icon { display: flex; width: 42px; height: 42px; flex-shrink: 0; margin-right: 8px; margin-top: 7px; }
-    #phone-a.desktop .supply-row .mini-icon , #phone-b.desktop .supply-row .mini-icon { display: none; }
-    #phone-a.desktop .position-card , #phone-b.desktop .position-card { padding: 33px; padding-right: 65px; border-radius: 40px; }
-    #phone-a.desktop .position-card .position-header, #phone-b.desktop .position-card .position-header,
-    #phone-a.desktop .position-card .position-stats, #phone-b.desktop .position-card .position-stats,
-    #phone-a.desktop .position-card .position-divider, #phone-b.desktop .position-card .position-divider,
-    #phone-a.desktop .position-card .detail-row, #phone-b.desktop .position-card .detail-row,
-    #phone-a.desktop .position-card .health-section, #phone-b.desktop .position-card .health-section,
-    #phone-a.desktop .position-card .position-actions , #phone-b.desktop .position-card .position-actions { display: none !important; }
+    #phone-a.desktop .position-card-inner > .card-icon{ display: flex; width: 42px; height: 42px; flex-shrink: 0; margin-right: 8px; margin-top: 7px; }
+    #phone-a.desktop .supply-row .mini-icon{ display: none; }
+    #phone-a.desktop .position-card{ padding: 33px; padding-right: 65px; border-radius: 40px; }
+    #phone-a.desktop .position-card .position-header,
+    #phone-a.desktop .position-card .position-stats,
+    #phone-a.desktop .position-card .position-divider,
+    #phone-a.desktop .position-card .detail-row,
+    #phone-a.desktop .position-card .health-section,
+    #phone-a.desktop .position-card .position-actions{ display: none !important; }
     /* — Left content column — */
     .position-left { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
     /* — Row 1: Supply (token info) — */
@@ -4006,7 +3852,7 @@
       padding: 0 6px;
     }
     .supply-row .mini-icon { width: 42px; height: 42px; border-radius: 21px; flex-shrink: 0; }
-    #phone-a.desktop .supply-row , #phone-b.desktop .supply-row { padding: 0; }
+    #phone-a.desktop .supply-row{ padding: 0; }
     .supply-info { display: flex; flex-direction: column; gap: 2px; }
     .supply-label { font-family: var(--font-ui); font-size: var(--ds-2xs); color: var(--text-secondary); line-height: 18px; }
     .supply-value { display: flex; align-items: center; gap: 8px; }
@@ -4021,7 +3867,7 @@
     .stat-col { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     /* — Row 3: Prices — */
     .price-row { display: flex; gap: 24px; align-items: flex-start; min-height: 38px; }
-    #phone-a.desktop .price-row > .detail-item , #phone-b.desktop .price-row > .detail-item { flex: 1 !important; min-width: 0; }
+    #phone-a.desktop .price-row > .detail-item{ flex: 1 !important; min-width: 0; }
     /* — Spacer column — */
     .position-spacer { width: 32px; flex-shrink: 0; align-self: stretch; display: flex; flex-direction: column; }
     .position-spacer-top { height: 57.6px; border-bottom: 1px solid var(--cream-300); }
@@ -4056,21 +3902,12 @@
     }
     .skel-circle { border-radius: 50%; }
     .skel-pill   { border-radius: 9999px; }
-    /* Op B (phone-b/c) — Cream palette */
-    #phone-b .skel-block, #phone-c .skel-block {
-      background: linear-gradient(90deg,
-        var(--cream-200) 0%,
-        var(--cream-300) 50%,
-        var(--cream-200) 100%);
-      background-size: 200% 100%;
-    }
     @keyframes skel-shimmer {
       0%   { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
     @media (prefers-reduced-motion: reduce) {
       .skel-block { animation: none; background: var(--neutral-200); }
-      #phone-b .skel-block, #phone-c .skel-block { background: var(--cream-200); }
     }
     /* Skel screen layouts — reuse padding/typography from real screens; only
        the dynamic content swaps to skeleton placeholders. */
@@ -4101,10 +3938,6 @@
     .skel-position-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .phone.desktop .skel-position-card { padding: 33px; padding-right: 65px; border-radius: 40px; }
     .phone.desktop #skel-positions .positions-content,
-    #phone-b.desktop #skel-positions-b .positions-content,
-    #phone-c.desktop #skel-positions-c .positions-content {
-      width: 100%; max-width: 720px; margin-left: auto; margin-right: auto;
-    }
     .phone.desktop #skel-positions, .phone.desktop #skel-positions-b, .phone.desktop #skel-positions-c {
       max-width: none; padding: 0 40px;
     }
@@ -4197,18 +4030,10 @@
       box-shadow: none;
       min-width: 77px;
     }
-    #phone-b #skel-home-b .token-rate-badge,
-    #phone-c #skel-home-c .token-rate-badge {
-      background: linear-gradient(90deg,
-        var(--cream-200) 0%, var(--cream-300) 50%, var(--cream-200) 100%);
-      background-size: 200% 100%;
-    }
     @media (prefers-reduced-motion: reduce) {
       #skel-home .token-rate-badge,
       #skel-home-b .token-rate-badge,
       #skel-home-c .token-rate-badge { animation: none; background: var(--neutral-200); }
-      #phone-b #skel-home-b .token-rate-badge,
-      #phone-c #skel-home-c .token-rate-badge { background: var(--cream-200); }
     }
     /* All buttons inside skeleton screens read as disabled. Just lock
        interaction — no opacity fade. Each button variant (btn-primary,
@@ -4260,8 +4085,7 @@
       <summary class="dev-nav-label"><span class="nav-emoji">🅰️</span>Option</summary>
       <div class="dev-nav-group option-nav">
         <button class="opt-toggle active" onclick="setOption('a')">A &mdash; Spec</button>
-        <button class="opt-toggle" onclick="setOption('b')">B &mdash; Variations</button>
-        <button class="opt-toggle" onclick="setOption('c')">C &mdash; Reduced Data</button>
+        <button class="opt-toggle" onclick="setOption('c')">Reduced Data</button>
       </div>
     </details>
     <details class="dev-nav-section" data-section="breakpoint" open>
@@ -5871,69 +5695,32 @@
   </nav>
 </div>
 </div>
-<div class="phone-wrap hidden" id="wrap-b">
-  <div class="phone-label">B</div>
-  <div class="phone" id="phone-b"></div>
-</div>
-<div class="phone-wrap hidden" id="wrap-c">
-  <div class="phone-label">C</div>
-  <div class="phone" id="phone-c"></div>
-</div>
 </div>
 
 <script>
-/* ═══ OPTION A/B/C ═══
-   A = phone-a (live DOM, OP2 applied — title has market selector)
-   B = phone-b (snapshot clone of pre-OP2 phone-a = OP1 frozen)
-   C = phone-c (snapshot clone + old-B tweaks) */
-
-/* Snapshot of phone-a BEFORE OP2 transform — captured on page init.
-   Used as source for both phone-b and phone-c clones. */
-var _phoneASnapshot = null;
-function capturePhoneASnapshot() {
-  if (_phoneASnapshot) return;
-  var phoneA = document.getElementById('phone-a');
-  if (phoneA) _phoneASnapshot = phoneA.innerHTML;
-}
+/* ═══ OPTION MODES ═══
+   A = phone-a default render
+   C = phone-a with .reduced-data-mode class on <html> (slow connection /
+       low-end device simulation; kills animations + uses lower-fidelity
+       backgrounds via CSS) */
 
 function setOption(mode, save) {
-  // Three modes only:
-  //   a — Purinta Final (phone-a)
-  //   b — Variations    (phone-b — alternate design)
-  //   c — Reduced Data  (phone-a, but with the prefers-reduced-data styles
-  //                      forced via .reduced-data-mode on <html>, so the
-  //                      designer can preview how the app looks for a user
-  //                      on a low-end device / slow connection)
   if (save !== false) localStorage.setItem('purinta-opt', mode);
-  var wrapA = document.getElementById('wrap-a');
-  var wrapB = document.getElementById('wrap-b');
-  var wrapC = document.getElementById('wrap-c');
   var btns = document.querySelectorAll('.opt-toggle');
   btns.forEach(function(b) { b.classList.remove('active'); });
-  var idx = { a: 0, b: 1, c: 2 }[mode];
+  var idx = { a: 0, c: 1 }[mode];
   if (btns[idx]) btns[idx].classList.add('active');
-  // a and c both render phone-a. c is just phone-a with reduced-data CSS on.
-  var showA = mode === 'a' || mode === 'c';
-  var showB = mode === 'b';
-  wrapA.classList.toggle('hidden', !showA);
-  wrapB.classList.toggle('hidden', !showB);
-  if (wrapC) wrapC.classList.add('hidden'); // phone-c retired; never shown
-  if (showB) { initPhoneB(); }
   // Reduced-data simulation. Honour real-device signals too — if the user's
   // browser/OS already indicates reduced-data (saveData, slow connection,
   // low memory, low cores, or the media-query preference), the class stays
-  // on regardless of mode (no point in turning it off for them).
+  // on regardless of mode.
   document.documentElement.classList.toggle(
     'reduced-data-mode',
     mode === 'c' || (window._isReducedDataDevice && window._isReducedDataDevice())
   );
-  // Sync breakpoint to all phones
+  // Sync breakpoint
   var bp = parseInt(localStorage.getItem('purinta-bp')) || 360;
   setBreakpoint(bp, false);
-  // Always show labels so you know which option you're viewing
-  document.querySelectorAll('.phone-label').forEach(function(l) {
-    l.style.display = 'block';
-  });
 }
 
 // On boot: detect ANY indicator that the user is on a constrained device
@@ -6023,13 +5810,7 @@ function replayConnectCelebration() {
   });
 }
 
-/* Capture phone-a snapshot IMMEDIATELY at script exec — before any async
-   transform (OP2 structure change, v2 emotes, etc.) touches the DOM.
-   phone-b and phone-c clone from this snapshot, so they represent OP1. */
-capturePhoneASnapshot();
-
-/* ═══ OP2 transform: move market selector from Supply section to title ═══
-   Applied ONLY to phone-a. Runs after snapshot so B and C stay OP1. */
+/* ═══ OP2 transform: move market selector from Supply section to title ═══ */
 function applyOP2ToPhoneA() {
   var phoneA = document.getElementById('phone-a');
   if (!phoneA) return;
@@ -6087,128 +5868,12 @@ applyOP2ToPhoneA();
   });
 })();
 
-// Phone A = Option A (OP2: market selector in title)
-
-/* Shared clone logic for phone-b and phone-c.
-   Both clone from _phoneASnapshot (pre-OP2 markup = OP1 structure).
-   suffix: 'b' or 'c' — used for ID remapping. */
-function clonePhoneFromSnapshot(phoneEl, suffix) {
-  if (!_phoneASnapshot) capturePhoneASnapshot();
-  phoneEl.innerHTML = _phoneASnapshot;
-  var dash = '-' + suffix;
-  // Remap IDs to avoid conflicts
-  phoneEl.querySelectorAll('[id]').forEach(function(el) {
-    el.id = el.id + dash;
-  });
-  // Reset all screen active states
-  phoneEl.querySelectorAll('.screen').forEach(function(s) {
-    s.classList.remove('active'); s.classList.remove('bg-screen');
-  });
-  // Mirror the active screen from phone-a
-  var phoneA = document.getElementById('phone-a');
-  var activeScreen = phoneA.querySelector('.screen.active');
-  if (activeScreen) {
-    var target = document.getElementById(activeScreen.id + dash);
-    if (target) target.classList.add('active');
-  }
-  // Restore original <object> mascots (snapshot may have v2-transformed ones)
-  restoreOriginalEmotes(phoneEl);
-  // Restore borrow mascot to original face-only emote
-  var borrowMascot = phoneEl.querySelector('#borrow' + dash + ' .mascot-area.happy .mascot-illustration');
-  if (borrowMascot && borrowMascot.tagName === 'IMG') {
-    var origObj = document.createElement('object');
-    origObj.className = 'mascot-illustration';
-    origObj.setAttribute('data', 'assets/Emote-00-Basic.svg');
-    origObj.setAttribute('type', 'image/svg+xml');
-    origObj.style.pointerEvents = 'none';
-    borrowMascot.parentNode.replaceChild(origObj, borrowMascot);
-  }
-  // Remove cloned loading overlays
-  phoneEl.querySelectorAll('.loading-screen-overlay').forEach(function(el) { el.remove(); });
-  // Copy wordmark SVG from live phone-a (OP2) — wordmark is identical across options
-  var srcWM = phoneA.querySelector('.logo-wordmark');
-  if (srcWM) {
-    phoneEl.querySelectorAll('.logo-wordmark').forEach(function(wm) {
-      wm.innerHTML = srcWM.innerHTML;
-    });
-  }
-  // Reveal homepage sections (unless loading intro will play)
-  var currentScreen = localStorage.getItem('purinta-screen') || 'homepage';
-  if (currentScreen !== 'homepage') {
-    phoneEl.querySelectorAll('.reveal-in').forEach(function(el) {
-      el.classList.add('revealed');
-    });
-  }
-  // Restore OP1 title text ("Borrow against" → "Borrow") — snapshot may contain
-  // the transitional "Borrow against" phrasing; for OP1 variants we want just "Borrow"
-  phoneEl.querySelectorAll('.borrow-title').forEach(function(t) {
-    var txt = (t.textContent || '').trim();
-    if (txt === 'Borrow against') t.textContent = 'Borrow';
-  });
-  // Progressive bottom-nav shadow wired to each cloned phone
-  if (typeof attachNavShadowScroll === 'function') attachNavShadowScroll(phoneEl);
-}
-
-/* Option B = OP1 frozen snapshot (identity clone, no tweaks) */
-function initPhoneB() {
-  var phoneB = document.getElementById('phone-b');
-  if (!phoneB) return;
-  clonePhoneFromSnapshot(phoneB, 'b');
-  // Sparkle IntersectionObserver wasn't attached to phone-b at DOMContentLoaded
-  // (it was empty then). Now that the clone is in place, wire its boosted badges.
-  if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
-  if (typeof rewritePositionTokenLabels === 'function') rewritePositionTokenLabels(phoneB);
-  // Snapshot was captured before DOMContentLoaded fired → skel-* clones are
-  // empty. Re-populate them now that the cloned source screens are in place.
-  if (typeof populateSkeletonHome === 'function') populateSkeletonHome('-b');
-  if (typeof populateSkeletonBorrow === 'function') populateSkeletonBorrow('-b');
-  if (typeof populateSkeletonUpdate === 'function') populateSkeletonUpdate('-b');
-  if (typeof populateSkeletonPositions === 'function') populateSkeletonPositions('-b');
-}
-
-/* Option C = old Option B variant (CTA card visible, restored title/total layout) */
-function initPhoneC() {
-  var phoneC = document.getElementById('phone-c');
-  if (!phoneC) return;
-  clonePhoneFromSnapshot(phoneC, 'c');
-  if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
-  if (typeof rewritePositionTokenLabels === 'function') rewritePositionTokenLabels(phoneC);
-  if (typeof populateSkeletonHome === 'function') populateSkeletonHome('-c');
-  if (typeof populateSkeletonBorrow === 'function') populateSkeletonBorrow('-c');
-  if (typeof populateSkeletonUpdate === 'function') populateSkeletonUpdate('-c');
-  if (typeof populateSkeletonPositions === 'function') populateSkeletonPositions('-c');
-  // Positions screen tweaks specific to Option C
-  var phoneCPositions = document.getElementById('positions-c');
-  if (phoneCPositions) {
-    var headerBtnC = phoneCPositions.querySelector('.positions-title-row .btn-sm');
-    if (headerBtnC) headerBtnC.remove();
-    var ctaC = phoneCPositions.querySelector('.new-borrow-cta');
-    if (ctaC) ctaC.style.display = '';
-    // Restore original layout: title and total-row as separate siblings
-    var titleRowC = phoneCPositions.querySelector('.positions-title-row');
-    var titleC = phoneCPositions.querySelector('.positions-title');
-    var totalRowC = phoneCPositions.querySelector('.total-row');
-    if (titleRowC && titleC && totalRowC) {
-      var parent = titleRowC.parentNode;
-      parent.insertBefore(titleC, titleRowC);
-      parent.insertBefore(totalRowC, titleRowC);
-      titleRowC.remove();
-      totalRowC.style.marginBottom = '20px';
-      totalRowC.style.marginLeft = '34px';
-      totalRowC.style.marginRight = '34px';
-    }
-  }
-}
-/* Store original <object> outerHTML keyed by base ID (without -c suffix) */
-var _originalEmoteEls = {};
 var _v2AppliedToA = false;
 
 /* Replace mascots with v2 body + expression layers */
 function applyV2Emotes(phone) {
   phone.querySelectorAll('object.mascot-illustration').forEach(function(obj) {
     if (!obj.id || obj.id.indexOf('health-emote') !== 0) return;
-    // Save original for restoring in Phone B
-    _originalEmoteEls[obj.id] = obj.outerHTML;
     var src = obj.getAttribute('data') || '';
     var emoteKey = 'ultra-safe';
     Object.keys(emoteUrls).forEach(function(key) {
@@ -6242,21 +5907,6 @@ function applyV2Emotes(phone) {
   _v2AppliedToA = true;
 }
 
-/* Restore Phone B mascots to original <object> elements */
-function restoreOriginalEmotes(phoneEl) {
-  phoneEl.querySelectorAll('.emote-v2').forEach(function(v2El) {
-    if (!v2El.id) return;
-    // Strip -b or -c suffix (phone-b and phone-c both clone from snapshot)
-    var baseId = v2El.id.replace(/-(b|c)$/, '');
-    var origHTML = _originalEmoteEls[baseId];
-    if (!origHTML) return;
-    var temp = document.createElement('div');
-    temp.innerHTML = origHTML;
-    var origObj = temp.firstElementChild;
-    origObj.id = v2El.id; // keep the suffix
-    v2El.parentNode.replaceChild(origObj, v2El);
-  });
-}
 
 /* ═══ TOKEN DROPDOWN ═══ */
 function closeTokenDropdown(select, onDone) {
@@ -7301,14 +6951,6 @@ function showScreen(id) {
   phoneA.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.classList.remove('bg-screen'); });
   document.getElementById(id).classList.add('active');
   phoneA.style.overflow = '';
-  // Mirror active screen to phone-b and phone-c (if initialized)
-  ['b', 'c'].forEach(function(sfx) {
-    var ph = document.getElementById('phone-' + sfx);
-    if (!ph || !ph.hasChildNodes()) return;
-    ph.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.classList.remove('bg-screen'); });
-    var target = document.getElementById(id + '-' + sfx);
-    if (target) target.classList.add('active');
-  });
   document.querySelectorAll('.screen-nav button').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.screen-nav .dev-folder').forEach(d => d.classList.remove('has-active'));
   // Match by onclick payload — folder layout means index-based lookup is
@@ -7364,29 +7006,15 @@ function showScreen(id) {
     if (typeof updateHealthMascot === 'function') updateHealthMascot();
     if (typeof updateBorrowValues === 'function') updateBorrowValues(id);
   }
-  // Skel-borrow: repopulate on every entry so the cloned V2 mascot picks up
-  // the current borrow-connected DOM (size + animation). The single
-  // DOMContentLoaded run snapshots whatever state borrow-connected was in at
-  // page load, which may not reflect later CSS/markup tweaks.
-  if (id === 'skel-borrow') {
-    if (typeof populateSkeletonBorrow === 'function') populateSkeletonBorrow('');
-    ['b', 'c'].forEach(function(sfx) {
-      var ph = document.getElementById('phone-' + sfx);
-      if (ph && ph.hasChildNodes() && typeof populateSkeletonBorrow === 'function') {
-        populateSkeletonBorrow('-' + sfx);
-      }
-    });
+  // Skel-borrow / skel-update: repopulate on entry so the cloned V2 mascot
+  // picks up the current source DOM (size + animation). The single
+  // DOMContentLoaded run captures whatever state the source was in at page
+  // load, which may not reflect later CSS/markup tweaks.
+  if (id === 'skel-borrow' && typeof populateSkeletonBorrow === 'function') {
+    populateSkeletonBorrow('');
   }
-  // Same dance for skel-update — clone fresh from #update on every entry so
-  // the SMIL bill animation in the static <img> mascot starts cleanly.
-  if (id === 'skel-update') {
-    if (typeof populateSkeletonUpdate === 'function') populateSkeletonUpdate('');
-    ['b', 'c'].forEach(function(sfx) {
-      var ph = document.getElementById('phone-' + sfx);
-      if (ph && ph.hasChildNodes() && typeof populateSkeletonUpdate === 'function') {
-        populateSkeletonUpdate('-' + sfx);
-      }
-    });
+  if (id === 'skel-update' && typeof populateSkeletonUpdate === 'function') {
+    populateSkeletonUpdate('');
   }
   // Update bottom nav + top nav active state + fill icons
   document.querySelectorAll('.bottom-nav-item, .top-nav-link').forEach(function(btn) {
@@ -7451,7 +7079,7 @@ function populatePositionsDisconnected() {
 
 // Per-phone populator. Pass '' for phone-a, '-b' / '-c' for clones — they
 // snapshot phone-a EARLY (before DOMContentLoaded fires) so this needs to be
-// called again after initPhoneB / initPhoneC to fill their skel screens.
+// scoped to phone-a only.
 function populateSkeletonHome(suffix) {
   suffix = suffix || '';
   var src = document.getElementById('homepage-connected' + suffix);
