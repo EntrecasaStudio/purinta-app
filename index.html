@@ -2572,6 +2572,15 @@
       55%  { opacity: 0.7; transform: translateY(4px); }
       80%, 100% { opacity: 0; transform: translateY(7px); }
     }
+    /* Upper-right tears project up-and-to-the-right (the drop shape already
+       points that way), so they fade out along that diagonal instead of
+       falling. */
+    @keyframes md-tear-up-right {
+      0%   { opacity: 0; transform: translate(-1px, 1px); }
+      15%  { opacity: 0.9; transform: translate(0, 0); }
+      55%  { opacity: 0.7; transform: translate(3px, -3px); }
+      80%, 100% { opacity: 0; transform: translate(6px, -6px); }
+    }
     @keyframes md-cheek-fever {
       0%, 100% { fill: #FEAAA4; }
       50%      { fill: var(--blush-600); }
@@ -2592,12 +2601,14 @@
       animation: md-tear-fall 4s ease-in 1.6s infinite;
       transform-box: fill-box; transform-origin: center;
     }
+    /* Drops 3 and 4 sit in the upper-right corner and project away from the
+       head (up-right). They follow that trajectory to dissolve. */
     .mascot-area.meltdown .emote-v2-melt svg .m-drop-3 {
-      animation: md-tear-fall 3.5s ease-in 0.9s infinite;
+      animation: md-tear-up-right 3.5s ease-in 0.9s infinite;
       transform-box: fill-box; transform-origin: center;
     }
     .mascot-area.meltdown .emote-v2-melt svg .m-drop-4 {
-      animation: md-tear-fall 4.2s ease-in 2.1s infinite;
+      animation: md-tear-up-right 4.2s ease-in 2.1s infinite;
       transform-box: fill-box; transform-origin: center;
     }
     .mascot-area.meltdown .emote-v2-melt svg .m-drop-5 {
@@ -2613,13 +2624,24 @@
       0%, 100% { transform: rotate(0deg) translateY(0); }
       50%      { transform: rotate(5deg) translateY(1.5px); }
     }
+    /* Quick fine tremor on top of the slow droop — uses the `translate:`
+       individual property so it composes with the droop's `transform:`. */
+    @keyframes md-hand-tremor {
+      0%, 100% { translate: 0 0; }
+      20%      { translate: -0.6px 0.4px; }
+      40%      { translate: 0.6px -0.3px; }
+      60%      { translate: -0.4px -0.5px; }
+      80%      { translate: 0.5px 0.5px; }
+    }
     .mascot-area.meltdown .emote-v2-melt svg .m-hand-l {
-      animation: md-hand-droop-l 3.8s ease-in-out infinite;
+      animation: md-hand-droop-l 3.8s ease-in-out infinite,
+                 md-hand-tremor 0.42s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: 50% 0%;
     }
     .mascot-area.meltdown .emote-v2-melt svg .m-hand-r {
-      animation: md-hand-droop-r 3.8s ease-in-out infinite -1.4s;
+      animation: md-hand-droop-r 3.8s ease-in-out infinite -1.4s,
+                 md-hand-tremor 0.4s ease-in-out infinite -0.18s;
       transform-box: fill-box;
       transform-origin: 50% 0%;
     }
@@ -2637,10 +2659,10 @@
     }
     .mascot-area.meltdown .emote-v2-melt svg .m-foot-l { transform-origin: 16px 60px; }
     .mascot-area.meltdown .emote-v2-melt svg .m-foot-r { transform-origin: 98px 56px; }
-    /* X eye: scale-pulse the cross WITHOUT rotating the eye */
+    /* X eye: pulse the cross from its full size DOWN to 50%, then back. */
     @keyframes md-eye-x-pulse {
       0%, 100% { transform: scale(1); }
-      50%      { transform: scale(1.18); }
+      50%      { transform: scale(0.5); }
     }
     /* Spiral eye rotates slowly — dizzy/passing-out vibe */
     @keyframes md-eye-spiral {
@@ -2666,7 +2688,10 @@
       55%       { opacity: 0.6; transform: scale(1.15); }
       80%       { opacity: 0; transform: scale(1.25); }
     }
-    .mascot-area.meltdown .emote-v2-melt svg .m-eye-x {
+    /* Pulse ONLY the X cross strokes inside the eye — the eyeball outline,
+       sclera and upper-lid stay completely static. The X is one path with
+       multiple sub-strokes; fill-box center pivots correctly around the X. */
+    .mascot-area.meltdown .emote-v2-melt svg .m-eye-x-cross {
       animation: md-eye-x-pulse 1.4s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center;
@@ -2703,16 +2728,61 @@
       animation: md-puddle-pop 3.2s ease-in-out 0.6s infinite;
       transform-box: fill-box; transform-origin: center;
     }
-    /* Drool strand stretching downward in a loop — anchored at the mouth */
+    /* Drool strands stretch downward in a loop, anchored at their attachment
+       point (mouth or coin slot). The mouth drool is more exaggerated; the
+       slot drool is calmer. */
     @keyframes md-drool-stretch {
       0%, 100% { transform: scaleY(1); }
       50%      { transform: scaleY(1.35); }
     }
+    @keyframes md-drool-stretch-strong {
+      0%, 100% { transform: scaleY(1); }
+      50%      { transform: scaleY(1.7); }
+    }
     .mascot-area.meltdown .emote-v2-melt svg .m-drool {
-      animation: md-drool-stretch 2.2s ease-in-out infinite;
+      animation: md-drool-stretch-strong 2s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center top;
     }
+    .mascot-area.meltdown .emote-v2-melt svg .m-drool-slot {
+      animation: md-drool-stretch 2.4s ease-in-out infinite -0.6s;
+      transform-box: fill-box;
+      transform-origin: center top;
+    }
+    /* Mouth tremor: the whole mouth complex (lines, drool, volume curves)
+       jitters slightly. Drool stretch compounds via individual `transform:`
+       on the child since parent uses `transform:` translate. */
+    @keyframes md-mouth-tremor {
+      0%, 100% { translate: 0 0; }
+      20%      { translate: -0.4px 0.3px; }
+      40%      { translate: 0.5px -0.2px; }
+      60%      { translate: -0.3px -0.4px; }
+      80%      { translate: 0.4px 0.4px; }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-mouth-group {
+      animation: md-mouth-tremor 0.45s ease-in-out infinite;
+    }
+    /* Melt strands on the body silhouette: appear, ooze down, fade. Each
+       strand has a slightly different delay so the body is continuously
+       dripping at staggered points. */
+    @keyframes md-melt-strand {
+      0%, 100% { opacity: 0; transform: translateY(0); }
+      20%      { opacity: 1; transform: translateY(0); }
+      55%      { opacity: 0.85; transform: translateY(2px); }
+      85%      { opacity: 0; transform: translateY(4px); }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-strand {
+      animation: md-melt-strand 4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center top;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-strand-1 { animation-delay: 0s; }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-strand-2 { animation-delay: 0.6s; }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-strand-3 { animation-delay: 1.2s; }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-strand-4 { animation-delay: 1.8s; }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-strand-5 { animation-delay: 2.4s; }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-strand-6 { animation-delay: 3s; }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-strand-7 { animation-delay: 3.5s; }
 
     @media (prefers-reduced-motion: reduce) {
       .mascot-area.is-punching .mascot-illustration { animation: none !important; }
@@ -2758,12 +2828,16 @@
       .mascot-area.meltdown .emote-v2-melt svg .m-hand-r,
       .mascot-area.meltdown .emote-v2-melt svg .m-foot-l,
       .mascot-area.meltdown .emote-v2-melt svg .m-foot-r,
-      .mascot-area.meltdown .emote-v2-melt svg .m-eye-x,
+      .mascot-area.meltdown .emote-v2-melt svg .m-eye-x-cross,
       .mascot-area.meltdown .emote-v2-melt svg .m-eye-spiral,
       .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow,
       .mascot-area.meltdown .emote-v2-melt svg [class^="m-melt"],
       .mascot-area.meltdown .emote-v2-melt svg [class^="m-puddle"],
-      .mascot-area.meltdown .emote-v2-melt svg .m-drool { animation: none; }
+      .mascot-area.meltdown .emote-v2-melt svg .m-drool,
+      .mascot-area.meltdown .emote-v2-melt svg .m-drool-slot,
+      .mascot-area.meltdown .emote-v2-melt svg .m-mouth-group,
+      .mascot-area.meltdown .emote-v2-melt svg [class*="m-melt-strand"] { animation: none; }
+      .mascot-area.meltdown .emote-v2-melt svg [class*="m-melt-strand"] { opacity: 1; }
       .mascot-area.meltdown .emote-v2-melt svg [class^="m-puddle"] { opacity: 1; }
       .mascot-area.looking-good .emote-v2-face svg .m-eye-open { opacity: 0; }
     }
