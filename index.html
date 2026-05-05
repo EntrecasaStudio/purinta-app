@@ -19,10 +19,23 @@
   <link rel="prefetch" href="assets/Emote-05-Meltdown.svg">
   <style>
     :root {
-    /* DS Type Scale (ratio 1.25, base 16) */
+    /* DS Type Scale (ratio 1.25, base 16) — matches Purinta/Primitives/Sizing/Size */
     --ds-3xs: 8px; --ds-2xs: 10px; --ds-xs: 13px; --ds-sm: 16px;
     --ds-md: 20px; --ds-lg: 25px; --ds-xl: 31px; --ds-2xl: 39px;
     --ds-3xl: 49px; --ds-4xl: 61px; --ds-5xl: 76px; --ds-6xl: 95px; --ds-7xl: 119px;
+    /* DS Space Scale — Purinta/Primitives/Sizing/Space (px). Use these for
+       gaps, paddings, margins. Tap-target floor is --ds-space-48 (Android
+       mid-range audience per Mar 2026 X analytics). */
+    --ds-space-2: 2px;  --ds-space-4: 4px;  --ds-space-6: 6px;  --ds-space-8: 8px;
+    --ds-space-10: 10px; --ds-space-12: 12px; --ds-space-14: 14px; --ds-space-16: 16px;
+    --ds-space-20: 20px; --ds-space-24: 24px; --ds-space-32: 32px;
+    --ds-space-40: 40px; --ds-space-48: 48px;
+    /* DS Radius Scale — Purinta/Primitives/Sizing/Radius (px) */
+    --ds-radius-8: 8px;  --ds-radius-12: 12px; --ds-radius-16: 16px; --ds-radius-24: 24px;
+    --ds-radius-28: 28px; --ds-radius-32: 32px; --ds-radius-40: 40px; --ds-radius-48: 48px;
+    --ds-radius-56: 56px; --ds-radius-full: 9999px;
+    /* DS Border Scale — Purinta/Primitives/Sizing/Border (px) */
+    --ds-border-1: 1px; --ds-border-1-5: 1.5px; --ds-border-2: 2px;
       /* Green — aligned to mascot SVG palette */
       --green-50: #F1F3E7; --green-100: #C8E4B0; --green-200: #9ECF84;
       --green-300: #78BA68; --green-400: #57A053; --green-500: #498746;
@@ -311,10 +324,26 @@
       display: flex; align-items: center; gap: 6px;
     }
     #phone-a .power-btn{ display: none; }
+
+    #phone-b .power-btn { display: none; }
     #phone-a .wallet-badge .wallet-dot{ display: none; }
+
+    #phone-b .wallet-badge .wallet-dot { display: none; }
     #phone-a .disconnect-dropdown{ display: none !important; }
+
+    #phone-b .disconnect-dropdown { display: none !important; }
     /* Pill Expand — wallet badge becomes expandable pill */
     #phone-a .wallet-badge{
+      padding: 8px 14px; border: 1px solid var(--cream-400);
+      cursor: pointer; white-space: nowrap;
+      display: flex; align-items: center; gap: 0;
+      min-height: 36px; box-sizing: border-box;
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.25s ease-in;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Pill Expand — wallet badge becomes expandable pill */
+    #phone-b .wallet-badge {
       padding: 8px 14px; border: 1px solid var(--cream-400);
       cursor: pointer; white-space: nowrap;
       display: flex; align-items: center; gap: 0;
@@ -325,7 +354,19 @@
     #phone-a .wallet-badge .wallet-address-text{
       display: flex; align-items: center;
     }
+
+    #phone-b .wallet-badge .wallet-address-text {
+      display: flex; align-items: center;
+    }
     #phone-a .wallet-badge .wallet-disconnect-zone{
+      display: flex; align-items: center; gap: 4px;
+      max-width: 0; opacity: 0; overflow: hidden; padding: 0;
+      color: var(--text-secondary); font-weight: 400; font-size: var(--ds-xs);
+      cursor: pointer; white-space: nowrap;
+      transition: max-width 0.3s ease-in, opacity 0.15s ease, padding 0.3s ease-in, color 0.2s ease;
+    }
+
+    #phone-b .wallet-badge .wallet-disconnect-zone {
       display: flex; align-items: center; gap: 4px;
       max-width: 0; opacity: 0; overflow: hidden; padding: 0;
       color: var(--text-secondary); font-weight: 400; font-size: var(--ds-xs);
@@ -337,7 +378,18 @@
       border-left: 1px solid transparent; margin-left: 0;
       transition: border-color 0.15s ease, margin-left 0.25s ease-in;
     }
+
+    #phone-b .wallet-badge .wallet-divider {
+      width: 0; height: 16px; flex-shrink: 0;
+      border-left: 1px solid transparent; margin-left: 0;
+      transition: border-color 0.15s ease, margin-left 0.25s ease-in;
+    }
     #phone-a .wallet-badge.expanded{
+      background: white; border-color: var(--cream-400);
+      box-shadow: var(--shadow-card);
+    }
+
+    #phone-b .wallet-badge.expanded {
       background: white; border-color: var(--cream-400);
       box-shadow: var(--shadow-card);
     }
@@ -349,11 +401,29 @@
       z-index: 50; padding-right: 0;
       transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out;
     }
+
+    never extends past the
+       phone's right margin). */
+    #phone-b:not(.desktop) .wallet-badge.expanded {
+      position: absolute; top: 50%; right: 0; transform: translateY(-50%);
+      z-index: 50; padding-right: 0;
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out;
+    }
     #phone-a .wallet-badge.expanded .wallet-divider {
       border-left-color: var(--cream-400); margin-left: 12px;
       transition: border-color 0.25s ease 0.1s, margin-left 0.35s ease-out;
     }
+
+    #phone-b .wallet-badge.expanded .wallet-divider {
+      border-left-color: var(--cream-400); margin-left: 12px;
+      transition: border-color 0.25s ease 0.1s, margin-left 0.35s ease-out;
+    }
     #phone-a .wallet-badge.expanded .wallet-disconnect-zone{
+      max-width: 140px !important; opacity: 1 !important; padding: 0 16px 0 10px !important; overflow: hidden !important;
+      transition: max-width 0.35s ease-out, opacity 0.25s ease 0.05s, padding 0.35s ease-out, color 0.2s ease;
+    }
+
+    #phone-b .wallet-badge.expanded .wallet-disconnect-zone {
       max-width: 140px !important; opacity: 1 !important; padding: 0 16px 0 10px !important; overflow: hidden !important;
       transition: max-width 0.35s ease-out, opacity 0.25s ease 0.05s, padding 0.35s ease-out, color 0.2s ease;
     }
@@ -363,12 +433,25 @@
       border-color: var(--cream-400);
       box-shadow: var(--shadow-card);
     }
+
+    /* Hover effects scoped to desktop-mode phones only. Mobile phones (touch)
+       show no hover/sticky-hover state on the wallet badge; the tap still opens it. */
+    #phone-b.desktop .wallet-badge:has(.wallet-disconnect-zone:hover) {
+      border-color: var(--cream-400);
+      box-shadow: var(--shadow-card);
+    }
     #phone-a.desktop .wallet-badge .wallet-disconnect-zone:hover{
+      color: var(--green-700);
+    }
+
+    #phone-b.desktop .wallet-badge .wallet-disconnect-zone:hover {
       color: var(--green-700);
     }
     .wallet-badge.no-transition,
     .wallet-badge.no-transition * { transition: none !important; }
     #phone-a.desktop .wallet-badge:hover:not(.expanded){ background: var(--mint-100) !important; color: var(--green-600) !important; border-color: var(--green-300) !important; box-shadow: var(--shadow-card) !important; }
+
+    #phone-b.desktop .wallet-badge:hover:not(.expanded) { background: var(--mint-100) !important; color: var(--green-600) !important; border-color: var(--green-300) !important; box-shadow: var(--shadow-card) !important; }
     /* All children pointer-events none when collapsed — click goes to badge */
     .wallet-badge:not(.expanded) > * { pointer-events: none; }
     .wallet-badge.expanded > .wallet-disconnect-zone { pointer-events: auto; }
@@ -498,6 +581,11 @@
     }
     /* Phone A — Figma brand-guidelines gradient (node 1708:135394): blush-50 → mint-50 at 102° */
     #homepage, #homepage-connected {
+      background: linear-gradient(102deg, var(--blush-50) 2.38%, var(--mint-50) 106.36%);
+    }
+
+    /* Phone A — Figma brand-guidelines gradient (node 1708:135394): blush-50 → mint-50 at 102° */
+    #homepage-b, #homepage-connected-b {
       background: linear-gradient(102deg, var(--blush-50) 2.38%, var(--mint-50) 106.36%);
     }
     .hero-section {
@@ -637,7 +725,13 @@
        than mint-50, keeping more tonal distance from the card's near-white bg.
        Boosted matches the same tint to keep "only the lighter green" across all rates. */
     #phone-a .token-rate-badge { background: var(--mint-100); }
+
+    keeping more tonal distance from the card's near-white bg.
+       Boosted matches the same tint to keep "only the lighter green" across all rates. */
+    #phone-b .token-rate-badge { background: var(--mint-100); }
     #phone-a .token-rate-badge--boosted { background: var(--mint-100); }
+
+    #phone-b .token-rate-badge--boosted { background: var(--mint-100); }
     /* Home "Option B" (phone-b) — variation for comparison vs Option A:
        · Flat background: all badges on mint-50 (boosted bg override to match non-boosted)
        · Sparkles still animate on viewport entry, but STAY visible at the end
@@ -841,6 +935,10 @@
     /* Option A positions cards: nudge the "i" up 1px and tighten 2px to the
        label on its left. Position: relative is layout-neutral so neighbors stay. */
     #phone-a .position-card .rate-info-icon { position: relative; top: -1px; margin-left: 2px; }
+
+    /* Option A positions cards: nudge the "i" up 1px and tighten 2px to the
+       label on its left. Position: relative is layout-neutral so neighbors stay. */
+    #phone-b .position-card .rate-info-icon { position: relative; top: -1px; margin-left: 2px; }
     /* Tooltip uses position: fixed so it escapes parent stacking contexts
        (position-card has z-index:1 → next card would otherwise cover the tooltip).
        JS positions it on hover/open via --tooltip-top and --tooltip-left
@@ -1108,6 +1206,14 @@
     }
 
     /* 5 drifting sparkle particles around the mascot on Done — mirrors the #confirm hero */
+    .bundle-mascot-sparkle {
+      position: absolute; width: 16px; height: 16px;
+      color: var(--green-400);
+      opacity: 0; pointer-events: none;
+    }
+
+
+    /* 5 drifting sparkle particles around the mascot on Done — mirrors the #confirm-b hero */
     .bundle-mascot-sparkle {
       position: absolute; width: 16px; height: 16px;
       color: var(--green-400);
@@ -1411,13 +1517,29 @@
          since the new design treats desktop and mobile identically. */
     /* Two mascot variants: default (happy) → swaps to done (bills) on .is-done */
     .bundle-mascot-default { display: none; }
+
+
+    /* ─── Option A redesign — only #phone-b ───
+       New flow per Figma 2006:151140 (desktop) / 2006:158406 (mobile):
+       · Mascot is visible from the start (happy variant) { display: none; }
     .bundle-mascot-done    { display: block; }
     #phone-a .bundle-mascot-default { display: block; }
+
+    #phone-b .bundle-mascot-default { display: block; }
     #phone-a .bundle-mascot-done    { display: none; }
+
+    #phone-b .bundle-mascot-done { display: none; }
     #phone-a .bundle-modal-overlay.is-done .bundle-mascot-default { display: none; }
+
+    #phone-b .bundle-modal-overlay.is-done .bundle-mascot-default { display: none; }
     #phone-a .bundle-modal-overlay.is-done .bundle-mascot-done    { display: block; }
+
+    #phone-b .bundle-modal-overlay.is-done .bundle-mascot-done { display: block; }
     /* Mascot container always open in option A, no max-height collapse */
     #phone-a .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
+
+    no max-height collapse */
+    #phone-b .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
     /* Mascot heights for option A — height drives the size, width auto-scales
        by SVG aspect. Confirmed (step 3) is larger than Begin to celebrate
        the success state. */
@@ -1425,12 +1547,25 @@
        doesn't grow or shift on Done. Container is pinned (above) for the same
        reason — swap is purely artwork, layout is locked. */
     #phone-a .bundle-mascot-img  { width: auto; height: 131px; max-height: 131px; }
+
+    layout is locked. */
+    #phone-b .bundle-mascot-img { width: auto; height: 131px; max-height: 131px; }
     #phone-a .bundle-mascot-done { height: 131px; }
+
+    #phone-b .bundle-mascot-done { height: 131px; }
     /* Re-fire the entry-pop on the done variant when it appears — same
        gelatinous rebound as option B, reinforcing the swap moment. The default
        mascot (already on screen) doesn't animate. */
     #phone-a .bundle-modal-overlay.is-done .bundle-mascot-default { animation: none; }
+
+    reinforcing the swap moment. The default
+       mascot (already on screen) doesn't animate. */
+    #phone-b .bundle-modal-overlay.is-done .bundle-mascot-default { animation: none; }
     #phone-a .bundle-modal-overlay.is-done .bundle-mascot-done {
+      animation: bundle-mascot-pop 1700ms cubic-bezier(0.45, 0, 0.55, 1) 0ms both;
+    }
+
+    #phone-b .bundle-modal-overlay.is-done .bundle-mascot-done {
       animation: bundle-mascot-pop 1700ms cubic-bezier(0.45, 0, 0.55, 1) 0ms both;
     }
     /* Blob also re-pops to amplify the moment, then settles into the idle float */
@@ -1438,15 +1573,33 @@
       animation: bundle-blob-pop   1400ms cubic-bezier(0.45, 0, 0.55, 1)   0ms both,
                  bundle-blob-float 5s    ease-in-out                    1400ms infinite;
     }
+
+    then settles into the idle float */
+    #phone-b .bundle-modal-overlay.is-done .bundle-mascot-blob {
+      animation: bundle-blob-pop   1400ms cubic-bezier(0.45, 0, 0.55, 1)   0ms both,
+                 bundle-blob-float 5s    ease-in-out                    1400ms infinite;
+    }
     /* Numbers don't morph between states — keep column layout + ds-2xl size */
     #phone-a .bundle-modal-overlay.is-done .bundle-row-value {
       flex-direction: column; align-items: center; gap: 2px;
     }
+
+    /* Numbers don't morph between states — keep column layout + ds-2xl size */
+    #phone-b .bundle-modal-overlay.is-done .bundle-row-value {
+      flex-direction: column; align-items: center; gap: 2px;
+    }
     #phone-a .bundle-modal-overlay.is-done .bundle-row-amount { font-size: var(--ds-2xl); }
+
+    #phone-b .bundle-modal-overlay.is-done .bundle-row-amount { font-size: var(--ds-2xl); }
     /* Done state on phone-a: keep the "&" separator visible (default hides it
        on .is-done). Sizing comes from the generic .phone.desktop .bundle-sep
        rule above (16px tall, 16px padding, 12px gap to "&"). */
     #phone-a .bundle-modal-overlay.is-done .bundle-sep {
+      max-height: 16px; opacity: 1; margin: initial;
+    }
+
+    12px gap to "&"). */
+    #phone-b .bundle-modal-overlay.is-done .bundle-sep {
       max-height: 16px; opacity: 1; margin: initial;
     }
 
@@ -1648,31 +1801,80 @@
     .token-dropdown-row .check-icon { width: 16px; height: 16px; flex-shrink: 0; }
     /* === Phone A — smaller pill token dropdown === */
     #phone-a .token-select-wrap{ width: 136px; height: 46px; }
+
+    /* === Phone A — smaller pill token dropdown === */
+    #phone-b .token-select-wrap { width: 136px; height: 46px; }
     /* Vertical padding made symmetric (was 5/3 — the icon read closer to
        the bottom in disabled state where the chevron's visual weight isn't
        there to balance). 4/4 puts the 28px icon dead-centre in the 40px
        min-height box and looks identical between active and disabled. */
     #phone-a .token-select-trigger{ min-width: 136px; min-height: 40px; padding: 4px 12px 4px 8px; gap: 6px; }
+
+    /* Vertical padding made symmetric (was 5/3 — the icon read closer to
+       the bottom in disabled state where the chevron's visual weight isn't
+       there to balance). 4/4 puts the 28px icon dead-centre in the 40px
+       min-height box and looks identical between active and disabled. */
+    #phone-b .token-select-trigger { min-width: 136px; min-height: 40px; padding: 4px 12px 4px 8px; gap: 6px; }
     #phone-a .token-select{ font-size: var(--ds-sm); }
+
+    #phone-b .token-select { font-size: var(--ds-sm); }
     #phone-a .token-select .mini-icon{ width: 28px; height: 28px; }
+
+    #phone-b .token-select .mini-icon { width: 28px; height: 28px; }
     #phone-a .token-select .token-name{ font-size: var(--ds-sm); line-height: 26px; }
+
+    #phone-b .token-select .token-name { font-size: var(--ds-sm); line-height: 26px; }
     #phone-a .token-select .chevron{ width: 10px; height: 8px; }
+
+    #phone-b .token-select .chevron { width: 10px; height: 8px; }
     #phone-a .token-dropdown{ padding: 2px 0 4px; }
+
+    #phone-b .token-dropdown { padding: 2px 0 4px; }
     #phone-a .token-dropdown-row{ padding: 5px 10px 5px 8px; font-size: var(--ds-xs); margin: 0 2px; gap: 6px; }
+
+    #phone-b .token-dropdown-row { padding: 5px 10px 5px 8px; font-size: var(--ds-xs); margin: 0 2px; gap: 6px; }
     #phone-a .token-dropdown-row .mini-icon{ width: 24px; height: 24px; }
+
+    #phone-b .token-dropdown-row .mini-icon { width: 24px; height: 24px; }
     #phone-a .token-dropdown-row .token-name{ font-size: var(--ds-xs); line-height: 21px; }
+
+    #phone-b .token-dropdown-row .token-name { font-size: var(--ds-xs); line-height: 21px; }
     #phone-a .token-dropdown-row.selected{ background: var(--cream-50); border-top: 1px solid var(--cream-300); border-bottom: 1px solid var(--cream-300); border-radius: 0; margin: 0; padding-left: 10px; padding-right: 6px; color: var(--cream-600); }
+
+    #phone-b .token-dropdown-row.selected { background: var(--cream-50); border-top: 1px solid var(--cream-300); border-bottom: 1px solid var(--cream-300); border-radius: 0; margin: 0; padding-left: 10px; padding-right: 6px; color: var(--cream-600); }
     #phone-a .token-dropdown-row.selected .mini-icon{ opacity: 0.5; }
+
+    #phone-b .token-dropdown-row.selected .mini-icon { opacity: 0.5; }
     #phone-a .token-dropdown-row .check-icon{ width: 14px; height: 14px; }
+
+    #phone-b .token-dropdown-row .check-icon { width: 14px; height: 14px; }
     /* Phone A — Borrow USDC badge text 16px */
     #phone-a .slider-token-badge{ font-size: var(--ds-sm); letter-spacing: 0.16px; }
+
+    /* Phone A — Borrow USDC badge text 16px */
+    #phone-b .slider-token-badge { font-size: var(--ds-sm); letter-spacing: 0.16px; }
     /* Phone A — token-select bg white (not cream-200), chevron cream-900 */
     #phone-a .token-select{ background: var(--neutral-50); box-shadow: none; }
+
+    chevron cream-900 */
+    #phone-b .token-select { background: var(--neutral-50); box-shadow: none; }
     #phone-a .token-select.open{ box-shadow: 2px 2px 4px 0 rgba(163,158,117,0.05); }
+
+    #phone-b .token-select.open { box-shadow: 2px 2px 4px 0 rgba(163,158,117,0.05); }
     #phone-a .token-select .chevron path{ fill: #8B8765 !important; stroke: #8B8765 !important; }
+
+    #phone-b .token-select .chevron path { fill: #8B8765 !important; stroke: #8B8765 !important; }
     /* Phone A — hide phosphor check, use Figma check asset via ::after */
     #phone-a .token-dropdown-row.selected .check-icon{ color: transparent !important; position: relative; width: 16px; height: 16px; }
+
+    use Figma check asset via ::after */
+    #phone-b .token-dropdown-row.selected .check-icon { color: transparent !important; position: relative; width: 16px; height: 16px; }
     #phone-a .token-dropdown-row.selected .check-icon::after{
+      content: ''; position: absolute; top: 0; left: 0; width: 16px; height: 16px;
+      background: url("assets/check-icon.svg") center/contain no-repeat;
+    }
+
+    #phone-b .token-dropdown-row.selected .check-icon::after {
       content: ''; position: absolute; top: 0; left: 0; width: 16px; height: 16px;
       background: url("assets/check-icon.svg") center/contain no-repeat;
     }
@@ -1683,10 +1885,24 @@
        hover edge stays sharp (matching the Figma desktop spec). Uses #phone-X.desktop
        so it wins specificity against the existing #phone-a/b token-dropdown rules. */
     #phone-a.desktop .token-dropdown{ padding: 0; }
+
+
+    while every other
+       hover edge stays sharp (matching the Figma desktop spec). Uses #phone-X.desktop
+       so it wins specificity against the existing #phone-b/b token-dropdown rules. */
+    #phone-b.desktop .token-dropdown { padding: 0; }
     #phone-a.desktop .token-dropdown-row{ margin: 0; border-radius: 0; }
+
+    #phone-b.desktop .token-dropdown-row { margin: 0; border-radius: 0; }
     #phone-a.desktop .token-dropdown-row:first-child{ margin-top: 0; }
+
+    #phone-b.desktop .token-dropdown-row:first-child { margin-top: 0; }
     #phone-a.desktop .token-dropdown-row:last-child{ margin-bottom: 0; }
+
+    #phone-b.desktop .token-dropdown-row:last-child { margin-bottom: 0; }
     #phone-a.desktop .token-dropdown-row.selected{ margin: 0; border-radius: 0; }
+
+    #phone-b.desktop .token-dropdown-row.selected { margin: 0; border-radius: 0; }
 
     /* ═══ BOTTOM SHEET (Option A mobile only) ═══
        Replaces the dropdown when tapping the market selector in the OP2 title.
@@ -1863,10 +2079,21 @@
       opacity: 1;
       border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
     }
+
+    gray text */
+    #phone-b .pct-btn.disabled {
+      opacity: 1;
+      border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
+    }
     /* Phone A — pct-btn disabled + active (selected) per Figma node 1467:170139:
        solid gray fill, no border, medium weight */
     #phone-a .pct-btn.disabled.active,
     #phone-a .pct-buttons.disabled .pct-btn.active{
+      border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
+    }
+
+    medium weight */
+    #phone-b .pct-btn.disabled.active, #phone-b .pct-buttons.disabled .pct-btn.active {
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
     /* Phone A — token-select disabled state (disconnected wallet).
@@ -1875,26 +2102,66 @@
        same size as the active state — without a visible boundary the
        eye reads only the inner text/icon and the pill looks shorter. */
     #phone-a .token-select.disabled{ border-color: var(--neutral-200) !important; pointer-events: none; }
+
+    /* Phone A — token-select disabled state (disconnected wallet).
+       Border token bumped from hardcoded #F0F0F0 (basically invisible on
+       neutral-50 bg) to --neutral-200 so the pill outline reads at the
+       same size as the active state — without a visible boundary the
+       eye reads only the inner text/icon and the pill looks shorter. */
+    #phone-b .token-select.disabled { border-color: var(--neutral-200) !important; pointer-events: none; }
     #phone-a .token-select.disabled .mini-icon{ opacity: 0.5; }
+
+    #phone-b .token-select.disabled .mini-icon { opacity: 0.5; }
     #phone-a .token-select.disabled .token-name{ color: var(--neutral-300); }
+
+    #phone-b .token-select.disabled .token-name { color: var(--neutral-300); }
     #phone-a .token-select.disabled .chevron path{ fill: #D6D2B2 !important; stroke: #D6D2B2 !important; }
+
+    #phone-b .token-select.disabled .chevron path { fill: #D6D2B2 !important; stroke: #D6D2B2 !important; }
     /* Phone A — slider disabled state (disconnected wallet in #borrow) */
     #phone-a #borrow .slider-track-bg{ background: #F0F0F0; }
+
+    /* Phone A — slider disabled state (disconnected wallet in #borrow-b) */
+    #phone-b #borrow-b .slider-track-bg { background: #F0F0F0; }
     #phone-a #borrow .slider-track-fill{ display: none; }
+
+    #phone-b #borrow-b .slider-track-fill { display: none; }
     #phone-a #borrow .slider-thumb{ display: none !important; }
+
+    #phone-b #borrow-b .slider-thumb { display: none !important; }
     /* Phone A — borrow-connected: disable Borrow section when Supply=0 */
     #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn{
+      pointer-events: none; border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
+    }
+
+    /* Phone A — borrow-connected: disable Borrow section when Supply=0 */
+    #phone-b #borrow-connected-b.supply-zero .slider-divider ~ .pct-buttons .pct-btn {
       pointer-events: none; border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
     }
     /* Disabled + active variant in borrow-connected (solid gray, medium) */
     #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn.active{
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
+
+    medium) */
+    #phone-b #borrow-connected-b.supply-zero .slider-divider ~ .pct-buttons .pct-btn.active {
+      border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
+    }
     #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track{ pointer-events: none; cursor: default; }
+
+    #phone-b #borrow-connected-b.supply-zero .slider-divider ~ .slider-track { pointer-events: none; cursor: default; }
     #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-bg{ background: #F0F0F0; }
+
+    #phone-b #borrow-connected-b.supply-zero .slider-divider ~ .slider-track .slider-track-bg { background: #F0F0F0; }
     #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-track-fill{ background: transparent; }
+
+    #phone-b #borrow-connected-b.supply-zero .slider-divider ~ .slider-track .slider-track-fill { background: transparent; }
     #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb path{ stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
+
+    #phone-b #borrow-connected-b.supply-zero .slider-divider ~ .slider-track .slider-thumb path { stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
     #phone-a #borrow-connected.supply-zero .btn-primary{ pointer-events: none; background: var(--mint-100); color: var(--green-200); box-shadow: none !important; border-color: transparent; }
+
+    #phone-b #borrow-connected-b.supply-zero .btn-primary { pointer-events: none; background: var(--mint-100); color: var(--green-200); box-shadow: none !important; border-color: transparent; }
     /* Icon inherits the green-200 color from the button — no opacity fade
        on disabled state, the color alone communicates the disabled look. */
     /* Supply thumb breathing glow — guides first action */
@@ -1907,8 +2174,17 @@
       animation-delay: 1s;
       transform-origin: center;
     }
+
+    #phone-b #borrow-connected-b.supply-zero .slider-label + .pct-buttons + .slider-track .slider-thumb {
+      animation: supplyBreath 1.8s ease-in-out infinite;
+      animation-delay: 1s;
+      transform-origin: center;
+    }
     /* Suppress breathing glow on Borrow slider thumb (only Supply should glow) */
     #phone-a #borrow-connected.supply-zero .slider-divider ~ .slider-track .slider-thumb{ animation: none !important; }
+
+    /* Suppress breathing glow on Borrow slider thumb (only Supply should glow) */
+    #phone-b #borrow-connected-b.supply-zero .slider-divider ~ .slider-track .slider-thumb { animation: none !important; }
 
     /* ═══ SUPPLY WARNING BANNER — token not in wallet ═══ */
     .supply-warning-banner {
@@ -1986,6 +2262,9 @@
     /* Ensure slider-section never stacks above the sticky banner */
     #phone-a #borrow-connected .slider-section{ position: relative; z-index: 1; }
 
+    /* Ensure slider-section never stacks above the sticky banner */
+    #phone-b #borrow-connected-b .slider-section { position: relative; z-index: 1; }
+
     /* Top mask — sticky cream strip that hides scrolling content above AND behind
        the banner's rounded corner cavities. Height 48px = 16px top gap + 32px banner radius.
        z-index 48 sits BELOW the banner (50) but ABOVE the widget (1), so the banner
@@ -2008,6 +2287,11 @@
     }
     /* Mask only appears when both conditions hold: no-funds active AND banner is stuck */
     .phone:not(.desktop) #borrow-connected.no-funds .banner-top-mask.stuck {
+      opacity: 1;
+    }
+
+    /* Mask only appears when both conditions hold: no-funds active AND banner is stuck */
+    .phone:not(.desktop) #borrow-connected-b.no-funds .banner-top-mask.stuck {
       opacity: 1;
     }
     /* Desktop: banner is still an absolute overlay inside the card (same
@@ -2037,16 +2321,36 @@
     #phone-a #borrow-connected.no-funds .pct-buttons:has(~ .slider-divider) .pct-btn{
       pointer-events: none; border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
     }
+
+
+    /* ═══ NO-FUNDS state: disable Supply section too (on top of supply-zero styles)
+           Uses :has() — targets elements BEFORE the .slider-divider (i.e. Supply side) ═══ */
+    #phone-b #borrow-connected-b.no-funds .pct-buttons:has(~ .slider-divider) .pct-btn {
+      pointer-events: none; border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
+    }
     #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider){ pointer-events: none; cursor: default; }
+
+    #phone-b #borrow-connected-b.no-funds .slider-track:has(~ .slider-divider) { pointer-events: none; cursor: default; }
     #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-bg{ background: #F0F0F0; }
+
+    #phone-b #borrow-connected-b.no-funds .slider-track:has(~ .slider-divider) .slider-track-bg { background: #F0F0F0; }
     #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-track-fill{ background: transparent; }
+
+    #phone-b #borrow-connected-b.no-funds .slider-track:has(~ .slider-divider) .slider-track-fill { background: transparent; }
     #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb path{ stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
+
+    #phone-b #borrow-connected-b.no-funds .slider-track:has(~ .slider-divider) .slider-thumb path { stroke: #CCCCCC !important; fill: var(--neutral-50) !important; }
     /* Suppress breathing glow when Supply is disabled (no funds) */
     #phone-a #borrow-connected.no-funds .slider-track:has(~ .slider-divider) .slider-thumb{ animation: none !important; }
+
+    /* Suppress breathing glow when Supply is disabled (no funds) */
+    #phone-b #borrow-connected-b.no-funds .slider-track:has(~ .slider-divider) .slider-thumb { animation: none !important; }
     /* State-driven: glow auto-stops when .supply-zero is removed (supply > 0)
        and resumes if supply returns to 0% — no .touched gating */
     @media (prefers-reduced-motion: reduce) {
       #phone-a #borrow-connected.supply-zero .slider-thumb{ animation: none !important; }
+
+      #phone-b #borrow-connected-b.supply-zero .slider-thumb { animation: none !important; }
     }
     .slider-divider {
       height: 1px; background: var(--cream-400); margin: 20px 0;
@@ -2381,10 +2685,23 @@
     #borrow .mascot-area::before,
     #borrow-connected .mascot-area::before,
     #update .mascot-area::before { display: none; }
+
+    /* Borrow + Modify screens: drop the foot shadow. The mascot sits very
+       close to the body copy in these layouts and the blurred ellipse was
+       reading as visual noise behind the message line — hurting legibility
+       of "Supply X and start printing" and the health-state text. Matches
+       the Figma source (node 222:4010). The shadow remains on screens
+       where there's more whitespace below the mascot (positions / 404). */
+    #borrow-b .mascot-area::before, #borrow-connected-b .mascot-area::before, #update-b .mascot-area::before { display: none; }
     /* Hide <object> mascots in Phone A until v2 emotes replace them — prevents size flash */
     /* Hide original <object> mascots in phone-a only (v2 transform replaces them).
        phone-b keeps its <object> tags as OP1 snapshot — do NOT hide. */
     #phone-a object.mascot-illustration { opacity: 0; }
+
+    /* Hide <object> mascots in Phone A until v2 emotes replace them — prevents size flash */
+    /* Hide original <object> mascots in phone-a only (v2 transform replaces them).
+       phone-b keeps its <object> tags as OP1 snapshot — do NOT hide. */
+    #phone-b object.mascot-illustration { opacity: 0; }
     .emote-v2.mascot-illustration { opacity: 1; }
     .mascot-area.happy .mascot-illustration { width: 130px; position: relative; top: 12px; }
     .mascot-area.happy img.mascot-illustration { width: 114px; top: 16px; animation: none; }
@@ -3383,17 +3700,30 @@
     }
     .empty-state-cta .btn { width: 100%; max-width: 260px; }
     #positions-empty.active, #positions-disconnected.active, #error-404.active { display: flex; flex-direction: column; min-height: 100%; }
+
+    #positions-empty-b.active, #positions-disconnected-b.active, #error-404-b.active { display: flex; flex-direction: column; min-height: 100%; }
     #positions-empty .mascot-area.happy img.mascot-illustration,
     #positions-disconnected .mascot-area.happy img.mascot-illustration { width: 158px; top: 40px; }
+
+    #positions-empty-b .mascot-area.happy img.mascot-illustration, #positions-disconnected-b .mascot-area.happy img.mascot-illustration { width: 158px; top: 40px; }
     /* Old white .mascot-blob and new SVG blob: drop the old one entirely;
        show the new gradient blob only on desktop (mobile renders mascot
        without a blob backdrop). Applies to both empty and disconnected. */
     #positions-empty .mascot-area.happy .mascot-blob,
     #positions-disconnected .mascot-area.happy .mascot-blob { display: none; }
+
+    /* Old white .mascot-blob and new SVG blob: drop the old one entirely;
+       show the new gradient blob only on desktop (mobile renders mascot
+       without a blob backdrop). Applies to both empty and disconnected. */
+    #positions-empty-b .mascot-area.happy .mascot-blob, #positions-disconnected-b .mascot-area.happy .mascot-blob { display: none; }
     #positions-empty .mascot-area.happy .mypositions-blob-img,
     #positions-disconnected .mascot-area.happy .mypositions-blob-img { display: none; }
+
+    #positions-empty-b .mascot-area.happy .mypositions-blob-img, #positions-disconnected-b .mascot-area.happy .mypositions-blob-img { display: none; }
     .phone.desktop #positions-empty .mascot-area.happy,
     .phone.desktop #positions-disconnected .mascot-area.happy { background: transparent !important; border: none !important; }
+
+    .phone.desktop #positions-empty-b .mascot-area.happy, .phone.desktop #positions-disconnected-b .mascot-area.happy { background: transparent !important; border: none !important; }
     /* Empty / Disconnected mascots are static "happy" — they never transition
        between health states, so the inherited 0.5s border-color transition
        just causes a dark-to-green flash when the breakpoint flips (desktop's
@@ -3402,17 +3732,32 @@
        these screens; the border lands at its final color immediately. */
     #positions-empty .mascot-area.happy,
     #positions-disconnected .mascot-area.happy { transition: none; }
+
+    which animates back to
+       green-200 over half a second on mobile). Kill the transition for
+       these screens; the border lands at its final color immediately. */
+    #positions-empty-b .mascot-area.happy, #positions-disconnected-b .mascot-area.happy { transition: none; }
     .phone.desktop #positions-empty .mascot-area.happy .mypositions-blob-img,
     .phone.desktop #positions-disconnected .mascot-area.happy .mypositions-blob-img {
       display: block; position: absolute; left: 50%; top: 50%;
       width: 185px; height: 160px; transform: translate(-50%, -50%);
       pointer-events: none; z-index: 0;
     }
+
+    .phone.desktop #positions-empty-b .mascot-area.happy .mypositions-blob-img, .phone.desktop #positions-disconnected-b .mascot-area.happy .mypositions-blob-img {
+      display: block; position: absolute; left: 50%; top: 50%;
+      width: 185px; height: 160px; transform: translate(-50%, -50%);
+      pointer-events: none; z-index: 0;
+    }
     .phone.desktop #positions-empty .mascot-area.happy img.mascot-illustration,
     .phone.desktop #positions-disconnected .mascot-area.happy img.mascot-illustration { width: 173px; top: 56px; }
+
+    .phone.desktop #positions-empty-b .mascot-area.happy img.mascot-illustration, .phone.desktop #positions-disconnected-b .mascot-area.happy img.mascot-illustration { width: 173px; top: 56px; }
     #positions-empty .app-footer,
     #positions-disconnected .app-footer,
     #error-404 .app-footer { margin-top: auto; }
+
+    #positions-empty-b .app-footer, #positions-disconnected-b .app-footer, #error-404-b .app-footer { margin-top: auto; }
     .positions-content { padding: 20px; }
     .positions-title {
       font-family: var(--font-display); font-weight: 500; font-size: var(--ds-lg);
@@ -3434,10 +3779,21 @@
     .position-card.supply-only:hover { border-color: var(--green-200); }
     /* Supply-only desktop card: simplified layout per Figma 951:54420 */
     #phone-a.desktop .position-card.supply-only .price-row{ display: none; }
+
+    /* Supply-only desktop card: simplified layout per Figma 951:54420 */
+    #phone-b.desktop .position-card.supply-only .price-row { display: none; }
     #phone-a.desktop .position-card.supply-only .health-row{ display: none; }
+
+    #phone-b.desktop .position-card.supply-only .health-row { display: none; }
     #phone-a.desktop .position-card.supply-only .stats-row{ border-bottom: none; padding-bottom: 0; }
+
+    #phone-b.desktop .position-card.supply-only .stats-row { border-bottom: none; padding-bottom: 0; }
     #phone-a.desktop .position-card.supply-only .position-spacer-top{ border-bottom: none; }
+
+    #phone-b.desktop .position-card.supply-only .position-spacer-top { border-bottom: none; }
     #phone-a.desktop .position-card.supply-only .position-buttons{ justify-content: center; }
+
+    #phone-b.desktop .position-card.supply-only .position-buttons { justify-content: center; }
     .position-header {
       display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
     }
@@ -3637,41 +3993,64 @@
     .phone.desktop #homepage-c,
     .phone.desktop #homepage-connected,
     .phone.desktop #homepage-connected-b { max-width: none; padding: 0 40px; }
+
+    .phone.desktop #homepage-b, .phone.desktop #homepage-connected-b { max-width: none; padding: 0 40px; }
     .phone.desktop #homepage-connected-c { max-width: none; padding: 0 40px; }
     .phone.desktop #confirm,
     .phone.desktop #confirm-b { max-width: none; padding: 0; }
+
+    .phone.desktop #confirm-b { max-width: none; padding: 0; }
     .phone.desktop #confirm-c { max-width: none; padding: 0; }
     #confirm.active, #confirm-b.active { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; }
+
+    #confirm-b.active { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; }
     #confirm.active, #confirm-c.active { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; }
+
+    #confirm-b.active { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 30; }
     #confirm > .modal-overlay, #confirm-b > .modal-overlay { height: 100%; }
+
+    #confirm-b > .modal-overlay { height: 100%; }
     #confirm > .modal-overlay, #confirm-c > .modal-overlay { height: 100%; }
+
+    #confirm-b > .modal-overlay { height: 100%; }
     .phone.desktop #homepage .hero-wrap,
     .phone.desktop #homepage-b .hero-wrap,
     .phone.desktop #homepage-c .hero-wrap,
     .phone.desktop #homepage-connected .hero-wrap,
     .phone.desktop #homepage-connected-b .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+    .phone.desktop #homepage-b .hero-wrap, .phone.desktop #homepage-connected-b .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
     .phone.desktop #homepage-connected-c .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
     .phone.desktop #homepage .hero-wrap .hero-section:last-child,
     .phone.desktop #homepage-b .hero-wrap .hero-section:last-child,
     .phone.desktop #homepage-c .hero-wrap .hero-section:last-child,
     .phone.desktop #homepage-connected .hero-wrap .hero-section:last-child,
     .phone.desktop #homepage-connected-b .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
+
+    .phone.desktop #homepage-b .hero-wrap .hero-section:last-child, .phone.desktop #homepage-connected-b .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
     .phone.desktop #homepage-connected-c .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
     .phone.desktop #homepage .hero-wrap .hero-title,
     .phone.desktop #homepage-b .hero-wrap .hero-title,
     .phone.desktop #homepage-c .hero-wrap .hero-title,
     .phone.desktop #homepage-connected .hero-wrap .hero-title,
     .phone.desktop #homepage-connected-b .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
+
+    .phone.desktop #homepage-b .hero-wrap .hero-title, .phone.desktop #homepage-connected-b .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
     .phone.desktop #homepage-connected-c .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
     .phone.desktop #homepage .hero-title .mini-icon,
     .phone.desktop #homepage-b .hero-title .mini-icon,
     .phone.desktop #homepage-c .hero-title .mini-icon,
     .phone.desktop #homepage-connected .hero-title .mini-icon,
     .phone.desktop #homepage-connected-b .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
+
+    .phone.desktop #homepage-b .hero-title .mini-icon, .phone.desktop #homepage-connected-b .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
     .phone.desktop #homepage-connected-c .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
     /* Phone A desktop: 32px gap between cards (brand spec) */
     .phone.desktop #homepage .token-list,
     .phone.desktop #homepage-connected .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 32px; max-width: none; }
+
+    /* Phone A desktop: 32px gap between cards (brand spec) */
+    .phone.desktop #homepage-b .token-list, .phone.desktop #homepage-connected-b .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 32px; max-width: none; }
     /* Phones B and C desktop: keep 16px gap */
     .phone.desktop #homepage-b .token-list,
     .phone.desktop #homepage-c .token-list,
@@ -3682,6 +4061,8 @@
     .phone.desktop #homepage-c .token-card,
     .phone.desktop #homepage-connected .token-card,
     .phone.desktop #homepage-connected-b .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
+
+    .phone.desktop #homepage-b .token-card, .phone.desktop #homepage-connected-b .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
     .phone.desktop #homepage-connected-c .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
     /* Skel-home clones #homepage-connected's markup at runtime, but the rules
        above are ID-scoped — replicate them for #skel-home* so the loading
@@ -3689,34 +4070,60 @@
     .phone.desktop #skel-home,
     .phone.desktop #skel-home-b,
     .phone.desktop #skel-home-c { max-width: none; padding: 0 40px; }
+
+    /* Skel-home clones #homepage-connected-b's markup at runtime, but the rules
+       above are ID-scoped — replicate them for #skel-home-b* so the loading
+       state matches the real desktop layout (horizontal hero, 3-col grid). */
+    .phone.desktop #skel-home-b { max-width: none; padding: 0 40px; }
     .phone.desktop #skel-home .hero-wrap,
     .phone.desktop #skel-home-b .hero-wrap,
     .phone.desktop #skel-home-c .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+    .phone.desktop #skel-home-b .hero-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
     .phone.desktop #skel-home .hero-wrap .hero-section:last-child,
     .phone.desktop #skel-home-b .hero-wrap .hero-section:last-child,
     .phone.desktop #skel-home-c .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
+
+    .phone.desktop #skel-home-b .hero-wrap .hero-section:last-child { padding: 0 !important; margin-top: 16px; position: relative; z-index: 2; }
     .phone.desktop #skel-home .hero-wrap .hero-title,
     .phone.desktop #skel-home-b .hero-wrap .hero-title,
     .phone.desktop #skel-home-c .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
+
+    .phone.desktop #skel-home-b .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
     .phone.desktop #skel-home .hero-title .mini-icon,
     .phone.desktop #skel-home-b .hero-title .mini-icon,
     .phone.desktop #skel-home-c .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
+
+    .phone.desktop #skel-home-b .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
     .phone.desktop #skel-home .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 32px; max-width: none; }
+
+    .phone.desktop #skel-home-b .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 32px; max-width: none; }
     .phone.desktop #skel-home-b .token-list,
     .phone.desktop #skel-home-c .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; max-width: none; }
     .phone.desktop #skel-home .token-card,
     .phone.desktop #skel-home-b .token-card,
     .phone.desktop #skel-home-c .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
 
+    .phone.desktop #skel-home-b .token-card { width: 320px; max-width: 320px; box-sizing: border-box; flex-shrink: 0; }
+
     .phone.desktop .app-header { height: 72px; box-sizing: border-box; padding-left: 0; padding-right: 0; }
     .phone.desktop .btn-connect { height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; font-size: var(--ds-sm); }
     #phone-a.desktop .wallet-badge{ height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.25s ease-in; }
+
+    #phone-b.desktop .wallet-badge { height: 44px; box-sizing: border-box; padding-left: 24px; padding-right: 24px; transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.25s ease-in; }
     #phone-a.desktop .wallet-badge.expanded{ padding-right: 0; transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out; }
+
+    #phone-b.desktop .wallet-badge.expanded { padding-right: 0; transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out; }
     #phone-a.desktop .wallet-badge.expanded .wallet-disconnect-zone{ padding-right: 24px !important; }
+
+    #phone-b.desktop .wallet-badge.expanded .wallet-disconnect-zone { padding-right: 24px !important; }
     .phone.desktop .hero { padding: 24px 0; }
     .phone.desktop .token-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 0; }
     
     #phone-a.desktop .positions-content{ padding-left: 0; padding-right: 0; }
+
+    
+    #phone-b.desktop .positions-content { padding-left: 0; padding-right: 0; }
     
     .phone.desktop #positions,
     .phone.desktop #positions-b,
@@ -3724,6 +4131,9 @@
     .phone.desktop #positions-empty,
     .phone.desktop #positions-disconnected,
     .phone.desktop #error-404 { max-width: none; padding: 0 40px; }
+
+    
+    .phone.desktop #positions-b, .phone.desktop #positions-empty-b, .phone.desktop #positions-disconnected-b, .phone.desktop #error-404-b { max-width: none; padding: 0 40px; }
     /* positions-empty and error-404 inherit the universal flex-column + margin-top:auto
        pattern from .phone.desktop .screen.active — but the #positions-empty.active /
        #error-404.active rule set min-height: 100% (for the mobile fixed-height phone),
@@ -3732,9 +4142,17 @@
     .phone.desktop #positions-empty.active,
     .phone.desktop #positions-disconnected.active,
     .phone.desktop #error-404.active { min-height: 100vh; }
+
+    /* positions-empty and error-404 inherit the universal flex-column + margin-top:auto
+       pattern from .phone.desktop .screen.active — but the #positions-empty-b.active /
+       #error-404-b.active rule set min-height: 100% (for the mobile fixed-height phone), which beats .phone.desktop .screen.active's min-height: 100vh by specificity.
+       Restore 100vh on desktop so the footer pushes to the viewport bottom. */
+    .phone.desktop #positions-empty-b.active, .phone.desktop #positions-disconnected-b.active, .phone.desktop #error-404-b.active { min-height: 100vh; }
     .phone.desktop #positions-empty .positions-content,
     .phone.desktop #positions-disconnected .positions-content,
     .phone.desktop #error-404 .positions-content { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }
+
+    .phone.desktop #positions-empty-b .positions-content, .phone.desktop #positions-disconnected-b .positions-content, .phone.desktop #error-404-b .positions-content { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }
     .phone.desktop #borrow,
     .phone.desktop #borrow-b,
     .phone.desktop #borrow-c,
@@ -3749,6 +4167,8 @@
     .phone.desktop #skel-update-c,
     .phone.desktop #update,
     .phone.desktop #update-b { max-width: none; padding: 0 40px; }
+
+    .phone.desktop #borrow-b, .phone.desktop #borrow-connected-b, .phone.desktop #skel-borrow-b, .phone.desktop #skel-update-b, .phone.desktop #update-b { max-width: none; padding: 0 40px; }
     .phone.desktop #update-c { max-width: none; padding: 0 40px; }
     .phone.desktop #borrow .borrow-content,
     .phone.desktop #borrow-b .borrow-content,
@@ -3770,6 +4190,8 @@
     .phone.desktop #skel-update-c .borrow-content,
     .phone.desktop #update .borrow-content,
     .phone.desktop #update-b .borrow-content { max-width: 720px; width: 100%; margin-left: auto; margin-right: auto; }
+
+    .phone.desktop #borrow-b .borrow-content, #phone-b.desktop #positions-b .positions-content, #phone-b.desktop #positions-empty-b .positions-content, #phone-b.desktop #error-404-b .positions-content, .phone.desktop #borrow-b .borrow-content, .phone.desktop #borrow-connected-b .borrow-content, .phone.desktop #skel-borrow-b .borrow-content, .phone.desktop #skel-update-b .borrow-content, .phone.desktop #update-b .borrow-content { max-width: 720px; width: 100%; margin-left: auto; margin-right: auto; }
     .phone.desktop #update-c .borrow-content { max-width: 720px; width: 100%; margin-left: auto; margin-right: auto; }
     .phone.desktop .update-arrow .old,
     .phone.desktop .update-arrow .new { flex-direction: row !important; gap: 4px; }
@@ -3814,6 +4236,15 @@
     .phone.desktop #skel-update-c .borrow-col-sidebar .mascot-area.happy .mascot-illustration {
       width: 111px; max-width: 111px; max-height: 120px;
     }
+
+    /* Borrow desktop initial state ONLY (the basic-money / .happy mascot with
+       the bill graphic): shrink the mascot pair by 20% to give the column
+       more breathing room. Health-state mascots (ultra-safe / looking-good /
+       getting-risky / danger-zone / meltdown) keep their original sizes.
+       Scoped to .mascot-area.happy so health emotes are unaffected. */
+    .phone.desktop #borrow-b .borrow-col-sidebar .mascot-area.happy .mascot-illustration, .phone.desktop #borrow-connected-b .borrow-col-sidebar .mascot-area.happy .mascot-illustration, .phone.desktop #skel-borrow-b .borrow-col-sidebar .mascot-area.happy .mascot-illustration, .phone.desktop #skel-update-b .borrow-col-sidebar .mascot-area.happy .mascot-illustration {
+      width: 111px; max-width: 111px; max-height: 120px;
+    }
     .phone.desktop #borrow .borrow-col-sidebar .mascot-area.happy .mascot-blob,
     .phone.desktop #borrow-connected .borrow-col-sidebar .mascot-area.happy .mascot-blob,
     .phone.desktop #skel-borrow .borrow-col-sidebar .mascot-area.happy .mascot-blob,
@@ -3822,6 +4253,10 @@
     .phone.desktop #skel-update .borrow-col-sidebar .mascot-area.happy .mascot-blob,
     .phone.desktop #skel-update-b .borrow-col-sidebar .mascot-area.happy .mascot-blob,
     .phone.desktop #skel-update-c .borrow-col-sidebar .mascot-area.happy .mascot-blob {
+      width: 112px; height: 86px;
+    }
+
+    .phone.desktop #borrow-b .borrow-col-sidebar .mascot-area.happy .mascot-blob, .phone.desktop #borrow-connected-b .borrow-col-sidebar .mascot-area.happy .mascot-blob, .phone.desktop #skel-borrow-b .borrow-col-sidebar .mascot-area.happy .mascot-blob, .phone.desktop #skel-update-b .borrow-col-sidebar .mascot-area.happy .mascot-blob {
       width: 112px; height: 86px;
     }
     /* Meltdown mascot is 10% smaller than the rest — beats the sidebar's 139px
@@ -3840,16 +4275,26 @@
     /* Desktop horizontal position cards — v4 layout (phone-a only) */
     .position-card-inner { display: none; }
     #phone-a.desktop .position-card-inner{ display: flex; align-items: flex-start; }
+
+    #phone-b.desktop .position-card-inner { display: flex; align-items: flex-start; }
     .position-card-inner > .card-icon { display: none; }
     #phone-a.desktop .position-card-inner > .card-icon{ display: flex; width: 42px; height: 42px; flex-shrink: 0; margin-right: 8px; margin-top: 7px; }
+
+    #phone-b.desktop .position-card-inner > .card-icon { display: flex; width: 42px; height: 42px; flex-shrink: 0; margin-right: 8px; margin-top: 7px; }
     #phone-a.desktop .supply-row .mini-icon{ display: none; }
+
+    #phone-b.desktop .supply-row .mini-icon { display: none; }
     #phone-a.desktop .position-card{ padding: 33px; padding-right: 65px; border-radius: 40px; }
+
+    #phone-b.desktop .position-card { padding: 33px; padding-right: 65px; border-radius: 40px; }
     #phone-a.desktop .position-card .position-header,
     #phone-a.desktop .position-card .position-stats,
     #phone-a.desktop .position-card .position-divider,
     #phone-a.desktop .position-card .detail-row,
     #phone-a.desktop .position-card .health-section,
     #phone-a.desktop .position-card .position-actions{ display: none !important; }
+
+    #phone-b.desktop .position-card .position-header, #phone-b.desktop .position-card .position-stats, #phone-b.desktop .position-card .position-divider, #phone-b.desktop .position-card .detail-row, #phone-b.desktop .position-card .health-section, #phone-b.desktop .position-card .position-actions { display: none !important; }
     /* — Left content column — */
     .position-left { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
     /* — Row 1: Supply (token info) — */
@@ -3860,6 +4305,8 @@
     }
     .supply-row .mini-icon { width: 42px; height: 42px; border-radius: 21px; flex-shrink: 0; }
     #phone-a.desktop .supply-row{ padding: 0; }
+
+    #phone-b.desktop .supply-row { padding: 0; }
     .supply-info { display: flex; flex-direction: column; gap: 2px; }
     .supply-label { font-family: var(--font-ui); font-size: var(--ds-2xs); color: var(--text-secondary); line-height: 18px; }
     .supply-value { display: flex; align-items: center; gap: 8px; }
@@ -3875,6 +4322,8 @@
     /* — Row 3: Prices — */
     .price-row { display: flex; gap: 24px; align-items: flex-start; min-height: 38px; }
     #phone-a.desktop .price-row > .detail-item{ flex: 1 !important; min-width: 0; }
+
+    #phone-b.desktop .price-row > .detail-item { flex: 1 !important; min-width: 0; }
     /* — Spacer column — */
     .position-spacer { width: 32px; flex-shrink: 0; align-self: stretch; display: flex; flex-direction: column; }
     .position-spacer-top { height: 57.6px; border-bottom: 1px solid var(--cream-300); }
@@ -3948,6 +4397,10 @@
     .phone.desktop #skel-positions, .phone.desktop #skel-positions-b, .phone.desktop #skel-positions-c {
       max-width: none; padding: 0 40px;
     }
+
+    .phone.desktop #skel-positions-b .positions-content, .phone.desktop #skel-positions-b {
+      max-width: none; padding: 0 40px;
+    }
     /* Switch Network — modal screen with dimmed backdrop and centered card.
        Hide the bottom-nav while it's active so the modal feels like an
        overlay rather than another routable page. */
@@ -3955,7 +4408,17 @@
       display: flex; align-items: center; justify-content: center;
       position: relative; padding: 20px;
     }
+
+    /* Switch Network — modal screen with dimmed backdrop and centered card.
+       Hide the bottom-nav while it's active so the modal feels like an
+       overlay rather than another routable page. */
+    #switch-network-b.active {
+      display: flex; align-items: center; justify-content: center;
+      position: relative; padding: 20px;
+    }
     .phone:has(#switch-network.active) .bottom-nav { display: none; }
+
+    .phone:has(#switch-network-b.active) .bottom-nav { display: none; }
     .switch-network-scrim {
       position: absolute; inset: 0;
       background: rgba(24, 82, 41, 0.6);
@@ -4037,10 +4500,26 @@
       box-shadow: none;
       min-width: 77px;
     }
+
+
+    /* Skel home: turn the entire token-rate-badge corner into a skeleton —
+       keeps its curved shape (0 32px 0 32px) and Figma width (~77px) but
+       overrides the mint fill with the shimmer gradient. Op A (phone-a) is
+       neutral; Op B (phone-b/c) is cream. */
+    #skel-home-b .token-rate-badge {
+      background: linear-gradient(90deg,
+        var(--neutral-200) 0%, var(--neutral-300) 50%, var(--neutral-200) 100%);
+      background-size: 200% 100%;
+      animation: skel-shimmer 1.7s ease-in-out infinite;
+      box-shadow: none;
+      min-width: 77px;
+    }
     @media (prefers-reduced-motion: reduce) {
       #skel-home .token-rate-badge,
       #skel-home-b .token-rate-badge,
       #skel-home-c .token-rate-badge { animation: none; background: var(--neutral-200); }
+
+      #skel-home-b .token-rate-badge { animation: none; background: var(--neutral-200); }
     }
     /* All buttons inside skeleton screens read as disabled. Just lock
        interaction — no opacity fade. Each button variant (btn-primary,
@@ -4050,6 +4529,12 @@
     #skel-home   .btn:disabled, #skel-borrow   .btn:disabled, #skel-update   .btn:disabled, #skel-positions   .btn:disabled,
     #skel-home-b .btn:disabled, #skel-borrow-b .btn:disabled, #skel-update-b .btn:disabled, #skel-positions-b .btn:disabled,
     #skel-home-c .btn:disabled, #skel-borrow-c .btn:disabled, #skel-update-c .btn:disabled, #skel-positions-c .btn:disabled {
+      cursor: not-allowed; pointer-events: none; filter: none !important;
+    }
+
+    so layering opacity on top only muddies the
+       intended colors. */
+    #skel-home-b   .btn:disabled, #skel-borrow-b   .btn:disabled, #skel-update-b   .btn:disabled, #skel-positions-b   .btn:disabled {
       cursor: not-allowed; pointer-events: none; filter: none !important;
     }
   </style>
@@ -4092,6 +4577,7 @@
       <summary class="dev-nav-label"><span class="nav-emoji">🅰️</span>Option</summary>
       <div class="dev-nav-group option-nav">
         <button class="opt-toggle active" onclick="setOption('a')">A &mdash; Spec</button>
+        <button class="opt-toggle" onclick="setOption('b')">B &mdash; Variations</button>
         <button class="opt-toggle" onclick="setOption('c')">Reduced Data</button>
       </div>
     </details>
@@ -5702,11 +6188,17 @@
   </nav>
 </div>
 </div>
+<div class="phone-wrap hidden" id="wrap-b">
+  <div class="phone-label">B</div>
+  <div class="phone" id="phone-b"></div>
+</div>
 </div>
 
 <script>
 /* ═══ OPTION MODES ═══
-   A = phone-a default render
+   A = phone-a default render (canonical)
+   B = phone-b live clone of A + Op B-specific overrides (compact-borrow
+       mobile, etc.) layered as #phone-b CSS rules on top
    C = phone-a with .reduced-data-mode class on <html> (slow connection /
        low-end device simulation; kills animations + uses lower-fidelity
        backgrounds via CSS) */
@@ -5715,8 +6207,16 @@ function setOption(mode, save) {
   if (save !== false) localStorage.setItem('purinta-opt', mode);
   var btns = document.querySelectorAll('.opt-toggle');
   btns.forEach(function(b) { b.classList.remove('active'); });
-  var idx = { a: 0, c: 1 }[mode];
+  var idx = { a: 0, b: 1, c: 2 }[mode];
   if (btns[idx]) btns[idx].classList.add('active');
+  // a / c render phone-a; b renders phone-b (cloned from a)
+  var wrapA = document.getElementById('wrap-a');
+  var wrapB = document.getElementById('wrap-b');
+  var showA = mode === 'a' || mode === 'c';
+  var showB = mode === 'b';
+  if (wrapA) wrapA.classList.toggle('hidden', !showA);
+  if (wrapB) wrapB.classList.toggle('hidden', !showB);
+  if (showB && typeof initPhoneB === 'function') initPhoneB();
   // Reduced-data simulation. Honour real-device signals too — if the user's
   // browser/OS already indicates reduced-data (saveData, slow connection,
   // low memory, low cores, or the media-query preference), the class stays
@@ -5728,6 +6228,145 @@ function setOption(mode, save) {
   // Sync breakpoint
   var bp = parseInt(localStorage.getItem('purinta-bp')) || 360;
   setBreakpoint(bp, false);
+}
+
+/* Generate a "bridge" stylesheet that mirrors every CSS rule targeting a
+   phone-a screen ID (#positions-empty, #borrow-connected, etc.) to its
+   `-b` counterpart so the cloned phone-b screens inherit identical styling.
+   Reads the inline <style> textContent directly (some browsers throw
+   SecurityError on cssRules for inline stylesheets). Runs once per session. */
+function injectPhoneBBridgeStylesheet() {
+  if (document.getElementById('phone-b-bridge')) return;
+  var SCREEN_IDS = [
+    'homepage-connected', 'homepage',
+    'borrow-connected', 'borrow',
+    'positions-disconnected', 'positions-empty', 'positions',
+    'update', 'switch-network', 'error-404', 'confirm',
+    'loading-loop', 'loading',
+    'skel-home', 'skel-borrow', 'skel-update', 'skel-positions'
+  ];
+  var idPattern = new RegExp('#(' + SCREEN_IDS.join('|') + ')(?![\\w-])', 'g');
+  // Find the largest <style> element — that's the main app stylesheet.
+  var styles = document.querySelectorAll('style');
+  if (!styles.length) return;
+  var mainStyle = Array.from(styles).reduce(function(a, b) {
+    return (a.textContent.length > b.textContent.length) ? a : b;
+  });
+  var css = mainStyle.textContent;
+  var newRules = [];
+  // Walk the CSS one rule at a time. Track @media/@supports nesting so we
+  // can re-emit -b peers inside the same wrapper. Simple bracket-counter
+  // tokenizer (no need for a full CSS AST — selectors and bodies are well
+  // delimited by `{` and `}` in the canonical inline stylesheet).
+  var pos = 0;
+  var len = css.length;
+  function processBlock(closingChar) {
+    while (pos < len) {
+      // Skip whitespace
+      while (pos < len && /\s/.test(css[pos])) pos++;
+      if (pos >= len) break;
+      if (closingChar && css[pos] === closingChar) { pos++; return; }
+      // @-rule?
+      if (css[pos] === '@') {
+        var atStart = pos;
+        // Read until `;` (statement) or `{` (block)
+        while (pos < len && css[pos] !== ';' && css[pos] !== '{') pos++;
+        if (css[pos] === ';') { pos++; continue; }
+        // It's a block @-rule (e.g. @media). Capture prefix + recurse into block.
+        var atPrefix = css.substring(atStart, pos).trim();
+        pos++; // skip {
+        var savedRules = newRules;
+        newRules = [];
+        processBlock('}');
+        var innerRules = newRules;
+        newRules = savedRules;
+        if (innerRules.length) {
+          newRules.push(atPrefix + ' {\n  ' + innerRules.join('\n  ') + '\n}');
+        }
+        continue;
+      }
+      // Regular rule — read selector until `{`
+      var selStart = pos;
+      while (pos < len && css[pos] !== '{' && css[pos] !== '}') pos++;
+      if (pos >= len || css[pos] === '}') return;
+      var selector = css.substring(selStart, pos).trim();
+      pos++; // skip {
+      // Read body until matching `}` (no nesting in CSS rule bodies)
+      var bodyStart = pos;
+      while (pos < len && css[pos] !== '}') pos++;
+      var body = css.substring(bodyStart, pos).trim();
+      if (pos < len) pos++; // skip }
+      // Process selector — emit a peer if any segment contains a screen ID
+      var parts = selector.split(',');
+      var bParts = [];
+      parts.forEach(function(p) {
+        var trimmed = p.trim();
+        if (!trimmed) return;
+        if (trimmed.indexOf('#phone-b') !== -1) return; // already has phone-b peer
+        idPattern.lastIndex = 0;
+        if (!idPattern.test(trimmed)) return;
+        idPattern.lastIndex = 0;
+        var bPart = trimmed.replace(idPattern, function(_m, sid) { return '#' + sid + '-b'; });
+        bPart = bPart.replace(/#phone-a/g, '#phone-b');
+        if (bPart !== trimmed) bParts.push(bPart);
+      });
+      if (bParts.length) {
+        newRules.push(bParts.join(', ') + ' { ' + body + ' }');
+      }
+    }
+  }
+  processBlock(null);
+  if (!newRules.length) return;
+  var style = document.createElement('style');
+  style.id = 'phone-b-bridge';
+  style.textContent = '/* Auto-generated phone-b screen-ID peers (' + newRules.length + ' rules) */\n' + newRules.join('\n');
+  document.head.appendChild(style);
+}
+
+/* ═══ Op B = identity clone of Phone A + #phone-b CSS overrides ═══ */
+function initPhoneB() {
+  var phoneA = document.getElementById('phone-a');
+  var phoneB = document.getElementById('phone-b');
+  if (!phoneA || !phoneB) return;
+  // Auto-generate -b peer rules for every CSS rule targeting screen IDs.
+  injectPhoneBBridgeStylesheet();
+  // Live clone phone-a's current DOM into phone-b.
+  phoneB.innerHTML = phoneA.innerHTML;
+  // Suffix every ID with -b to avoid collisions with phone-a.
+  phoneB.querySelectorAll('[id]').forEach(function(el) { el.id = el.id + '-b'; });
+  // Reset .active flags; mirror phone-a's currently active screen.
+  phoneB.querySelectorAll('.screen').forEach(function(s) {
+    s.classList.remove('active'); s.classList.remove('bg-screen');
+  });
+  var activeA = phoneA.querySelector('.screen.active');
+  if (activeA) {
+    var targetB = document.getElementById(activeA.id + '-b');
+    if (targetB) targetB.classList.add('active');
+  }
+  // Drop any cloned loading overlays.
+  phoneB.querySelectorAll('.loading-screen-overlay').forEach(function(el) { el.remove(); });
+  // V2 emote bodies — fill any empty .emote-v2-body slots from v2BodySvg.
+  if (typeof v2BodySvg !== 'undefined' && v2BodySvg) {
+    phoneB.querySelectorAll('.emote-v2').forEach(function(container) {
+      var bodyEl = container.querySelector('.emote-v2-body');
+      if (bodyEl && !bodyEl.innerHTML.trim()) bodyEl.innerHTML = v2BodySvg;
+      var ek = container.dataset && container.dataset.activeEmote;
+      if (ek && typeof v2ExprParts !== 'undefined' && v2ExprParts[ek] && typeof applyV2Expression === 'function') {
+        applyV2Expression(container, ek);
+      }
+    });
+  }
+  // Sparkle observer + token-label rewrites (re-attach to phone-b nodes).
+  if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
+  if (typeof rewritePositionTokenLabels === 'function') rewritePositionTokenLabels(phoneB);
+  // Repopulate skel screens (their static markup is empty).
+  if (typeof populateSkeletonHome === 'function') populateSkeletonHome('-b');
+  if (typeof populateSkeletonBorrow === 'function') populateSkeletonBorrow('-b');
+  if (typeof populateSkeletonUpdate === 'function') populateSkeletonUpdate('-b');
+  if (typeof populateSkeletonPositions === 'function') populateSkeletonPositions('-b');
+  if (typeof populatePositionsDisconnected === 'function') populatePositionsDisconnected('-b');
+  // Bottom-nav shadow wiring on scroll inside phone-b.
+  if (typeof attachNavShadowScroll === 'function') attachNavShadowScroll(phoneB);
 }
 
 // On boot: detect ANY indicator that the user is on a constrained device
@@ -6965,6 +7604,13 @@ function showScreen(id) {
   phoneA.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.classList.remove('bg-screen'); });
   document.getElementById(id).classList.add('active');
   phoneA.style.overflow = '';
+  // Mirror active screen to phone-b if it's been initialized.
+  var phoneB = document.getElementById('phone-b');
+  if (phoneB && phoneB.hasChildNodes()) {
+    phoneB.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active', 'bg-screen'); });
+    var targetB = document.getElementById(id + '-b');
+    if (targetB) targetB.classList.add('active');
+  }
   document.querySelectorAll('.screen-nav button').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.screen-nav .dev-folder').forEach(d => d.classList.remove('has-active'));
   // Match by onclick payload — folder layout means index-based lookup is
@@ -7064,9 +7710,10 @@ document.addEventListener('DOMContentLoaded', function() {
 // Wallet-disconnected state for #positions — same layout/graphic as empty,
 // different copy + Connect CTA, and a disconnected header (Connect button in
 // place of the wallet-address badge).
-function populatePositionsDisconnected() {
-  var src = document.getElementById('positions-empty');
-  var dst = document.getElementById('positions-disconnected');
+function populatePositionsDisconnected(suffix) {
+  suffix = suffix || '';
+  var src = document.getElementById('positions-empty' + suffix);
+  var dst = document.getElementById('positions-disconnected' + suffix);
   if (!src || !dst) return;
   dst.innerHTML = src.innerHTML;
   // Swap the header's connected widget (wallet-badge + power button) for the
@@ -7926,6 +8573,13 @@ function parseV2Emote(svgString, emoteKey) {
             applyV2Expression(container, ek);
           }
         });
+        // If Op B was already initialized BEFORE V2 finished loading, phone-b
+        // was cloned with the old <object> mascots. Re-run initPhoneB now so
+        // it re-clones phone-a's freshly V2-fied DOM.
+        if (localStorage.getItem('purinta-opt') === 'b' && typeof initPhoneB === 'function') {
+          var wrapB = document.getElementById('wrap-b');
+          if (wrapB && !wrapB.classList.contains('hidden')) initPhoneB();
+        }
         // Re-sync health mascot now that emotes are ready (fixes race condition on initial load)
         if (typeof updateHealthMascot === 'function') updateHealthMascot();
       }
