@@ -5933,10 +5933,15 @@ function punchActiveMascot() {
     setTimeout(function() { area.classList.remove('is-punching'); }, 260);
   });
 }
-// Replay the wallet-connect celebration on demand (dev-nav button). Resets
-// the once-per-session flag and re-runs the burst on the active screen.
+// Replay the wallet-connect celebration on demand (dev-nav button). Adds
+// `.is-celebrating` directly so the keyframe re-fires; does NOT touch the
+// `showScreen._celebratedConnect` flag, because if it did, every later
+// `showScreen('borrow-connected')` (e.g. clicking Ultra Safe in the nav,
+// which routes through showScreen) would re-trigger the auto-celebration
+// — exactly the bug we want to avoid. The auto-celebration stays
+// strictly once-per-session; replay is a manual override that doesn't
+// disturb that flag.
 function replayConnectCelebration() {
-  showScreen._celebratedConnect = false;
   var active = document.querySelector('.screen.active');
   if (!active) return;
   active.querySelectorAll('.mascot-area').forEach(function(area) {
@@ -6966,6 +6971,13 @@ function setBorrowHealth(level) {
 // wallet-connect celebration replays so this view is also a good place to
 // review that animation.
 function setBorrowInitial() {
+  // Capture the once-per-session flag BEFORE showScreen flips it. If this
+  // is the user's first visit to a -connected screen, showScreen will
+  // auto-fire the celebration on its own — we don't want a manual replay
+  // on top, that'd restart the animation mid-flight. If the flag was
+  // already set (subsequent clicks on Initial), we DO want a manual replay
+  // because showScreen will skip its auto path.
+  var alreadyCelebrated = !!showScreen._celebratedConnect;
   showScreen('borrow-connected');
   ['', '-b', '-c'].forEach(function(sfx) {
     var screenId = 'borrow-connected' + sfx;
@@ -6986,11 +6998,13 @@ function setBorrowInitial() {
     });
   });
   _markStateBtnActive('setBorrowInitial', null);
-  // Replay the connect celebration so this view doubles as a way to
-  // review/repeat the animation without needing a full reload.
-  setTimeout(function() {
-    if (typeof replayConnectCelebration === 'function') replayConnectCelebration();
-  }, 120);
+  if (alreadyCelebrated) {
+    // showScreen won't fire the burst this time; do it manually so this
+    // entry point doubles as a way to re-watch the connect animation.
+    setTimeout(function() {
+      if (typeof replayConnectCelebration === 'function') replayConnectCelebration();
+    }, 120);
+  }
 }
 function setModifyHealth(level) {
   showScreen('update');
