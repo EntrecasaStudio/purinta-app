@@ -192,6 +192,21 @@
       background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); transition: all 0.15s; }
     .dev-nav-group button:hover { background: rgba(255,255,255,0.12); color: white; border-color: rgba(255,255,255,0.2); }
     .dev-nav-group button.active { background: var(--green-700); color: white; border-color: var(--green-600); }
+    /* Secondary-tier active state for buttons that don't navigate to a new
+       SCREEN, just toggle a sub-state on the current one (Initial state +
+       all the emote health levels in Borrow / Modify folders). The solid
+       green-700 fill is reserved for the screen-level navigation; these
+       sub-items get an outlined + subtle-fill treatment so the visual
+       hierarchy reads "primary nav active" vs "sub-state active" at a
+       glance. Selectors target onclick contents so we don't need to touch
+       the HTML for every button. */
+    .dev-nav-group button[onclick*="setBorrowHealth"].active,
+    .dev-nav-group button[onclick*="setBorrowInitial"].active,
+    .dev-nav-group button[onclick*="setModifyHealth"].active {
+      background: rgba(105, 170, 138, 0.16);
+      color: var(--green-300);
+      border-color: var(--green-500);
+    }
     .dev-nav-group button:active { transform: scale(0.95); }
     .dev-nav-group button.bp-secondary { font-size: 9px; padding: 3px 7px; opacity: 0.55; border-style: dashed; }
     .dev-nav-group button.bp-secondary.active { opacity: 1; background: var(--green-600); }
@@ -2211,59 +2226,58 @@
     .mascot-area.is-celebrating .mascot-blob {
       animation: blob-celebrate-flash 2.6s ease-out forwards;
     }
+    /* The mascot character also reacts — a kawaii squash-and-leap so the
+       celebration is felt on the mascot itself, not just the rays. This
+       matters most in the initial-state of borrow-connected (basic-money
+       emote) where the mascot has no internal idle animations of its own;
+       without this the "replay" looked like only the background moved.
+       Uses `scale:` and `translate:` individual properties so it overrides
+       the running mascot-bob without conflict. */
+    @keyframes mascot-celebrate {
+      0%   { scale: 1;       translate: 0 0;    }
+      18%  { scale: 1.08 0.92; translate: 0 3px; }   /* squash down */
+      40%  { scale: 0.94 1.12; translate: 0 -12px; } /* leap up */
+      62%  { scale: 1.04 0.96; translate: 0 -4px; }
+      82%  { scale: 0.99 1.01; translate: 0 1px; }
+      100% { scale: 1;       translate: 0 0;    }
+    }
+    .mascot-area.is-celebrating .mascot-illustration {
+      animation: mascot-celebrate 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
     .mascot-area.is-celebrating .blob-sunburst-rotor,
     .mascot-area.is-celebrating .blob-sunburst-shimmer {
       animation-play-state: running;
     }
     .mascot-area.is-celebrating .blob-sunburst-vignette { opacity: 1; }
-    /* #10 — Honour prefers-reduced-data: this is the "user is on a $50
-       phone in Lagos" signal more than a stylistic preference. We
-       aggressively cut CPU + GPU work — disable every loop animation that
-       isn't load-bearing for understanding the screen, and drop the
-       expensive `filter: blur` on the foot shadow. Rays + radial backdrops
-       stay visible (just static); cheeks/flush still change colour, but
-       not on a loop; mascot stops bobbing.
-       Both the OS preference (`prefers-reduced-data: reduce`) and the
-       dev-nav "C — Reduced Data" option flip a single class on `<html>`
-       (`.reduced-data-mode`), so this rule block only needs one wrapper.
-       JS at boot listens to the media query and toggles that class. */
-    html.reduced-data-mode {
-      /* Backdrops + state animations: stop all loops */
-      .blob-sunburst-rotor,
-      .blob-sunburst-shimmer,
-      .blob-meltdown-bg-pulse,
-      .blob-meltdown-bg-shimmer,
-      .mascot-illustration,
-      .mascot-blob,
-      .mascot-area.meltdown .mascot-blob,
-      .mascot-area.ultra-safe .mascot-blob,
-      .mascot-stars .sp1,
-      .mascot-stars .sp2,
-      .mascot-stars .sp3,
-      .mascot-stars .sp4,
-      .mascot-stars .sp5,
-      .mascot-stars .sp6,
-      .mascot-stars .sp7,
-      /* All paint-per-frame keyframes (animate `fill` / `stop-color`) */
-      .mascot-area.getting-risky .emote-v2-face svg .m-flush-stop,
-      .mascot-area.getting-risky .emote-v2-face svg .m-cheek,
-      .mascot-area.danger-zone .emote-v2-face svg .m-flush-stop,
-      .mascot-area.danger-zone .emote-v2-face svg .m-cheek,
-      .mascot-area.meltdown .emote-v2-melt svg .m-cheek,
-      /* All tremor-class loops across states */
-      .mascot-area.danger-zone .emote-v2-face svg .m-eyes,
-      .mascot-area.danger-zone .emote-v2-face svg .m-eyebrow,
-      .mascot-area.danger-zone .emote-v2-face svg .m-hand-l,
-      .mascot-area.danger-zone .emote-v2-face svg .m-hand-r,
-      .mascot-area.getting-risky .emote-v2-face svg .m-eyebrow,
-      .mascot-area.getting-risky .emote-v2-face svg .m-hand,
-      .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow,
-      .mascot-area.meltdown .emote-v2-melt svg .m-hand-l,
-      .mascot-area.meltdown .emote-v2-melt svg .m-hand-r { animation: none !important; }
-      /* Drop the blurred foot-shadow — `filter: blur` is CPU-cheap when
-         static but still costs memory. */
-      .mascot-area::before { display: none; }
+    /* #10 — REDUCED-DATA / LOW-END MODE
+       Audience profile (per Mar 2026 X analytics): 70.5% mobile, top
+       countries Nigeria / India / Indonesia / Turkey / Bangladesh —
+       emerging markets on mid-range Android. Many users on $50–$150
+       phones (Mali-G52 GPUs, 1–2 GB RAM) and 2G/3G networks.
+       Strategy: a single class on `<html>` (`.reduced-data-mode`) that
+       kills ALL animations everywhere with one wildcard rule. Why
+       wildcard instead of a hand-maintained selector list?
+       1. The app has 60+ keyframes; manual lists drift out of date the
+          moment a new animation lands.
+       2. We want hardware AND bandwidth-constrained users to land here,
+          and for them, EVERY animation costs paint cycles or texture
+          memory we can't afford.
+       3. CSS transitions (hover feedback, modal open, button press) are
+          not affected — only `animation:` is killed. UI feedback stays
+          intact, the app just doesn't loop or breathe.
+       The class is set by either (a) the OS preference
+       `prefers-reduced-data: reduce` / `Save-Data`, (b) a slow
+       `effectiveType` ('slow-2g' / '2g' / '3g'), (c) low device memory
+       (<4 GB) or core count (<4), or (d) the dev-nav "C — Reduced Data"
+       toggle for live preview. JS at boot evaluates all of these. */
+    html.reduced-data-mode *,
+    html.reduced-data-mode *::before,
+    html.reduced-data-mode *::after {
+      animation: none !important;
     }
+    /* Drop the blurred foot-shadow — `filter: blur` paints once but still
+       costs texture memory the device may not have. */
+    html.reduced-data-mode .mascot-area::before { display: none; }
 
     /* MELTDOWN radial — same skeleton as the ultra-safe sunburst, but the
        motion language is the opposite. Where ultra-safe rotates (energy
@@ -2344,6 +2358,15 @@
       z-index: 0;
       pointer-events: none;
     }
+    /* Borrow + Modify screens: drop the foot shadow. The mascot sits very
+       close to the body copy in these layouts and the blurred ellipse was
+       reading as visual noise behind the message line — hurting legibility
+       of "Supply X and start printing" and the health-state text. Matches
+       the Figma source (node 222:4010). The shadow remains on screens
+       where there's more whitespace below the mascot (positions / 404). */
+    #borrow .mascot-area::before,
+    #borrow-connected .mascot-area::before,
+    #update .mascot-area::before { display: none; }
     /* Hide <object> mascots in Phone A until v2 emotes replace them — prevents size flash */
     /* Hide original <object> mascots in phone-a only (v2 transform replaces them).
        phone-b keeps its <object> tags as OP1 snapshot — do NOT hide. */
@@ -4239,7 +4262,26 @@
     <div class="dev-nav-section">
       <div class="dev-nav-label">Animations</div>
       <div class="dev-nav-group">
-        <button onclick="replayConnectCelebration()">Replay Connect</button>
+        <details class="dev-folder">
+          <summary>Animations</summary>
+          <div class="folder-items">
+            <!-- One-shot triggers (re-fire on demand) -->
+            <button onclick="replayConnectCelebration()">Replay Connect Burst</button>
+            <button onclick="punchActiveMascot()">Replay State Punch</button>
+            <!-- Direct entries to screens with hero animations -->
+            <button onclick="showScreen('loading-loop')">Loading Mascot</button>
+            <button onclick="showScreen('switch-network')">Switch Network</button>
+            <button onclick="showScreen('error-404')">404 Mascot</button>
+            <button onclick="devOpenBundle()">Bundle Confirmation</button>
+            <!-- State-emote idle loops (live on borrow-connected) -->
+            <button onclick="setBorrowInitial()">Initial · supply pulse</button>
+            <button onclick="setBorrowHealth('ultra-safe')">Ultra Safe · idle loops</button>
+            <button onclick="setBorrowHealth('looking-good')">Looking Good · idle loops</button>
+            <button onclick="setBorrowHealth('getting-risky')">Getting Risky · tremors</button>
+            <button onclick="setBorrowHealth('danger-zone')">Danger Zone · tremors</button>
+            <button onclick="setBorrowHealth('meltdown')">Meltdown · drips/pulses</button>
+          </div>
+        </details>
       </div>
     </div>
     <div class="dev-nav-section">
@@ -5810,14 +5852,13 @@ function setOption(mode, save) {
   wrapB.classList.toggle('hidden', !showB);
   if (wrapC) wrapC.classList.add('hidden'); // phone-c retired; never shown
   if (showB) { initPhoneB(); }
-  // Reduced-data simulation. Honour the OS preference too — if the user's
-  // browser already reports prefers-reduced-data: reduce, the class stays
+  // Reduced-data simulation. Honour real-device signals too — if the user's
+  // browser/OS already indicates reduced-data (saveData, slow connection,
+  // low memory, low cores, or the media-query preference), the class stays
   // on regardless of mode (no point in turning it off for them).
-  var osReducedData = window.matchMedia &&
-    window.matchMedia('(prefers-reduced-data: reduce)').matches;
   document.documentElement.classList.toggle(
     'reduced-data-mode',
-    mode === 'c' || osReducedData
+    mode === 'c' || (window._isReducedDataDevice && window._isReducedDataDevice())
   );
   // Sync breakpoint to all phones
   var bp = parseInt(localStorage.getItem('purinta-bp')) || 360;
@@ -5828,20 +5869,70 @@ function setOption(mode, save) {
   });
 }
 
-// On boot: mirror the OS prefers-reduced-data preference into the class so
-// the rule block fires for users who set it system-wide. Keep the listener
-// alive so changes mid-session also propagate.
+// On boot: detect ANY indicator that the user is on a constrained device
+// or connection, and add `.reduced-data-mode` to <html> so the wildcard
+// rule above kills all animations. Distinguishes between bandwidth and
+// hardware signals but treats them uniformly — for our audience (mostly
+// emerging markets per Mar 2026 X analytics), either dimension being
+// constrained is enough to justify the same degradation.
+//
+//   BANDWIDTH signals
+//     - prefers-reduced-data: reduce          (CSS media query / Save-Data)
+//     - navigator.connection.saveData         (same flag, JS-side)
+//     - navigator.connection.effectiveType    ('slow-2g' / '2g' / '3g')
+//
+//   HARDWARE signals
+//     - navigator.deviceMemory      (RAM in GB, rounded; <4 ⇒ low-end)
+//     - navigator.hardwareConcurrency (CPU logical cores; <4 ⇒ low-end)
+//
+// Rationale for thresholds: a typical Tecno Spark / Infinix Hot ($60–$120)
+// reports deviceMemory=2 (2 GB) and hardwareConcurrency=4 or fewer. Setting
+// the bar at <4 GB / <4 cores catches that segment without false-positives
+// on mid-tier devices like a Galaxy A14 (which usually report 4+ for both).
+// Keeps a live listener so connection changes mid-session also propagate.
+window._isReducedDataDevice = function isReducedDataDevice() {
+  var mqData = window.matchMedia && window.matchMedia('(prefers-reduced-data: reduce)');
+  if (mqData && mqData.matches) return true;
+  var c = navigator.connection;
+  if (c) {
+    if (c.saveData) return true;
+    if (/^(slow-2g|2g|3g)$/.test(c.effectiveType || '')) return true;
+  }
+  if (typeof navigator.deviceMemory === 'number' && navigator.deviceMemory < 4) return true;
+  if (typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency < 4) return true;
+  return false;
+};
 (function watchReducedData() {
   if (!window.matchMedia) return;
-  var mql = window.matchMedia('(prefers-reduced-data: reduce)');
   var apply = function() {
-    if (mql.matches) document.documentElement.classList.add('reduced-data-mode');
+    if (window._isReducedDataDevice()) {
+      document.documentElement.classList.add('reduced-data-mode');
+    }
   };
   apply();
-  if (mql.addEventListener) mql.addEventListener('change', apply);
-  else if (mql.addListener) mql.addListener(apply);
+  // Listen on the things that can flip mid-session.
+  var mqData = window.matchMedia('(prefers-reduced-data: reduce)');
+  if (mqData.addEventListener) mqData.addEventListener('change', apply);
+  else if (mqData.addListener) mqData.addListener(apply);
+  if (navigator.connection && navigator.connection.addEventListener) {
+    navigator.connection.addEventListener('change', apply);
+  }
 })();
 
+// Replay the mascot state-change punch (squash → stretch → settle) on
+// every visible mascot in the active screen. The punch is what plays
+// during real state transitions — this lets the designer review it
+// without needing to drag a slider.
+function punchActiveMascot() {
+  var active = document.querySelector('.screen.active');
+  if (!active) return;
+  active.querySelectorAll('.mascot-area').forEach(function(area) {
+    area.classList.remove('is-punching');
+    void area.offsetWidth; // force reflow
+    area.classList.add('is-punching');
+    setTimeout(function() { area.classList.remove('is-punching'); }, 260);
+  });
+}
 // Replay the wallet-connect celebration on demand (dev-nav button). Resets
 // the once-per-session flag and re-runs the burst on the active screen.
 function replayConnectCelebration() {
