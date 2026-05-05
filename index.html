@@ -2703,6 +2703,16 @@
       animation: md-puddle-pop 3.2s ease-in-out 0.6s infinite;
       transform-box: fill-box; transform-origin: center;
     }
+    /* Drool strand stretching downward in a loop — anchored at the mouth */
+    @keyframes md-drool-stretch {
+      0%, 100% { transform: scaleY(1); }
+      50%      { transform: scaleY(1.35); }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-drool {
+      animation: md-drool-stretch 2.2s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center top;
+    }
 
     @media (prefers-reduced-motion: reduce) {
       .mascot-area.is-punching .mascot-illustration { animation: none !important; }
@@ -2752,7 +2762,8 @@
       .mascot-area.meltdown .emote-v2-melt svg .m-eye-spiral,
       .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow,
       .mascot-area.meltdown .emote-v2-melt svg [class^="m-melt"],
-      .mascot-area.meltdown .emote-v2-melt svg [class^="m-puddle"] { animation: none; }
+      .mascot-area.meltdown .emote-v2-melt svg [class^="m-puddle"],
+      .mascot-area.meltdown .emote-v2-melt svg .m-drool { animation: none; }
       .mascot-area.meltdown .emote-v2-melt svg [class^="m-puddle"] { opacity: 1; }
       .mascot-area.looking-good .emote-v2-face svg .m-eye-open { opacity: 0; }
     }
