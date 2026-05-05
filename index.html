@@ -3879,8 +3879,7 @@
 
     /* ═══ SKELETONS ═══
        Loading-state placeholders for the home, borrow, and my-positions screens.
-       Phone-a renders Op A (Neutral palette), phone-b/c render Op B (Cream).
-       Shimmer sweeps a lighter band (300) across a base (200) every 1.7s. */
+       Neutral palette (200/300) shimmers every 1.7s across all phones. */
     .skel-block {
       background: linear-gradient(90deg,
         var(--neutral-200) 0%,
@@ -3893,7 +3892,6 @@
     }
     .skel-circle { border-radius: 50%; }
     .skel-pill   { border-radius: 9999px; }
-    /* Op B (phone-b/c) — Cream palette */
     @keyframes skel-shimmer {
       0%   { background-position: 200% 0; }
       100% { background-position: -200% 0; }
@@ -4010,8 +4008,7 @@
 
     /* Skel home: turn the entire token-rate-badge corner into a skeleton —
        keeps its curved shape (0 32px 0 32px) and Figma width (~77px) but
-       overrides the mint fill with the shimmer gradient. Op A (phone-a) is
-       neutral; Op B (phone-b/c) is cream. */
+       overrides the mint fill with the shimmer gradient. */
     #skel-home .token-rate-badge,
     #skel-home-b .token-rate-badge,
     #skel-home-c .token-rate-badge {
@@ -5512,8 +5509,7 @@
        Standalone loading states for Home, Borrow, and My Positions. Static
        UI chrome (header, footer, titles, mascot illustration) renders normally;
        dynamic content slots show animated .skel-block placeholders that loop
-       indefinitely. Phone-a uses the Cream palette (Op A); phone-b/c use
-       Neutral (Op B) — see CSS overrides under #phone-b .skel-block. -->
+       indefinitely. Neutral palette across all phones. -->
 
   <!-- Skeleton: Home — clones #homepage-connected's structure on init.
        The only on-chain data on this screen is the per-market borrow rate
@@ -5928,18 +5924,6 @@ function clonePhoneFromSnapshot(phoneEl, suffix) {
     var target = document.getElementById(activeScreen.id + dash);
     if (target) target.classList.add('active');
   }
-  // Restore original <object> mascots (snapshot may have v2-transformed ones)
-  restoreOriginalEmotes(phoneEl);
-  // Restore borrow mascot to original face-only emote
-  var borrowMascot = phoneEl.querySelector('#borrow' + dash + ' .mascot-area.happy .mascot-illustration');
-  if (borrowMascot && borrowMascot.tagName === 'IMG') {
-    var origObj = document.createElement('object');
-    origObj.className = 'mascot-illustration';
-    origObj.setAttribute('data', 'assets/Emote-00-Basic.svg');
-    origObj.setAttribute('type', 'image/svg+xml');
-    origObj.style.pointerEvents = 'none';
-    borrowMascot.parentNode.replaceChild(origObj, borrowMascot);
-  }
   // Remove cloned loading overlays
   phoneEl.querySelectorAll('.loading-screen-overlay').forEach(function(el) { el.remove(); });
   // Copy wordmark SVG from live phone-a (OP2) — wordmark is identical across options
@@ -5956,17 +5940,12 @@ function clonePhoneFromSnapshot(phoneEl, suffix) {
       el.classList.add('revealed');
     });
   }
-  // Restore OP1 title text ("Borrow against" → "Borrow") — snapshot may contain
-  // the transitional "Borrow against" phrasing; for OP1 variants we want just "Borrow"
-  phoneEl.querySelectorAll('.borrow-title').forEach(function(t) {
-    var txt = (t.textContent || '').trim();
-    if (txt === 'Borrow against') t.textContent = 'Borrow';
-  });
   // Progressive bottom-nav shadow wired to each cloned phone
   if (typeof attachNavShadowScroll === 'function') attachNavShadowScroll(phoneEl);
 }
 
-/* Option B = OP1 frozen snapshot (identity clone, no tweaks) */
+/* Option B = identity clone of Phone A. Renders the same as Op A. Any
+   future B-specific tweaks layer on as #phone-b CSS overrides. */
 function initPhoneB() {
   var phoneB = document.getElementById('phone-b');
   if (!phoneB) return;
@@ -6016,16 +5995,12 @@ function initPhoneC() {
     }
   }
 }
-/* Store original <object> outerHTML keyed by base ID (without -c suffix) */
-var _originalEmoteEls = {};
 var _v2AppliedToA = false;
 
 /* Replace mascots with v2 body + expression layers */
 function applyV2Emotes(phone) {
   phone.querySelectorAll('object.mascot-illustration').forEach(function(obj) {
     if (!obj.id || obj.id.indexOf('health-emote') !== 0) return;
-    // Save original for restoring in Phone B
-    _originalEmoteEls[obj.id] = obj.outerHTML;
     var src = obj.getAttribute('data') || '';
     var emoteKey = 'ultra-safe';
     Object.keys(emoteUrls).forEach(function(key) {
@@ -6057,22 +6032,6 @@ function applyV2Emotes(phone) {
     obj.parentNode.replaceChild(container, obj);
   });
   _v2AppliedToA = true;
-}
-
-/* Restore Phone B mascots to original <object> elements */
-function restoreOriginalEmotes(phoneEl) {
-  phoneEl.querySelectorAll('.emote-v2').forEach(function(v2El) {
-    if (!v2El.id) return;
-    // Strip -b or -c suffix (phone-b and phone-c both clone from snapshot)
-    var baseId = v2El.id.replace(/-(b|c)$/, '');
-    var origHTML = _originalEmoteEls[baseId];
-    if (!origHTML) return;
-    var temp = document.createElement('div');
-    temp.innerHTML = origHTML;
-    var origObj = temp.firstElementChild;
-    origObj.id = v2El.id; // keep the suffix
-    v2El.parentNode.replaceChild(origObj, v2El);
-  });
 }
 
 /* ═══ TOKEN DROPDOWN ═══ */
@@ -7068,6 +7027,16 @@ function showScreen(id) {
   // they don't keep covering the next screen we navigate to.
   document.querySelectorAll('.bundle-modal-overlay.is-open').forEach(function(o) { o.classList.remove('is-open'); });
   if (typeof closeQuickRepay === 'function') closeQuickRepay();
+  // Wallet-aware redirect: clicking "My Positions" from a disconnected screen
+  // should land on the disconnected variant, not the connected positions list.
+  // Disconnected = currently on `homepage` or `borrow` (NOT their *-connected
+  // peers). Skip the redirect for the *-b / *-c screen suffixes since they
+  // route through the same logic via cloned IDs.
+  if (id === 'positions') {
+    var current = (document.querySelector('#phone-a .screen.active') || {}).id || '';
+    var isDisconnected = current === 'homepage' || current === 'borrow';
+    if (isDisconnected) id = 'positions-disconnected';
+  }
   // [#5] Wallet-connect celebration — when the user first lands on any
   // *-connected screen this session, briefly play the sunburst rays burst
   // across the mascots in the now-active screen, regardless of current
@@ -7515,11 +7484,10 @@ function populateSkeletonPositions(suffix) {
   // Disable health hearts in BOTH layouts (mobile uses .health-section, desktop
   // uses .health-hearts). Health level is derived from the still-loading
   // supply/borrow values — fully-saturated hearts would lie about the position's
-  // health, so we dim them. Op A (phone-a / suffix '') goes grayscale to match
-  // its neutral palette; Op B/C (phone-b/c, cream) keeps the pink tint.
-  var dimGrayscale = (suffix === '');
+  // health, so we dim them via grayscale + reduced opacity (consistent across
+  // all phones now that Op B = identity clone of Op A).
   dst.querySelectorAll('.health-hearts, .health-section').forEach(function(h) {
-    if (dimGrayscale) h.style.filter = 'grayscale(1)';
+    h.style.filter = 'grayscale(1)';
     h.style.opacity = '0.4';
   });
   // Some hearts are pre-marked as "empty":
