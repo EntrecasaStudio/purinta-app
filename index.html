@@ -2083,16 +2083,20 @@
        parent .mascot-blob has overflow:visible). Removing the .ultra-safe
        class reverses the intro through the CSS transition — no JS
        exit-animation needed. */
+    /* Both anchors use `transform-box: view-box` so the origin is in the
+       SVG's own viewBox coords (0-150 range), pinning the pivot exactly at
+       the visual centre of the rays — the centre stays fixed under the
+       mascot during rotation. */
     .blob-sunburst {
       transform: scale(0);
-      transform-box: fill-box;
+      transform-box: view-box;
       transform-origin: 75px 75px;
       transition: transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1),
                   opacity 400ms ease;
       opacity: 0;
     }
     .blob-sunburst-rotor {
-      transform-box: fill-box;
+      transform-box: view-box;
       transform-origin: 75px 75px;
       animation: blob-sunburst-rotate 30s linear infinite;
       animation-play-state: paused;
@@ -2119,6 +2123,56 @@
     }
     .mascot-area.ultra-safe .blob-sunburst-rotor {
       animation-play-state: running;
+    }
+    /* #4 — Soft radial vignette under the rays. Lives inside .blob-sunburst
+       so it grows in/out together with the rays. Scoped to ultra-safe. */
+    .blob-sunburst-vignette { opacity: 0; transition: opacity 500ms ease; }
+    .mascot-area.ultra-safe .blob-sunburst-vignette { opacity: 1; }
+    /* #3 — Wedge shimmer. Different period from the rotation so the two
+       motions never lock up. Scoped to ultra-safe via animation-play-state
+       (avoids touching the visibility logic on .blob-sunburst). */
+    @keyframes blob-sunburst-shimmer {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.78; }
+    }
+    .blob-sunburst-shimmer {
+      animation: blob-sunburst-shimmer 4.3s ease-in-out infinite;
+      animation-play-state: paused;
+    }
+    .mascot-area.ultra-safe .blob-sunburst-shimmer { animation-play-state: running; }
+    /* #7 — Exit gesture. When .is-exiting-ultra-safe is on (set briefly by
+       JS on state-out), the rays clip back into the organic blob shape as
+       they shrink to 0 — reads as the kawaii energy collecting back into
+       the character. The blob fill also re-fades in so the silhouette is
+       there to land in. */
+    .mascot-area.is-exiting-ultra-safe .blob-sunburst {
+      clip-path: url(#mascot-blob-shape);
+    }
+    /* #5 — One-shot wallet-connect celebration. Plays the rays burst once,
+       independent of the current health state, by piggy-backing on the
+       same scale + opacity transition. JS adds .is-celebrating for ~1.6s
+       on the first transition into a -connected screen. */
+    @keyframes blob-sunburst-celebrate {
+      0%       { transform: scale(0); opacity: 0; }
+      30%      { transform: scale(1.08); opacity: 1; }
+      75%      { transform: scale(1); opacity: 1; }
+      100%     { transform: scale(0); opacity: 0; }
+    }
+    .mascot-area.is-celebrating .blob-sunburst {
+      animation: blob-sunburst-celebrate 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      transform-box: view-box;
+      transform-origin: 75px 75px;
+    }
+    .mascot-area.is-celebrating .blob-sunburst-rotor,
+    .mascot-area.is-celebrating .blob-sunburst-shimmer {
+      animation-play-state: running;
+    }
+    .mascot-area.is-celebrating .blob-sunburst-vignette { opacity: 1; }
+    /* #10 — Honour prefers-reduced-data: skip the rotation + shimmer to
+       reduce CPU/battery. The rays are still visible, just static. */
+    @media (prefers-reduced-data: reduce) {
+      .blob-sunburst-rotor,
+      .blob-sunburst-shimmer { animation: none !important; }
     }
     .mascot-illustration {
       width: 72px; max-width: 80%; height: auto; position: relative; z-index: 1;
@@ -3913,8 +3967,30 @@
       cursor: not-allowed; pointer-events: none; filter: none !important;
     }
   </style>
+  <!-- Sunburst SVG is fetched eagerly so the rays paint as soon as the
+       ultra-safe state turns on, with no first-paint pop. The browser
+       caches it for all 6 inline <image> tags. (Inlining the 60 KB of paths
+       directly into HTML was rejected: the file is cached after first
+       fetch, so inlining only bloats the document.) -->
+  <link rel="preload" as="image" href="assets/Mascot-Sunburst.svg">
 </head>
 <body>
+
+<!-- Shared SVG defs: lives once in the document so every .mascot-blob can
+     reference the vignette gradient and the blob clip-path by id without
+     duplicating the markup. The SVG itself is invisible (0×0). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="mascot-sunburst-vignette" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"  stop-color="var(--mint-50)"  stop-opacity="0.85"/>
+      <stop offset="60%" stop-color="var(--mint-100)" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="var(--mint-100)" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="mascot-blob-shape">
+      <path d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z"/>
+    </clipPath>
+  </defs>
+</svg>
 
 <!-- DEV NAV — floating panel -->
 <div class="dev-nav">
@@ -4410,7 +4486,7 @@
 
         <div class="borrow-col-sidebar">
         <div class="mascot-area happy">
-          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><g class="blob-sunburst-rotor"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-76.1" width="500" height="302.2" preserveAspectRatio="xMidYMid meet"/></g></g></svg></div>
+          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
           <img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="Purinta with money" style="pointer-events:none;">
           <span class="mascot-text">Connect your wallet to start borrowing</span>
         </div>
@@ -4559,7 +4635,7 @@
             <svg class="sp6" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#C8E4B0"/></svg>
             <svg class="sp7" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
           </div>
-          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><g class="blob-sunburst-rotor"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-76.1" width="500" height="302.2" preserveAspectRatio="xMidYMid meet"/></g></g></svg></div>
+          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
           <object id="health-emote" class="mascot-illustration" data="assets/v2-emote-00-basic-money.svg" type="image/svg+xml" style="pointer-events:none;"></object>
           <span id="health-text" class="mascot-text">Supply PEPE and start printing</span>
         </div>
@@ -5067,7 +5143,7 @@
         <div class="positions-title">My Positions</div>
       </div>
       <div class="mascot-area happy" style="margin-top:8px; width:100%; border-radius:32px;">
-        <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><g class="blob-sunburst-rotor"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-76.1" width="500" height="302.2" preserveAspectRatio="xMidYMid meet"/></g></g></svg></div>
+        <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
         <img class="mypositions-blob-img" src="assets/mypositions-blob.svg" alt="" aria-hidden="true">
         <img class="mascot-illustration" src="assets/empty-state-mascot.png" alt="Purinta sad - no active positions" style="pointer-events:none;">
       </div>
@@ -5245,7 +5321,7 @@
             <svg class="sp6" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#C8E4B0"/></svg>
             <svg class="sp7" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
           </div>
-          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><g class="blob-sunburst-rotor"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-76.1" width="500" height="302.2" preserveAspectRatio="xMidYMid meet"/></g></g></svg></div>
+          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
           <object id="health-emote-modify" class="mascot-illustration" data="assets/Emote-01-Ultra-safe.svg" type="image/svg+xml" style="pointer-events:none;"></object>
           <span id="health-text-modify" class="mascot-text">Ultra safe! Maximum protection</span>
         </div>
@@ -6702,6 +6778,25 @@ function showScreen(id) {
   // they don't keep covering the next screen we navigate to.
   document.querySelectorAll('.bundle-modal-overlay.is-open').forEach(function(o) { o.classList.remove('is-open'); });
   if (typeof closeQuickRepay === 'function') closeQuickRepay();
+  // [#5] Wallet-connect celebration — when the user first lands on any
+  // *-connected screen this session, briefly play the sunburst rays burst
+  // across the mascots in the now-active screen, regardless of current
+  // health state. Reads as "kawaii energy" arriving with the wallet. Fires
+  // once per session.
+  if (/-connected(?:-[bc])?$/.test(id) && !showScreen._celebratedConnect) {
+    showScreen._celebratedConnect = true;
+    // Defer until after the screen is marked active (further down this
+    // function) and the layout has settled, so we only celebrate on mascot
+    // areas inside the now-visible screen.
+    setTimeout(function() {
+      var newScreen = document.getElementById(id);
+      if (!newScreen) return;
+      newScreen.querySelectorAll('.mascot-area').forEach(function(area) {
+        area.classList.add('is-celebrating');
+        setTimeout(function() { area.classList.remove('is-celebrating'); }, 1700);
+      });
+    }, 60);
+  }
   // Save the outgoing screen's scroll position so navigating back (or between
   // sibling screens like the health-state variants of borrow-connected/update)
   // doesn't yank the viewport to the top and hide the mascot on mobile.
@@ -6947,7 +7042,7 @@ function populateSkeletonBorrow(suffix) {
     mascotArea.className = 'mascot-area happy';
     mascotArea.removeAttribute('id');
     mascotArea.innerHTML =
-      '<div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><g class="blob-sunburst-rotor"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-76.1" width="500" height="302.2" preserveAspectRatio="xMidYMid meet"/></g></g></svg></div>' +
+      '<div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>' +
       '<img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="" style="pointer-events:none;">' +
       textHtml;
   }
@@ -7022,7 +7117,7 @@ function populateSkeletonUpdate(suffix) {
     mascotArea.className = 'mascot-area happy';
     mascotArea.removeAttribute('id');
     mascotArea.innerHTML =
-      '<div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><g class="blob-sunburst-rotor"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-76.1" width="500" height="302.2" preserveAspectRatio="xMidYMid meet"/></g></g></svg></div>' +
+      '<div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>' +
       '<img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="" style="pointer-events:none;">' +
       textHtml;
   }
@@ -7895,6 +7990,11 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
   if (!area || !text) return;
   var screen = document.getElementById(screenId);
 
+  // [#7] Exit gesture — if we're leaving ultra-safe, briefly tag the area so
+  // the rays can collect back into the blob shape on their way out. Cleaned
+  // up on a timer that matches the CSS transition duration.
+  var wasUltraSafe = area.classList.contains('ultra-safe');
+
   // Clear all health-level classes
   healthLevels.forEach(function(l) {
     area.classList.remove(l.key);
@@ -7935,6 +8035,14 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
   if (screen) screen.classList.add(info.key);
   text.textContent = info.text;
   swapEmote(emoteContainerId, info.key);
+
+  // [#7] If we just left ultra-safe (without re-entering), apply the exit
+  // gesture for ~750ms so the rays clip back into the blob silhouette as
+  // they fade out.
+  if (wasUltraSafe && info.key !== 'ultra-safe') {
+    area.classList.add('is-exiting-ultra-safe');
+    setTimeout(function() { area.classList.remove('is-exiting-ultra-safe'); }, 750);
+  }
 }
 
 /* ═══ ANIMATED MASCOT (vanilla JS port) ═══ */
