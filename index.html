@@ -2635,9 +2635,9 @@
       animation: md-leg-give 4s ease-in-out infinite;
       transform-box: view-box;
     }
-    .mascot-area.meltdown .emote-v2-melt svg .m-foot-l { transform-origin: 17px 60px; }
-    .mascot-area.meltdown .emote-v2-melt svg .m-foot-r { transform-origin: 97px 58px; }
-    /* X eye pulses (scale beat) — like the mascot's vital sign barely flickers */
+    .mascot-area.meltdown .emote-v2-melt svg .m-foot-l { transform-origin: 16px 60px; }
+    .mascot-area.meltdown .emote-v2-melt svg .m-foot-r { transform-origin: 98px 56px; }
+    /* X eye: scale-pulse the cross WITHOUT rotating the eye */
     @keyframes md-eye-x-pulse {
       0%, 100% { transform: scale(1); }
       50%      { transform: scale(1.18); }
@@ -2654,6 +2654,18 @@
       50% { translate: 0.4px -0.3px; }
       75% { translate: -0.3px 0.4px; }
     }
+    /* Melted body parts slowly drip (subtle Y shift + scale) */
+    @keyframes md-melt-drip {
+      0%, 100% { transform: translateY(0) scaleY(1); }
+      50%      { transform: translateY(0.6px) scaleY(1.015); }
+    }
+    /* Bottom puddle drops appear → enlarge → dissolve in a loop */
+    @keyframes md-puddle-pop {
+      0%, 100%  { opacity: 0; transform: scale(0.6); }
+      15%       { opacity: 0.9; transform: scale(1); }
+      55%       { opacity: 0.6; transform: scale(1.15); }
+      80%       { opacity: 0; transform: scale(1.25); }
+    }
     .mascot-area.meltdown .emote-v2-melt svg .m-eye-x {
       animation: md-eye-x-pulse 1.4s ease-in-out infinite;
       transform-box: fill-box;
@@ -2668,6 +2680,28 @@
       animation: md-eyebrow-tremor 0.4s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-base {
+      animation: md-melt-drip 4.5s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center top;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-drips {
+      animation: md-melt-drip 5s ease-in-out infinite -1.2s;
+      transform-box: fill-box;
+      transform-origin: center top;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-puddle-1 {
+      animation: md-puddle-pop 3s ease-in-out 0s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-puddle-2 {
+      animation: md-puddle-pop 3.4s ease-in-out 1.1s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-puddle-3 {
+      animation: md-puddle-pop 3.2s ease-in-out 0.6s infinite;
+      transform-box: fill-box; transform-origin: center;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -2716,7 +2750,10 @@
       .mascot-area.meltdown .emote-v2-melt svg .m-foot-r,
       .mascot-area.meltdown .emote-v2-melt svg .m-eye-x,
       .mascot-area.meltdown .emote-v2-melt svg .m-eye-spiral,
-      .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow { animation: none; }
+      .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow,
+      .mascot-area.meltdown .emote-v2-melt svg [class^="m-melt"],
+      .mascot-area.meltdown .emote-v2-melt svg [class^="m-puddle"] { animation: none; }
+      .mascot-area.meltdown .emote-v2-melt svg [class^="m-puddle"] { opacity: 1; }
       .mascot-area.looking-good .emote-v2-face svg .m-eye-open { opacity: 0; }
     }
     /* V2 full-body emote system (Option B) — static body + instant face swap */
