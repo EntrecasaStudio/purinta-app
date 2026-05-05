@@ -4217,20 +4217,20 @@
 <div class="dev-nav">
   <button class="dev-nav-toggle" onclick="document.querySelector('.dev-nav-panel').classList.toggle('open')" title="Toggle navigation"><span class="toggle-glyph"></span></button>
   <div class="dev-nav-panel">
-    <details class="dev-nav-section" data-section="breakpoint" open>
-      <summary class="dev-nav-label"><span class="nav-emoji">📐</span>Breakpoint</summary>
-      <div class="dev-nav-group">
-        <button class="bp-btn active" onclick="setBreakpoint(360)" data-bp="360">360</button>
-        <button class="bp-btn bp-secondary" onclick="setBreakpoint(414)" data-bp="414">414</button>
-        <button class="bp-btn" onclick="setBreakpoint(1280)" data-bp="1280">1280</button>
-      </div>
-    </details>
     <details class="dev-nav-section" data-section="option" open>
       <summary class="dev-nav-label"><span class="nav-emoji">🅰️</span>Option</summary>
       <div class="dev-nav-group option-nav">
         <button class="opt-toggle active" onclick="setOption('a')">A &mdash; Spec</button>
         <button class="opt-toggle" onclick="setOption('b')">B &mdash; Variations</button>
         <button class="opt-toggle" onclick="setOption('c')">C &mdash; Reduced Data</button>
+      </div>
+    </details>
+    <details class="dev-nav-section" data-section="breakpoint" open>
+      <summary class="dev-nav-label"><span class="nav-emoji">📐</span>Breakpoint</summary>
+      <div class="dev-nav-group">
+        <button class="bp-btn active" onclick="setBreakpoint(360)" data-bp="360">360</button>
+        <button class="bp-btn bp-secondary" onclick="setBreakpoint(414)" data-bp="414">414</button>
+        <button class="bp-btn" onclick="setBreakpoint(1280)" data-bp="1280">1280</button>
       </div>
     </details>
     <details class="dev-nav-section" data-section="screens" open>
