@@ -5994,10 +5994,17 @@ function closeTokenBottomSheet() {
   document.querySelectorAll('.token-sheet-overlay, .token-sheet').forEach(function(el) {
     el.classList.remove('open');
   });
-  // Remove containing-block transform after sheet close animation finishes
+  // After the close animation, drop the containing-block transform AND remove
+  // the sheet from the DOM. Leaving the sheet attached caused a regression:
+  // after tapping the selector once, scrolling the phone made the (closed)
+  // sheet peek into view because lingering containing-block + overflow state
+  // could expose its translated position. Recreate fresh on next open.
   setTimeout(function() {
     document.querySelectorAll('.phone.has-sheet').forEach(function(p) {
       p.classList.remove('has-sheet');
+    });
+    document.querySelectorAll('.token-sheet, .token-sheet-overlay').forEach(function(el) {
+      el.remove();
     });
   }, 300);
   _activeSheetSelect = null;
