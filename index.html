@@ -2118,6 +2118,603 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
+    /* State change "punch": squash → swap SVG mid-squash → stretch → settle.
+       Sells the change as the character reacting (cartoon body language)
+       rather than as one image substituting another. JS toggles .is-punching
+       on the .mascot-area and times the swap to land at ~30% of this anim. */
+    @keyframes mascot-state-punch {
+      0%   { transform: scale(1, 1); }
+      30%  { transform: scale(1.08, 0.92); }
+      70%  { transform: scale(0.95, 1.05); }
+      100% { transform: scale(1, 1); }
+    }
+    .mascot-area.is-punching .mascot-illustration {
+      animation: mascot-state-punch 250ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+
+    /* ULTRA-SAFE — internal animations on the live mascot. Body breathes
+       (printer torso only), cheeks beat, eye stars pulse, eyebrows lift in
+       a "joy" arc, hands wave overhead. Each part is identified by a class
+       added directly to the SVG (.m-cheek/.m-eye-star/.m-eyebrow/.m-hand)
+       so the same scheme can be reused across other emotes. */
+    @keyframes ultra-safe-breathe {
+      0%, 100% { transform: scale(1, 1); }
+      50%      { transform: scale(1.025, 1.04); }
+    }
+    @keyframes ultra-safe-cheek-beat {
+      0%, 60%, 100% { transform: scale(1); }
+      15%           { transform: scale(1.18); }
+      30%           { transform: scale(0.95); }
+      45%           { transform: scale(1.10); }
+    }
+    @keyframes ultra-safe-star-grow {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50%      { transform: scale(1.25) rotate(15deg); }
+    }
+    @keyframes ultra-safe-eyebrow-lift {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-1.5px); }
+    }
+    @keyframes ultra-safe-hand-wave-r {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-3px) rotate(8deg); }
+    }
+    @keyframes ultra-safe-hand-wave-l {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-3px) rotate(-8deg); }
+    }
+    .mascot-area.ultra-safe .emote-v2-body {
+      animation: ultra-safe-breathe 3.5s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .mascot-area.ultra-safe .emote-v2-face svg .m-cheek {
+      animation: ultra-safe-cheek-beat 1.4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.ultra-safe .emote-v2-face svg .m-eye-star {
+      animation: ultra-safe-star-grow 1.8s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    /* Big star and small star slightly out of phase so they don't pulse in lockstep */
+    .mascot-area.ultra-safe .emote-v2-face svg .m-eye-star-small {
+      animation-delay: -0.6s;
+    }
+    .mascot-area.ultra-safe .emote-v2-face svg .m-eyebrow {
+      animation: ultra-safe-eyebrow-lift 2.2s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.ultra-safe .emote-v2-face svg .m-hand-r {
+      animation: ultra-safe-hand-wave-r 1.6s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: 50% 90%;
+    }
+    .mascot-area.ultra-safe .emote-v2-face svg .m-hand-l {
+      animation: ultra-safe-hand-wave-l 1.6s ease-in-out infinite -0.4s;
+      transform-box: fill-box;
+      transform-origin: 50% 90%;
+    }
+    /* Alternating heel-tap — adds the only rotation+lift in the leg system,
+       keeping it visually distinct from cheek/star/hand pulses while staying
+       energetic enough to read as celebrating. */
+    @keyframes us-heel-l {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      50%      { transform: rotate(-2deg) translateY(-1px); }
+    }
+    @keyframes us-heel-r {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      50%      { transform: rotate(2deg) translateY(-1px); }
+    }
+    .mascot-area.ultra-safe .emote-v2-feet svg .m-foot-l {
+      animation: us-heel-l 0.8s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 51px 75px;
+    }
+    .mascot-area.ultra-safe .emote-v2-feet svg .m-foot-r {
+      animation: us-heel-r 0.8s ease-in-out infinite -0.4s;
+      transform-box: view-box;
+      transform-origin: 86px 76px;
+    }
+    /* LOOKING-GOOD — second-best state. Same naming scheme as ultra-safe, but
+       a calmer personality: slower breathing, gentler cheek pulse, near-still
+       hands. The SVG uses smile-curves for eyes (no eye-stars) so we don't
+       animate those. Mouth and eyes left static for a relaxed feel. */
+    @keyframes looking-good-breathe {
+      0%, 100% { transform: scale(1, 1); }
+      50%      { transform: scale(1.018, 1.028); }
+    }
+    @keyframes looking-good-cheek-pulse {
+      0%, 100% { scale: 1; }
+      50%      { scale: 1.08; }
+    }
+    /* When the open-eyes flash (5s cycle, 92-97% window), the cheeks dip down
+       so they don't touch the now-taller eyes. translate is on its own CSS
+       property so it composes with cheek-pulse's scale without conflict. */
+    @keyframes looking-good-cheek-lower {
+      0%, 90%, 100% { translate: 0 0; }
+      92%, 97%      { translate: 0 1.8px; }
+    }
+    @keyframes looking-good-hand-sway-r {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-1.5px) rotate(3deg); }
+    }
+    @keyframes looking-good-hand-sway-l {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-1.5px) rotate(-3deg); }
+    }
+    .mascot-area.looking-good .emote-v2-body {
+      animation: looking-good-breathe 4.5s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .mascot-area.looking-good .emote-v2-face svg .m-cheek {
+      animation:
+        looking-good-cheek-pulse 2.4s ease-in-out infinite,
+        looking-good-cheek-lower 5s linear infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    /* Eye blink-open: smile-eyes are the resting state, open-eyes (borrowed
+       from the basic-money emote) flash for ~250ms every 5s to read as the
+       mascot briefly opening its eyes — a small life-tic. */
+    .mascot-area.looking-good .emote-v2-face svg .m-eye {
+      animation: looking-good-eye-smile 5s linear infinite;
+    }
+    .mascot-area.looking-good .emote-v2-face svg .m-eye-open {
+      opacity: 0;
+      animation: looking-good-eye-open-flash 5s linear infinite;
+    }
+    @keyframes looking-good-eye-smile {
+      0%, 90%, 100% { opacity: 1; }
+      92%, 97%      { opacity: 0; }
+    }
+    @keyframes looking-good-eye-open-flash {
+      0%, 90%, 100% { opacity: 0; }
+      92%, 97%      { opacity: 1; }
+    }
+    .mascot-area.looking-good .emote-v2-face svg .m-hand-r {
+      animation: looking-good-hand-sway-r 2.5s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: 50% 90%;
+    }
+    .mascot-area.looking-good .emote-v2-face svg .m-hand-l {
+      animation: looking-good-hand-sway-l 2.5s ease-in-out infinite -0.6s;
+      transform-box: fill-box;
+      transform-origin: 50% 90%;
+    }
+    /* Calm sync-bounce: legs compress slightly during the body's inhale peak
+       (matches body-breathe 4.5s cycle). Both legs same phase — feels like
+       the whole figure pumps gently in unison rather than dancing. */
+    @keyframes lg-leg-pump {
+      0%, 100% { transform: scaleY(1); }
+      50%      { transform: scaleY(0.97); }
+    }
+    .mascot-area.looking-good .emote-v2-feet svg .m-foot-l {
+      animation: lg-leg-pump 4.5s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 51px 105px; /* bottom of foot — squash from below */
+    }
+    .mascot-area.looking-good .emote-v2-feet svg .m-foot-r {
+      animation: lg-leg-pump 4.5s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 86px 105px;
+    }
+    /* GETTING-RISKY — anxious / worried personality. Body breathes anxiously
+       with a baseline tremor, eyes pulse + tremble, eyebrows tremble, hands
+       tremble, mouth wave loops via clip-path, sweat drops fall on staggered
+       cycles, and a celeste gradient overlays the body to read as "pale". */
+    @keyframes gr-body-breathe { 0%, 100% { scale: 1; } 50% { scale: 1.018 1.028; } }
+    @keyframes gr-tremor {
+      0%, 100% { translate: 0 0; }
+      20% { translate: -0.4px 0.2px; }
+      40% { translate: 0.3px -0.2px; }
+      60% { translate: -0.2px -0.3px; }
+      80% { translate: 0.4px 0.2px; }
+    }
+    @keyframes gr-eye-pulse {
+      0%, 30%, 60%, 100% { scale: 1; }
+      15% { scale: 1.10; }
+      45% { scale: 1.07; }
+    }
+    @keyframes gr-mouth-wave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-8px); } /* one full wave period (2 q-segments × 4 units) */
+    }
+    @keyframes gr-sweat-fall {
+      0%   { opacity: 0; transform: translateY(-1px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      45%  { opacity: 0.8; transform: translateY(3px); }
+      60%, 100% { opacity: 0; transform: translateY(4.5px); }
+    }
+    .mascot-area.getting-risky .emote-v2-body {
+      animation: gr-body-breathe 3s ease-in-out infinite, gr-tremor 0.32s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-eyes {
+      animation: gr-eye-pulse 1.8s ease-in-out infinite, gr-tremor 0.3s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-eyebrow {
+      animation: gr-tremor 0.28s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-hand {
+      animation: gr-tremor 0.26s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-mouth-inner {
+      animation: gr-mouth-wave 1.2s linear infinite;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-drop-1 {
+      animation: gr-sweat-fall 2.8s ease-in 0.2s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-drop-2 {
+      animation: gr-sweat-fall 2.8s ease-in 1.2s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-drop-3 {
+      animation: gr-sweat-fall 3.2s ease-in 0.7s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-drop-4 {
+      animation: gr-sweat-fall 2.5s ease-in 1.8s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    /* Body overlay sits on top of the shared body layer to add a "pale" celeste
+       wash that's specific to this state. opacity stays modest so the cream
+       body still reads through. */
+    .mascot-area.getting-risky .emote-v2-face svg .m-body-overlay {
+      opacity: 0.75;
+    }
+    /* Hide the V2-baked static mouth stroke — getting-risky uses the
+       conveyor wave inside the clip-path instead. */
+    .mascot-area.getting-risky .emote-v2-face svg .m-mouth-stroke,
+    .mascot-area.getting-risky .emote-v2-feet svg .m-mouth-stroke,
+    .mascot-area.getting-risky .emote-v2-body svg .m-mouth-stroke {
+      display: none;
+    }
+    /* Wobby legs — undulating skew + slight Y squish reinforces the shaky
+       state. Each foot rotates around its own top-center; right foot is phase-
+       offset so they don't move in lockstep. */
+    @keyframes gr-foot-wobble-l {
+      0%, 100% { transform: skewX(0deg) scaleY(1); }
+      25%      { transform: skewX(-3deg) scaleY(0.98); }
+      50%      { transform: skewX(0deg) scaleY(1.02); }
+      75%      { transform: skewX(3deg) scaleY(0.98); }
+    }
+    @keyframes gr-foot-wobble-r {
+      0%, 100% { transform: skewX(0deg) scaleY(1); }
+      25%      { transform: skewX(2deg) scaleY(0.98); }
+      50%      { transform: skewX(0deg) scaleY(1.02); }
+      75%      { transform: skewX(-2deg) scaleY(0.98); }
+    }
+    /* transform-box: view-box anchors every foot path to the SAME SVG point
+       (top of the foot in ultra-safe's coord space — feet are normalized to
+       ultra-safe across emotes), so the fill, outline and highlight on each
+       leg move as one piece instead of each path skewing around its own
+       bounding box and the stroke "thinning" against the fixed fill. */
+    .mascot-area.getting-risky .emote-v2-feet svg .m-foot-l {
+      animation: gr-foot-wobble-l 0.55s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 51px 75px;
+    }
+    .mascot-area.getting-risky .emote-v2-feet svg .m-foot-r {
+      animation: gr-foot-wobble-r 0.55s ease-in-out infinite -0.18s;
+      transform-box: view-box;
+      transform-origin: 86px 76px;
+    }
+    /* Cheek flush: from the resting worried-pink to a stronger blush-500
+       coral, looping. Stays scoped to .getting-risky so other states keep
+       their own cheek treatment. */
+    @keyframes gr-cheek-flush {
+      0%, 100% { fill: #E9C9D3; }
+      50%      { fill: var(--blush-500); }
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-cheek {
+      animation: gr-cheek-flush 1.6s ease-in-out infinite;
+    }
+
+    /* DANGER-ZONE — alarm. Faster + stronger versions of the worry animations,
+       a gradient flush that pulses red on the head, and 5 sweat drops flying
+       outward in different directions. Mouth has tongue/teeth (no conveyor). */
+    @keyframes dz-tremor {
+      0%, 100% { translate: 0 0; }
+      15% { translate: -1px 0.4px; }
+      30% { translate: 1px -0.5px; }
+      45% { translate: -0.6px 0.8px; }
+      60% { translate: 1.2px -0.3px; }
+      75% { translate: -0.8px -0.5px; }
+      90% { translate: 0.6px 0.4px; }
+    }
+    @keyframes dz-face-tremble {
+      0%, 100% { translate: 0 0; }
+      20% { translate: -1px 0.3px; }
+      40% { translate: 0.8px -0.6px; }
+      60% { translate: -0.4px -0.9px; }
+      80% { translate: 1px 0.3px; }
+    }
+    @keyframes dz-flush {
+      0%, 100% { stop-color: #FCCBCB; }
+      50%      { stop-color: #FEAAA4; }
+    }
+    @keyframes dz-cheek-flush {
+      0%, 100% { fill: #FEDBD8; }
+      50%      { fill: var(--blush-500); }
+    }
+    /* 5 drop directions — match V1's drop-fly arcs scaled to V2's coordinate
+       space (~1/7 of V1 viewBox so translates shrink accordingly). */
+    @keyframes dz-drop-tl {
+      0% { opacity: 0; transform: translate(0, 0); }
+      8% { opacity: 1; transform: translate(0, 0); }
+      35% { opacity: 0.4; transform: translate(-3px, -2px); }
+      45%, 100% { opacity: 0; transform: translate(-4px, -3px); }
+    }
+    @keyframes dz-drop-l {
+      0% { opacity: 0; transform: translate(0, 0); }
+      8% { opacity: 1; transform: translate(0, 0); }
+      35% { opacity: 0.4; transform: translate(-3px, -1px); }
+      45%, 100% { opacity: 0; transform: translate(-4px, -2px); }
+    }
+    @keyframes dz-drop-t {
+      0% { opacity: 0; transform: translate(0, 0); }
+      8% { opacity: 1; transform: translate(0, 0); }
+      35% { opacity: 0.4; transform: translate(0.5px, -3px); }
+      45%, 100% { opacity: 0; transform: translate(1px, -4px); }
+    }
+    @keyframes dz-drop-r {
+      0% { opacity: 0; transform: translate(0, 0); }
+      8% { opacity: 1; transform: translate(0, 0); }
+      35% { opacity: 0.4; transform: translate(3px, -1px); }
+      45%, 100% { opacity: 0; transform: translate(4px, -2px); }
+    }
+    @keyframes dz-drop-tr {
+      0% { opacity: 0; transform: translate(0, 0); }
+      8% { opacity: 1; transform: translate(0, 0); }
+      35% { opacity: 0.4; transform: translate(3px, -2px); }
+      45%, 100% { opacity: 0; transform: translate(4px, -3px); }
+    }
+    @keyframes dz-foot-wobble-l {
+      0%, 100% { transform: skewX(0deg) scaleY(1) rotate(0deg); }
+      20%  { transform: skewX(-4deg) scaleY(0.95) rotate(-1deg); }
+      40%  { transform: skewX(2deg) scaleY(1.03) rotate(0deg); }
+      60%  { transform: skewX(-3deg) scaleY(0.97) rotate(1deg); }
+      80%  { transform: skewX(4deg) scaleY(1.02) rotate(0deg); }
+    }
+    @keyframes dz-foot-wobble-r {
+      0%, 100% { transform: skewX(0deg) scaleY(1) rotate(0deg); }
+      20%  { transform: skewX(3deg) scaleY(0.95) rotate(1deg); }
+      40%  { transform: skewX(-2deg) scaleY(1.03) rotate(0deg); }
+      60%  { transform: skewX(4deg) scaleY(0.97) rotate(-1deg); }
+      80%  { transform: skewX(-3deg) scaleY(1.02) rotate(0deg); }
+    }
+    /* Body shakes hard on a 0.25s cycle (V1 head-shake timing) */
+    .mascot-area.danger-zone .emote-v2-body {
+      animation: dz-tremor 0.25s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-eyes {
+      animation: dz-face-tremble 0.15s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-eyebrow {
+      animation: dz-face-tremble 0.15s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-hand-l,
+    .mascot-area.danger-zone .emote-v2-face svg .m-hand-r {
+      animation: dz-tremor 0.22s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: 50% 80%;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-cheek {
+      animation: dz-cheek-flush 1s ease-in-out infinite;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-flush-stop {
+      animation: dz-flush 1.2s ease-in-out infinite;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-drop-tl {
+      animation: dz-drop-tl 1.8s ease-out 0.1s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-drop-l {
+      animation: dz-drop-l 2s ease-out 0.5s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-drop-t {
+      animation: dz-drop-t 1.6s ease-out 0.3s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-drop-r {
+      animation: dz-drop-r 1.9s ease-out 0.7s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-drop-tr {
+      animation: dz-drop-tr 1.7s ease-out 0.2s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.danger-zone .emote-v2-face svg .m-body-overlay {
+      opacity: 0.85;
+    }
+    /* Chaotic foot wobble — faster, larger amplitude than getting-risky */
+    .mascot-area.danger-zone .emote-v2-feet svg .m-foot-l {
+      animation: dz-foot-wobble-l 0.42s ease-in-out infinite;
+      transform-box: view-box;
+      transform-origin: 51px 75px;
+    }
+    .mascot-area.danger-zone .emote-v2-feet svg .m-foot-r {
+      animation: dz-foot-wobble-r 0.42s ease-in-out infinite -0.14s;
+      transform-box: view-box;
+      transform-origin: 86px 76px;
+    }
+
+    /* MELTDOWN — opposite of danger-zone: SLOW, dramatic, collapsing. Body
+       slumps and sways; tears (instead of sweat drops) drip slowly; cheeks
+       flush a feverish red. */
+    @keyframes md-sway {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      25% { transform: translateX(-1px) rotate(-0.6deg); }
+      75% { transform: translateX(1px) rotate(0.6deg); }
+    }
+    @keyframes md-tear-fall {
+      0%   { opacity: 0; transform: translateY(-1px); }
+      15%  { opacity: 0.9; transform: translateY(0); }
+      55%  { opacity: 0.7; transform: translateY(4px); }
+      80%, 100% { opacity: 0; transform: translateY(7px); }
+    }
+    @keyframes md-cheek-fever {
+      0%, 100% { fill: #FEAAA4; }
+      50%      { fill: var(--blush-600); }
+    }
+    /* Slow, weak body sway as a whole (the entire melt SVG) */
+    .mascot-area.meltdown .emote-v2-melt svg {
+      animation: md-sway 4.5s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-cheek {
+      animation: md-cheek-fever 3.2s ease-in-out infinite;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-drop-1 {
+      animation: md-tear-fall 3.8s ease-in 0.4s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-drop-2 {
+      animation: md-tear-fall 4s ease-in 1.6s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-drop-3 {
+      animation: md-tear-fall 3.5s ease-in 0.9s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-drop-4 {
+      animation: md-tear-fall 4.2s ease-in 2.1s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-drop-5 {
+      animation: md-tear-fall 3.6s ease-in 0.2s infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    /* Hands hang limp and slowly droop — slight rotate down + small Y drift */
+    @keyframes md-hand-droop-l {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      50%      { transform: rotate(-5deg) translateY(1.5px); }
+    }
+    @keyframes md-hand-droop-r {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      50%      { transform: rotate(5deg) translateY(1.5px); }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-hand-l {
+      animation: md-hand-droop-l 3.8s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: 50% 0%;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-hand-r {
+      animation: md-hand-droop-r 3.8s ease-in-out infinite -1.4s;
+      transform-box: fill-box;
+      transform-origin: 50% 0%;
+    }
+    /* Legs barely holding up — slow lean / squash, weak. Both legs same phase
+       so it reads as the whole body slumping rather than dancing. */
+    @keyframes md-leg-give {
+      0%, 100% { transform: scaleY(1) skewX(0deg); }
+      40%      { transform: scaleY(0.96) skewX(-1.5deg); }
+      60%      { transform: scaleY(0.96) skewX(1deg); }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-foot-l,
+    .mascot-area.meltdown .emote-v2-melt svg .m-foot-r {
+      animation: md-leg-give 4s ease-in-out infinite;
+      transform-box: view-box;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-foot-l { transform-origin: 17px 60px; }
+    .mascot-area.meltdown .emote-v2-melt svg .m-foot-r { transform-origin: 97px 58px; }
+    /* X eye pulses (scale beat) — like the mascot's vital sign barely flickers */
+    @keyframes md-eye-x-pulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.18); }
+    }
+    /* Spiral eye rotates slowly — dizzy/passing-out vibe */
+    @keyframes md-eye-spiral {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    /* Eyebrows tremble subtly (slower than danger-zone, weaker overall) */
+    @keyframes md-eyebrow-tremor {
+      0%, 100% { translate: 0 0; }
+      25% { translate: -0.5px 0.3px; }
+      50% { translate: 0.4px -0.3px; }
+      75% { translate: -0.3px 0.4px; }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-eye-x {
+      animation: md-eye-x-pulse 1.4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-eye-spiral {
+      animation: md-eye-spiral 4s linear infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow {
+      animation: md-eyebrow-tremor 0.4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mascot-area.is-punching .mascot-illustration { animation: none !important; }
+      .mascot-area.ultra-safe .emote-v2-body,
+      .mascot-area.ultra-safe .emote-v2-face svg .m-cheek,
+      .mascot-area.ultra-safe .emote-v2-face svg .m-eye-star,
+      .mascot-area.ultra-safe .emote-v2-face svg .m-eyebrow,
+      .mascot-area.ultra-safe .emote-v2-face svg .m-hand-r,
+      .mascot-area.ultra-safe .emote-v2-face svg .m-hand-l,
+      .mascot-area.ultra-safe .emote-v2-feet svg .m-foot-l,
+      .mascot-area.ultra-safe .emote-v2-feet svg .m-foot-r,
+      .mascot-area.looking-good .emote-v2-body,
+      .mascot-area.looking-good .emote-v2-face svg .m-cheek,
+      .mascot-area.looking-good .emote-v2-face svg .m-eye,
+      .mascot-area.looking-good .emote-v2-face svg .m-eye-open,
+      .mascot-area.looking-good .emote-v2-face svg .m-hand-r,
+      .mascot-area.looking-good .emote-v2-face svg .m-hand-l,
+      .mascot-area.looking-good .emote-v2-feet svg .m-foot-l,
+      .mascot-area.looking-good .emote-v2-feet svg .m-foot-r,
+      .mascot-area.getting-risky .emote-v2-body,
+      .mascot-area.getting-risky .emote-v2-face svg .m-eyes,
+      .mascot-area.getting-risky .emote-v2-face svg .m-eyebrow,
+      .mascot-area.getting-risky .emote-v2-face svg .m-hand,
+      .mascot-area.getting-risky .emote-v2-face svg .m-mouth-inner,
+      .mascot-area.getting-risky .emote-v2-face svg [class^="m-drop"],
+      .mascot-area.getting-risky .emote-v2-face svg .m-cheek,
+      .mascot-area.getting-risky .emote-v2-feet svg .m-foot-l,
+      .mascot-area.getting-risky .emote-v2-feet svg .m-foot-r,
+      .mascot-area.danger-zone .emote-v2-body,
+      .mascot-area.danger-zone .emote-v2-face svg .m-eyes,
+      .mascot-area.danger-zone .emote-v2-face svg .m-eyebrow,
+      .mascot-area.danger-zone .emote-v2-face svg .m-hand-l,
+      .mascot-area.danger-zone .emote-v2-face svg .m-hand-r,
+      .mascot-area.danger-zone .emote-v2-face svg .m-cheek,
+      .mascot-area.danger-zone .emote-v2-face svg .m-flush-stop,
+      .mascot-area.danger-zone .emote-v2-face svg [class^="m-drop"],
+      .mascot-area.danger-zone .emote-v2-feet svg .m-foot-l,
+      .mascot-area.danger-zone .emote-v2-feet svg .m-foot-r,
+      .mascot-area.meltdown .emote-v2-melt svg,
+      .mascot-area.meltdown .emote-v2-melt svg .m-cheek,
+      .mascot-area.meltdown .emote-v2-melt svg [class^="m-drop"],
+      .mascot-area.meltdown .emote-v2-melt svg .m-hand-l,
+      .mascot-area.meltdown .emote-v2-melt svg .m-hand-r,
+      .mascot-area.meltdown .emote-v2-melt svg .m-foot-l,
+      .mascot-area.meltdown .emote-v2-melt svg .m-foot-r,
+      .mascot-area.meltdown .emote-v2-melt svg .m-eye-x,
+      .mascot-area.meltdown .emote-v2-melt svg .m-eye-spiral,
+      .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow { animation: none; }
+      .mascot-area.looking-good .emote-v2-face svg .m-eye-open { opacity: 0; }
+    }
     /* V2 full-body emote system (Option B) — static body + instant face swap */
     .emote-v2 { position: relative; overflow: visible; aspect-ratio: 1 / 0.85; }
     .emote-v2 svg { overflow: visible; }
@@ -3579,7 +4176,7 @@
 
         <div class="borrow-col-sidebar">
         <div class="mascot-area happy">
-          <div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none"><path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/></svg></div>
+          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/></svg></div>
           <img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="Purinta with money" style="pointer-events:none;">
           <span class="mascot-text">Connect your wallet to start borrowing</span>
         </div>
@@ -3728,7 +4325,7 @@
             <svg class="sp6" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#C8E4B0"/></svg>
             <svg class="sp7" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
           </div>
-          <div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none"><path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/></svg></div>
+          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/></svg></div>
           <object id="health-emote" class="mascot-illustration" data="assets/v2-emote-00-basic-money.svg" type="image/svg+xml" style="pointer-events:none;"></object>
           <span id="health-text" class="mascot-text">Supply PEPE and start printing</span>
         </div>
@@ -4236,7 +4833,7 @@
         <div class="positions-title">My Positions</div>
       </div>
       <div class="mascot-area happy" style="margin-top:8px; width:100%; border-radius:32px;">
-        <div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none"><path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/></svg></div>
+        <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/></svg></div>
         <img class="mypositions-blob-img" src="assets/mypositions-blob.svg" alt="" aria-hidden="true">
         <img class="mascot-illustration" src="assets/empty-state-mascot.png" alt="Purinta sad - no active positions" style="pointer-events:none;">
       </div>
@@ -4414,7 +5011,7 @@
             <svg class="sp6" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#C8E4B0"/></svg>
             <svg class="sp7" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
           </div>
-          <div class="mascot-blob"><svg width="140" height="108" viewBox="0 0 140 108" fill="none"><path d="M122.419 16.9187C132.103 41.8744 114.018 72.1683 82.0254 84.5821C50.0331 96.9959 16.2482 86.8286 6.5648 61.8729C-3.11862 36.9172 13.6396 41.9526 45.6319 29.5388C77.6242 17.1251 112.736 -8.03707 122.419 16.9187Z" fill="white"/></svg></div>
+          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/></svg></div>
           <object id="health-emote-modify" class="mascot-illustration" data="assets/Emote-01-Ultra-safe.svg" type="image/svg+xml" style="pointer-events:none;"></object>
           <span id="health-text-modify" class="mascot-text">Ultra safe! Maximum protection</span>
         </div>
@@ -5712,18 +6309,37 @@ function _applyHealthPreset(screenId, level) {
     }
     // Re-sync derived UI: mascot, summary, banner, modify CTA disabled state.
     if (typeof updateBorrowValues === 'function') updateBorrowValues(screenId);
-    if (screenId === 'borrow-connected' && typeof updateHealthMascot === 'function') updateHealthMascot();
-    if (screenId === 'update' && typeof updateHealthMascot === 'function') updateHealthMascot();
+    // Pick the right mascot updater for the phone suffix. Each updater handles
+    // BOTH borrow-connected and update on its phone, so calling once per phone
+    // is enough.
+    var sfxMatch = screenId.match(/-([bc])$/);
+    var updater = sfxMatch
+      ? (sfxMatch[1] === 'b' ? window.updateHealthMascotB : window.updateHealthMascotC)
+      : window.updateHealthMascot;
+    if (typeof updater === 'function') updater();
     if (screenId.indexOf('update') === 0 && typeof updateModifyCtaState === 'function') updateModifyCtaState(screen);
   });
 }
+// Highlights the matching dev-nav state button (in addition to the screen
+// button that showScreen already activates). Re-applied after showScreen
+// because showScreen wipes .active across the screen-nav.
+function _markStateBtnActive(fn, level) {
+  var btn = document.querySelector(".screen-nav button[onclick*=\"" + fn + "('" + level + "')\"]");
+  if (!btn) return;
+  btn.classList.add('active');
+  var folder = btn.closest('.dev-folder');
+  if (folder) { folder.open = true; folder.classList.add('has-active'); }
+}
 function setBorrowHealth(level) {
   showScreen('borrow-connected');
-  _applyHealthPreset('borrow-connected', level);
+  // Mirror the preset to phones B and C so multi-phone views stay in sync.
+  ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('borrow-connected' + sfx, level); });
+  _markStateBtnActive('setBorrowHealth', level);
 }
 function setModifyHealth(level) {
   showScreen('update');
-  _applyHealthPreset('update', level);
+  ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('update' + sfx, level); });
+  _markStateBtnActive('setModifyHealth', level);
 }
 
 function modifyFromPosition(btn) {
@@ -5848,6 +6464,21 @@ function applyPositionDataToModify(screen, data) {
 }
 
 function showScreen(id) {
+  // Close any open dev-spawned modals (bundle confirmation / quick repay) so
+  // they don't keep covering the next screen we navigate to.
+  document.querySelectorAll('.bundle-modal-overlay.is-open').forEach(function(o) { o.classList.remove('is-open'); });
+  if (typeof closeQuickRepay === 'function') closeQuickRepay();
+  // Save the outgoing screen's scroll position so navigating back (or between
+  // sibling screens like the health-state variants of borrow-connected/update)
+  // doesn't yank the viewport to the top and hide the mascot on mobile.
+  var prevActive = document.querySelector('#phone-a .screen.active');
+  if (prevActive) {
+    showScreen._scroll = showScreen._scroll || {};
+    showScreen._scroll[prevActive.id] = {
+      phone: (document.getElementById('phone-a') || {}).scrollTop || 0,
+      window: window.scrollY
+    };
+  }
   // Close any open disconnect dropdowns on screen change
   document.querySelectorAll('.disconnect-dropdown.open').forEach(function(d) { d.classList.remove('open'); });
   // Collapse expanded wallet pills and freeze transitions during screen switch
@@ -5888,7 +6519,10 @@ function showScreen(id) {
     var parentFolder = navBtn.closest('.dev-folder');
     if (parentFolder) { parentFolder.open = true; parentFolder.classList.add('has-active'); }
   }
-  document.querySelectorAll('.phone').forEach(function(p) { p.scrollTop = 0; if (p._navShadowUpdate) p._navShadowUpdate(); }); window.scrollTo(0, 0);
+  // Restore the incoming screen's saved scroll (defaults to 0 on first visit).
+  var memo = (showScreen._scroll && showScreen._scroll[id]) || { phone: 0, window: 0 };
+  document.querySelectorAll('.phone').forEach(function(p) { p.scrollTop = memo.phone; if (p._navShadowUpdate) p._navShadowUpdate(); });
+  window.scrollTo(0, memo.window);
   // Modify screen: anchor CTA disabled on every entry path. Runs in rAF so the
   // active screen is laid out first (slider fills readable) before we read pcts.
   if (/^update/.test(id)) {
@@ -6079,9 +6713,7 @@ function populateSkeletonBorrow(suffix) {
     mascotArea.className = 'mascot-area happy';
     mascotArea.removeAttribute('id');
     mascotArea.innerHTML =
-      '<div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none">' +
-        '<path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/>' +
-      '</svg></div>' +
+      '<div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/></svg></div>' +
       '<img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="" style="pointer-events:none;">' +
       textHtml;
   }
@@ -6156,9 +6788,7 @@ function populateSkeletonUpdate(suffix) {
     mascotArea.className = 'mascot-area happy';
     mascotArea.removeAttribute('id');
     mascotArea.innerHTML =
-      '<div class="mascot-blob"><svg width="140" height="120" viewBox="0 0 140 120" fill="none">' +
-        '<path d="M75 0C120 8 140 30 132 62C124 94 95 118 58 115C21 112 -2 82 4 48C10 14 30 -8 75 0Z" fill="white"/>' +
-      '</svg></div>' +
+      '<div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/></svg></div>' +
       '<img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="" style="pointer-events:none;">' +
       textHtml;
   }
@@ -6883,12 +7513,27 @@ function applyV2Expression(container, emoteKey) {
   container.dataset.activeEmote = emoteKey;
 }
 
-/* Swap emote: instant expression change, static body */
+/* Swap emote: instant expression change, but the .mascot-area squashes around
+   the swap so it reads as a body reaction (cartoon-style "expression change")
+   instead of an image substitution. The bg gradient transition (0.5s) handles
+   the smoother part of the state change. */
 function swapEmote(containerId, emoteKey) {
   var container = document.getElementById(containerId);
   if (!container) return;
   if (container.dataset.activeEmote === emoteKey) return;
-  applyV2Expression(container, emoteKey);
+  var area = container.closest('.mascot-area');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!area || reduceMotion) {
+    applyV2Expression(container, emoteKey);
+    return;
+  }
+  // Restart the punch on rapid swaps via reflow.
+  area.classList.remove('is-punching');
+  void area.offsetWidth;
+  area.classList.add('is-punching');
+  // Land the SVG swap inside the squash phase (~30% into 250ms).
+  setTimeout(function() { applyV2Expression(container, emoteKey); }, 75);
+  setTimeout(function() { area.classList.remove('is-punching'); }, 260);
 }
 
 /* ═══ HEALTH MASCOT — 5 levels based on slider positions ═══ */
