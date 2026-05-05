@@ -956,11 +956,15 @@
       -webkit-backdrop-filter: var(--scrim-commit-blur);
       padding: 20px;
     }
-    /* Desktop: pin to the viewport instead of the (possibly very-tall) phone
-       so the modal is always centered on what the user is looking at —
-       triggering Quick Repay from a position card mid-page used to drop
-       the modal at the phone's vertical center, requiring a scroll. */
-    .phone.desktop .bundle-modal-overlay { position: fixed; }
+    /* Desktop: keep the overlay scoped to the phone frame so the backdrop
+       doesn't bleed past the device illusion. Use sticky on the dialog so
+       it stays visually centered against the user's viewport even if the
+       phone is taller than the visible region. */
+    .phone.desktop .bundle-modal-overlay { position: absolute; }
+    .phone.desktop .bundle-modal-overlay .bundle-modal-dialog {
+      position: sticky;
+      top: max(20px, calc(50vh - var(--bundle-dialog-half, 280px)));
+    }
     .bundle-modal-overlay.is-open { display: flex; animation: qr-fade 180ms ease-out; }
     .bundle-modal-dialog {
       background: var(--neutral-50);
