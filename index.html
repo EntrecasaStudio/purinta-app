@@ -2621,9 +2621,8 @@
                  md-body-tremor 0.5s ease-in-out infinite;
       transform-origin: center bottom;
     }
-    .mascot-area.meltdown .emote-v2-melt svg .m-cheek {
-      animation: md-cheek-fever 3.2s ease-in-out infinite;
-    }
+    /* Cheek fever + stretch are combined into a single rule further below
+       (where md-cheek-stretch is defined). */
     .mascot-area.meltdown .emote-v2-melt svg .m-drop-1 {
       animation: md-tear-fall 3.8s ease-in 0.4s infinite;
       transform-box: fill-box; transform-origin: center;
@@ -2736,6 +2735,32 @@
       animation: md-eyebrow-tremor 0.4s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center;
+    }
+    /* Drippy upper-body line (the wavy melt outline above the eyes — line +
+       its cream shadow) stretches downward in a slow loop, reinforcing the
+       sense the head is melting. Anchored at the top so the drips extend
+       down toward the face. */
+    @keyframes md-melt-line-stretch {
+      0%, 100% { transform: scaleY(1); }
+      50%      { transform: scaleY(1.18); }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-melt-line {
+      animation: md-melt-line-stretch 3.6s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center top;
+    }
+    /* Cheeks gently stretch downward in addition to the colour fever pulse —
+       uses the `scale:` individual transform property so it composes with
+       md-cheek-fever (which animates `fill`). */
+    @keyframes md-cheek-stretch {
+      0%, 100% { scale: 1 1; }
+      50%      { scale: 1 1.18; }
+    }
+    .mascot-area.meltdown .emote-v2-melt svg .m-cheek {
+      animation: md-cheek-fever 3.2s ease-in-out infinite,
+                 md-cheek-stretch 3.6s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center top;
     }
     .mascot-area.meltdown .emote-v2-melt svg .m-melt-base {
       animation: md-melt-drip 4.5s ease-in-out infinite;
@@ -2868,6 +2893,7 @@
       .mascot-area.meltdown .emote-v2-melt svg .m-drool,
       .mascot-area.meltdown .emote-v2-melt svg .m-drool-slot,
       .mascot-area.meltdown .emote-v2-melt svg .m-mouth-group,
+      .mascot-area.meltdown .emote-v2-melt svg .m-melt-line,
       .mascot-area.meltdown .emote-v2-melt svg [class*="m-melt-strand"] { animation: none; }
       .mascot-area.meltdown .emote-v2-melt svg [class*="m-melt-strand"] { opacity: 1; }
       .mascot-area.meltdown .emote-v2-melt svg [class^="m-puddle"] { opacity: 1; }
