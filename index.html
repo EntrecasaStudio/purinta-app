@@ -2166,19 +2166,35 @@
       clip-path: url(#mascot-blob-shape);
     }
     /* #5 — One-shot wallet-connect celebration. Plays the rays burst once,
-       independent of the current health state, by piggy-backing on the
-       same scale + opacity transition. JS adds .is-celebrating for ~1.6s
-       on the first transition into a -connected screen. */
+       independent of the current health state. The keyframe is
+       intentionally *louder* than the idle ultra-safe rays so the moment
+       reads as a celebration, not just "kawaii rays appeared":
+       - peak scale 1.55 (vs 1 at rest) so the rays burst clearly outward
+       - small CCW → CW rotation kick to add energy
+       - holds at scale 1.15 in the middle so the user has time to register
+       - longer total duration (2.2s) so it doesn't feel rushed
+       - parent `.mascot-blob` opacity is briefly lifted so the whole area
+         brightens during the moment. */
     @keyframes blob-sunburst-celebrate {
-      0%       { transform: scale(0); opacity: 0; }
-      30%      { transform: scale(1.08); opacity: 1; }
-      75%      { transform: scale(1); opacity: 1; }
-      100%     { transform: scale(0); opacity: 0; }
+      0%       { transform: scale(0)    rotate(-18deg); opacity: 0; }
+      18%      { transform: scale(1.55) rotate(0deg);  opacity: 1; }
+      35%      { transform: scale(1.25) rotate(10deg); opacity: 1; }
+      55%      { transform: scale(1.15) rotate(-3deg); opacity: 1; }
+      80%      { transform: scale(1)    rotate(0deg);  opacity: 1; }
+      100%     { transform: scale(0)    rotate(0deg);  opacity: 0; }
+    }
+    @keyframes blob-celebrate-flash {
+      0%, 100% { opacity: 0.4; }
+      18%      { opacity: 0.9; }   /* matches the ray burst peak */
+      80%      { opacity: 0.6; }
     }
     .mascot-area.is-celebrating .blob-sunburst {
-      animation: blob-sunburst-celebrate 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation: blob-sunburst-celebrate 2.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
       transform-box: view-box;
       transform-origin: 75px 75px;
+    }
+    .mascot-area.is-celebrating .mascot-blob {
+      animation: blob-celebrate-flash 2.2s ease-out forwards;
     }
     .mascot-area.is-celebrating .blob-sunburst-rotor,
     .mascot-area.is-celebrating .blob-sunburst-shimmer {
@@ -4168,6 +4184,7 @@
           <div class="folder-items">
             <button onclick="showScreen('borrow')">Borrow</button>
             <button onclick="showScreen('borrow-connected')">Borrow+</button>
+            <button onclick="setBorrowInitial()">Initial</button>
             <button onclick="setBorrowHealth('ultra-safe')">Ultra Safe</button>
             <button onclick="setBorrowHealth('looking-good')">Looking Good</button>
             <button onclick="setBorrowHealth('getting-risky')">Getting Risky</button>
@@ -6833,6 +6850,38 @@ function setBorrowHealth(level) {
   // Mirror the preset to phones B and C so multi-phone views stay in sync.
   ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('borrow-connected' + sfx, level); });
   _markStateBtnActive('setBorrowHealth', level);
+}
+// Initial state on borrow-connected: wallet is connected but no supply yet.
+// Sliders at 0, mascot in "happy" state with the "Supply X and start
+// printing" line, supply slider thumb pulses to draw the eye, and the
+// wallet-connect celebration replays so this view is also a good place to
+// review that animation.
+function setBorrowInitial() {
+  showScreen('borrow-connected');
+  ['', '-b', '-c'].forEach(function(sfx) {
+    var screenId = 'borrow-connected' + sfx;
+    requestAnimationFrame(function() {
+      var screen = document.getElementById(screenId);
+      if (!screen) return;
+      var tracks = screen.querySelectorAll('.slider-track');
+      if (typeof setSliderPct === 'function') {
+        if (tracks[0]) setSliderPct(tracks[0], 0);
+        if (tracks[1]) setSliderPct(tracks[1], 0);
+      }
+      if (typeof updateBorrowValues === 'function') updateBorrowValues(screenId);
+      var sfxMatch = screenId.match(/-([bc])$/);
+      var updater = sfxMatch
+        ? (sfxMatch[1] === 'b' ? window.updateHealthMascotB : window.updateHealthMascotC)
+        : window.updateHealthMascot;
+      if (typeof updater === 'function') updater();
+    });
+  });
+  _markStateBtnActive('setBorrowInitial', null);
+  // Replay the connect celebration so this view doubles as a way to
+  // review/repeat the animation without needing a full reload.
+  setTimeout(function() {
+    if (typeof replayConnectCelebration === 'function') replayConnectCelebration();
+  }, 120);
 }
 function setModifyHealth(level) {
   showScreen('update');
