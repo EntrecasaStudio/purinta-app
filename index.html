@@ -1977,11 +1977,10 @@
       max-height: 120px;
       opacity: 1;
       transform: translateY(0);
-      /* Top + sides bordered (1.5px); bottom uncovered because it sits
-         INSIDE the card's content area (covered by the banner's own bg). */
-      border-width: 1.5px 1.5px 0 1.5px;
-      /* -32 px = the card's border-radius — banner overlaps the card
-         exactly enough to hide the rounded top corners behind it. */
+      border-width: 1.5px;
+      /* Banner overlaps the card vertically by 32 px (= card's
+         border-radius) so its bottom edge sits inside the card's rounded-
+         corner zone — those corners get hidden behind the banner. */
       margin: 0 0 -32px 0;
       pointer-events: auto;
     }
