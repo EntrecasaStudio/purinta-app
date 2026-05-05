@@ -1938,14 +1938,20 @@
       opacity: 0;
       overflow: hidden;
       background: #FFECDB;
-      border: 1.5px solid #FFA466;
-      border-bottom: none;
+      /* `border-width: 0` while collapsed so the box doesn't reserve the
+         1.5px top border height in the layout — without this, switching
+         between #borrow (banner absent) and #borrow-connected (banner
+         present but collapsed) shifted everything below by ~2px because
+         the border-top still rendered while max-height was 0. The border
+         is restored when `.active`. */
+      border: 0 solid #FFA466;
       border-radius: 32px 32px 0 0;
       margin: 0;
       transform: translateY(-4px);
       isolation: isolate; /* contain stacking so content below never paints over */
       transition:
         max-height 240ms cubic-bezier(0.2, 0, 0, 1),
+        border-width 200ms ease-out 40ms,
         opacity 200ms ease-out 40ms,
         transform 200ms ease-out 40ms,
         margin 240ms cubic-bezier(0.2, 0, 0, 1);
@@ -1955,6 +1961,7 @@
       max-height: 120px;
       opacity: 1;
       transform: translateY(0);
+      border-width: 1.5px 1.5px 0 1.5px; /* top + sides only; bottom merges with card */
       margin: 0 0 -2px 0; /* -2px tucks banner bottom over card border for seamless join */
       pointer-events: auto;
     }
