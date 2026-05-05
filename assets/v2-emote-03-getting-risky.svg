@@ -66,8 +66,8 @@
 <path d="M33.2461 59.0363C33.8981 58.6998 34.3646 58.1468 34.6441 57.4463C36.1326 57.4108 37.3636 56.4518 37.7261 55.0028C37.9383 54.1524 37.7661 53.4857 37.4836 52.6913C38.9881 52.2593 40.6698 53.0885 41.1898 54.757C38.0687 54.757 38.2776 57.0936 38.5396 58.7928C37.7531 58.9163 37.1156 59.4003 36.7211 60.0928C34.8435 63.3884 38.4902 67.9773 40.4736 70.3038C39.3026 71.8488 37.7406 72.9053 35.9211 73.4543C30.7431 75.0164 26.8008 72.8976 24.7754 69.4327" stroke="#185229"/></g>
 <defs><clipPath id="m-mouth-clip"><rect x="30" y="43" width="24" height="6" rx="3"/></clipPath>
 <linearGradient id="paint0_linear_591_64896" x1="40.9053" y1="3.00005" x2="40.9053" y2="76.9239" gradientUnits="userSpaceOnUse">
-<stop stop-color="#C9D4E8"/>
-<stop offset="0.45" stop-color="#C9D4E8" stop-opacity="0"/>
+<stop stop-color="#B2D0FF" class="m-flush-stop"/>
+<stop offset="0.45" stop-color="#B2D0FF" stop-opacity="0"/>
 </linearGradient>
 </defs>
 <g class="m-mouth-outer" clip-path="url(#m-mouth-clip)"><g class="m-mouth-inner"><path d="M 14 46 q 2 -2.5 4 0 q 2 2.5 4 0 q 2 -2.5 4 0 q 2 2.5 4 0 q 2 -2.5 4 0 q 2 2.5 4 0 q 2 -2.5 4 0 q 2 2.5 4 0 q 2 -2.5 4 0 q 2 2.5 4 0 q 2 -2.5 4 0 q 2 2.5 4 0 q 2 -2.5 4 0 q 2 2.5 4 0 q 2 -2.5 4 0 q 2 2.5 4 0" stroke="#185229" stroke-width="1.2" fill="none" stroke-linecap="round"/></g></g></svg>
