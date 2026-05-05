@@ -7030,30 +7030,23 @@ function setBorrowHealth(level) {
   _markStateBtnActive('setBorrowHealth', level);
 }
 // Toggle the "token not in your wallet" warning banner on borrow-connected
-// for design review. Drives the same `.no-funds` class on the screen and
-// `.active`/`.exiting` flow on the banner that selecting a non-held token
-// would normally produce — so the dev can see the banner enter and exit
-// without having to switch tokens.
+// for design review. Routes through the real token-selection flow so the
+// banner / .no-funds class / mascot text / dropdown selected-row all stay
+// in sync — switching to MORPHO (not in wallet) flips everything ON, and
+// switching back to PEPE (in wallet) flips everything OFF, exactly as the
+// user would experience it via the token dropdown.
 function toggleNoFundsBanner() {
   showScreen('borrow-connected');
   ['', '-b', '-c'].forEach(function(sfx) {
     var screen = document.getElementById('borrow-connected' + sfx);
     if (!screen) return;
-    var banner = screen.querySelector('.supply-warning-banner');
-    if (!banner) return;
-    var isActive = banner.classList.contains('active');
-    if (isActive) {
-      banner.classList.remove('active');
-      banner.classList.add('exiting');
-      banner.setAttribute('aria-hidden', 'true');
-      setTimeout(function() { banner.classList.remove('exiting'); }, 320);
-      screen.classList.remove('no-funds');
-    } else {
-      banner.classList.remove('exiting');
-      banner.classList.add('active');
-      banner.setAttribute('aria-hidden', 'false');
-      screen.classList.add('no-funds');
-    }
+    var isNoFunds = screen.classList.contains('no-funds');
+    var targetToken = isNoFunds ? 'pepe' : 'morpho';
+    // Pick the dropdown row in *this* screen for the target token and run
+    // the existing selectToken() — it handles banner entry/exit, mascot
+    // line, screen class, and any mirroring to the other phones.
+    var row = screen.querySelector('.token-select .token-dropdown-row[data-token="' + targetToken + '"]');
+    if (row && typeof selectToken === 'function') selectToken(row);
   });
 }
 // Initial state on borrow-connected: wallet is connected but no supply yet.
