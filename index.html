@@ -2060,9 +2060,13 @@
     .phone.desktop .supply-warning-banner {
       border-radius: 40px 40px 0 0;
     }
-    /* Desktop card padding-top expands by extra 80px when banner is shown. */
+    /* Desktop card padding-top with banner: 99px gives ~40px gap between
+       the banner bottom and the card's first row of content (banner is
+       ~57px tall, sits at top:0 of the card, so content at padding-top
+       99 lands ~40px below it). 30px tighter than the previous 129px
+       which left the content sitting too far from the banner. */
     .phone.desktop .slider-section.has-banner {
-      padding-top: 129px; /* 49 default + 80 banner room */
+      padding-top: 99px;
     }
     @media (prefers-reduced-motion: reduce) {
       .supply-warning-banner, .supply-warning-banner.active, .supply-warning-banner.exiting {
