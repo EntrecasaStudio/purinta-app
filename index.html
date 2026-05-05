@@ -1783,14 +1783,23 @@
     .slider-section {
       background: white; border-radius: 32px; padding: 20px;
       border: 1px solid var(--cream-400);
-      /* Padding-top expands when the supply-warning-banner is active so
-         the card extends *behind* the banner (banner overlaps card top
-         by 32 px via negative margin) without the banner covering the
-         card's content. The transition matches the banner's collapse so
-         on exit, the banner shrinks and the card padding shrinks in sync
-         — content slides up smoothly. Border-radius and border-color
-         stay constant; only padding-top changes. */
-      transition: padding-top 240ms cubic-bezier(0.4, 0, 0.2, 1) 80ms;
+      /* Anchor for the absolutely-positioned supply-warning-banner that
+         lives inside this section. Padding-top grows when the banner is
+         active so the banner overlay doesn't cover the card's actual
+         content. The transition timing differs by direction:
+         - ENTER: padding grows first (240 ms), then banner fades in.
+         - EXIT: banner fades out first, then padding shrinks (240 ms).
+         The :has() rule below keeps the padding extended through the
+         banner's exit so the banner has room to fade in place. */
+      position: relative;
+      transition: padding-top 240ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Card padding-top expands while the banner is shown OR fading out.
+       Driven by an explicit `.has-banner` class on the card (added by JS
+       when the banner appears, removed only after the banner finishes
+       exiting) — more reliable than CSS :has() across engines. */
+    .slider-section.has-banner {
+      padding-top: 80px;
     }
     .slider-label {
       display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 20px;
@@ -1946,49 +1955,35 @@
 
     /* ═══ SUPPLY WARNING BANNER — token not in wallet ═══ */
     .supply-warning-banner {
-      max-height: 0;
-      opacity: 0;
-      overflow: hidden;
-      background: #FFECDB;
-      border: 0 solid #FFA466;
-      border-radius: 32px 32px 0 0;
-      margin: 0;
-      transform: translateY(-4px);
-      /* Banner paints ABOVE the card via z-index. When active, a negative
-         margin-bottom (-32 px) pulls the card up so the banner's bottom
-         edge overlaps the card's rounded top corners by exactly the
-         corner radius (32 px). The card compensates with extra
-         padding-top to keep its content from being covered. Net read:
-         the rounded corners of the card get hidden behind the banner —
-         the user sees a banner pill with the card's flat sides + rounded
-         bottom flowing out from beneath it (per Figma 1453:125670). */
-      position: relative;
+      /* Absolute overlay anchored to the top of its slider-section parent.
+         The banner never participates in flow — only the card's padding
+         creates the visual space it occupies. */
+      position: absolute;
+      top: 0; left: 0; right: 0;
       z-index: 2;
-      isolation: isolate;
-      transition:
-        max-height 240ms cubic-bezier(0.2, 0, 0, 1),
-        border-width 200ms ease-out 40ms,
-        opacity 200ms ease-out 40ms,
-        transform 200ms ease-out 40ms,
-        margin 240ms cubic-bezier(0.2, 0, 0, 1);
+      background: #FFECDB;
+      border: 1.5px solid #FFA466;
+      border-radius: 32px 32px 0 0;
+      overflow: hidden;
+      /* Default state: invisible. */
+      opacity: 0;
+      transform: translateY(-4px);
+      visibility: hidden;
       pointer-events: none;
+      /* On enter (default → .active): wait for the card padding-top to
+         finish growing (240 ms) before fading the banner in. visibility
+         flips at the start of the transition so the box becomes
+         hit-testable just as it appears. */
+      transition:
+        opacity 200ms ease-out 240ms,
+        transform 200ms ease-out 240ms,
+        visibility 0s linear 240ms;
     }
     .supply-warning-banner.active {
-      max-height: 120px;
       opacity: 1;
       transform: translateY(0);
-      border-width: 1.5px;
-      /* Banner overlaps the card vertically by 32 px (= card's
-         border-radius) so its bottom edge sits inside the card's rounded-
-         corner zone — those corners get hidden behind the banner. */
-      margin: 0 0 -32px 0;
+      visibility: visible;
       pointer-events: auto;
-    }
-    /* Card padding-top expands by the banner overlap (32 px) when the
-       banner is active, so the banner doesn't paint over the card's
-       internal content. */
-    .supply-warning-banner.active + .slider-section {
-      padding-top: 52px; /* 20 default + 32 banner overlap */
     }
     .supply-warning-banner .swb-content {
       display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -2000,29 +1995,18 @@
     .supply-warning-banner .swb-text { white-space: nowrap; }
     .supply-warning-banner .swb-token-name { font-weight: 500; }
     .supply-warning-banner .swb-strip { height: 6px; background: #FFA466; }
-    /* Exit state — banner-only animation. The card never changes
-       (corners stay at 32px, border stays cream-400) regardless of
-       whether the banner is entering, present, or leaving. The banner
-       fades + collapses on its own:
-         • opacity 1 → 0 over 140 ms (no delay) — content + box dissolve
-         • border-width 1.5 → 0 over 140 ms — frame collapses with fill
-         • max-height 120 → 0 over 240 ms with 80 ms delay — empty box
-           collapses after the dissolve
-         • margin and transform follow the same timing
-       Net read: banner softly fades out, then the empty space rises up,
-       and the card stays untouched throughout. */
+    /* Exit state — banner fades out first (no delay), then the card's
+       padding-top shrinks back via the .slider-section transition once
+       `.exiting` is removed (the :has() rule keeps padding extended
+       while .exiting is on). Net read: banner disappears in place, then
+       the now-empty padding zone collapses and the content slides up. */
     .supply-warning-banner.exiting {
-      max-height: 0;
       opacity: 0;
       transform: translateY(-4px);
-      margin: 0;
-      border-width: 0;
+      visibility: visible; /* stay visible while opacity fades */
       transition:
-        opacity 140ms ease-out,
-        border-width 140ms ease-out,
-        transform 200ms ease-out,
-        max-height 240ms cubic-bezier(0.4, 0, 0.2, 1) 80ms,
-        margin 240ms cubic-bezier(0.4, 0, 0.2, 1) 80ms;
+        opacity 200ms ease-out,
+        transform 200ms ease-out;
     }
     /* Icon pulse once after banner lands */
     @keyframes swbIconPulse {
@@ -2034,10 +2018,13 @@
       animation: swbIconPulse 600ms ease-out 280ms 1;
       transform-origin: center;
     }
-    /* Mobile: sticky to 16px from top of phone frame. High z-index + solid bg keep
-       scrolling content hidden behind the banner (never paints over it). */
+    /* Mobile + desktop now both use absolute positioning (banner overlays the
+       card's top-padding zone). The previous mobile-sticky behaviour is no
+       longer needed because the banner is anchored inside the card and
+       moves with it on scroll naturally. Keeping a higher z-index on
+       active so it always paints above sibling card content. */
     .phone:not(.desktop) .supply-warning-banner.active {
-      position: sticky; top: 16px; z-index: 50;
+      z-index: 50;
     }
     /* Ensure slider-section never stacks above the sticky banner */
     #phone-a #borrow-connected .slider-section , #phone-b #borrow-connected .slider-section { position: relative; z-index: 1; }
@@ -2066,15 +2053,17 @@
     .phone:not(.desktop) #borrow-connected.no-funds .banner-top-mask.stuck {
       opacity: 1;
     }
-    /* Desktop: banner sits flush above card (no sticky), matches desktop card radius */
+    /* Desktop: banner is still an absolute overlay inside the card (same
+       pattern as mobile). Border-radius matches the desktop card radius
+       (40px). The card has padding: 49px on desktop, so the overlay area
+       takes that into account when sized. */
     .phone.desktop .supply-warning-banner {
-      border-radius: 24px 24px 0 0;
-      max-width: 720px;
-      margin-left: auto; margin-right: auto;
-      width: 100%;
-      box-sizing: border-box;
+      border-radius: 40px 40px 0 0;
     }
-    .phone.desktop .supply-warning-banner.active { margin-bottom: -2px; }
+    /* Desktop card padding-top expands by extra 80px when banner is shown. */
+    .phone.desktop .slider-section.has-banner {
+      padding-top: 129px; /* 49 default + 80 banner room */
+    }
     @media (prefers-reduced-motion: reduce) {
       .supply-warning-banner, .supply-warning-banner.active, .supply-warning-banner.exiting {
         transition-duration: 0ms !important;
@@ -4815,15 +4804,20 @@
       </div>
 
       <div class="banner-top-mask" id="swb-mask-a" aria-hidden="true"></div>
-      <div class="supply-warning-banner" id="swb-a" aria-hidden="true">
-        <div class="swb-content">
-          <i class="ph-fill ph-warning swb-icon" aria-hidden="true"></i>
-          <span class="swb-text">Add <span class="swb-token-name">MORPHO</span> to your wallet to get started.</span>
-        </div>
-        <div class="swb-strip"></div>
-      </div>
 
       <div class="slider-section">
+        <!-- Banner is now a CHILD of the card, positioned absolutely so it
+             overlays the card's top-padding zone. Sequence on enter: card's
+             padding-top grows first to make room, then the banner fades in
+             over the new space. On exit: banner fades out first, then
+             padding shrinks. The banner never affects flow. -->
+        <div class="supply-warning-banner" id="swb-a" aria-hidden="true">
+          <div class="swb-content">
+            <i class="ph-fill ph-warning swb-icon" aria-hidden="true"></i>
+            <span class="swb-text">Add <span class="swb-token-name">MORPHO</span> to your wallet to get started.</span>
+          </div>
+          <div class="swb-strip"></div>
+        </div>
         <div class="borrow-col-sliders">
         <div class="slider-label">
           <span class="slider-label-text">Supply</span>
@@ -6502,7 +6496,14 @@ function updateSupplyWarningBanner(screen, tokenKey, tokenName) {
   var nameEl = banner.querySelector('.swb-token-name');
   if (nameEl) nameEl.textContent = tokenName;
 
+  // Card sits above the banner in the new overlay layout. We mark the
+  // card with `.has-banner` to drive its padding-top expansion. Class is
+  // added when the banner appears and only removed AFTER the banner has
+  // finished its exit fade — that way the card padding stays extended
+  // through the full banner-fade window, then collapses on its own.
+  var card = banner.closest('.slider-section');
   if (!inWallet) {
+    if (card) card.classList.add('has-banner');
     banner.classList.remove('exiting');
     banner.classList.add('active');
     banner.setAttribute('aria-hidden', 'false');
@@ -6511,8 +6512,18 @@ function updateSupplyWarningBanner(screen, tokenKey, tokenName) {
       banner.classList.remove('active');
       banner.classList.add('exiting');
       banner.setAttribute('aria-hidden', 'true');
-      // 320ms covers the longest exit transition: max-height 240ms with 80ms delay.
-      setTimeout(function() { banner.classList.remove('exiting'); }, 320);
+      // 220ms = banner opacity fade duration + small buffer. After this,
+      // remove `.exiting` from the banner AND `.has-banner` from the
+      // card → card padding-top transitions 80→20 over 240ms, content
+      // slides up.
+      setTimeout(function() {
+        banner.classList.remove('exiting');
+        if (card) card.classList.remove('has-banner');
+      }, 220);
+    } else if (card) {
+      // Banner wasn't active (e.g. selecting a held token while no banner
+      // showing) — make sure the card class is off too.
+      card.classList.remove('has-banner');
     }
   }
   // Re-check mask stuck state after banner change
