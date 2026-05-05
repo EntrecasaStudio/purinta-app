@@ -1671,7 +1671,11 @@
     .token-dropdown-row .check-icon { width: 16px; height: 16px; flex-shrink: 0; }
     /* === Phone A — smaller pill token dropdown === */
     #phone-a .token-select-wrap , #phone-b .token-select-wrap { width: 136px; height: 46px; }
-    #phone-a .token-select-trigger , #phone-b .token-select-trigger { min-width: 136px; min-height: 40px; padding: 5px 12px 3px 8px; gap: 6px; }
+    /* Vertical padding made symmetric (was 5/3 — the icon read closer to
+       the bottom in disabled state where the chevron's visual weight isn't
+       there to balance). 4/4 puts the 28px icon dead-centre in the 40px
+       min-height box and looks identical between active and disabled. */
+    #phone-a .token-select-trigger , #phone-b .token-select-trigger { min-width: 136px; min-height: 40px; padding: 4px 12px 4px 8px; gap: 6px; }
     #phone-a .token-select , #phone-b .token-select { font-size: var(--ds-sm); }
     #phone-a .token-select .mini-icon , #phone-b .token-select .mini-icon { width: 28px; height: 28px; }
     #phone-a .token-select .token-name , #phone-b .token-select .token-name { font-size: var(--ds-sm); line-height: 26px; }
@@ -1982,17 +1986,39 @@
       border-top-right-radius: 0 !important;
       border-top: none !important;
     }
-    /* Exit state: everything animates together (no phase delay) for a clean push-up */
+    /* Exit state: everything animates together (no phase delay) for a clean
+       push-up. Opacity fades out FIRST (140ms) so the orange banner is
+       gone before the height collapses — the user sees the banner
+       dissolve, not a tall stripe shrinking. Border-width also collapses
+       in the same window so the 1.5px frame doesn't outlast the fill. */
     .supply-warning-banner.exiting {
       max-height: 0;
       opacity: 0;
       transform: translateY(-4px);
       margin: 0;
+      border-width: 0;
       transition:
-        max-height 220ms cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 200ms ease-out,
+        opacity 140ms ease-out,
         transform 200ms ease-out,
-        margin 220ms cubic-bezier(0.4, 0, 0.2, 1);
+        border-width 160ms ease-out 60ms,
+        max-height 240ms cubic-bezier(0.4, 0, 0.2, 1) 80ms,
+        margin 240ms cubic-bezier(0.4, 0, 0.2, 1) 80ms;
+    }
+    /* Slider-section's seamless-merge override (no top radius / no top
+       border) is normally only on while the banner is .active. During
+       exit the .active class is removed so the override drops instantly,
+       making the card top corners snap back to rounded BEFORE the banner
+       has finished collapsing — the user sees a flicker. Keep the merge
+       active during .exiting so the card top stays flat until the banner
+       has finished animating out, then restores via transition together
+       with the banner. */
+    .supply-warning-banner.exiting + .slider-section {
+      border-top-left-radius: 0 !important;
+      border-top-right-radius: 0 !important;
+      border-top: none !important;
+      transition:
+        border-top-left-radius 160ms ease-out 80ms,
+        border-top-right-radius 160ms ease-out 80ms;
     }
     /* Icon pulse once after banner lands */
     @keyframes swbIconPulse {
@@ -4257,6 +4283,7 @@
             <button onclick="showScreen('borrow')">Borrow</button>
             <button onclick="showScreen('borrow-connected')">Borrow+</button>
             <button onclick="setBorrowInitial()">Initial</button>
+            <button onclick="toggleNoFundsBanner()">Toggle No-Funds Banner</button>
             <button onclick="setBorrowHealth('ultra-safe')">Ultra Safe</button>
             <button onclick="setBorrowHealth('looking-good')">Looking Good</button>
             <button onclick="setBorrowHealth('getting-risky')">Getting Risky</button>
@@ -7001,6 +7028,33 @@ function setBorrowHealth(level) {
   // Mirror the preset to phones B and C so multi-phone views stay in sync.
   ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('borrow-connected' + sfx, level); });
   _markStateBtnActive('setBorrowHealth', level);
+}
+// Toggle the "token not in your wallet" warning banner on borrow-connected
+// for design review. Drives the same `.no-funds` class on the screen and
+// `.active`/`.exiting` flow on the banner that selecting a non-held token
+// would normally produce — so the dev can see the banner enter and exit
+// without having to switch tokens.
+function toggleNoFundsBanner() {
+  showScreen('borrow-connected');
+  ['', '-b', '-c'].forEach(function(sfx) {
+    var screen = document.getElementById('borrow-connected' + sfx);
+    if (!screen) return;
+    var banner = screen.querySelector('.supply-warning-banner');
+    if (!banner) return;
+    var isActive = banner.classList.contains('active');
+    if (isActive) {
+      banner.classList.remove('active');
+      banner.classList.add('exiting');
+      banner.setAttribute('aria-hidden', 'true');
+      setTimeout(function() { banner.classList.remove('exiting'); }, 320);
+      screen.classList.remove('no-funds');
+    } else {
+      banner.classList.remove('exiting');
+      banner.classList.add('active');
+      banner.setAttribute('aria-hidden', 'false');
+      screen.classList.add('no-funds');
+    }
+  });
 }
 // Initial state on borrow-connected: wallet is connected but no supply yet.
 // Sliders at 0, mascot in "happy" state with the "Supply X and start
