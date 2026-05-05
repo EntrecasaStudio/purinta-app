@@ -1994,32 +1994,55 @@
       border-top-right-radius: 0 !important;
       border-top: none !important;
     }
-    /* Exit state — two visual phases:
-       PHASE 1 (0–160ms): banner dissolves while the card rounds back.
-         Banner opacity 1→0, banner border-width 1.5→0. Simultaneously
-         the card's seamless-merge override drops (because `.active` is
-         removed before `.exiting` is added) so its top radii animate
-         back to 32px and its top border restores via the transition we
-         declared on `.slider-section`. The user sees the rounded card
-         shape appear UNDER the dissolving banner.
-       PHASE 2 (160–360ms): the empty banner space collapses and the
-         content above rises. max-height 120→0, margin -2→0.
-       Net read: "banner fades to reveal the rounded card, then the
-       block of space goes away" — exactly what was requested. */
+    /* Exit state — two visual phases (per Figma 1467:132556):
+       PHASE 1 (0–140ms): banner morphs into a continuation of the card.
+         Background #FFECDB → white. Border #FFA466 → cream-400.
+         Inner content (.swb-content + .swb-strip) opacity 1→0.
+         The card below stays merged (top radii 0, no top border) via
+         the `.exiting + .slider-section` rule below, so the user reads
+         banner+card as a single tall rounded white block.
+       PHASE 2 (160–360ms): the unified white block collapses to the
+         card's natural size. Banner max-height 120→0, margin -2→0,
+         border-width 1.5→0. Content above rises.
+       After .exiting is removed (at 360ms by JS), the card-merge
+       override drops, and the transition on `.slider-section` animates
+       the top corners back to 32px (one final smooth flourish). */
     .supply-warning-banner.exiting {
+      /* Phase 1 properties */
+      background: white;
+      border-color: var(--cream-400);
+      opacity: 1; /* override default `opacity: 0` so the box stays painted during phase 1 */
+      /* Phase 2 properties */
       max-height: 0;
-      opacity: 0;
-      transform: translateY(-4px);
       margin: 0;
       border-width: 0;
+      transform: translateY(-4px);
       transition:
-        /* Phase 1 — dissolve, runs immediately */
-        opacity 140ms ease-out,
-        border-width 140ms ease-out,
-        transform 200ms ease-out,
+        /* Phase 1 — colour swap, runs immediately */
+        background 140ms ease-out,
+        border-color 140ms ease-out,
         /* Phase 2 — collapse, deferred until phase 1 has resolved */
+        transform 200ms ease-out 160ms,
         max-height 200ms cubic-bezier(0.4, 0, 0.2, 1) 160ms,
-        margin 200ms cubic-bezier(0.4, 0, 0.2, 1) 160ms;
+        margin 200ms cubic-bezier(0.4, 0, 0.2, 1) 160ms,
+        border-width 200ms ease-out 160ms;
+    }
+    /* Phase 1: fade the orange content (icon + text + bottom strip) so
+       only the white container shape remains. */
+    .supply-warning-banner.exiting .swb-content,
+    .supply-warning-banner.exiting .swb-strip {
+      opacity: 0;
+      transition: opacity 140ms ease-out;
+    }
+    /* Card stays seamlessly merged (no top radius, no top border) for the
+       full exit window so banner+card paint as a single white block. The
+       override drops only when JS removes `.exiting` at 360ms, at which
+       point `.slider-section`'s own transition rounds the top back to
+       32px as the closing flourish. */
+    .supply-warning-banner.exiting + .slider-section {
+      border-top-left-radius: 0 !important;
+      border-top-right-radius: 0 !important;
+      border-top: none !important;
     }
     /* Icon pulse once after banner lands */
     @keyframes swbIconPulse {
