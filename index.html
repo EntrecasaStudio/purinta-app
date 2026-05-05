@@ -2581,13 +2581,34 @@
       55%  { opacity: 0.7; transform: translate(3px, -3px); }
       80%, 100% { opacity: 0; transform: translate(6px, -6px); }
     }
+    /* Mid-right tear: shape points down-and-to-the-right, follow that arc
+       to dissolve. */
+    @keyframes md-tear-down-right {
+      0%   { opacity: 0; transform: translate(-1px, -1px); }
+      15%  { opacity: 0.9; transform: translate(0, 0); }
+      55%  { opacity: 0.7; transform: translate(3px, 3px); }
+      80%, 100% { opacity: 0; transform: translate(6px, 6px); }
+    }
+    /* Whole body tremor — composes with md-sway via the `translate:`
+       individual property so the slow sway keeps working. */
+    @keyframes md-body-tremor {
+      0%, 100% { translate: 0 0; }
+      20%      { translate: -0.4px 0.3px; }
+      40%      { translate: 0.5px -0.3px; }
+      60%      { translate: -0.3px -0.5px; }
+      80%      { translate: 0.4px 0.4px; }
+    }
     @keyframes md-cheek-fever {
       0%, 100% { fill: #FEAAA4; }
       50%      { fill: var(--blush-600); }
     }
-    /* Slow, weak body sway as a whole (the entire melt SVG) */
+    /* Slow, weak body sway as a whole (the entire melt SVG) plus a faster
+       fine tremor layered on top. The two animations target different
+       transform properties (`transform:` for the sway, `translate:` for the
+       tremor) so they compose without overriding each other. */
     .mascot-area.meltdown .emote-v2-melt svg {
-      animation: md-sway 4.5s ease-in-out infinite;
+      animation: md-sway 4.5s ease-in-out infinite,
+                 md-body-tremor 0.5s ease-in-out infinite;
       transform-origin: center bottom;
     }
     .mascot-area.meltdown .emote-v2-melt svg .m-cheek {
@@ -2601,14 +2622,14 @@
       animation: md-tear-fall 4s ease-in 1.6s infinite;
       transform-box: fill-box; transform-origin: center;
     }
-    /* Drops 3 and 4 sit in the upper-right corner and project away from the
-       head (up-right). They follow that trajectory to dissolve. */
+    /* Drop 4 (top-most) shoots up-and-right; drop 3 (just below) points
+       down-and-right. Both move quickly relative to the slow falling tears. */
     .mascot-area.meltdown .emote-v2-melt svg .m-drop-3 {
-      animation: md-tear-up-right 3.5s ease-in 0.9s infinite;
+      animation: md-tear-down-right 2.4s ease-in 0.4s infinite;
       transform-box: fill-box; transform-origin: center;
     }
     .mascot-area.meltdown .emote-v2-melt svg .m-drop-4 {
-      animation: md-tear-up-right 4.2s ease-in 2.1s infinite;
+      animation: md-tear-up-right 2.6s ease-in 1s infinite;
       transform-box: fill-box; transform-origin: center;
     }
     .mascot-area.meltdown .emote-v2-melt svg .m-drop-5 {
