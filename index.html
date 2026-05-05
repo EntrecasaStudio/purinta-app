@@ -5702,12 +5702,12 @@
 
 /* Snapshot of phone-a BEFORE OP2 transform — captured on page init.
    Used as source for both phone-b and phone-c clones. */
-var _phoneASnapshot = null;
-function capturePhoneASnapshot() {
-  if (_phoneASnapshot) return;
-  var phoneA = document.getElementById('phone-a');
-  if (phoneA) _phoneASnapshot = phoneA.innerHTML;
-}
+/* Phone B clones phone-a's CURRENT innerHTML at init time (NOT a frozen
+   snapshot). The previous architecture cached the snapshot at script exec
+   to preserve a pre-OP2 layout for Op B; now Op B is meant to be an
+   identity clone of A, so we read phone-a's live DOM each time — this
+   automatically reflects every later transform (OP2 title swap, V2 emote
+   stacks, etc.). */
 
 function setOption(mode, save) {
   // Three modes only:
@@ -5836,13 +5836,9 @@ function replayConnectCelebration() {
   });
 }
 
-/* Capture phone-a snapshot IMMEDIATELY at script exec — before any async
-   transform (OP2 structure change, v2 emotes, etc.) touches the DOM.
-   phone-b and phone-c clone from this snapshot, so they represent OP1. */
-capturePhoneASnapshot();
-
 /* ═══ OP2 transform: move market selector from Supply section to title ═══
-   Applied ONLY to phone-a. Runs after snapshot so B and C stay OP1. */
+   Applied to phone-a on script exec. Phone-b clones phone-a's live DOM
+   at init time, so B picks up the OP2 layout automatically. */
 function applyOP2ToPhoneA() {
   var phoneA = document.getElementById('phone-a');
   if (!phoneA) return;
@@ -5902,12 +5898,13 @@ applyOP2ToPhoneA();
 
 // Phone A = Option A (OP2: market selector in title)
 
-/* Shared clone logic for phone-b and phone-c.
-   Both clone from _phoneASnapshot (pre-OP2 markup = OP1 structure).
-   suffix: 'b' or 'c' — used for ID remapping. */
+/* Shared clone logic for phone-b and phone-c. Reads phone-a's CURRENT
+   innerHTML so B picks up every transform applied to A (OP2 title swap,
+   V2 emote stacks, etc.). suffix: 'b' or 'c' — used for ID remapping. */
 function clonePhoneFromSnapshot(phoneEl, suffix) {
-  if (!_phoneASnapshot) capturePhoneASnapshot();
-  phoneEl.innerHTML = _phoneASnapshot;
+  var srcPhone = document.getElementById('phone-a');
+  if (!srcPhone) return;
+  phoneEl.innerHTML = srcPhone.innerHTML;
   var dash = '-' + suffix;
   // Remap IDs to avoid conflicts
   phoneEl.querySelectorAll('[id]').forEach(function(el) {
@@ -5918,21 +5915,13 @@ function clonePhoneFromSnapshot(phoneEl, suffix) {
     s.classList.remove('active'); s.classList.remove('bg-screen');
   });
   // Mirror the active screen from phone-a
-  var phoneA = document.getElementById('phone-a');
-  var activeScreen = phoneA.querySelector('.screen.active');
+  var activeScreen = srcPhone.querySelector('.screen.active');
   if (activeScreen) {
     var target = document.getElementById(activeScreen.id + dash);
     if (target) target.classList.add('active');
   }
   // Remove cloned loading overlays
   phoneEl.querySelectorAll('.loading-screen-overlay').forEach(function(el) { el.remove(); });
-  // Copy wordmark SVG from live phone-a (OP2) — wordmark is identical across options
-  var srcWM = phoneA.querySelector('.logo-wordmark');
-  if (srcWM) {
-    phoneEl.querySelectorAll('.logo-wordmark').forEach(function(wm) {
-      wm.innerHTML = srcWM.innerHTML;
-    });
-  }
   // Reveal homepage sections (unless loading intro will play)
   var currentScreen = localStorage.getItem('purinta-screen') || 'homepage';
   if (currentScreen !== 'homepage') {
