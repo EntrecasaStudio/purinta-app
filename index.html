@@ -6975,7 +6975,15 @@ function _applyHealthPreset(screenId, level) {
 // button that showScreen already activates). Re-applied after showScreen
 // because showScreen wipes .active across the screen-nav.
 function _markStateBtnActive(fn, level) {
-  var btn = document.querySelector(".screen-nav button[onclick*=\"" + fn + "('" + level + "')\"]");
+  // For helpers that take a `level` argument the button onclick is e.g.
+  // `setBorrowHealth('ultra-safe')`. For helpers that take no argument
+  // (setBorrowInitial), `level` is null and the button is `setBorrowInitial()`
+  // — the previous selector `setBorrowInitial('null')` never matched, so
+  // the dev-nav stayed highlighting "Borrow+" instead of "Initial".
+  var sel = level == null
+    ? ".screen-nav button[onclick*=\"" + fn + "()\"]"
+    : ".screen-nav button[onclick*=\"" + fn + "('" + level + "')\"]";
+  var btn = document.querySelector(sel);
   if (!btn) return;
   btn.classList.add('active');
   var folder = btn.closest('.dev-folder');
