@@ -2375,6 +2375,16 @@
     .mascot-area.getting-risky .emote-v2-face svg .m-body-overlay {
       opacity: 0.75;
     }
+    /* Heartbeat: the celeste gradient pulses to a deeper info-blue and back,
+       mirroring the danger-zone red flush but in the cool palette. Uses DS
+       --info-200/--info-400 tokens so the colour stays anchored to the system. */
+    @keyframes gr-flush {
+      0%, 100% { stop-color: var(--info-200); }
+      50%      { stop-color: var(--info-400); }
+    }
+    .mascot-area.getting-risky .emote-v2-face svg .m-flush-stop {
+      animation: gr-flush 1.6s ease-in-out infinite;
+    }
     /* Hide the V2-baked static mouth stroke — getting-risky uses the
        conveyor wave inside the clip-path instead. */
     .mascot-area.getting-risky .emote-v2-face svg .m-mouth-stroke,
@@ -2830,6 +2840,7 @@
       .mascot-area.getting-risky .emote-v2-face svg .m-mouth-inner,
       .mascot-area.getting-risky .emote-v2-face svg [class^="m-drop"],
       .mascot-area.getting-risky .emote-v2-face svg .m-cheek,
+      .mascot-area.getting-risky .emote-v2-face svg .m-flush-stop,
       .mascot-area.getting-risky .emote-v2-feet svg .m-foot-l,
       .mascot-area.getting-risky .emote-v2-feet svg .m-foot-r,
       .mascot-area.danger-zone .emote-v2-body,
