@@ -2175,26 +2175,41 @@
        - longer total duration (2.2s) so it doesn't feel rushed
        - parent `.mascot-blob` opacity is briefly lifted so the whole area
          brightens during the moment. */
+    /* Two-act keyframe: punchy bounce-in (0 → 50%) followed by a long
+       gentle decay (50% → 100%). Opacity fades earlier than scale so the
+       exit reads as the rays "dissolving" rather than snapping shut, and
+       scale eases through 0.6 rather than slamming to 0.
+       Total duration is 2.6s — the JS setTimeout matches so the
+       `.is-celebrating` class persists for the entire animation; the
+       element ends naturally at the 100% keyframe (scale 0, opacity 0)
+       and matches the rest state without needing a follow-up transition. */
     @keyframes blob-sunburst-celebrate {
       0%       { transform: scale(0)    rotate(-18deg); opacity: 0; }
-      18%      { transform: scale(1.55) rotate(0deg);  opacity: 1; }
-      35%      { transform: scale(1.25) rotate(10deg); opacity: 1; }
-      55%      { transform: scale(1.15) rotate(-3deg); opacity: 1; }
-      80%      { transform: scale(1)    rotate(0deg);  opacity: 1; }
-      100%     { transform: scale(0)    rotate(0deg);  opacity: 0; }
+      14%      { transform: scale(1.55) rotate(0deg);   opacity: 1; }
+      28%      { transform: scale(1.25) rotate(10deg);  opacity: 1; }
+      48%      { transform: scale(1.15) rotate(-3deg);  opacity: 1; }
+      62%      { transform: scale(1.08) rotate(0deg);   opacity: 0.95; }
+      78%      { transform: scale(0.92) rotate(0deg);   opacity: 0.7; }
+      90%      { transform: scale(0.65) rotate(0deg);   opacity: 0.3; }
+      100%     { transform: scale(0)    rotate(0deg);   opacity: 0; }
     }
     @keyframes blob-celebrate-flash {
       0%, 100% { opacity: 0.4; }
-      18%      { opacity: 0.9; }   /* matches the ray burst peak */
-      80%      { opacity: 0.6; }
+      14%      { opacity: 0.9; }   /* matches the ray burst peak */
+      62%      { opacity: 0.7; }
+      90%      { opacity: 0.45; }  /* eases back to the rest state opacity */
     }
     .mascot-area.is-celebrating .blob-sunburst {
-      animation: blob-sunburst-celebrate 2.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      /* `cubic-bezier(0.5, 1.4, 0.4, 1)` — overshoot on the in-bounce, eased
+         landing on the way out. Less aggressive on the exit than the
+         previous (.34, 1.56, .64, 1) which was kicking back during the
+         fade-out and reading as a snap. */
+      animation: blob-sunburst-celebrate 2.6s cubic-bezier(0.5, 1.4, 0.4, 1) forwards;
       transform-box: view-box;
       transform-origin: 75px 75px;
     }
     .mascot-area.is-celebrating .mascot-blob {
-      animation: blob-celebrate-flash 2.2s ease-out forwards;
+      animation: blob-celebrate-flash 2.6s ease-out forwards;
     }
     .mascot-area.is-celebrating .blob-sunburst-rotor,
     .mascot-area.is-celebrating .blob-sunburst-shimmer {
@@ -5838,7 +5853,10 @@ function replayConnectCelebration() {
     // Force reflow so the animation re-fires when re-added.
     void area.offsetWidth;
     area.classList.add('is-celebrating');
-    setTimeout(function() { area.classList.remove('is-celebrating'); }, 1700);
+    // Matches the celebrate keyframe duration (2.6s) so the class persists
+    // for the full animation and the rays land at scale(0)/opacity(0) on
+    // their own — no abrupt fallback to the rest-state transition.
+    setTimeout(function() { area.classList.remove('is-celebrating'); }, 2600);
   });
 }
 
@@ -7030,7 +7048,8 @@ function showScreen(id) {
       if (!newScreen) return;
       newScreen.querySelectorAll('.mascot-area').forEach(function(area) {
         area.classList.add('is-celebrating');
-        setTimeout(function() { area.classList.remove('is-celebrating'); }, 1700);
+        // Matches the 2.6s celebrate keyframe so it lands on its own.
+        setTimeout(function() { area.classList.remove('is-celebrating'); }, 2600);
       });
     }, 60);
   }
