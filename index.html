@@ -184,8 +184,35 @@
     .dev-nav-panel::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
     .dev-nav-section { margin-bottom: 10px; }
     .dev-nav-section:last-child { margin-bottom: 0; }
+    /* Each top-level section is now a `<details>` so the entire group can
+       be collapsed when not in use. The label becomes the `<summary>` —
+       same visual style as before, plus a chevron that rotates open. */
     .dev-nav-label { font-size: 9px; color: rgba(255,255,255,0.35); text-transform: uppercase;
       letter-spacing: 1.5px; font-weight: 600; margin-bottom: 6px; padding: 0 4px; }
+    details.dev-nav-section > summary.dev-nav-label {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    details.dev-nav-section > summary.dev-nav-label::-webkit-details-marker { display: none; }
+    details.dev-nav-section > summary.dev-nav-label::before {
+      content: '▸';
+      font-size: 8px;
+      color: rgba(255,255,255,0.4);
+      transition: transform 0.15s ease;
+    }
+    details.dev-nav-section[open] > summary.dev-nav-label::before {
+      transform: rotate(90deg);
+    }
+    details.dev-nav-section > summary.dev-nav-label .nav-emoji {
+      font-size: 11px;
+      letter-spacing: 0;
+      filter: saturate(0.8);
+    }
+    details.dev-nav-section > summary.dev-nav-label:hover { color: rgba(255,255,255,0.65); }
     .dev-nav-group { display: flex; gap: 4px; flex-wrap: wrap; }
     .dev-nav-group button { font-family: 'SF Mono', 'Menlo', monospace; font-size: 10px; font-weight: 500;
       padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
@@ -4190,24 +4217,24 @@
 <div class="dev-nav">
   <button class="dev-nav-toggle" onclick="document.querySelector('.dev-nav-panel').classList.toggle('open')" title="Toggle navigation"><span class="toggle-glyph"></span></button>
   <div class="dev-nav-panel">
-    <div class="dev-nav-section">
-      <div class="dev-nav-label">Breakpoint</div>
+    <details class="dev-nav-section" data-section="breakpoint" open>
+      <summary class="dev-nav-label"><span class="nav-emoji">📐</span>Breakpoint</summary>
       <div class="dev-nav-group">
         <button class="bp-btn active" onclick="setBreakpoint(360)" data-bp="360">360</button>
         <button class="bp-btn bp-secondary" onclick="setBreakpoint(414)" data-bp="414">414</button>
         <button class="bp-btn" onclick="setBreakpoint(1280)" data-bp="1280">1280</button>
       </div>
-    </div>
-    <div class="dev-nav-section">
-      <div class="dev-nav-label">Option</div>
+    </details>
+    <details class="dev-nav-section" data-section="option" open>
+      <summary class="dev-nav-label"><span class="nav-emoji">🅰️</span>Option</summary>
       <div class="dev-nav-group option-nav">
         <button class="opt-toggle active" onclick="setOption('a')">A &mdash; Spec</button>
         <button class="opt-toggle" onclick="setOption('b')">B &mdash; Variations</button>
         <button class="opt-toggle" onclick="setOption('c')">C &mdash; Reduced Data</button>
       </div>
-    </div>
-    <div class="dev-nav-section">
-      <div class="dev-nav-label">Screens</div>
+    </details>
+    <details class="dev-nav-section" data-section="screens" open>
+      <summary class="dev-nav-label"><span class="nav-emoji">🪟</span>Screens</summary>
       <div class="dev-nav-group screen-nav" style="flex-direction:column;gap:6px;">
         <details class="dev-folder" open>
           <summary>Home</summary>
@@ -4258,39 +4285,34 @@
           </div>
         </details>
       </div>
-    </div>
-    <div class="dev-nav-section">
-      <div class="dev-nav-label">Animations</div>
-      <div class="dev-nav-group">
-        <details class="dev-folder">
-          <summary>Animations</summary>
-          <div class="folder-items">
-            <!-- One-shot triggers (re-fire on demand) -->
-            <button onclick="replayConnectCelebration()">Replay Connect Burst</button>
-            <button onclick="punchActiveMascot()">Replay State Punch</button>
-            <!-- Direct entries to screens with hero animations -->
-            <button onclick="showScreen('loading-loop')">Loading Mascot</button>
-            <button onclick="showScreen('switch-network')">Switch Network</button>
-            <button onclick="showScreen('error-404')">404 Mascot</button>
-            <button onclick="devOpenBundle()">Bundle Confirmation</button>
-            <!-- State-emote idle loops (live on borrow-connected) -->
-            <button onclick="setBorrowInitial()">Initial · supply pulse</button>
-            <button onclick="setBorrowHealth('ultra-safe')">Ultra Safe · idle loops</button>
-            <button onclick="setBorrowHealth('looking-good')">Looking Good · idle loops</button>
-            <button onclick="setBorrowHealth('getting-risky')">Getting Risky · tremors</button>
-            <button onclick="setBorrowHealth('danger-zone')">Danger Zone · tremors</button>
-            <button onclick="setBorrowHealth('meltdown')">Meltdown · drips/pulses</button>
-          </div>
-        </details>
+    </details>
+    <details class="dev-nav-section" data-section="animations">
+      <summary class="dev-nav-label"><span class="nav-emoji">✨</span>Animations</summary>
+      <div class="dev-nav-group" style="flex-direction:column;gap:4px;">
+        <!-- One-shot triggers (re-fire on demand) -->
+        <button onclick="replayConnectCelebration()">Replay Connect Burst</button>
+        <button onclick="punchActiveMascot()">Replay State Punch</button>
+        <!-- Direct entries to screens with hero animations -->
+        <button onclick="showScreen('loading-loop')">Loading Mascot</button>
+        <button onclick="showScreen('switch-network')">Switch Network</button>
+        <button onclick="showScreen('error-404')">404 Mascot</button>
+        <button onclick="devOpenBundle()">Bundle Confirmation</button>
+        <!-- State-emote idle loops (live on borrow-connected) -->
+        <button onclick="setBorrowInitial()">Initial · supply pulse</button>
+        <button onclick="setBorrowHealth('ultra-safe')">Ultra Safe · idle loops</button>
+        <button onclick="setBorrowHealth('looking-good')">Looking Good · idle loops</button>
+        <button onclick="setBorrowHealth('getting-risky')">Getting Risky · tremors</button>
+        <button onclick="setBorrowHealth('danger-zone')">Danger Zone · tremors</button>
+        <button onclick="setBorrowHealth('meltdown')">Meltdown · drips/pulses</button>
       </div>
-    </div>
-    <div class="dev-nav-section">
-      <div class="dev-nav-label">Icons</div>
+    </details>
+    <details class="dev-nav-section" data-section="icons">
+      <summary class="dev-nav-label"><span class="nav-emoji">🎯</span>Icons</summary>
       <div class="dev-nav-group">
         <button onclick="var p=document.getElementById('borrow-icon-picker');p.style.display=p.style.display==='none'?'block':'none';">Borrow Icons</button>
         <button onclick="var p=document.getElementById('disconnect-icon-picker');p.style.display=p.style.display==='none'?'block':'none';">Disconnect Icons</button>
       </div>
-    </div>
+    </details>
   </div>
 </div>
 <div id="icon-picker" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;background:white;padding:24px;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.25);min-width:220px;">
@@ -8679,6 +8701,20 @@ function playLoadingIntro(phone) {
   if (savedOpt && ['a', 'b', 'c'].indexOf(savedOpt) !== -1) {
     setOption(savedOpt, false);
   }
+  // Persist dev-nav section collapse state across reloads. Each
+  // `<details class="dev-nav-section" data-section="...">` reads its
+  // open/closed state from localStorage on boot, and writes it back on
+  // every toggle. Default behaviour (no saved state) keeps whatever
+  // `open` attribute the markup specified.
+  document.querySelectorAll('details.dev-nav-section[data-section]').forEach(function(d) {
+    var key = 'devnav-section-' + d.dataset.section;
+    var saved = localStorage.getItem(key);
+    if (saved === 'open') d.setAttribute('open', '');
+    else if (saved === 'closed') d.removeAttribute('open');
+    d.addEventListener('toggle', function() {
+      localStorage.setItem(key, d.open ? 'open' : 'closed');
+    });
+  });
   // Copy wordmark SVG to homepage-connected (avoids duplicating huge inline SVG)
   var srcWordmark = document.querySelector('#homepage .app-logo .logo-wordmark');
   var dstWordmark = document.querySelector('#homepage-connected .app-logo .logo-wordmark');
