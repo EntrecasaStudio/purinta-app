@@ -2194,14 +2194,15 @@
     .blob-meltdown-bg-pulse {
       transform-box: view-box;
       transform-origin: 75px 75px;
-      animation: blob-meltdown-pulse 4.8s ease-in-out infinite;
+      animation: blob-meltdown-pulse 9.6s ease-in-out infinite;
       animation-play-state: paused;
     }
-    /* Strong scale pulse 100% → 150% — reads as the meltdown's feverish
-       heartbeat swelling out and pulling back. */
+    /* Big slow scale pulse 100% → 180% — reads as the meltdown's feverish
+       heartbeat swelling outward and pulling back. Slower period (~10s)
+       drags the pulse out so it feels heavy/exhausted rather than panicked. */
     @keyframes blob-meltdown-pulse {
       0%, 100% { transform: scale(1); }
-      50%      { transform: scale(1.5); }
+      50%      { transform: scale(1.8); }
     }
     /* Slower than the sunburst shimmer so the two states read distinctly. */
     .blob-meltdown-bg-shimmer {
