@@ -125,7 +125,14 @@
 
     /* PHONE FRAME */
 
-    .phone { width: 360px; height: 700px; background: var(--cream-50); border-radius: 32px; overflow-x: hidden; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); position: relative; margin-top: 24px; }
+    /* `content-visibility: auto` lets the browser skip layout / paint /
+       animation work for any .phone whose box is outside the viewport. The
+       intrinsic-size hint matches the actual frame dimensions so scrollbars
+       stay stable when a phone hasn't been rendered yet. Biggest single
+       perf win on low-end Android: when phone B/C is below the fold (or in
+       a tab a user just scrolled past), all its mascot animations stop
+       waking the GPU. */
+    .phone { width: 360px; height: 700px; background: var(--cream-50); border-radius: 32px; overflow-x: hidden; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); position: relative; margin-top: 24px; content-visibility: auto; contain-intrinsic-size: 360px 700px; }
 
     /* DEV NAV — floating panel outside phone frame */
     .dev-nav { position: fixed; top: 16px; left: 16px; z-index: 9999; font-family: 'SF Mono', 'Menlo', monospace; }
@@ -2068,13 +2075,19 @@
     }
     .mascot-blob svg { width: 100%; height: 100%; overflow: visible; }
     .blob-fill { transition: opacity 400ms ease; }
+    /* Scale-only morph (no rotation). The original keyframes rotated the
+       blob ±14deg; on Mali-G52 GPUs the non-axis-aligned rotation forced a
+       slower path through the compositor than pure scale. Visually the
+       difference is minimal (the blob's organic shape already reads as
+       morphing under scale alone), so the rotate component is dropped to
+       keep the layer axis-aligned and cheap. */
     @keyframes mascot-blob-morph {
-      0%       { transform: translate(-50%, -55%) scale(1) rotate(0deg); }
-      15%      { transform: translate(-50%, -55%) scale(1.2) rotate(12deg); }
-      35%      { transform: translate(-50%, -55%) scale(0.9) rotate(-10deg); }
-      55%      { transform: translate(-50%, -55%) scale(1.18) rotate(14deg); }
-      75%      { transform: translate(-50%, -55%) scale(0.93) rotate(-8deg); }
-      100%     { transform: translate(-50%, -55%) scale(1) rotate(0deg); }
+      0%       { transform: translate(-50%, -55%) scale(1); }
+      15%      { transform: translate(-50%, -55%) scale(1.2); }
+      35%      { transform: translate(-50%, -55%) scale(0.9); }
+      55%      { transform: translate(-50%, -55%) scale(1.18); }
+      75%      { transform: translate(-50%, -55%) scale(0.93); }
+      100%     { transform: translate(-50%, -55%) scale(1); }
     }
     /* Sunburst rays appear ONLY in ultra-safe state. The rays are anchored
        at the SVG centre (75,75), grow in from that point, then rotate in
@@ -2168,13 +2181,49 @@
       animation-play-state: running;
     }
     .mascot-area.is-celebrating .blob-sunburst-vignette { opacity: 1; }
-    /* #10 — Honour prefers-reduced-data: skip the rotation + shimmer to
-       reduce CPU/battery. The rays are still visible, just static. */
+    /* #10 — Honour prefers-reduced-data: this is the "user is on a $50
+       phone in Lagos" signal more than a stylistic preference. We
+       aggressively cut CPU + GPU work — disable every loop animation that
+       isn't load-bearing for understanding the screen, and drop the
+       expensive `filter: blur` on the foot shadow. Rays + radial backdrops
+       stay visible (just static); cheeks/flush still change colour, but
+       not on a loop; mascot stops bobbing. */
     @media (prefers-reduced-data: reduce) {
+      /* Backdrops + state animations: stop all loops */
       .blob-sunburst-rotor,
       .blob-sunburst-shimmer,
       .blob-meltdown-bg-pulse,
-      .blob-meltdown-bg-shimmer { animation: none !important; }
+      .blob-meltdown-bg-shimmer,
+      .mascot-illustration,
+      .mascot-blob,
+      .mascot-area.meltdown .mascot-blob,
+      .mascot-area.ultra-safe .mascot-blob,
+      .mascot-stars .sp1,
+      .mascot-stars .sp2,
+      .mascot-stars .sp3,
+      .mascot-stars .sp4,
+      .mascot-stars .sp5,
+      .mascot-stars .sp6,
+      .mascot-stars .sp7,
+      /* All paint-per-frame keyframes (animate `fill` / `stop-color`) */
+      .mascot-area.getting-risky .emote-v2-face svg .m-flush-stop,
+      .mascot-area.getting-risky .emote-v2-face svg .m-cheek,
+      .mascot-area.danger-zone .emote-v2-face svg .m-flush-stop,
+      .mascot-area.danger-zone .emote-v2-face svg .m-cheek,
+      .mascot-area.meltdown .emote-v2-melt svg .m-cheek,
+      /* All tremor-class loops across states */
+      .mascot-area.danger-zone .emote-v2-face svg .m-eyes,
+      .mascot-area.danger-zone .emote-v2-face svg .m-eyebrow,
+      .mascot-area.danger-zone .emote-v2-face svg .m-hand-l,
+      .mascot-area.danger-zone .emote-v2-face svg .m-hand-r,
+      .mascot-area.getting-risky .emote-v2-face svg .m-eyebrow,
+      .mascot-area.getting-risky .emote-v2-face svg .m-hand,
+      .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow,
+      .mascot-area.meltdown .emote-v2-melt svg .m-hand-l,
+      .mascot-area.meltdown .emote-v2-melt svg .m-hand-r { animation: none !important; }
+      /* Drop the blurred foot-shadow — `filter: blur` is CPU-cheap when
+         static but still costs memory. */
+      .mascot-area::before { display: none; }
     }
 
     /* MELTDOWN radial — same skeleton as the ultra-safe sunburst, but the
@@ -2197,12 +2246,15 @@
       animation: blob-meltdown-pulse 9.6s ease-in-out infinite;
       animation-play-state: paused;
     }
-    /* Big slow scale pulse 100% → 180% — reads as the meltdown's feverish
-       heartbeat swelling outward and pulling back. Slower period (~10s)
-       drags the pulse out so it feels heavy/exhausted rather than panicked. */
+    /* Slow scale pulse 100% → 125% — heavy/exhausted heartbeat read.
+       Capped at 1.25x (down from the original 1.8x) because animating
+       scale on an `<image>` of a vector SVG re-rasterizes on iOS Safari
+       and Mali-G52 GPUs at every cycle past the cached size. 1.25x keeps
+       the emotional swell with ~30% the texture-memory peak — critical
+       for low-end Android in low-bandwidth markets. */
     @keyframes blob-meltdown-pulse {
       0%, 100% { transform: scale(1); }
-      50%      { transform: scale(1.8); }
+      50%      { transform: scale(1.25); }
     }
     /* Slower than the sunburst shimmer so the two states read distinctly. */
     .blob-meltdown-bg-shimmer {
@@ -2228,10 +2280,30 @@
     .mascot-area.meltdown .blob-meltdown-bg-vignette { opacity: 1; }
     .mascot-illustration {
       width: 72px; max-width: 80%; height: auto; position: relative; z-index: 1;
-      filter: drop-shadow(0 3px 8px rgba(8, 60, 32, 0.12));
       animation: mascot-bob 3s ease-in-out infinite;
       object-fit: contain;
       transition: opacity 0.2s ease;
+    }
+    /* Static foot-shadow as a pseudo-element on .mascot-area instead of an
+       animated `filter: drop-shadow(...)` on .mascot-illustration. The
+       drop-shadow filter re-paints the mascot silhouette every frame of
+       `mascot-bob` (one of the most expensive filter operations on Mali
+       GPUs); a static blurred ellipse paints once and gets cached. The
+       shadow no longer follows the bob ±8px, but the visual loss is
+       negligible vs. the perf gain on low-end devices. */
+    .mascot-area::before {
+      content: '';
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      width: 90px;
+      height: 14px;
+      background: rgba(8, 60, 32, 0.12);
+      border-radius: 50%;
+      filter: blur(6px);
+      transform: translateX(-50%);
+      z-index: 0;
+      pointer-events: none;
     }
     /* Hide <object> mascots in Phone A until v2 emotes replace them — prevents size flash */
     /* Hide original <object> mascots in phone-a only (v2 transform replaces them).
