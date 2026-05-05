@@ -197,6 +197,10 @@
     .dev-nav-group button.bp-secondary.active { opacity: 1; background: var(--green-600); }
     .dev-nav-group button.opt-toggle { position: relative; }
     .dev-nav-group button.opt-toggle.active { background: var(--green-700); }
+    /* Options nav stacks vertically so each row has room for the full
+       label ("A — Purinta Final" etc.) instead of a single letter. */
+    .dev-nav-group.option-nav { flex-direction: column; align-items: stretch; gap: 4px; }
+    .dev-nav-group.option-nav button.opt-toggle { width: 100%; text-align: left; padding: 5px 9px; }
     /* Collapsible folders for Screens — native <details>/<summary> */
     .dev-folder { border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; }
     .dev-folder > summary {
@@ -2187,8 +2191,12 @@
        isn't load-bearing for understanding the screen, and drop the
        expensive `filter: blur` on the foot shadow. Rays + radial backdrops
        stay visible (just static); cheeks/flush still change colour, but
-       not on a loop; mascot stops bobbing. */
-    @media (prefers-reduced-data: reduce) {
+       not on a loop; mascot stops bobbing.
+       Both the OS preference (`prefers-reduced-data: reduce`) and the
+       dev-nav "C — Reduced Data" option flip a single class on `<html>`
+       (`.reduced-data-mode`), so this rule block only needs one wrapper.
+       JS at boot listens to the media query and toggles that class. */
+    html.reduced-data-mode {
       /* Backdrops + state animations: stop all loops */
       .blob-sunburst-rotor,
       .blob-sunburst-shimmer,
@@ -4139,11 +4147,9 @@
     <div class="dev-nav-section">
       <div class="dev-nav-label">Option</div>
       <div class="dev-nav-group option-nav">
-        <button class="opt-toggle active" onclick="setOption('a')">A</button>
-        <button class="opt-toggle" onclick="setOption('b')">B</button>
-        <button class="opt-toggle" onclick="setOption('c')">C</button>
-        <button class="opt-toggle" onclick="setOption('ab')">AB</button>
-        <button class="opt-toggle" onclick="setOption('abc')">ABC</button>
+        <button class="opt-toggle active" onclick="setOption('a')">A &mdash; Purinta Final</button>
+        <button class="opt-toggle" onclick="setOption('b')">B &mdash; Variations</button>
+        <button class="opt-toggle" onclick="setOption('c')">C &mdash; Reduced Data</button>
       </div>
     </div>
     <div class="dev-nav-section">
@@ -4196,6 +4202,12 @@
             <button onclick="showScreen('error-404')">404</button>
           </div>
         </details>
+      </div>
+    </div>
+    <div class="dev-nav-section">
+      <div class="dev-nav-label">Animations</div>
+      <div class="dev-nav-group">
+        <button onclick="replayConnectCelebration()">Replay Connect</button>
       </div>
     </div>
     <div class="dev-nav-section">
@@ -5744,28 +5756,72 @@ function capturePhoneASnapshot() {
 }
 
 function setOption(mode, save) {
+  // Three modes only:
+  //   a — Purinta Final (phone-a)
+  //   b — Variations    (phone-b — alternate design)
+  //   c — Reduced Data  (phone-a, but with the prefers-reduced-data styles
+  //                      forced via .reduced-data-mode on <html>, so the
+  //                      designer can preview how the app looks for a user
+  //                      on a low-end device / slow connection)
   if (save !== false) localStorage.setItem('purinta-opt', mode);
   var wrapA = document.getElementById('wrap-a');
   var wrapB = document.getElementById('wrap-b');
   var wrapC = document.getElementById('wrap-c');
   var btns = document.querySelectorAll('.opt-toggle');
   btns.forEach(function(b) { b.classList.remove('active'); });
-  var idx = { a: 0, b: 1, c: 2, ab: 3, abc: 4 }[mode];
+  var idx = { a: 0, b: 1, c: 2 }[mode];
   if (btns[idx]) btns[idx].classList.add('active');
-  var showA = mode === 'a' || mode === 'ab' || mode === 'abc';
-  var showB = mode === 'b' || mode === 'ab' || mode === 'abc';
-  var showC = mode === 'c' || mode === 'abc';
+  // a and c both render phone-a. c is just phone-a with reduced-data CSS on.
+  var showA = mode === 'a' || mode === 'c';
+  var showB = mode === 'b';
   wrapA.classList.toggle('hidden', !showA);
   wrapB.classList.toggle('hidden', !showB);
-  wrapC.classList.toggle('hidden', !showC);
+  if (wrapC) wrapC.classList.add('hidden'); // phone-c retired; never shown
   if (showB) { initPhoneB(); }
-  if (showC) { initPhoneC(); }
+  // Reduced-data simulation. Honour the OS preference too — if the user's
+  // browser already reports prefers-reduced-data: reduce, the class stays
+  // on regardless of mode (no point in turning it off for them).
+  var osReducedData = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-data: reduce)').matches;
+  document.documentElement.classList.toggle(
+    'reduced-data-mode',
+    mode === 'c' || osReducedData
+  );
   // Sync breakpoint to all phones
   var bp = parseInt(localStorage.getItem('purinta-bp')) || 360;
   setBreakpoint(bp, false);
   // Always show labels so you know which option you're viewing
   document.querySelectorAll('.phone-label').forEach(function(l) {
     l.style.display = 'block';
+  });
+}
+
+// On boot: mirror the OS prefers-reduced-data preference into the class so
+// the rule block fires for users who set it system-wide. Keep the listener
+// alive so changes mid-session also propagate.
+(function watchReducedData() {
+  if (!window.matchMedia) return;
+  var mql = window.matchMedia('(prefers-reduced-data: reduce)');
+  var apply = function() {
+    if (mql.matches) document.documentElement.classList.add('reduced-data-mode');
+  };
+  apply();
+  if (mql.addEventListener) mql.addEventListener('change', apply);
+  else if (mql.addListener) mql.addListener(apply);
+})();
+
+// Replay the wallet-connect celebration on demand (dev-nav button). Resets
+// the once-per-session flag and re-runs the burst on the active screen.
+function replayConnectCelebration() {
+  showScreen._celebratedConnect = false;
+  var active = document.querySelector('.screen.active');
+  if (!active) return;
+  active.querySelectorAll('.mascot-area').forEach(function(area) {
+    area.classList.remove('is-celebrating'); // reset if mid-flight
+    // Force reflow so the animation re-fires when re-added.
+    void area.offsetWidth;
+    area.classList.add('is-celebrating');
+    setTimeout(function() { area.classList.remove('is-celebrating'); }, 1700);
   });
 }
 
@@ -8445,7 +8501,9 @@ function playLoadingIntro(phone) {
   var savedBp = parseInt(localStorage.getItem('purinta-bp'));
   if (savedBp) setBreakpoint(savedBp); else setBreakpoint(360, false);
   var savedOpt = localStorage.getItem('purinta-opt');
-  if (savedOpt && ['a', 'b', 'c', 'ab', 'abc'].indexOf(savedOpt) !== -1) {
+  // Migrate legacy combo modes (`ab`, `abc`) to the new 3-mode system.
+  if (savedOpt === 'ab' || savedOpt === 'abc') savedOpt = 'a';
+  if (savedOpt && ['a', 'b', 'c'].indexOf(savedOpt) !== -1) {
     setOption(savedOpt, false);
   }
   // Copy wordmark SVG to homepage-connected (avoids duplicating huge inline SVG)
