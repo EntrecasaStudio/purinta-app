@@ -4586,6 +4586,19 @@
       margin-bottom: var(--ds-space-8);
       min-height: 0;
     }
+
+    /* Title baseline alignment with #positions / #update. The OP2 transform
+       appends the 46 px-tall token-select pill to .borrow-title; with
+       align-items: center the title text gets pushed down ~(46-25)/2 = 11 px
+       compared to a screen with a plain title. Pull the whole .borrow-header
+       up so "Borrow against" lands at the same baseline as "My Positions" and
+       "Modify Position". Applies to both Op A and Op B mobile borrow screens. */
+    .phone:not(.desktop) #borrow .borrow-header,
+    .phone:not(.desktop) #borrow-connected .borrow-header,
+    .phone:not(.desktop) #borrow-b .borrow-header,
+    .phone:not(.desktop) #borrow-connected-b .borrow-header {
+      margin-top: -10px;
+    }
     /* Slider section: 16 top/sides, 20 bottom (extra breathing room below
        the last "Supplying"/"Borrowing" row before the section closes). */
     #phone-b:not(.desktop) #borrow-b .slider-section,
