@@ -4537,6 +4537,83 @@
     #skel-home-b   .btn:disabled, #skel-borrow-b   .btn:disabled, #skel-update-b   .btn:disabled, #skel-positions-b   .btn:disabled {
       cursor: not-allowed; pointer-events: none; filter: none !important;
     }
+
+    /* ═══ Op B compact-borrow (mobile only) ═══
+       Goal: condense vertical chrome on borrow / borrow-connected / update
+       (connected + disconnected) so the health mascot stays inside the
+       first viewport on mid-range Android (640–720px tall, 70.5% of the
+       audience per Mar 2026 X analytics). All values come from the DS
+       primitive scales (--ds-space-*, --ds-radius-*, --ds-7xl from
+       Sizing/Size). Tap targets meet --ds-space-48 floor.
+       Scope: #phone-b:not(.desktop) on the four borrow/modify screens. */
+    #phone-b:not(.desktop) #borrow-b .borrow-content,
+    #phone-b:not(.desktop) #borrow-connected-b .borrow-content,
+    #phone-b:not(.desktop) #update-b .borrow-content {
+      padding: var(--ds-space-16);
+    }
+    /* Title: drop one DS step (lg 25 → md 20) to save vertical space without
+       sacrificing legibility. */
+    #phone-b:not(.desktop) #borrow-b .borrow-title,
+    #phone-b:not(.desktop) #borrow-connected-b .borrow-title,
+    #phone-b:not(.desktop) #update-b .borrow-title {
+      font-size: var(--ds-md);
+      gap: var(--ds-space-8);
+    }
+    /* Header tightens: smaller bottom margin, drop the 32px min-height. */
+    #phone-b:not(.desktop) #borrow-b .borrow-header,
+    #phone-b:not(.desktop) #borrow-connected-b .borrow-header,
+    #phone-b:not(.desktop) #update-b .borrow-header {
+      margin-bottom: var(--ds-space-8);
+      min-height: 0;
+    }
+    /* Slider section: 20 → 16 padding (matches DS Space-16). */
+    #phone-b:not(.desktop) #borrow-b .slider-section,
+    #phone-b:not(.desktop) #borrow-connected-b .slider-section,
+    #phone-b:not(.desktop) #update-b .slider-section {
+      padding: var(--ds-space-16);
+    }
+    /* Slider labels: tighter row, smaller bottom margin. */
+    #phone-b:not(.desktop) #borrow-b .slider-label,
+    #phone-b:not(.desktop) #borrow-connected-b .slider-label,
+    #phone-b:not(.desktop) #update-b .slider-label {
+      margin-bottom: var(--ds-space-12);
+      gap: var(--ds-space-12);
+    }
+    /* Pct buttons: bump height to --ds-space-48 floor (was 42 px in Op A,
+       below Material Design's 48 dp recommend for our Android-mid-range
+       audience). Tighter gap + bottom margin to compensate. */
+    #phone-b:not(.desktop) #borrow-b .pct-btn,
+    #phone-b:not(.desktop) #borrow-connected-b .pct-btn,
+    #phone-b:not(.desktop) #update-b .pct-btn {
+      height: var(--ds-space-48);
+    }
+    #phone-b:not(.desktop) #borrow-b .pct-buttons,
+    #phone-b:not(.desktop) #borrow-connected-b .pct-buttons,
+    #phone-b:not(.desktop) #update-b .pct-buttons {
+      margin-bottom: var(--ds-space-8);
+      gap: var(--ds-space-6);
+    }
+    /* Token-select pill: bump to 48 floor (was 46). Width preserved. */
+    #phone-b:not(.desktop) #borrow-b .token-select-wrap,
+    #phone-b:not(.desktop) #borrow-connected-b .token-select-wrap,
+    #phone-b:not(.desktop) #update-b .token-select-wrap {
+      height: var(--ds-space-48);
+    }
+    /* Slider divider: 20 → 12 vertical spacing. */
+    #phone-b:not(.desktop) #borrow-b .slider-divider,
+    #phone-b:not(.desktop) #borrow-connected-b .slider-divider,
+    #phone-b:not(.desktop) #update-b .slider-divider {
+      margin: var(--ds-space-12) 0;
+    }
+    /* Mascot area: 168 → --ds-7xl (119 px from Sizing/Size scale).
+       Saves ~49 px of vertical chrome. Padding 32 → 16. Top margin 20 → 12. */
+    #phone-b:not(.desktop) #borrow-b .mascot-area,
+    #phone-b:not(.desktop) #borrow-connected-b .mascot-area,
+    #phone-b:not(.desktop) #update-b .mascot-area {
+      height: var(--ds-7xl);
+      padding: var(--ds-space-16);
+      margin-top: var(--ds-space-12);
+    }
   </style>
   <!-- Sunburst SVG is fetched eagerly so the rays paint as soon as the
        ultra-safe state turns on, with no first-paint pop. The browser
