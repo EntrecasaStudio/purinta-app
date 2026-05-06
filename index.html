@@ -287,10 +287,11 @@
       padding: 6px; background: rgba(255,255,255,0.02);
     }
     .dev-folder .folder-items button {
-      display: block;
+      display: flex !important;
+      align-items: center;
+      justify-content: flex-start !important;
       width: 100%;
-      text-align: left;
-      justify-content: flex-start;
+      text-align: left !important;
     }
     .phones-container { display: flex; gap: 96px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
     .phone-label { font-family: 'SF Mono', 'Menlo', monospace; font-size: 20px; font-weight: 500;
@@ -4592,11 +4593,14 @@
     #phone-b:not(.desktop) #borrow-connected-b .mascot-area.happy img.mascot-illustration,
     #phone-b:not(.desktop) #update-b .mascot-area.happy img.mascot-illustration {
       width: 97px; /* 114 × 0.85 — disconnected mascot uses <img> */
+      top: 20px; /* +4 px from the Op A 16 — lowers the peak of the
+                    SMIL bill-rising animation by 4 px in Op B */
     }
     #phone-b:not(.desktop) #borrow-b .mascot-area.happy .emote-v2.mascot-illustration,
     #phone-b:not(.desktop) #borrow-connected-b .mascot-area.happy .emote-v2.mascot-illustration,
     #phone-b:not(.desktop) #update-b .mascot-area.happy .emote-v2.mascot-illustration {
       width: 99px; /* 117 × 0.85 — connected basic-money emote-v2 stack */
+      top: 11px;   /* +4 px from the Op A 7 — same lower-peak treatment */
     }
     #phone-b:not(.desktop) #borrow-b .mascot-area.ultra-safe .mascot-illustration,
     #phone-b:not(.desktop) #borrow-b .mascot-area.looking-good .mascot-illustration,
