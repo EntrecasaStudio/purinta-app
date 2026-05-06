@@ -8771,13 +8771,50 @@ function updateHealthMascot() {
   updateHealthForScreenV2('borrow-connected', 'health-mascot', 'health-emote', 'health-text');
   updateHealthForScreenV2('update', 'health-mascot-modify', 'health-emote-modify', 'health-text-modify');
 }
+/* Re-suffix freshly written V2 emote SVG IDs so they don't collide with
+   phone-a's identical IDs. applyV2Expression injects raw v2ExprParts
+   strings (slot-mask, paint0_linear_*, mask0_*, m-mouth-clip) which lack
+   the -b suffix; without re-suffix, url(#X) inside phone-b resolves to
+   phone-a's matching element (in display:none wrap-a) → broken
+   masks/gradients = limbless render. */
+function suffixEmoteV2Ids(container, suffix) {
+  if (!container || !suffix) return;
+  var html = container.innerHTML;
+  var ids = new Set();
+  var idRe = /\bid="([^"]+)"/g;
+  var m;
+  while ((m = idRe.exec(html)) !== null) {
+    if (!m[1].endsWith(suffix)) ids.add(m[1]);
+  }
+  if (!ids.size) return;
+  ids.forEach(function(id) {
+    var esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    html = html.replace(new RegExp('\\bid="' + esc + '"', 'g'), 'id="' + id + suffix + '"');
+    html = html.replace(new RegExp('url\\(#' + esc + '\\)', 'g'), 'url(#' + id + suffix + ')');
+    html = html.replace(new RegExp('(\\b(?:xlink:)?href=)"#' + esc + '"', 'g'), '$1"#' + id + suffix + '"');
+  });
+  container.innerHTML = html;
+}
+
 function updateHealthMascotB() {
-  updateHealthForScreen('borrow-connected-b', 'health-mascot-b', 'health-emote-b', 'health-text-b');
-  updateHealthForScreen('update-b', 'health-mascot-modify-b', 'health-emote-modify-b', 'health-text-modify-b');
+  // Phone-b uses the V2 mascot system just like phone-a (we cloned it from A).
+  // The legacy updateHealthForScreen would overwrite the V2 stack with
+  // <object data="Emote-XX.svg">, which loads the old limbless art —
+  // visible as "B mascots look like the old versions, no arms/legs".
+  updateHealthForScreenV2('borrow-connected-b', 'health-mascot-b', 'health-emote-b', 'health-text-b');
+  updateHealthForScreenV2('update-b', 'health-mascot-modify-b', 'health-emote-modify-b', 'health-text-modify-b');
+  // Re-suffix any un-suffixed IDs the V2 update just injected.
+  suffixEmoteV2Ids(document.getElementById('health-emote-b'), '-b');
+  suffixEmoteV2Ids(document.getElementById('health-emote-modify-b'), '-b');
 }
 function updateHealthMascotC() {
-  updateHealthForScreen('borrow-connected-c', 'health-mascot-c', 'health-emote-c', 'health-text-c');
-  updateHealthForScreen('update-c', 'health-mascot-modify-c', 'health-emote-modify-c', 'health-text-modify-c');
+  // Phone-c is retired (Op C uses phone-a + .reduced-data-mode), so this is
+  // only kept defensively in case anything still calls it. Match phone-b's
+  // V2 behaviour to avoid the same legacy-asset regression.
+  updateHealthForScreenV2('borrow-connected-c', 'health-mascot-c', 'health-emote-c', 'health-text-c');
+  updateHealthForScreenV2('update-c', 'health-mascot-modify-c', 'health-emote-modify-c', 'health-text-modify-c');
+  suffixEmoteV2Ids(document.getElementById('health-emote-c'), '-c');
+  suffixEmoteV2Ids(document.getElementById('health-emote-modify-c'), '-c');
 }
 
 /* V2 health update — full-body V2 mascot + no-supply state */
