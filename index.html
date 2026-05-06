@@ -4534,12 +4534,15 @@
     #phone-b:not(.desktop) #update-b .slider-track {
       margin-bottom: var(--ds-space-8);
     }
-    /* Slider labels: tighter row, smaller bottom margin. */
+    /* Slider labels: tighter row, smaller bottom margin. 4 px left padding
+       offsets the "Supply"/"Borrow" headings from the section's left edge
+       for a touch more breathing room (matches Figma compact spec). */
     #phone-b:not(.desktop) #borrow-b .slider-label,
     #phone-b:not(.desktop) #borrow-connected-b .slider-label,
     #phone-b:not(.desktop) #update-b .slider-label {
       margin-bottom: var(--ds-space-12);
       gap: var(--ds-space-12);
+      padding-left: var(--ds-space-4);
     }
     /* Pct buttons: keep Op A's 42 px height (no compact override). Only
        margin/gap tightens. */
