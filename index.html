@@ -7249,7 +7249,13 @@ document.addEventListener('DOMContentLoaded', function() { rewritePositionTokenL
 // Bundle modal for Modify Position — Option A (phone-a) only. Other phones
 // fall back to the legacy #confirm screen so the patterns can be compared.
 function _attachOverlayToHostPhone(overlay, btn) {
-  var host = (btn && btn.closest('.phone')) || document.getElementById('phone-a');
+  // Prefer the phone that owns the triggering button. Fall back to the FIRST
+  // visible phone (Op B with phone-a hidden would otherwise attach to a
+  // hidden phone-a and the modal would be invisible). Only fall back further
+  // to phone-a as a last resort.
+  var host = (btn && btn.closest('.phone'))
+          || document.querySelector('.phone-wrap:not(.hidden) .phone')
+          || document.getElementById('phone-a');
   if (host && overlay.parentElement !== host) host.appendChild(overlay);
   // If phone is scrolled (e.g. Modify button at the bottom), snap to the top so
   // the modal lands in view, and lock scroll while it's open.
