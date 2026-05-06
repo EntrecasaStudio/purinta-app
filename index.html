@@ -4546,19 +4546,15 @@
        primitive scales (--ds-space-*, --ds-radius-*, --ds-7xl from
        Sizing/Size). Tap targets meet --ds-space-48 floor.
        Scope: #phone-b:not(.desktop) on the four borrow/modify screens. */
+    /* Lateral padding stays at 20 px (matches Op A) so the safe content zone
+       on a 360 px viewport is identical; only vertical chrome compacts. */
     #phone-b:not(.desktop) #borrow-b .borrow-content,
     #phone-b:not(.desktop) #borrow-connected-b .borrow-content,
     #phone-b:not(.desktop) #update-b .borrow-content {
-      padding: var(--ds-space-16);
+      padding: var(--ds-space-16) var(--ds-space-20);
     }
-    /* Title: drop one DS step (lg 25 → md 20) to save vertical space without
-       sacrificing legibility. */
-    #phone-b:not(.desktop) #borrow-b .borrow-title,
-    #phone-b:not(.desktop) #borrow-connected-b .borrow-title,
-    #phone-b:not(.desktop) #update-b .borrow-title {
-      font-size: var(--ds-md);
-      gap: var(--ds-space-8);
-    }
+    /* Title size unchanged from Op A (--ds-lg = 25 px). The compact gain
+       comes from the surrounding chrome, not from typography. */
     /* Header tightens: smaller bottom margin, drop the 32px min-height. */
     #phone-b:not(.desktop) #borrow-b .borrow-header,
     #phone-b:not(.desktop) #borrow-connected-b .borrow-header,
@@ -4655,6 +4651,7 @@
       <div class="dev-nav-group option-nav">
         <button class="opt-toggle active" onclick="setOption('a')">A &mdash; Spec</button>
         <button class="opt-toggle" onclick="setOption('b')">B &mdash; Variations</button>
+        <button class="opt-toggle" onclick="setOption('ab')">A + B</button>
         <button class="opt-toggle" onclick="setOption('c')">Reduced Data</button>
       </div>
     </details>
@@ -6284,13 +6281,14 @@ function setOption(mode, save) {
   if (save !== false) localStorage.setItem('purinta-opt', mode);
   var btns = document.querySelectorAll('.opt-toggle');
   btns.forEach(function(b) { b.classList.remove('active'); });
-  var idx = { a: 0, b: 1, c: 2 }[mode];
+  var idx = { a: 0, b: 1, ab: 2, c: 3 }[mode];
   if (btns[idx]) btns[idx].classList.add('active');
-  // a / c render phone-a; b renders phone-b (cloned from a)
+  // 'ab' shows both wraps side-by-side for comparison.
+  // a / c render phone-a only; b renders phone-b only.
   var wrapA = document.getElementById('wrap-a');
   var wrapB = document.getElementById('wrap-b');
-  var showA = mode === 'a' || mode === 'c';
-  var showB = mode === 'b';
+  var showA = mode === 'a' || mode === 'c' || mode === 'ab';
+  var showB = mode === 'b' || mode === 'ab';
   if (wrapA) wrapA.classList.toggle('hidden', !showA);
   if (wrapB) wrapB.classList.toggle('hidden', !showB);
   if (showB && typeof initPhoneB === 'function') initPhoneB();
