@@ -396,14 +396,10 @@
     /* Mobile expanded: anchor to the right of .header-right and grow leftward
        (the disconnect zone slides in from the right, never extends past the
        phone's right margin). */
-    #phone-a:not(.desktop) .wallet-badge.expanded {
-      position: absolute; top: 50%; right: 0; transform: translateY(-50%);
-      z-index: 50; padding-right: 0;
-      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding-right 0.35s ease-out;
-    }
-
-    never extends past the
+    /* Mobile expanded: anchor to the right of .header-right and grow leftward
+       (the disconnect zone slides in from the right, never extends past the
        phone's right margin). */
+    #phone-a:not(.desktop) .wallet-badge.expanded,
     #phone-b:not(.desktop) .wallet-badge.expanded {
       position: absolute; top: 50%; right: 0; transform: translateY(-50%);
       z-index: 50; padding-right: 0;
@@ -725,9 +721,6 @@
        than mint-50, keeping more tonal distance from the card's near-white bg.
        Boosted matches the same tint to keep "only the lighter green" across all rates. */
     #phone-a .token-rate-badge { background: var(--mint-100); }
-
-    keeping more tonal distance from the card's near-white bg.
-       Boosted matches the same tint to keep "only the lighter green" across all rates. */
     #phone-b .token-rate-badge { background: var(--mint-100); }
     #phone-a .token-rate-badge--boosted { background: var(--mint-100); }
 
@@ -1537,8 +1530,6 @@
     #phone-b .bundle-modal-overlay.is-done .bundle-mascot-done { display: block; }
     /* Mascot container always open in option A, no max-height collapse */
     #phone-a .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
-
-    no max-height collapse */
     #phone-b .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
     /* Mascot heights for option A — height drives the size, width auto-scales
        by SVG aspect. Confirmed (step 3) is larger than Begin to celebrate
@@ -1547,8 +1538,6 @@
        doesn't grow or shift on Done. Container is pinned (above) for the same
        reason — swap is purely artwork, layout is locked. */
     #phone-a .bundle-mascot-img  { width: auto; height: 131px; max-height: 131px; }
-
-    layout is locked. */
     #phone-b .bundle-mascot-img { width: auto; height: 131px; max-height: 131px; }
     #phone-a .bundle-mascot-done { height: 131px; }
 
@@ -1557,9 +1546,6 @@
        gelatinous rebound as option B, reinforcing the swap moment. The default
        mascot (already on screen) doesn't animate. */
     #phone-a .bundle-modal-overlay.is-done .bundle-mascot-default { animation: none; }
-
-    reinforcing the swap moment. The default
-       mascot (already on screen) doesn't animate. */
     #phone-b .bundle-modal-overlay.is-done .bundle-mascot-default { animation: none; }
     #phone-a .bundle-modal-overlay.is-done .bundle-mascot-done {
       animation: bundle-mascot-pop 1700ms cubic-bezier(0.45, 0, 0.55, 1) 0ms both;
@@ -1573,8 +1559,6 @@
       animation: bundle-blob-pop   1400ms cubic-bezier(0.45, 0, 0.55, 1)   0ms both,
                  bundle-blob-float 5s    ease-in-out                    1400ms infinite;
     }
-
-    then settles into the idle float */
     #phone-b .bundle-modal-overlay.is-done .bundle-mascot-blob {
       animation: bundle-blob-pop   1400ms cubic-bezier(0.45, 0, 0.55, 1)   0ms both,
                  bundle-blob-float 5s    ease-in-out                    1400ms infinite;
@@ -1597,8 +1581,6 @@
     #phone-a .bundle-modal-overlay.is-done .bundle-sep {
       max-height: 16px; opacity: 1; margin: initial;
     }
-
-    12px gap to "&"). */
     #phone-b .bundle-modal-overlay.is-done .bundle-sep {
       max-height: 16px; opacity: 1; margin: initial;
     }
@@ -1862,8 +1844,6 @@
     #phone-b .token-select .chevron path { fill: #8B8765 !important; stroke: #8B8765 !important; }
     /* Phone A — hide phosphor check, use Figma check asset via ::after */
     #phone-a .token-dropdown-row.selected .check-icon{ color: transparent !important; position: relative; width: 16px; height: 16px; }
-
-    use Figma check asset via ::after */
     #phone-b .token-dropdown-row.selected .check-icon { color: transparent !important; position: relative; width: 16px; height: 16px; }
     #phone-a .token-dropdown-row.selected .check-icon::after{
       content: ''; position: absolute; top: 0; left: 0; width: 16px; height: 16px;
@@ -1881,11 +1861,6 @@
        hover edge stays sharp (matching the Figma desktop spec). Uses #phone-X.desktop
        so it wins specificity against the existing #phone-a/b token-dropdown rules. */
     #phone-a.desktop .token-dropdown{ padding: 0; }
-
-
-    while every other
-       hover edge stays sharp (matching the Figma desktop spec). Uses #phone-X.desktop
-       so it wins specificity against the existing #phone-b/b token-dropdown rules. */
     #phone-b.desktop .token-dropdown { padding: 0; }
     #phone-a.desktop .token-dropdown-row{ margin: 0; border-radius: 0; }
 
@@ -2075,8 +2050,6 @@
       opacity: 1;
       border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
     }
-
-    gray text */
     #phone-b .pct-btn.disabled {
       opacity: 1;
       border-color: #F0F0F0; background: var(--neutral-50); color: #CCCCCC;
@@ -2087,8 +2060,6 @@
     #phone-a .pct-buttons.disabled .pct-btn.active{
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
-
-    medium weight */
     #phone-b .pct-btn.disabled.active, #phone-b .pct-buttons.disabled .pct-btn.active {
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
@@ -2138,8 +2109,6 @@
     #phone-a #borrow-connected.supply-zero .slider-divider ~ .pct-buttons .pct-btn.active{
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
-
-    medium) */
     #phone-b #borrow-connected-b.supply-zero .slider-divider ~ .pct-buttons .pct-btn.active {
       border: none; background: #F0F0F0; color: #CCCCCC; font-weight: 500;
     }
@@ -3728,10 +3697,6 @@
        these screens; the border lands at its final color immediately. */
     #positions-empty .mascot-area.happy,
     #positions-disconnected .mascot-area.happy { transition: none; }
-
-    which animates back to
-       green-200 over half a second on mobile). Kill the transition for
-       these screens; the border lands at its final color immediately. */
     #positions-empty-b .mascot-area.happy, #positions-disconnected-b .mascot-area.happy { transition: none; }
     .phone.desktop #positions-empty .mascot-area.happy .mypositions-blob-img,
     .phone.desktop #positions-disconnected .mascot-area.happy .mypositions-blob-img {
@@ -4527,9 +4492,6 @@
     #skel-home-c .btn:disabled, #skel-borrow-c .btn:disabled, #skel-update-c .btn:disabled, #skel-positions-c .btn:disabled {
       cursor: not-allowed; pointer-events: none; filter: none !important;
     }
-
-    so layering opacity on top only muddies the
-       intended colors. */
     #skel-home-b   .btn:disabled, #skel-borrow-b   .btn:disabled, #skel-update-b   .btn:disabled, #skel-positions-b   .btn:disabled {
       cursor: not-allowed; pointer-events: none; filter: none !important;
     }
