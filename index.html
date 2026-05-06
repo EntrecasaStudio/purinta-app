@@ -6359,6 +6359,18 @@ function initPhoneB() {
   // re-introducing the duplicate-id collision (broken mask = mascot without
   // limbs). The global V2 fill loop in the SVG load promise also skips
   // phone-b for the same reason.
+  //
+  // BUT: SMIL animations inside the cloned SVG may not auto-start (they
+  // ran in phone-a's context, the cloned <animateTransform> elements are
+  // inert until the SVG is re-parsed). Kick each layer by clearing and
+  // reassigning its innerHTML — that triggers a fresh parse and SMIL
+  // playback in phone-b.
+  phoneB.querySelectorAll('.emote-v2 .emote-v2-feet, .emote-v2 .emote-v2-body, .emote-v2 .emote-v2-face, .emote-v2 .emote-v2-melt').forEach(function(layer) {
+    var html = layer.innerHTML;
+    if (!html.trim()) return;
+    layer.innerHTML = '';
+    layer.innerHTML = html;
+  });
   // Sparkle observer + token-label rewrites (re-attach to phone-b nodes).
   if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
   if (typeof rewritePositionTokenLabels === 'function') rewritePositionTokenLabels(phoneB);
