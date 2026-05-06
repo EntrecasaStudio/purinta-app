@@ -1395,47 +1395,28 @@
        fill-circle treatment but in the Error palette: pink disc + warning
        icon. The label stays primary (not secondary like .is-done) so the
        failed action reads as the focal point of the modal. */
+    /* Step error treatment — pink filled disc with a white X glyph. Colours
+       per Figma 2537-250952: bg Error/200, 1.5px border Error/100, glyph
+       white. Mirrors the .is-done filled-circle visual language but in the
+       error palette. */
     .bundle-step.is-error .bundle-step-num {
       background: var(--error-200);
-      border-color: transparent;
-      color: var(--error-500);
-      /* The is-error step-num holds an injected <i class="ph-fill ph-warning-circle">
-         from JS. Override the inherited transparent color + font-size so the
-         icon sits centred and tinted Error/500. */
-      font-size: 22px; line-height: 1;
+      border: var(--ds-border-1-5) solid var(--error-100);
+      color: white;
+      font-size: 14px; line-height: 1;
     }
     .bundle-step.is-error .bundle-step-num i {
       display: flex; align-items: center; justify-content: center;
-      width: 100%; height: 100%; color: inherit;
+      width: 100%; height: 100%; color: inherit; font-weight: 700;
     }
     .bundle-step.is-error .bundle-step-text { color: var(--text-primary); font-weight: 500; }
-    /* Error banner — pink card under the stepper, mirrors the supply-warning
-       banner pattern. Visible only when the modal is in the .is-error state. */
-    .bundle-error-banner {
-      display: none;
-      align-items: flex-start; gap: 10px;
-      padding: 12px 20px 12px 16px;
-      background: var(--error-50);
-      border: 1px solid var(--error-400);
-      border-radius: 12px;
+    /* Error message uses the SAME .bundle-message component as ready /
+       processing / done — pink theme overrides Error/50 bg + Error/400
+       border, body text aligned left like every other state. */
+    .bundle-modal-overlay.is-error .bundle-message {
+      background: var(--error-50); border-color: var(--error-400);
     }
-    .bundle-modal-overlay.is-error .bundle-error-banner { display: flex; }
-    .bundle-error-banner i {
-      color: var(--error-500); font-size: 20px; flex-shrink: 0;
-      line-height: 1; margin-top: 2px;
-    }
-    .bundle-error-banner-body { flex: 1; }
-    .bundle-error-banner-body strong {
-      font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 500;
-      color: var(--text-primary); display: block; line-height: 21px;
-    }
-    .bundle-error-banner-body span {
-      font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 400;
-      color: var(--text-primary); line-height: 21px;
-    }
-    /* Hide the regular bundle-message in error state — the error banner
-       takes its place. */
-    .bundle-modal-overlay.is-error .bundle-message { display: none; }
+    .bundle-modal-overlay.is-error .bundle-message-icon { color: var(--error-500); }
     /* CTA: "Try again" replaces Begin/Processing/Done in error state. */
     .bundle-cta-error {
       display: none; align-items: center; justify-content: center; gap: 8px;
@@ -1474,13 +1455,17 @@
     .bundle-modal-overlay.is-processing .bmi-processing { display: inline-block; }
     .bundle-modal-overlay.is-done .bmi-processing { display: none; }
     .bundle-modal-overlay.is-done .bmi-done { display: inline-block; color: var(--green-600); }
-    /* 3 message variants show/hide by overlay state */
+    .bundle-modal-overlay.is-error .bundle-message-icon { display: none; }
+    .bundle-modal-overlay.is-error .bmi-error { display: inline-block; }
+    /* 4 message variants show/hide by overlay state */
     .bundle-message-body > * { display: none; }
     .bundle-modal-overlay .bundle-message-ready { display: block; }
     .bundle-modal-overlay.is-processing .bundle-message-ready,
-    .bundle-modal-overlay.is-done .bundle-message-ready { display: none; }
+    .bundle-modal-overlay.is-done .bundle-message-ready,
+    .bundle-modal-overlay.is-error .bundle-message-ready { display: none; }
     .bundle-modal-overlay.is-processing .bundle-message-processing { display: block; }
     .bundle-modal-overlay.is-done .bundle-message-done { display: block; }
+    .bundle-modal-overlay.is-error .bundle-message-error { display: block; }
     .bundle-modal-overlay.is-processing .bundle-message {
       background: var(--warning-100); border-color: var(--warning-400);
     }
@@ -4769,6 +4754,7 @@
             <button onclick="setBorrowHealth('danger-zone')">Danger Zone</button>
             <button onclick="setBorrowHealth('meltdown')">Meltdown</button>
             <button onclick="devOpenBundle()">Confirmation modal</button>
+            <button onclick="devOpenBundleError()">Confirmation modal Error</button>
             <button onclick="toggleNoFundsBanner()">Toggle No-Funds Banner</button>
             <button onclick="showScreen('skel-borrow')">Skel</button>
           </div>
@@ -4811,8 +4797,8 @@
         <button onclick="showScreen('loading-loop')"><span class="anim-dot anim-dot-progress"></span>Loading Mascot</button>
         <button onclick="showScreen('switch-network')"><span class="anim-dot anim-dot-todo"></span>Switch Network</button>
         <button onclick="showScreen('error-404')"><span class="anim-dot anim-dot-todo"></span>404 Mascot</button>
-        <button onclick="devOpenBundle()"><span class="anim-dot anim-dot-todo"></span>Bundle Confirmation</button>
-        <button onclick="devOpenBundleError()"><span class="anim-dot anim-dot-progress"></span>Bundle · Error</button>
+        <button onclick="devOpenBundle()"><span class="anim-dot anim-dot-todo"></span>Confirmation modal</button>
+        <button onclick="devOpenBundleError()"><span class="anim-dot anim-dot-progress"></span>Confirmation modal Error</button>
         <!-- State-emote idle loops (live on borrow-connected) -->
         <button onclick="setBorrowInitial()"><span class="anim-dot anim-dot-done"></span>Initial · supply pulse</button>
         <button onclick="setBorrowHealth('ultra-safe')"><span class="anim-dot anim-dot-done"></span>Ultra Safe · idle loops</button>
@@ -6152,17 +6138,12 @@
         <i class="ph ph-info bundle-message-icon bmi-ready" aria-hidden="true"></i>
         <i class="ph ph-info bundle-message-icon bmi-processing" aria-hidden="true"></i>
         <i class="ph-fill ph-seal-check bundle-message-icon bmi-done" aria-hidden="true"></i>
+        <i class="ph-fill ph-warning-circle bundle-message-icon bmi-error" aria-hidden="true"></i>
         <div class="bundle-message-body">
           <div class="bundle-message-ready"><strong>Ready to go</strong><br>Initiate the transaction by clicking the button below.</div>
           <div class="bundle-message-processing"><strong>Proceed in wallet</strong><br>Continue your transaction in your connected wallet.</div>
           <div class="bundle-message-done"><strong>Done!</strong><br>Transaction completed successfully.</div>
-        </div>
-      </div>
-      <div class="bundle-error-banner">
-        <i class="ph-fill ph-warning-circle" aria-hidden="true"></i>
-        <div class="bundle-error-banner-body">
-          <strong>Error</strong>
-          <span>Something went wrong. Please try again later.</span>
+          <div class="bundle-message-error"><strong>Error</strong><br>Something went wrong. Please try again later.</div>
         </div>
       </div>
         <button class="btn btn-primary btn-full bundle-modal-cta" onclick="bundleModalCtaClick()">
@@ -7567,12 +7548,14 @@ function runBundleErrorSequence(errorAt) {
       if (pn) pn.innerHTML = '<i class="ph ph-check"></i>';
     }
     if (i === errorAt) {
-      // Fail this step — flip to error state.
+      // Fail this step — flip to error state. White X glyph on the pink
+      // disc per Figma 2537-250952 (matching the .is-done filled-circle
+      // visual language but with the error palette + X).
       var fail = steps[i];
       fail.classList.remove('is-active');
       fail.classList.add('is-error');
       var fn = fail.querySelector('.bundle-step-num');
-      if (fn) fn.innerHTML = '<i class="ph-fill ph-warning-circle"></i>';
+      if (fn) fn.innerHTML = '<i class="ph-bold ph-x"></i>';
       overlay.classList.remove('is-processing');
       overlay.classList.add('is-error');
       return;
