@@ -6577,17 +6577,19 @@ function punchActiveMascot() {
 // strictly once-per-session; replay is a manual override that doesn't
 // disturb that flag.
 function replayConnectCelebration() {
-  var active = document.querySelector('.screen.active');
-  if (!active) return;
-  active.querySelectorAll('.mascot-area').forEach(function(area) {
-    area.classList.remove('is-celebrating'); // reset if mid-flight
-    // Force reflow so the animation re-fires when re-added.
-    void area.offsetWidth;
-    area.classList.add('is-celebrating');
-    // Matches the celebrate keyframe duration (2.6s) so the class persists
-    // for the full animation and the rays land at scale(0)/opacity(0) on
-    // their own — no abrupt fallback to the rest-state transition.
-    setTimeout(function() { area.classList.remove('is-celebrating'); }, 2600);
+  // Celebrate EVERY visible phone's active-screen mascot. Was scoped to the
+  // first .screen.active in the document (always phone-a's), so on Op B the
+  // visible phone-b mascot wasn't getting the burst. Iterate over every
+  // non-hidden .phone-wrap so Op A, Op B, and A+B all play correctly.
+  var hostScreens = document.querySelectorAll('.phone-wrap:not(.hidden) .phone .screen.active');
+  if (!hostScreens.length) return;
+  hostScreens.forEach(function(active) {
+    active.querySelectorAll('.mascot-area').forEach(function(area) {
+      area.classList.remove('is-celebrating');
+      void area.offsetWidth; // force reflow so the keyframe re-fires
+      area.classList.add('is-celebrating');
+      setTimeout(function() { area.classList.remove('is-celebrating'); }, 2600);
+    });
   });
 }
 
@@ -8880,14 +8882,23 @@ function suffixEmoteV2Ids(container, suffix) {
   while ((m = idRe.exec(html)) !== null) {
     if (!m[1].endsWith(suffix)) ids.add(m[1]);
   }
-  if (!ids.size) return;
-  ids.forEach(function(id) {
-    var esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    html = html.replace(new RegExp('\\bid="' + esc + '"', 'g'), 'id="' + id + suffix + '"');
-    html = html.replace(new RegExp('url\\(#' + esc + '\\)', 'g'), 'url(#' + id + suffix + ')');
-    html = html.replace(new RegExp('(\\b(?:xlink:)?href=)"#' + esc + '"', 'g'), '$1"#' + id + suffix + '"');
+  if (ids.size) {
+    ids.forEach(function(id) {
+      var esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      html = html.replace(new RegExp('\\bid="' + esc + '"', 'g'), 'id="' + id + suffix + '"');
+      html = html.replace(new RegExp('url\\(#' + esc + '\\)', 'g'), 'url(#' + id + suffix + ')');
+      html = html.replace(new RegExp('(\\b(?:xlink:)?href=)"#' + esc + '"', 'g'), '$1"#' + id + suffix + '"');
+    });
+    container.innerHTML = html;
+  }
+  // Kick SMIL — <animate*> elements inside SVG content set via innerHTML
+  // don't always auto-start in the cloned/re-set context. Force begin()
+  // so the basic-money bill-emerging animation plays on phone-b too.
+  container.querySelectorAll('animate, animateTransform, animateMotion').forEach(function(el) {
+    if (typeof el.beginElement === 'function') {
+      try { el.beginElement(); } catch (e) { /* unsupported / not yet attached */ }
+    }
   });
-  container.innerHTML = html;
 }
 
 function updateHealthMascotB() {
