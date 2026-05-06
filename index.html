@@ -4565,13 +4565,15 @@
     #phone-b:not(.desktop) #update-b .slider-divider {
       margin: var(--ds-space-16) 0;
     }
-    /* Mascot area: 168 → --ds-7xl (119 px from Sizing/Size scale).
-       Padding 32 → 16. Top margin matches Op A's 20 (--ds-space-20). */
+    /* Mascot area: --ds-7xl + --ds-space-8 (119 + 8 = 127 px), padding
+       16 top/sides, 24 bottom. Same content area as plain --ds-7xl @ 16
+       padding, but the +8 padding-bottom drops the text further from
+       the frame's lower edge. Top margin matches Op A's 20. */
     #phone-b:not(.desktop) #borrow-b .mascot-area,
     #phone-b:not(.desktop) #borrow-connected-b .mascot-area,
     #phone-b:not(.desktop) #update-b .mascot-area {
-      height: var(--ds-7xl);
-      padding: var(--ds-space-16);
+      height: calc(var(--ds-7xl) + var(--ds-space-8));
+      padding: var(--ds-space-16) var(--ds-space-16) var(--ds-space-24);
       margin-top: var(--ds-space-20);
     }
     /* Mascot illustration: 15% shrink in every state (happy / ultra-safe /
@@ -6455,8 +6457,12 @@ function initPhoneB() {
     var targetB = document.getElementById(activeA.id + '-b');
     if (targetB) targetB.classList.add('active');
   }
-  // Drop any cloned loading overlays.
-  phoneB.querySelectorAll('.loading-screen-overlay').forEach(function(el) { el.remove(); });
+  // Drop any cloned homepage loading overlays — but PRESERVE the one inside
+  // #loading-loop-b (the dev preview screen needs its own overlay to show
+  // the spinning mascot when the user navigates to it via the dev nav).
+  phoneB.querySelectorAll('.loading-screen-overlay').forEach(function(el) {
+    if (!el.closest('#loading-loop-b')) el.remove();
+  });
   // The cloned innerHTML already carries phone-a's V2 layers (body/face/feet/
   // melt) with -b-suffixed IDs from the string pass above. We do NOT call
   // applyV2Expression on phone-b's containers — that would reach into the
@@ -7769,11 +7775,19 @@ function showScreen(id) {
       }
     });
   }
-  // Loading-loop dev screen: keep the mascot spinning while it's active, stop on exit
+  // Loading-loop dev screen: keep the mascot spinning while it's active, stop
+  // on exit. Scope to whichever phone is currently visible (phone-a on Op A/C,
+  // phone-b on Op B, or both on A+B). The mascot id is `loading-loop` in
+  // phone-a, `loading-loop-b` in phone-b — query inside the visible phones.
   if (_loadingLoopStop) { _loadingLoopStop(); _loadingLoopStop = null; }
   if (id === 'loading-loop') {
-    var loopMascot = document.querySelector('#loading-loop .loading-mascot');
-    if (loopMascot) _loadingLoopStop = startLoadingMascotSpin(loopMascot);
+    var loopStops = [];
+    document.querySelectorAll('.phone-wrap:not(.hidden) .phone .loading-mascot').forEach(function(loopMascot) {
+      loopStops.push(startLoadingMascotSpin(loopMascot));
+    });
+    if (loopStops.length) {
+      _loadingLoopStop = function() { loopStops.forEach(function(s) { if (s) s(); }); };
+    }
   }
   // Restart the one-pass boost-rate attention animation on every arrival to a home screen
   if (id === 'homepage' || id === 'homepage-connected') {
