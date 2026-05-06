@@ -7478,6 +7478,12 @@ function _markStateBtnActive(fn, level) {
   if (folder) { folder.open = true; folder.classList.add('has-active'); }
 }
 function setBorrowHealth(level) {
+  // Suppress the wallet-connect celebration when entering borrow-connected
+  // through a dev-nav state preset — that animation belongs to the real
+  // connect flow, not to design-preview state-change shortcuts. Reads as
+  // "the festejo plays on every state change in Op B" otherwise (since
+  // the flag would be false on the first dev-nav click after reload).
+  showScreen._celebratedConnect = true;
   showScreen('borrow-connected');
   // Mirror the preset to phones B and C so multi-phone views stay in sync.
   ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('borrow-connected' + sfx, level); });
