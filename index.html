@@ -6330,10 +6330,26 @@ function initPhoneB() {
   if (!phoneA || !phoneB) return;
   // Auto-generate -b peer rules for every CSS rule targeting screen IDs.
   injectPhoneBBridgeStylesheet();
-  // Live clone phone-a's current DOM into phone-b.
-  phoneB.innerHTML = phoneA.innerHTML;
-  // Suffix every ID with -b to avoid collisions with phone-a.
-  phoneB.querySelectorAll('[id]').forEach(function(el) { el.id = el.id + '-b'; });
+  // Build a -b version of phone-a's HTML BEFORE writing it into phone-b.
+  // Suffix every `id="X"` attribute AND every internal reference (url(#X),
+  // href="#X", xlink:href="#X") in a single string pass. If we suffixed IDs
+  // post-assignment, SVG internal refs (mask/clipPath/gradient/use) would
+  // still point at phone-a's matching ID — which lives inside wrap-a
+  // (display: none when Op B is active) → broken mask = mascots rendered
+  // without arms/legs because the slot-mask in basic-money emote couldn't
+  // resolve.
+  var raw = phoneA.innerHTML;
+  var seenIds = new Set();
+  var idRe = /\bid="([^"]+)"/g;
+  var idMatch;
+  while ((idMatch = idRe.exec(raw)) !== null) seenIds.add(idMatch[1]);
+  seenIds.forEach(function(id) {
+    var esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    raw = raw.replace(new RegExp('\\bid="' + esc + '"', 'g'), 'id="' + id + '-b"');
+    raw = raw.replace(new RegExp('url\\(#' + esc + '\\)', 'g'), 'url(#' + id + '-b)');
+    raw = raw.replace(new RegExp('(\\b(?:xlink:)?href=)"#' + esc + '"', 'g'), '$1"#' + id + '-b"');
+  });
+  phoneB.innerHTML = raw;
   // Reset .active flags; mirror phone-a's currently active screen.
   phoneB.querySelectorAll('.screen').forEach(function(s) {
     s.classList.remove('active'); s.classList.remove('bg-screen');
@@ -6345,17 +6361,13 @@ function initPhoneB() {
   }
   // Drop any cloned loading overlays.
   phoneB.querySelectorAll('.loading-screen-overlay').forEach(function(el) { el.remove(); });
-  // V2 emote bodies — fill any empty .emote-v2-body slots from v2BodySvg.
-  if (typeof v2BodySvg !== 'undefined' && v2BodySvg) {
-    phoneB.querySelectorAll('.emote-v2').forEach(function(container) {
-      var bodyEl = container.querySelector('.emote-v2-body');
-      if (bodyEl && !bodyEl.innerHTML.trim()) bodyEl.innerHTML = v2BodySvg;
-      var ek = container.dataset && container.dataset.activeEmote;
-      if (ek && typeof v2ExprParts !== 'undefined' && v2ExprParts[ek] && typeof applyV2Expression === 'function') {
-        applyV2Expression(container, ek);
-      }
-    });
-  }
+  // The cloned innerHTML already carries phone-a's V2 layers (body/face/feet/
+  // melt) with -b-suffixed IDs from the string pass above. We do NOT call
+  // applyV2Expression on phone-b's containers — that would reach into the
+  // un-suffixed v2ExprParts source SVG and overwrite our suffixed IDs,
+  // re-introducing the duplicate-id collision (broken mask = mascot without
+  // limbs). The global V2 fill loop in the SVG load promise also skips
+  // phone-b for the same reason.
   // Sparkle observer + token-label rewrites (re-attach to phone-b nodes).
   if (typeof setupBoostAttentionObservers === 'function') setupBoostAttentionObservers();
   if (typeof rewritePositionTokenLabels === 'function') rewritePositionTokenLabels(phoneB);
@@ -8564,8 +8576,12 @@ function parseV2Emote(svgString, emoteKey) {
         if (!_v2AppliedToA) {
           applyV2Emotes(document.getElementById('phone-a'));
         }
-        // Fill any containers already created
+        // Fill any containers already created. Skip phone-b containers —
+        // initPhoneB handles them via string-suffixed clone, and re-running
+        // applyV2Expression here would inject un-suffixed source SVG IDs,
+        // breaking the SVG internal references (mask/clipPath/gradient).
         document.querySelectorAll('.emote-v2').forEach(function(container) {
+          if (container.closest('#phone-b')) return;
           var bodyEl = container.querySelector('.emote-v2-body');
           if (bodyEl && !bodyEl.innerHTML.trim() && v2BodySvg) bodyEl.innerHTML = v2BodySvg;
           var ek = container.dataset.activeEmote;
