@@ -1389,13 +1389,13 @@
        fill-circle treatment but in the Error palette: pink disc + warning
        icon. The label stays primary (not secondary like .is-done) so the
        failed action reads as the focal point of the modal. */
-    /* Step error treatment — pink filled disc with a white X glyph. Colours
-       per Figma 2537-250952: bg Error/200, 1.5px border Error/100, glyph
-       white. Mirrors the .is-done filled-circle visual language but in the
-       error palette. */
+    /* Step error treatment — soft pink disc with a white X glyph. Colours
+       per Figma 2537-290751 (final): solid Error/100 fill, no border,
+       white X. Lighter + borderless vs the previous reference (which used
+       Error/200 + 1.5 px Error/100 border). */
     .bundle-step.is-error .bundle-step-num {
-      background: var(--error-200);
-      border: var(--ds-border-1-5) solid var(--error-100);
+      background: var(--error-100);
+      border-color: transparent;
       color: white;
       font-size: 14px; line-height: 1;
     }
@@ -1564,15 +1564,17 @@
        · Desktop reverts to the column rows + horizontal "&" lines (mobile-style)
          since the new design treats desktop and mobile identically. */
     /* Two mascot variants: default (happy) → swaps to done (bills) on .is-done */
-    /* Two mascot variants: default (Begin — happy, no bills) is visible
-       in the ready/processing/error states; done (Confirmed — with bills)
-       only appears once the bundle finishes successfully (.is-done).
-       Rules apply universally — no phone-X scoping needed since the
-       overlay can be hosted by any phone via _attachOverlayToHostPhone. */
+    /* Two mascot variants: default (Begin — happy, no bills) shows in the
+       ready/processing states. The done (Confirmed — PEPE with bills)
+       mascot appears in BOTH .is-done and .is-error per Figma 2537-290751
+       (the final error spec keeps the same hero illustration; only the
+       stepper + message banner communicate the error). */
     .bundle-mascot-default { display: block; }
     .bundle-mascot-done    { display: none; }
-    .bundle-modal-overlay.is-done .bundle-mascot-default { display: none; }
-    .bundle-modal-overlay.is-done .bundle-mascot-done    { display: block; }
+    .bundle-modal-overlay.is-done .bundle-mascot-default,
+    .bundle-modal-overlay.is-error .bundle-mascot-default { display: none; }
+    .bundle-modal-overlay.is-done .bundle-mascot-done,
+    .bundle-modal-overlay.is-error .bundle-mascot-done { display: block; }
     /* Mascot container always open in option A, no max-height collapse */
     #phone-a .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
     #phone-b .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
