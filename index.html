@@ -4511,11 +4511,19 @@
       margin-bottom: var(--ds-space-8);
       min-height: 0;
     }
-    /* Slider section: 20 → 16 padding (matches DS Space-16). */
+    /* Slider section: 16 top/sides, 20 bottom (extra breathing room below
+       the last "Supplying"/"Borrowing" row before the section closes). */
     #phone-b:not(.desktop) #borrow-b .slider-section,
     #phone-b:not(.desktop) #borrow-connected-b .slider-section,
     #phone-b:not(.desktop) #update-b .slider-section {
-      padding: var(--ds-space-16);
+      padding: var(--ds-space-16) var(--ds-space-16) var(--ds-space-20);
+    }
+    /* Slider track: 12 → 4 margin-bottom — collapses the gap between the
+       slider thumb and the "Supplying"/"Borrowing" info row directly below. */
+    #phone-b:not(.desktop) #borrow-b .slider-track,
+    #phone-b:not(.desktop) #borrow-connected-b .slider-track,
+    #phone-b:not(.desktop) #update-b .slider-track {
+      margin-bottom: var(--ds-space-4);
     }
     /* Slider labels: tighter row, smaller bottom margin. */
     #phone-b:not(.desktop) #borrow-b .slider-label,
