@@ -1391,6 +1391,64 @@
               mask: url("assets/check-icon.svg") center/contain no-repeat;
     }
     .bundle-step.is-done .bundle-step-text { color: var(--text-secondary); }
+    /* Error state — second step failed (or any step). Mirrors the .is-done
+       fill-circle treatment but in the Error palette: pink disc + warning
+       icon. The label stays primary (not secondary like .is-done) so the
+       failed action reads as the focal point of the modal. */
+    .bundle-step.is-error .bundle-step-num {
+      background: var(--error-200);
+      border-color: transparent;
+      color: var(--error-500);
+      /* The is-error step-num holds an injected <i class="ph-fill ph-warning-circle">
+         from JS. Override the inherited transparent color + font-size so the
+         icon sits centred and tinted Error/500. */
+      font-size: 22px; line-height: 1;
+    }
+    .bundle-step.is-error .bundle-step-num i {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 100%; color: inherit;
+    }
+    .bundle-step.is-error .bundle-step-text { color: var(--text-primary); font-weight: 500; }
+    /* Error banner — pink card under the stepper, mirrors the supply-warning
+       banner pattern. Visible only when the modal is in the .is-error state. */
+    .bundle-error-banner {
+      display: none;
+      align-items: flex-start; gap: 10px;
+      padding: 12px 20px 12px 16px;
+      background: var(--error-50);
+      border: 1px solid var(--error-400);
+      border-radius: 12px;
+    }
+    .bundle-modal-overlay.is-error .bundle-error-banner { display: flex; }
+    .bundle-error-banner i {
+      color: var(--error-500); font-size: 20px; flex-shrink: 0;
+      line-height: 1; margin-top: 2px;
+    }
+    .bundle-error-banner-body { flex: 1; }
+    .bundle-error-banner-body strong {
+      font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 500;
+      color: var(--text-primary); display: block; line-height: 21px;
+    }
+    .bundle-error-banner-body span {
+      font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 400;
+      color: var(--text-primary); line-height: 21px;
+    }
+    /* Hide the regular bundle-message in error state — the error banner
+       takes its place. */
+    .bundle-modal-overlay.is-error .bundle-message { display: none; }
+    /* CTA: "Try again" replaces Begin/Processing/Done in error state. */
+    .bundle-cta-error {
+      display: none; align-items: center; justify-content: center; gap: 8px;
+    }
+    .bundle-modal-overlay.is-error .bundle-cta-ready,
+    .bundle-modal-overlay.is-error .bundle-cta-processing,
+    .bundle-modal-overlay.is-error .bundle-cta-done { display: none; }
+    .bundle-modal-overlay.is-error .bundle-cta-error { display: inline-flex; }
+    /* In error state the modal CTA is fully interactive (not the dimmed
+       processing state) — re-enable opacity/pointer-events. */
+    .bundle-modal-overlay.is-error .bundle-modal-cta {
+      pointer-events: auto; opacity: 1;
+    }
     .bundle-message {
       display: flex; align-items: flex-start; gap: 8px;
       /* Ready state default: info blue — "here's what will happen".
@@ -4751,6 +4809,7 @@
         <button onclick="showScreen('switch-network')"><span class="anim-dot anim-dot-todo"></span>Switch Network</button>
         <button onclick="showScreen('error-404')"><span class="anim-dot anim-dot-todo"></span>404 Mascot</button>
         <button onclick="devOpenBundle()"><span class="anim-dot anim-dot-todo"></span>Bundle Confirmation</button>
+        <button onclick="devOpenBundleError()"><span class="anim-dot anim-dot-progress"></span>Bundle · Error</button>
         <!-- State-emote idle loops (live on borrow-connected) -->
         <button onclick="setBorrowInitial()"><span class="anim-dot anim-dot-done"></span>Initial · supply pulse</button>
         <button onclick="setBorrowHealth('ultra-safe')"><span class="anim-dot anim-dot-done"></span>Ultra Safe · idle loops</button>
@@ -6096,10 +6155,18 @@
           <div class="bundle-message-done"><strong>Done!</strong><br>Transaction completed successfully.</div>
         </div>
       </div>
+      <div class="bundle-error-banner">
+        <i class="ph-fill ph-warning-circle" aria-hidden="true"></i>
+        <div class="bundle-error-banner-body">
+          <strong>Error</strong>
+          <span>Something went wrong. Please try again later.</span>
+        </div>
+      </div>
         <button class="btn btn-primary btn-full bundle-modal-cta" onclick="bundleModalCtaClick()">
           <span class="bundle-cta-ready">Begin</span>
           <span class="bundle-cta-processing"><i class="ph-light ph-circle-notch bundle-spin"></i> Processing</span>
           <span class="bundle-cta-done"><i class="ph ph-cards-three btn-icon"></i> View Positions</span>
+          <span class="bundle-cta-error"><i class="ph-light ph-arrow-clockwise btn-icon"></i> Try again</span>
         </button>
       </div>
     </div>
@@ -7211,8 +7278,11 @@ function openBundleModal(data, btn) {
   if (!overlay) return;
   _attachOverlayToHostPhone(overlay, btn);
   // Reset to "ready" state each time it opens
-  overlay.classList.remove('is-processing', 'is-done');
+  overlay.classList.remove('is-processing', 'is-done', 'is-error');
   overlay.classList.add('is-ready');
+  // Stash an errorAt index on the overlay if the caller wants the second
+  // step to fail (used by devOpenBundleError). bundleModalCtaClick reads it.
+  overlay.dataset.errorAt = (data.errorAt != null) ? String(data.errorAt) : '';
   // Render the summary rows dynamically — one per non-zero operation, with "&"
   // separators between them. An empty bundle (no changes) shows a single "—" row.
   var rowsWrap = overlay.querySelector('.bundle-modal-rows');
@@ -7289,6 +7359,14 @@ function bundleModalCtaClick() {
   if (!overlay) return;
   if (overlay.classList.contains('is-done')) { closeBundleModalAndFinish(); return; }
   if (overlay.classList.contains('is-processing')) return;
+  // "Try again" from the error state — re-run the same sequence (will fail
+  // at the same step again per the dev preview's intent).
+  if (overlay.classList.contains('is-error')) {
+    overlay.classList.remove('is-error');
+    overlay.classList.add('is-ready');
+  }
+  var errAt = parseInt(overlay.dataset.errorAt, 10);
+  if (!isNaN(errAt)) { runBundleErrorSequence(errAt); return; }
   runBundleSequence();
 }
 
@@ -7435,6 +7513,71 @@ function devOpenBundle() {
       'Execute the bundle'
     ]
   }, null);
+}
+
+/* Bundle Confirmation — Error variant. Same flow as devOpenBundle but the
+   bundle sequence fails on the second step. Wires the dev-nav "Bundle Error"
+   button so the design can preview the error state with the pink banner +
+   warning-circle-fill on the failed step. */
+function devOpenBundleError() {
+  openBundleModal({
+    operations: [
+      { label: 'Supply', amount: '0.0000367', token: 'MORPHO', tokenClass: 'morpho' },
+      { label: 'Repay',  amount: '0.00006',   token: 'USDC',   tokenClass: 'usdc' }
+    ],
+    steps: [
+      'Sign approval for transferring PEPE',
+      'Execute the bundle'
+    ],
+    errorAt: 1 /* fail step index 1 (second step) */
+  }, null);
+}
+
+/* Same shape as runBundleSequence but stops at `errorAt` and tips the modal
+   into .is-error: previous steps marked .is-done with the check, the failing
+   step swaps to .is-error with a warning-circle-fill icon, the error banner
+   appears, the CTA flips to "Try again". */
+function runBundleErrorSequence(errorAt) {
+  var overlay = document.getElementById('bundle-modal-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('is-ready', 'is-processing', 'is-done', 'is-error');
+  overlay.classList.add('is-processing');
+  var steps = overlay.querySelectorAll('.bundle-step');
+  steps.forEach(function(s) {
+    s.classList.remove('is-active', 'is-done', 'is-error');
+    var num = s.querySelector('.bundle-step-num');
+    if (num) num.innerHTML = '';
+  });
+  var i = 0;
+  function advance() {
+    if (i > 0) {
+      var prev = steps[i-1];
+      prev.classList.remove('is-active');
+      prev.classList.add('is-done');
+      var pn = prev.querySelector('.bundle-step-num');
+      if (pn) pn.innerHTML = '<i class="ph ph-check"></i>';
+    }
+    if (i === errorAt) {
+      // Fail this step — flip to error state.
+      var fail = steps[i];
+      fail.classList.remove('is-active');
+      fail.classList.add('is-error');
+      var fn = fail.querySelector('.bundle-step-num');
+      if (fn) fn.innerHTML = '<i class="ph-fill ph-warning-circle"></i>';
+      overlay.classList.remove('is-processing');
+      overlay.classList.add('is-error');
+      return;
+    }
+    if (i >= steps.length) {
+      overlay.classList.remove('is-processing');
+      overlay.classList.add('is-done');
+      return;
+    }
+    steps[i].classList.add('is-active');
+    i++;
+    setTimeout(advance, 1400);
+  }
+  advance();
 }
 
 // Health-state presets — dev-nav shortcuts that navigate to the screen and
