@@ -1853,16 +1853,12 @@
 
     /* Phone A — Borrow USDC badge text 16px */
     #phone-b .slider-token-badge { font-size: var(--ds-sm); letter-spacing: 0.16px; }
-    /* Phone A — token-select bg white (not cream-200), chevron cream-900 */
-    #phone-a .token-select{ background: var(--neutral-50); box-shadow: none; }
-
-    chevron cream-900 */
+    /* Token-select bg white (not cream-200), chevron cream-900 */
+    #phone-a .token-select,
     #phone-b .token-select { background: var(--neutral-50); box-shadow: none; }
-    #phone-a .token-select.open{ box-shadow: 2px 2px 4px 0 rgba(163,158,117,0.05); }
-
+    #phone-a .token-select.open,
     #phone-b .token-select.open { box-shadow: 2px 2px 4px 0 rgba(163,158,117,0.05); }
-    #phone-a .token-select .chevron path{ fill: #8B8765 !important; stroke: #8B8765 !important; }
-
+    #phone-a .token-select .chevron path,
     #phone-b .token-select .chevron path { fill: #8B8765 !important; stroke: #8B8765 !important; }
     /* Phone A — hide phosphor check, use Figma check asset via ::after */
     #phone-a .token-dropdown-row.selected .check-icon{ color: transparent !important; position: relative; width: 16px; height: 16px; }
@@ -4575,26 +4571,15 @@
       margin-bottom: var(--ds-space-12);
       gap: var(--ds-space-12);
     }
-    /* Pct buttons: bump height to --ds-space-48 floor (was 42 px in Op A,
-       below Material Design's 48 dp recommend for our Android-mid-range
-       audience). Tighter gap + bottom margin to compensate. */
-    #phone-b:not(.desktop) #borrow-b .pct-btn,
-    #phone-b:not(.desktop) #borrow-connected-b .pct-btn,
-    #phone-b:not(.desktop) #update-b .pct-btn {
-      height: var(--ds-space-48);
-    }
+    /* Pct buttons: keep Op A's 42 px height (no compact override). Only
+       margin/gap tightens. */
     #phone-b:not(.desktop) #borrow-b .pct-buttons,
     #phone-b:not(.desktop) #borrow-connected-b .pct-buttons,
     #phone-b:not(.desktop) #update-b .pct-buttons {
       margin-bottom: var(--ds-space-8);
       gap: var(--ds-space-6);
     }
-    /* Token-select pill: bump to 48 floor (was 46). Width preserved. */
-    #phone-b:not(.desktop) #borrow-b .token-select-wrap,
-    #phone-b:not(.desktop) #borrow-connected-b .token-select-wrap,
-    #phone-b:not(.desktop) #update-b .token-select-wrap {
-      height: var(--ds-space-48);
-    }
+    /* Token-select pill: keep Op A's 46 px height. */
     /* Slider divider: 20 → 12 vertical spacing. */
     #phone-b:not(.desktop) #borrow-b .slider-divider,
     #phone-b:not(.desktop) #borrow-connected-b .slider-divider,
@@ -4850,8 +4835,8 @@
     btn.onclick = function(){
       container.querySelectorAll('button').forEach(function(b){ b.style.background='none'; b.style.borderColor='#e5e1be'; b.classList.remove('selected'); });
       btn.style.background='var(--mint-100)'; btn.style.borderColor='var(--green-300)'; btn.classList.add('selected');
-      // Update pill expand zone icons (Phone A)
-      document.querySelectorAll('#phone-a .wallet-disconnect-zone i').forEach(function(el){
+      // Update pill expand zone icons across all phones (a/b/c).
+      document.querySelectorAll('.wallet-disconnect-zone i').forEach(function(el){
         el.className = 'ph ' + ic.id;
         el.style.fontSize = '16px';
       });
@@ -6466,6 +6451,10 @@ function initPhoneB() {
   if (typeof populatePositionsDisconnected === 'function') populatePositionsDisconnected('-b');
   // Bottom-nav shadow wiring on scroll inside phone-b.
   if (typeof attachNavShadowScroll === 'function') attachNavShadowScroll(phoneB);
+  // Banner-stuck scroll detector + peek-behind shrink on scroll — both
+  // attach a scroll listener to the phone element. Match phone-a's wiring.
+  if (typeof window._attachBannerStuckTo === 'function') window._attachBannerStuckTo(phoneB);
+  if (typeof window._attachPeekScrollTo === 'function') window._attachPeekScrollTo(phoneB);
 }
 
 // On boot: detect ANY indicator that the user is on a constrained device
@@ -6588,29 +6577,28 @@ function applyOP2ToPhoneA() {
 }
 applyOP2ToPhoneA();
 
-// Peek-behind shrink on scroll
+// Peek-behind shrink on scroll. Runs per-phone (was phone-a only).
 (function() {
-  var phone = document.getElementById('phone-a');
-  var peek = document.querySelector('.new-borrow-peek');
-  if (!phone || !peek) return;
-  var hideThreshold = null;
-  phone.addEventListener('scroll', function() {
-    var s = phone.scrollTop;
-    // Lazy-compute threshold when first scrolling (positions screen must be visible)
-    if (hideThreshold === null) {
-      var firstCard = phone.querySelector('.position-card');
-      var stickyTop = parseFloat(getComputedStyle(peek).top) || 130;
-      // Hide when first card fully covers peek (card top reaches peek sticky top)
-      hideThreshold = firstCard ? firstCard.offsetTop - stickyTop : 80;
-      if (hideThreshold < 30) hideThreshold = 30; // safety minimum
-    }
-    // Shrink animation: scale from 1 → 0.85 over full scroll distance to hide
-    var t = Math.min(s / hideThreshold, 1);
-    var scale = 1 - (t * 0.15);
-    peek.style.transform = 'scale(' + scale + ')';
-    // Hide when fully covered by first card
-    peek.style.visibility = s >= hideThreshold ? 'hidden' : 'visible';
-  });
+  function attach(phone) {
+    var peek = phone.querySelector('.new-borrow-peek');
+    if (!peek) return;
+    var hideThreshold = null;
+    phone.addEventListener('scroll', function() {
+      var s = phone.scrollTop;
+      if (hideThreshold === null) {
+        var firstCard = phone.querySelector('.position-card');
+        var stickyTop = parseFloat(getComputedStyle(peek).top) || 130;
+        hideThreshold = firstCard ? firstCard.offsetTop - stickyTop : 80;
+        if (hideThreshold < 30) hideThreshold = 30;
+      }
+      var t = Math.min(s / hideThreshold, 1);
+      var scale = 1 - (t * 0.15);
+      peek.style.transform = 'scale(' + scale + ')';
+      peek.style.visibility = s >= hideThreshold ? 'hidden' : 'visible';
+    });
+  }
+  document.querySelectorAll('.phone').forEach(attach);
+  window._attachPeekScrollTo = attach;
 })();
 
 var _v2AppliedToA = false;
@@ -6673,12 +6661,13 @@ function closeTokenDropdown(select, onDone) {
 }
 function toggleTokenDropdown(el) {
   var select = el.closest('.token-select');
-  // Option A mobile: title selector opens a bottom sheet instead of dropdown
+  // Mobile + title-position selector → bottom sheet (any phone). Was gated
+  // to phone-a only, which left phone-b mobile with a desktop dropdown that
+  // doesn't fit the layout.
   var phone = select.closest('.phone');
   var inTitle = !!select.closest('.borrow-title');
-  var isPhoneA = phone && phone.id === 'phone-a';
   var isMobile = phone && !phone.classList.contains('desktop');
-  if (isPhoneA && inTitle && isMobile) {
+  if (inTitle && isMobile) {
     openTokenBottomSheet(select);
     return;
   }
@@ -6876,30 +6865,35 @@ function attachNavShadowScroll(phone) {
 }
 // Attach to phone-a on load
 (function() {
-  var phoneA = document.getElementById('phone-a');
-  if (phoneA) attachNavShadowScroll(phoneA);
+  // Wire the bottom-nav shadow scroll listener on every phone (phone-a now,
+  // phone-b later via initPhoneB). Was phone-a only, so phone-b's bottom-nav
+  // shadow never updated on scroll.
+  document.querySelectorAll('.phone').forEach(function(p) { attachNavShadowScroll(p); });
 })();
 
-// Scroll detector: toggles '.stuck' on the banner-top-mask whenever the banner
-// has reached its sticky position (16px from top of phone frame) on mobile.
+// Scroll detector: toggles '.stuck' on the banner-top-mask whenever the
+// supply-warning banner has reached its sticky position. Runs per-phone
+// (was phone-a only, so phone-b's banner mask never reflected its scroll).
 (function() {
-  var phone = document.getElementById('phone-a');
-  if (!phone) return;
-  function syncMaskStuck() {
-    var banner = document.getElementById('swb-a');
-    var mask = document.getElementById('swb-mask-a');
-    if (!banner || !mask) return;
-    if (!banner.classList.contains('active')) { mask.classList.remove('stuck'); return; }
-    var bRect = banner.getBoundingClientRect();
-    var pRect = phone.getBoundingClientRect();
-    // Banner is stuck when its top sits at (or past) the 16px offset from phone's top.
-    // Using <= 16.5 for subpixel tolerance.
-    mask.classList.toggle('stuck', (bRect.top - pRect.top) <= 16.5);
+  function attach(phone) {
+    if (!phone) return;
+    var suffix = phone.id === 'phone-a' ? '-a' : ('-' + phone.id.replace('phone-', ''));
+    function syncMaskStuck() {
+      var banner = document.getElementById('swb' + suffix);
+      var mask = document.getElementById('swb-mask' + suffix);
+      if (!banner || !mask) return;
+      if (!banner.classList.contains('active')) { mask.classList.remove('stuck'); return; }
+      var bRect = banner.getBoundingClientRect();
+      var pRect = phone.getBoundingClientRect();
+      mask.classList.toggle('stuck', (bRect.top - pRect.top) <= 16.5);
+    }
+    phone.addEventListener('scroll', syncMaskStuck, { passive: true });
+    window.addEventListener('resize', syncMaskStuck);
+    if (phone.id === 'phone-a') window._swbSyncMask = syncMaskStuck;
   }
-  phone.addEventListener('scroll', syncMaskStuck, { passive: true });
-  window.addEventListener('resize', syncMaskStuck);
-  // Expose so other code can trigger a re-check (e.g., after banner appears/exits)
-  window._swbSyncMask = syncMaskStuck;
+  document.querySelectorAll('.phone').forEach(attach);
+  // Phone-b/c are wired by initPhoneB after their first clone.
+  window._attachBannerStuckTo = attach;
 })();
 
 // Show/hide the supply warning banner (class already toggled in selectToken)
@@ -6966,35 +6960,24 @@ document.addEventListener('click', function(e) {
     document.querySelectorAll('.bp-btn').forEach(function(b) { b.classList.remove('active'); });
     var bpBtn = document.querySelector('.bp-btn[data-bp="' + w + '"]'); if (bpBtn) bpBtn.classList.add('active');
   }
-// Phone A: Pill Expand — single global handler
+// Wallet pill: single delegated handler that targets `.wallet-badge` in
+// ANY phone (a / b / c). Was previously gated to phone-a only (and a stale
+// phone-c handler that never fires since phone-c is retired) — phone-b's
+// wallet badge silently did nothing on tap, so users couldn't disconnect
+// from Op B. Scoping to all phones makes the disconnect work everywhere.
 document.addEventListener('click', function(e) {
-  var badge = e.target.closest('#phone-a .wallet-badge');
-  // Click on disconnect zone — let it handle itself
+  // Click on the disconnect zone itself — let its onclick handle the action.
   if (e.target.closest('.wallet-disconnect-zone')) return;
-  // Click on a wallet badge — toggle it
+  var badge = e.target.closest('.wallet-badge');
   if (badge) {
     var wasExpanded = badge.classList.contains('expanded');
-    // Close all expanded badges first
-    document.querySelectorAll('#phone-a .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
+    // Close every other expanded badge first (single-open invariant).
+    document.querySelectorAll('.wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
     if (!wasExpanded) badge.classList.add('expanded');
     return;
   }
-  // Click anywhere else — close all
-  document.querySelectorAll('#phone-a .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
-});
-
-// Phone B: Pill Expand vertical — single global handler
-document.addEventListener('click', function(e) {
-  var badge = e.target.closest('#phone-c .wallet-badge');
-  if (e.target.closest('#phone-c .wallet-disconnect-zone')) return;
-  if (badge) {
-    var wasExpanded = badge.classList.contains('expanded');
-    document.querySelectorAll('#phone-c .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
-    if (!wasExpanded) badge.classList.add('expanded');
-    return;
-  }
-  // Click outside — close all
-  document.querySelectorAll('#phone-c .wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
+  // Click outside any badge — close all.
+  document.querySelectorAll('.wallet-badge.expanded').forEach(function(b) { b.classList.remove('expanded'); });
 });
 // Escape closes all expanded pills
 document.addEventListener('keydown', function(e) {
@@ -8479,8 +8462,10 @@ function setSliderPct(track, pct) {
   document.addEventListener('pointerdown', function(e) {
     var track = e.target.closest('.slider-track');
     if (!track) return;
-    // Skip disabled sliders (phone-a #borrow)
-    if (track.closest('#phone-a #borrow')) return;
+    // Skip disabled sliders — the disconnected #borrow / #borrow-b screens
+    // have non-interactive sliders. Match by the screen ID + suffix so phone-b
+    // is gated alongside phone-a (was previously phone-a only).
+    if (track.closest('#borrow') || track.closest('#borrow-b')) return;
     dragTrack = track;
     setSliderPct(track, pctFromEvent(track, e));
     e.preventDefault();
