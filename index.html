@@ -1631,6 +1631,42 @@
        background to the failure state. Path is a single <path> inside
        the inline SVG, so a one-line override does it. */
     .bundle-modal-overlay.is-error .bundle-mascot-blob path { fill: var(--error-50); }
+    /* Error entrance — same logic as the done celebration: pure
+       transform-driven squash/stretch, NO opacity transitions (the done
+       keyframes don't fade in either, so adding opacity here read as a
+       different kind of entrance and broke consistency). Mascot keeps
+       scaleX(-1) baked into every keyframe so the mirror isn't lost. */
+    @keyframes bundle-mascot-error-pop {
+      0%   { transform: scaleX(-1) scale(0.6); }
+      24%  { transform: scaleX(-1) scaleX(1.12) scaleY(0.90); }
+      42%  { transform: scaleX(-1) scaleX(0.92) scaleY(1.08); }
+      58%  { transform: scaleX(-1) scaleX(1.05) scaleY(0.97); }
+      72%  { transform: scaleX(-1) scaleX(0.98) scaleY(1.02); }
+      84%  { transform: scaleX(-1) scale(1)    rotate(3deg);  }
+      93%  { transform: scaleX(-1) scale(1)    rotate(-1.5deg); }
+      100% { transform: scaleX(-1) scale(1)    rotate(0deg);  }
+    }
+    @keyframes bundle-blob-error-pop {
+      0%   { transform: scale(0.55); }
+      20%  { transform: scaleX(1.18) scaleY(0.84); }
+      38%  { transform: scaleX(0.86) scaleY(1.14); }
+      55%  { transform: scaleX(1.08) scaleY(0.94); }
+      72%  { transform: scaleX(0.96) scaleY(1.04); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    #phone-a .bundle-modal-overlay.is-error .bundle-mascot-error,
+    #phone-b .bundle-modal-overlay.is-error .bundle-mascot-error {
+      animation: bundle-mascot-error-pop 1700ms cubic-bezier(0.45, 0, 0.55, 1) 220ms both;
+    }
+    #phone-a .bundle-modal-overlay.is-error .bundle-mascot-blob,
+    #phone-b .bundle-modal-overlay.is-error .bundle-mascot-blob {
+      animation: bundle-blob-error-pop 1400ms cubic-bezier(0.45, 0, 0.55, 1) 0ms both,
+                 bundle-blob-float    5s    ease-in-out               1400ms infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bundle-modal-overlay.is-error .bundle-mascot-error,
+      .bundle-modal-overlay.is-error .bundle-mascot-blob { animation: none; }
+    }
     /* Re-fire the entry-pop on the done variant when it appears — same
        gelatinous rebound as option B, reinforcing the swap moment. The default
        mascot (already on screen) doesn't animate. */
@@ -2581,10 +2617,11 @@
       100%     { transform: scale(0)    rotate(0deg);   opacity: 0; }
     }
     @keyframes blob-celebrate-flash {
-      0%, 100% { opacity: 0.4; }
-      14%      { opacity: 0.9; }   /* matches the ray burst peak */
-      62%      { opacity: 0.7; }
-      90%      { opacity: 0.45; }  /* eases back to the rest state opacity */
+      0%       { opacity: 0.4; }
+      14%      { opacity: 1; }     /* full punch — rays pop at peak */
+      62%      { opacity: 0.95; }  /* sustain so the rays read clearly */
+      90%      { opacity: 0.6; }
+      100%     { opacity: 0.4; }
     }
     .mascot-area.is-celebrating .blob-sunburst {
       /* `cubic-bezier(0.5, 1.4, 0.4, 1)` — overshoot on the in-bounce, eased
@@ -2616,11 +2653,32 @@
     .mascot-area.is-celebrating .mascot-illustration {
       animation: mascot-celebrate 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
+    /* Happy state (Initial / connected basic-money) sets `animation: none`
+       on img.mascot-illustration and .emote-v2.mascot-illustration to kill
+       the looping bob — that override has specificity (0,3,0) and comes
+       AFTER the celebration rule above (0,2,0), so it was also killing
+       the connect-burst squash-and-leap. Re-instate the celebration
+       animation with !important + matching specificity so it wins back
+       inside .is-celebrating without restoring the idle bob otherwise. */
+    .mascot-area.is-celebrating.happy img.mascot-illustration,
+    .mascot-area.is-celebrating.happy .emote-v2.mascot-illustration {
+      animation: mascot-celebrate 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+    }
     .mascot-area.is-celebrating .blob-sunburst-rotor,
     .mascot-area.is-celebrating .blob-sunburst-shimmer {
       animation-play-state: running;
     }
     .mascot-area.is-celebrating .blob-sunburst-vignette { opacity: 1; }
+    /* Clear the white blob fill during the burst — without this the rays
+       (whose source SVG has internal opacity 0.4 × 0.5 = 0.2) sat on top
+       of the opaque white blob and got washed out. In ultra-safe this is
+       handled by `.mascot-area.ultra-safe .blob-fill { opacity: 0 }`;
+       extend the same treatment to `.is-celebrating` so the connect-burst
+       reads loud in every state, not only when the user lands ultra-safe.
+       Use !important to beat the .blob-fill `transition: opacity 400ms`
+       cascade — without it the fade-out lagged so the rays' early peak
+       (at 14% / ~360 ms) sat on a still-mostly-white blob and read dim. */
+    .mascot-area.is-celebrating .blob-fill { opacity: 0 !important; transition: opacity 200ms ease; }
     /* #10 — REDUCED-DATA / LOW-END MODE
        Audience profile (per Mar 2026 X analytics): 70.5% mobile, top
        countries Nigeria / India / Indonesia / Turkey / Bangladesh —
@@ -2773,9 +2831,23 @@
       position: absolute; z-index: 2; pointer-events: none;
       width: 200px; height: 210px;
       top: 0; left: 50%; transform: translateX(-50%);
-      opacity: 0; transition: opacity 0.4s ease;
+      display: none;
+      opacity: 1;
     }
-    .mascot-area.ultra-safe .mascot-stars { opacity: 1; }
+    .mascot-area.ultra-safe .mascot-stars { display: block; }
+    /* The green dot floating at the upper-left of the mascot was the
+       right-foot shine ellipse. Each V2 emote SVG has two highlight
+       ellipses (m-foot-l, m-foot-r). The LEFT one uses absolute cx/cy
+       at the foot's actual position, so its CSS animation only re-orients
+       it. The RIGHT one uses `cx="1.5" cy="1.9"` and relies on a SVG
+       `transform="matrix(...)"` attribute to translate it to the foot.
+       Once the per-state CSS animations on `.m-foot-r` apply their own
+       `transform: rotate/skew/scale(...)`, the SVG matrix is REPLACED
+       (CSS transform doesn't compose with SVG transform attributes), and
+       the ellipse falls back to its raw 1.5/1.9 coords — i.e. the
+       upper-left of the SVG viewBox. Hide it; the highlight is tiny and
+       not load-bearing visually. */
+    .emote-v2-feet svg ellipse.m-foot-r { display: none; }
     .mascot-stars svg { position: absolute; }
     /* Upper-left, near the left hand-raise */
     .mascot-stars .sp1 { width: 22px; height: 22px; top: 6px; left: 10px; animation: star-twinkle 2.2s ease-in-out infinite 0s; }
@@ -6695,14 +6767,28 @@ function replayConnectCelebration() {
   // first .screen.active in the document (always phone-a's), so on Op B the
   // visible phone-b mascot wasn't getting the burst. Iterate over every
   // non-hidden .phone-wrap so Op A, Op B, and A+B all play correctly.
+  //
+  // Track the cleanup timeout per .mascot-area so back-to-back fires don't
+  // step on each other. setBorrowInitial calls this on entry; if the user
+  // then clicks "Replay Connect Burst" again, the first call's timeout
+  // would otherwise fire mid-second-animation and yank .is-celebrating
+  // off, killing the burst. Storing the id on the element lets us cancel
+  // the stale timeout before re-firing.
   var hostScreens = document.querySelectorAll('.phone-wrap:not(.hidden) .phone .screen.active');
   if (!hostScreens.length) return;
   hostScreens.forEach(function(active) {
     active.querySelectorAll('.mascot-area').forEach(function(area) {
+      if (area._celebrateTimer) {
+        clearTimeout(area._celebrateTimer);
+        area._celebrateTimer = null;
+      }
       area.classList.remove('is-celebrating');
       void area.offsetWidth; // force reflow so the keyframe re-fires
       area.classList.add('is-celebrating');
-      setTimeout(function() { area.classList.remove('is-celebrating'); }, 2600);
+      area._celebrateTimer = setTimeout(function() {
+        area.classList.remove('is-celebrating');
+        area._celebrateTimer = null;
+      }, 2600);
     });
   });
 }
