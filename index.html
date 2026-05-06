@@ -1579,25 +1579,15 @@
        · Desktop reverts to the column rows + horizontal "&" lines (mobile-style)
          since the new design treats desktop and mobile identically. */
     /* Two mascot variants: default (happy) → swaps to done (bills) on .is-done */
-    .bundle-mascot-default { display: none; }
-
-
-    /* ─── Option A redesign — only #phone-b ───
-       New flow per Figma 2006:151140 (desktop) / 2006:158406 (mobile):
-       · Mascot is visible from the start (happy variant) { display: none; }
-    .bundle-mascot-done    { display: block; }
-    #phone-a .bundle-mascot-default { display: block; }
-
-    #phone-b .bundle-mascot-default { display: block; }
-    #phone-a .bundle-mascot-done    { display: none; }
-
-    #phone-b .bundle-mascot-done { display: none; }
-    #phone-a .bundle-modal-overlay.is-done .bundle-mascot-default { display: none; }
-
-    #phone-b .bundle-modal-overlay.is-done .bundle-mascot-default { display: none; }
-    #phone-a .bundle-modal-overlay.is-done .bundle-mascot-done    { display: block; }
-
-    #phone-b .bundle-modal-overlay.is-done .bundle-mascot-done { display: block; }
+    /* Two mascot variants: default (Begin — happy, no bills) is visible
+       in the ready/processing/error states; done (Confirmed — with bills)
+       only appears once the bundle finishes successfully (.is-done).
+       Rules apply universally — no phone-X scoping needed since the
+       overlay can be hosted by any phone via _attachOverlayToHostPhone. */
+    .bundle-mascot-default { display: block; }
+    .bundle-mascot-done    { display: none; }
+    .bundle-modal-overlay.is-done .bundle-mascot-default { display: none; }
+    .bundle-modal-overlay.is-done .bundle-mascot-done    { display: block; }
     /* Mascot container always open in option A, no max-height collapse */
     #phone-a .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
     #phone-b .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
