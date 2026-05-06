@@ -288,6 +288,16 @@
       width: 100%;
       text-align: left !important;
     }
+    /* Status dots prefixed to Animations buttons. Tracks implementation
+       progress per animation: green = shipped, orange = in flight, red = todo. */
+    .anim-dot {
+      display: inline-block;
+      width: 8px; height: 8px; border-radius: 50%;
+      margin-right: 8px; flex-shrink: 0;
+    }
+    .anim-dot-done     { background: #4ade80; box-shadow: 0 0 4px rgba(74, 222, 128, 0.5); }
+    .anim-dot-progress { background: #fb923c; box-shadow: 0 0 4px rgba(251, 146, 60, 0.5); }
+    .anim-dot-todo     { background: #f87171; box-shadow: 0 0 4px rgba(248, 113, 113, 0.5); }
     .phones-container { display: flex; gap: 96px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
     .phone-label { font-family: 'SF Mono', 'Menlo', monospace; font-size: 20px; font-weight: 500;
       color: rgba(255,255,255,0.6); background: rgba(30,30,30,0.85); border: 1px solid rgba(255,255,255,0.1);
@@ -4726,21 +4736,22 @@
     <details class="dev-nav-section" data-section="animations">
       <summary class="dev-nav-label"><span class="nav-emoji">✨</span>Animations</summary>
       <div class="dev-nav-group" style="flex-direction:column;gap:4px;">
+        <!-- Status dots: 🟢 done, 🟠 in progress, 🔴 todo. -->
         <!-- One-shot triggers (re-fire on demand) -->
-        <button onclick="replayConnectCelebration()">Replay Connect Burst</button>
-        <button onclick="punchActiveMascot()">Replay State Punch</button>
+        <button onclick="replayConnectCelebration()"><span class="anim-dot anim-dot-done"></span>Replay Connect Burst</button>
+        <button onclick="punchActiveMascot()"><span class="anim-dot anim-dot-done"></span>Replay State Punch</button>
         <!-- Direct entries to screens with hero animations -->
-        <button onclick="showScreen('loading-loop')">Loading Mascot</button>
-        <button onclick="showScreen('switch-network')">Switch Network</button>
-        <button onclick="showScreen('error-404')">404 Mascot</button>
-        <button onclick="devOpenBundle()">Bundle Confirmation</button>
+        <button onclick="showScreen('loading-loop')"><span class="anim-dot anim-dot-progress"></span>Loading Mascot</button>
+        <button onclick="showScreen('switch-network')"><span class="anim-dot anim-dot-todo"></span>Switch Network</button>
+        <button onclick="showScreen('error-404')"><span class="anim-dot anim-dot-todo"></span>404 Mascot</button>
+        <button onclick="devOpenBundle()"><span class="anim-dot anim-dot-todo"></span>Bundle Confirmation</button>
         <!-- State-emote idle loops (live on borrow-connected) -->
-        <button onclick="setBorrowInitial()">Initial · supply pulse</button>
-        <button onclick="setBorrowHealth('ultra-safe')">Ultra Safe · idle loops</button>
-        <button onclick="setBorrowHealth('looking-good')">Looking Good · idle loops</button>
-        <button onclick="setBorrowHealth('getting-risky')">Getting Risky · tremors</button>
-        <button onclick="setBorrowHealth('danger-zone')">Danger Zone · tremors</button>
-        <button onclick="setBorrowHealth('meltdown')">Meltdown · drips/pulses</button>
+        <button onclick="setBorrowInitial()"><span class="anim-dot anim-dot-done"></span>Initial · supply pulse</button>
+        <button onclick="setBorrowHealth('ultra-safe')"><span class="anim-dot anim-dot-done"></span>Ultra Safe · idle loops</button>
+        <button onclick="setBorrowHealth('looking-good')"><span class="anim-dot anim-dot-done"></span>Looking Good · idle loops</button>
+        <button onclick="setBorrowHealth('getting-risky')"><span class="anim-dot anim-dot-done"></span>Getting Risky · tremors</button>
+        <button onclick="setBorrowHealth('danger-zone')"><span class="anim-dot anim-dot-done"></span>Danger Zone · tremors</button>
+        <button onclick="setBorrowHealth('meltdown')"><span class="anim-dot anim-dot-done"></span>Meltdown · drips/pulses</button>
       </div>
     </details>
     <details class="dev-nav-section" data-section="icons">
