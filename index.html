@@ -277,9 +277,15 @@
     .dev-folder > summary:hover { background: rgba(255,255,255,0.08); }
     .dev-folder .folder-items {
       display: flex; flex-direction: column; gap: 4px;
+      align-items: stretch; justify-content: flex-start;
       padding: 6px; background: rgba(255,255,255,0.02);
     }
-    .dev-folder .folder-items button { width: 100%; text-align: left; }
+    .dev-folder .folder-items button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      justify-content: flex-start;
+    }
     .phones-container { display: flex; gap: 96px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
     .phone-label { font-family: 'SF Mono', 'Menlo', monospace; font-size: 20px; font-weight: 500;
       color: rgba(255,255,255,0.6); background: rgba(30,30,30,0.85); border: 1px solid rgba(255,255,255,0.1);
