@@ -286,7 +286,8 @@
       align-items: stretch; justify-content: flex-start;
       padding: 6px; background: rgba(255,255,255,0.02);
     }
-    .dev-folder .folder-items button {
+    .dev-folder .folder-items button,
+    .dev-nav-group[style*="column"] button {
       display: flex !important;
       align-items: center;
       justify-content: flex-start !important;
@@ -7484,12 +7485,6 @@ function _markStateBtnActive(fn, level) {
   if (folder) { folder.open = true; folder.classList.add('has-active'); }
 }
 function setBorrowHealth(level) {
-  // Suppress the wallet-connect celebration when entering borrow-connected
-  // through a dev-nav state preset — that animation belongs to the real
-  // connect flow, not to design-preview state-change shortcuts. Reads as
-  // "the festejo plays on every state change in Op B" otherwise (since
-  // the flag would be false on the first dev-nav click after reload).
-  showScreen._celebratedConnect = true;
   showScreen('borrow-connected');
   // Mirror the preset to phones B and C so multi-phone views stay in sync.
   ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('borrow-connected' + sfx, level); });
@@ -7523,11 +7518,8 @@ function toggleNoFundsBanner() {
 function setBorrowInitial() {
   // Capture the once-per-session flag BEFORE showScreen flips it. If this
   // is the user's first visit to a -connected screen, showScreen will
-  // auto-fire the celebration on its own — we don't want a manual replay
-  // on top, that'd restart the animation mid-flight. If the flag was
-  // already set (subsequent clicks on Initial), we DO want a manual replay
-  // because showScreen will skip its auto path.
-  var alreadyCelebrated = !!showScreen._celebratedConnect;
+  // showScreen no longer auto-fires the celebration; trigger it manually
+  // here so "Initial" doubles as a quick way to re-watch the connect burst.
   showScreen('borrow-connected');
   ['', '-b', '-c'].forEach(function(sfx) {
     var screenId = 'borrow-connected' + sfx;
@@ -7548,13 +7540,9 @@ function setBorrowInitial() {
     });
   });
   _markStateBtnActive('setBorrowInitial', null);
-  if (alreadyCelebrated) {
-    // showScreen won't fire the burst this time; do it manually so this
-    // entry point doubles as a way to re-watch the connect animation.
-    setTimeout(function() {
-      if (typeof replayConnectCelebration === 'function') replayConnectCelebration();
-    }, 120);
-  }
+  setTimeout(function() {
+    if (typeof replayConnectCelebration === 'function') replayConnectCelebration();
+  }, 120);
 }
 function setModifyHealth(level) {
   showScreen('update');
@@ -7688,26 +7676,12 @@ function showScreen(id) {
   // they don't keep covering the next screen we navigate to.
   document.querySelectorAll('.bundle-modal-overlay.is-open').forEach(function(o) { o.classList.remove('is-open'); });
   if (typeof closeQuickRepay === 'function') closeQuickRepay();
-  // [#5] Wallet-connect celebration — when the user first lands on any
-  // *-connected screen this session, briefly play the sunburst rays burst
-  // across the mascots in the now-active screen, regardless of current
-  // health state. Reads as "kawaii energy" arriving with the wallet. Fires
-  // once per session.
-  if (/-connected(?:-[bc])?$/.test(id) && !showScreen._celebratedConnect) {
-    showScreen._celebratedConnect = true;
-    // Defer until after the screen is marked active (further down this
-    // function) and the layout has settled, so we only celebrate on mascot
-    // areas inside the now-visible screen.
-    setTimeout(function() {
-      var newScreen = document.getElementById(id);
-      if (!newScreen) return;
-      newScreen.querySelectorAll('.mascot-area').forEach(function(area) {
-        area.classList.add('is-celebrating');
-        // Matches the 2.6s celebrate keyframe so it lands on its own.
-        setTimeout(function() { area.classList.remove('is-celebrating'); }, 2600);
-      });
-    }, 60);
-  }
+  // (Wallet-connect celebration auto-trigger removed.) The big sunburst
+  // burst was firing on every "first visit" to any *-connected screen,
+  // including dev-nav state-preset clicks (Ultra Safe, Looking Good, etc.)
+  // which read as "festejo on every state change". The animation is now
+  // purely manual: only the "Replay Connect Burst" button in the dev-nav
+  // Animations section triggers it via replayConnectCelebration().
   // Save the outgoing screen's scroll position so navigating back (or between
   // sibling screens like the health-state variants of borrow-connected/update)
   // doesn't yank the viewport to the top and hide the mascot on mobile.
