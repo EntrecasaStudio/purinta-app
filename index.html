@@ -113,12 +113,15 @@
       40% { opacity: 1; transform: scale(1); }
     }
     /* Turntable mascot — 13-frame strip (front → left → back), JS-driven so the
-       reverse half (back → right → front) reuses the same frames mirrored. */
+       reverse half (back → right → front) reuses the same frames mirrored.
+       v5 SVG (2026-05-06) optimised through SVGO: 161 KB → 94 KB on disk
+       (41.6% reduction); ~33 KB gzipped (vs 60 KB gzipped of the previous
+       v3). Strip frame height 144px (viewBox 0 0 5335 288). */
     .loading-screen-overlay .loading-mascot {
-      width: 200px; height: 143px;
-      background-image: url('assets/turntable-v3/Mascot-Loading-2026_04_28.svg');
+      width: 200px; height: 144px;
+      background-image: url('assets/turntable-v5/Mascot-Loading-v5.svg');
       background-repeat: no-repeat;
-      background-size: auto 143px;
+      background-size: auto 144px;
       background-position: 0 0;
       will-change: background-position, transform;
     }
@@ -9121,7 +9124,7 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
 // index 12 = back. We complete the full 360° by ping-ponging the index and
 // mirroring the return leg so it reads as the mascot's other side.
 var LOADING_MASCOT_FRAMES = [5164, 4696, 4227, 3792, 3374, 2988, 2626, 2283, 1924, 1532, 1114, 661, 176];
-var LOADING_MASCOT_SCALE = 143 / 287; // native viewBox height → display height
+var LOADING_MASCOT_SCALE = 144 / 288; // native viewBox height → display height
 var LOADING_MASCOT_DISPLAY_W = 200;
 
 // Drives the ping-pong spin on a .loading-mascot element. Returns a stop fn.
