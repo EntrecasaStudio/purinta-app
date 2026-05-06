@@ -4648,13 +4648,22 @@
       gap: var(--ds-space-12);
       padding-left: var(--ds-space-8);
     }
-    /* Pct buttons: keep Op A's 42 px height (no compact override). Only
-       margin/gap tightens. */
+    /* Pct buttons: shrink for compact-borrow. Text drops from --ds-sm (16)
+       to --ds-xs (13), height from 42 → 36, so the row contributes ~6 px
+       less to total widget height. 36 px stays above WCAG 2.5.5 AA
+       (24 px target minimum) but is below Material's 48 px recommendation
+       — acceptable trade-off given the compact-borrow brief. */
     #phone-b:not(.desktop) #borrow-b .pct-buttons,
     #phone-b:not(.desktop) #borrow-connected-b .pct-buttons,
     #phone-b:not(.desktop) #update-b .pct-buttons {
       margin-bottom: var(--ds-space-8);
       gap: var(--ds-space-6);
+    }
+    #phone-b:not(.desktop) #borrow-b .pct-btn,
+    #phone-b:not(.desktop) #borrow-connected-b .pct-btn,
+    #phone-b:not(.desktop) #update-b .pct-btn {
+      font-size: var(--ds-xs);
+      height: 36px;
     }
     /* Token-select pill: keep Op A's 46 px height. */
     /* Slider divider: 16 px top/bottom (4 px more than the previous 12 — gives
