@@ -1395,21 +1395,30 @@
        fill-circle treatment but in the Error palette: pink disc + warning
        icon. The label stays primary (not secondary like .is-done) so the
        failed action reads as the focal point of the modal. */
-    /* Step error treatment — soft pink disc with a white X glyph. Colours
-       per Figma 2537-290751 (final): solid Error/100 fill, no border,
-       white X. Lighter + borderless vs the previous reference (which used
-       Error/200 + 1.5 px Error/100 border). */
+    /* Step error treatment — soft pink disc with the exact 2.5px-stroke X
+       from Figma 2537-290747 (Steps component, error step). Disc: solid
+       Error/100, no border. Glyph: 16×16 inline SVG, viewBox 10.5×10.5,
+       2 round-capped strokes in Error/600 (currentColor) — matches the
+       Figma asset 1:1. The label drops to Neutral/700 in this final
+       state (per Figma "Execute the bundle" label colour). */
     .bundle-step.is-error .bundle-step-num {
       background: var(--error-100);
       border-color: transparent;
-      color: white;
-      font-size: 14px; line-height: 1;
+      color: var(--error-600);
     }
-    .bundle-step.is-error .bundle-step-num i {
-      display: flex; align-items: center; justify-content: center;
-      width: 100%; height: 100%; color: inherit; font-weight: 700;
+    /* Render the X at its intrinsic 10.5×10.5 (viewBox + stroke-cap spill)
+       so the 2.5 stroke lands at 2.5 CSS px — same on-screen weight as the
+       check icon (which has a 1:1 viewBox at 16). Sizing it to 16 would
+       scale up by ~1.52× and make the cross noticeably fatter than the
+       check; this keeps the two states visually paired. */
+    .bundle-step.is-error .bundle-step-num svg {
+      width: 10.5px; height: 10.5px; display: block;
     }
-    .bundle-step.is-error .bundle-step-text { color: var(--text-primary); font-weight: 500; }
+    /* Once a step has errored the label drops back to the resting weight
+       at Neutral/700 — the active state's fake-bold (text-stroke) goes
+       away with .is-active, and the error banner below carries the
+       emphasis, not the step label. */
+    .bundle-step.is-error .bundle-step-text { color: var(--neutral-700); font-weight: 400; }
     /* Error message uses the SAME .bundle-message component as ready /
        processing / done — pink theme overrides Error/50 bg + Error/400
        border, body text aligned left like every other state. */
@@ -1480,6 +1489,12 @@
     /* Mobile / phone-b/c default: column wrappers flatten so children stack
        vertically as before. Display: contents removes the wrapper from layout. */
     .bundle-modal-col, .bundle-modal-divider { display: contents; }
+    /* Mobile only: mascot sits ABOVE the Supply/Repay numbers. With
+       display: contents on the wrappers, every grandchild is a direct
+       flex item of .bundle-modal-dialog, so order: -1 lifts the mascot
+       to the top of the column. Desktop overrides this with order: 0
+       below so the row layout (values | divider | actions) is preserved. */
+    .phone:not(.desktop) .bundle-modal-mascot { order: -1; }
     /* Desktop: 720px dialog with horizontal split — values | divider | actions */
     .phone.desktop .bundle-modal-dialog {
       max-width: 720px; padding: 48px; border-radius: 56px;
@@ -1569,32 +1584,53 @@
        · Numbers stay the same size and stacked layout across all states.
        · Desktop reverts to the column rows + horizontal "&" lines (mobile-style)
          since the new design treats desktop and mobile identically. */
-    /* Two mascot variants: default (happy) → swaps to done (bills) on .is-done */
-    /* Two mascot variants: default (Begin — happy, no bills) shows in the
-       ready/processing states. The done (Confirmed — PEPE with bills)
-       mascot appears in BOTH .is-done and .is-error per Figma 2537-290751
-       (the final error spec keeps the same hero illustration; only the
-       stepper + message banner communicate the error). */
+    /* Three mascot variants:
+       · default — Begin (happy, no bills): ready / processing
+       · done    — Confirmed (PEPE with bills): is-done
+       · error   — empty-state mascot mirrored to face right: is-error
+       The error variant reuses the My-Positions-empty illustration
+       (mirrored horizontally) so it reads as a soft "something didn't
+       happen" rather than the celebratory bills hero. */
     .bundle-mascot-default { display: block; }
     .bundle-mascot-done    { display: none; }
-    .bundle-modal-overlay.is-done .bundle-mascot-default,
+    .bundle-mascot-error   { display: none; }
+    .bundle-modal-overlay.is-done  .bundle-mascot-default,
     .bundle-modal-overlay.is-error .bundle-mascot-default { display: none; }
-    .bundle-modal-overlay.is-done .bundle-mascot-done,
-    .bundle-modal-overlay.is-error .bundle-mascot-done { display: block; }
+    .bundle-modal-overlay.is-done  .bundle-mascot-done    { display: block; }
+    .bundle-modal-overlay.is-error .bundle-mascot-error   { display: block; }
     /* Mascot container always open in option A, no max-height collapse */
     #phone-a .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
     #phone-b .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
     /* Mascot heights for option A — height drives the size, width auto-scales
-       by SVG aspect. Confirmed (step 3) is larger than Begin to celebrate
-       the success state. */
-    /* Both mascot variants render at the same intrinsic height so the modal
-       doesn't grow or shift on Done. Container is pinned (above) for the same
-       reason — swap is purely artwork, layout is locked. */
+       by SVG aspect. The Confirmed (done) artwork has more visual presence
+       than Begin (legs / arms / falling bills), so we render Begin 15% smaller
+       to balance the two visually. Container stays pinned at 131px in both
+       cases (centered via flex), so the swap is purely artwork — no layout
+       shift. */
     #phone-a .bundle-mascot-img  { width: auto; height: 131px; max-height: 131px; }
     #phone-b .bundle-mascot-img { width: auto; height: 131px; max-height: 131px; }
+    /* Initial (Begin) — 15% smaller than the done state. */
+    #phone-a .bundle-mascot-default,
+    #phone-b .bundle-mascot-default { height: 111px; max-height: 111px; }
     #phone-a .bundle-mascot-done { height: 131px; }
 
     #phone-b .bundle-mascot-done { height: 131px; }
+    /* Error — empty-state mascot, mirrored so it faces right (toward the
+       error banner / CTA below). Rendered ~10% larger than the done
+       variant (144 vs 131) because the empty-state artwork sits lower in
+       its bbox (legs/feet take more space, head reads smaller); bumping
+       up balances perceived size. The mirror lives on the <img> itself;
+       pop animations are scoped to .bundle-mascot-done so this stays put. */
+    #phone-a .bundle-mascot-error,
+    #phone-b .bundle-mascot-error {
+      width: auto;
+      height: 158px; max-height: 158px;
+      transform: scaleX(-1);
+    }
+    /* Error blob — Error/50 (#FFEDF9) instead of Mint/200 to theme the
+       background to the failure state. Path is a single <path> inside
+       the inline SVG, so a one-line override does it. */
+    .bundle-modal-overlay.is-error .bundle-mascot-blob path { fill: var(--error-50); }
     /* Re-fire the entry-pop on the done variant when it appears — same
        gelatinous rebound as option B, reinforcing the swap moment. The default
        mascot (already on screen) doesn't animate. */
@@ -4570,7 +4606,10 @@
     #phone-b:not(.desktop) #borrow-b .borrow-header,
     #phone-b:not(.desktop) #borrow-connected-b .borrow-header,
     #phone-b:not(.desktop) #update-b .borrow-header {
-      margin-bottom: var(--ds-space-8);
+      /* +6 over the previous --ds-space-8 — pushes the slider card
+         (and everything below it) 6 px lower. --ds-space-14 keeps us
+         on the DS primitive scale. */
+      margin-bottom: var(--ds-space-14);
       min-height: 0;
     }
 
@@ -4625,14 +4664,15 @@
     #phone-b:not(.desktop) #update-b .slider-divider {
       margin: var(--ds-space-16) 0;
     }
-    /* Mascot area: --ds-7xl + --ds-space-8 (119 + 8 = 127 px), padding
-       16 top/sides, 24 bottom. Same content area as plain --ds-7xl @ 16
-       padding, but the +8 padding-bottom drops the text further from
-       the frame's lower edge. Top margin matches Op A's 20. */
+    /* Mascot area: --ds-7xl + --ds-space-24 (119 + 24 = 143 px), padding
+       16 top/sides, 24 bottom. The +16 vs the previous --ds-space-8 height
+       extends the frame upward (mascot is justify-content: flex-end so it
+       stays pinned to the bottom; the extra 16 goes above it as breathing
+       room around the head). Top margin matches Op A's 20. */
     #phone-b:not(.desktop) #borrow-b .mascot-area,
     #phone-b:not(.desktop) #borrow-connected-b .mascot-area,
     #phone-b:not(.desktop) #update-b .mascot-area {
-      height: calc(var(--ds-7xl) + var(--ds-space-8));
+      height: calc(var(--ds-7xl) + var(--ds-space-24));
       padding: var(--ds-space-16) var(--ds-space-16) var(--ds-space-24);
       margin-top: var(--ds-space-20);
     }
@@ -6125,6 +6165,7 @@
           <svg class="bundle-mascot-blob" viewBox="0 0 140 108" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M122 17C132 42 114 72 82 85C50 97 16 87 7 62C-3 37 14 42 46 30C78 17 113 -8 122 17Z"/></svg>
           <img class="bundle-mascot-img bundle-mascot-default" src="assets/Purinta-Begin.svg" alt="" aria-hidden="true">
           <img class="bundle-mascot-img bundle-mascot-done" src="assets/Purinta-Confirmed.svg" alt="" aria-hidden="true">
+          <img class="bundle-mascot-img bundle-mascot-error" src="assets/empty-state-mascot.png" alt="" aria-hidden="true">
           <span class="bundle-mascot-sparkle bms-1"></span>
           <span class="bundle-mascot-sparkle bms-2"></span>
           <span class="bundle-mascot-sparkle bms-3"></span>
@@ -7544,29 +7585,36 @@ function runBundleErrorSequence(errorAt) {
   function advance() {
     if (i > 0) {
       var prev = steps[i-1];
+      // The just-completed step. If it's the one we're targeting for the
+      // error, swap to the .is-error treatment (Error/600 X on Error/100
+      // disc) instead of the .is-done check. Either way, drop .is-active
+      // first. The X is the exact 2.5px-stroke Figma asset (2537-290747)
+      // inlined as SVG so it inherits currentColor and scales cleanly.
       prev.classList.remove('is-active');
+      if ((i - 1) === errorAt) {
+        prev.classList.add('is-error');
+        var fn = prev.querySelector('.bundle-step-num');
+        if (fn) fn.innerHTML =
+          '<svg width="16" height="16" viewBox="0 0 10.5 10.5" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+            '<path d="M9.25 1.25L1.25 9.25" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '<path d="M1.25 1.25L9.25 9.25" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '</svg>';
+        overlay.classList.remove('is-processing');
+        overlay.classList.add('is-error');
+        return; /* stop the sequence — error banner + Try again CTA take over */
+      }
       prev.classList.add('is-done');
       var pn = prev.querySelector('.bundle-step-num');
       if (pn) pn.innerHTML = '<i class="ph ph-check"></i>';
-    }
-    if (i === errorAt) {
-      // Fail this step — flip to error state. White X glyph on the pink
-      // disc per Figma 2537-250952 (matching the .is-done filled-circle
-      // visual language but with the error palette + X).
-      var fail = steps[i];
-      fail.classList.remove('is-active');
-      fail.classList.add('is-error');
-      var fn = fail.querySelector('.bundle-step-num');
-      if (fn) fn.innerHTML = '<i class="ph-bold ph-x"></i>';
-      overlay.classList.remove('is-processing');
-      overlay.classList.add('is-error');
-      return;
     }
     if (i >= steps.length) {
       overlay.classList.remove('is-processing');
       overlay.classList.add('is-done');
       return;
     }
+    // Walk into the next step's active state — same cream-disc + dot
+    // treatment as the normal flow, so the error step ALSO gets the
+    // "in progress" beat before failing.
     steps[i].classList.add('is-active');
     i++;
     setTimeout(advance, 1400);
@@ -8848,7 +8896,11 @@ function parseV2Emote(svgString, emoteKey) {
         // If Op B was already initialized BEFORE V2 finished loading, phone-b
         // was cloned with the old <object> mascots. Re-run initPhoneB now so
         // it re-clones phone-a's freshly V2-fied DOM.
-        if (localStorage.getItem('purinta-opt') === 'b' && typeof initPhoneB === 'function') {
+        // Includes 'ab' mode — without it, A+B reload leaves phone-b with
+        // the pre-V2 clone and the mascot never appears until the user
+        // switches to B-only and reloads (re-firing the boot path).
+        var _optAtV2Ready = localStorage.getItem('purinta-opt');
+        if ((_optAtV2Ready === 'b' || _optAtV2Ready === 'ab') && typeof initPhoneB === 'function') {
           var wrapB = document.getElementById('wrap-b');
           if (wrapB && !wrapB.classList.contains('hidden')) initPhoneB();
         }
