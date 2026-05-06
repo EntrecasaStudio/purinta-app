@@ -6411,16 +6411,32 @@ function initPhoneB() {
   // without arms/legs because the slot-mask in basic-money emote couldn't
   // resolve.
   var raw = phoneA.innerHTML;
+  // IDs defined OUTSIDE the phones (in the body's shared <svg><defs>):
+  // gradient/clipPath/etc. that are shared across phones. Don't suffix
+  // references to these — there's no -b copy in phone-b's subtree, so the
+  // suffix would dangle and the gradient/clip would fail to render
+  // (e.g. ultra-safe sunburst rays missing because url(#mascot-sunburst-
+  // vignette-b) doesn't resolve to anything).
+  var SHARED_DEF_IDS = new Set();
+  document.querySelectorAll('body > svg > defs > [id]').forEach(function(el) {
+    SHARED_DEF_IDS.add(el.id);
+  });
   var seenIds = new Set();
   var idRe = /\bid="([^"]+)"/g;
   var idMatch;
   while ((idMatch = idRe.exec(raw)) !== null) seenIds.add(idMatch[1]);
   seenIds.forEach(function(id) {
+    if (SHARED_DEF_IDS.has(id)) return;
     var esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     raw = raw.replace(new RegExp('\\bid="' + esc + '"', 'g'), 'id="' + id + '-b"');
     raw = raw.replace(new RegExp('url\\(#' + esc + '\\)', 'g'), 'url(#' + id + '-b)');
     raw = raw.replace(new RegExp('(\\b(?:xlink:)?href=)"#' + esc + '"', 'g'), '$1"#' + id + '-b"');
   });
+  // Even when the shared IDs aren't in seenIds (because they only appear as
+  // `url(#X)` references inside phoneA, never as `id="X"` in its subtree),
+  // we still need to ensure their references DON'T get suffixed. The loop
+  // above already handles them by skipping seenIds members; refs to
+  // non-defined-in-A ids weren't candidates for suffixing in the first place.
   phoneB.innerHTML = raw;
   // Reset .active flags; mirror phone-a's currently active screen.
   phoneB.querySelectorAll('.screen').forEach(function(s) {
