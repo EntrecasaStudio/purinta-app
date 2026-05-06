@@ -9225,9 +9225,10 @@ function playLoadingIntro(phone) {
   var savedBp = parseInt(localStorage.getItem('purinta-bp'));
   if (savedBp) setBreakpoint(savedBp); else setBreakpoint(360, false);
   var savedOpt = localStorage.getItem('purinta-opt');
-  // Migrate legacy combo modes (`ab`, `abc`) to the new 3-mode system.
-  if (savedOpt === 'ab' || savedOpt === 'abc') savedOpt = 'a';
-  if (savedOpt && ['a', 'b', 'c'].indexOf(savedOpt) !== -1) {
+  // Migrate stale `abc` (3-phone preview from before phone-c retired)
+  // back to single A. `ab` is now a first-class mode (A+B comparison).
+  if (savedOpt === 'abc') savedOpt = 'a';
+  if (savedOpt && ['a', 'b', 'ab', 'c'].indexOf(savedOpt) !== -1) {
     setOption(savedOpt, false);
   }
   // Persist dev-nav section collapse state across reloads. Each
