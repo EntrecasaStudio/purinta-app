@@ -2620,14 +2620,19 @@
        `.is-celebrating` class persists for the entire animation; the
        element ends naturally at the 100% keyframe (scale 0, opacity 0)
        and matches the rest state without needing a follow-up transition. */
+    /* Entry: bouncy in to peak (1.55) by 14%. Sustain near-peak through
+       50% so the artwork reads. THEN single monotonic shrink+fade from
+       55% → 100% — no sub-1.0 wobble on the way out. The previous
+       keyframe dipped through scale 0.92 → 0.65 → 0 with opacity 0.7 →
+       0.3 → 0, which paired with the (0.4, 1) bezier on exit created a
+       perceptible "stall" at sub-1.0 scales where the artwork stayed
+       visible an extra beat before disappearing. */
     @keyframes blob-sunburst-celebrate {
       0%       { transform: scale(0)    rotate(-18deg); opacity: 0; }
       14%      { transform: scale(1.55) rotate(0deg);   opacity: 1; }
       28%      { transform: scale(1.25) rotate(10deg);  opacity: 1; }
-      48%      { transform: scale(1.15) rotate(-3deg);  opacity: 1; }
-      62%      { transform: scale(1.08) rotate(0deg);   opacity: 0.95; }
-      78%      { transform: scale(0.92) rotate(0deg);   opacity: 0.7; }
-      90%      { transform: scale(0.65) rotate(0deg);   opacity: 0.3; }
+      48%      { transform: scale(1.10) rotate(-3deg);  opacity: 1; }
+      55%      { transform: scale(1.00) rotate(0deg);   opacity: 0.95; }
       100%     { transform: scale(0)    rotate(0deg);   opacity: 0; }
     }
     @keyframes blob-celebrate-flash {
@@ -2637,14 +2642,41 @@
       90%      { opacity: 0.6; }
       100%     { opacity: 0.4; }
     }
-    .mascot-area.is-celebrating .blob-sunburst {
-      /* `cubic-bezier(0.5, 1.4, 0.4, 1)` — overshoot on the in-bounce, eased
-         landing on the way out. Less aggressive on the exit than the
-         previous (.34, 1.56, .64, 1) which was kicking back during the
-         fade-out and reading as a snap. */
-      animation: blob-sunburst-celebrate 2.6s cubic-bezier(0.5, 1.4, 0.4, 1) forwards;
+    /* Connect-burst custom backdrop. Replaces the ambient ultra-safe
+       sunburst during the wallet-connect celebration only. The asset is
+       designed for this moment specifically (richer rays + decoration);
+       the simpler Mascot-Sunburst.svg keeps doing the ultra-safe ambient
+       duty.
+
+       Lives at the same level as .blob-sunburst inside .mascot-blob and
+       inherits the parent's blob-celebrate-flash brightness pulse. Hidden
+       at rest (scale 0 / opacity 0); the burst keyframe scales it in to
+       1.55× peak and fades it out to invisible by 100%, same shape as
+       the old rays' burst so the existing JS toggle (.is-celebrating
+       class for 2.6 s) drives both equally. */
+    .connect-burst-bg {
+      transform: scale(0);
       transform-box: view-box;
       transform-origin: 75px 75px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .mascot-area.is-celebrating .connect-burst-bg {
+      /* Bezier `(0.45, 1.4, 0.55, 0.9)` — overshoot on entry preserved,
+         exit lands at y=0.9 (instead of 1) so the curve doesn't decelerate
+         into the final keyframe. With the old (0.4, 1) the exit eased
+         AGAINST a 0 keyframe and visibly stalled near the end. */
+      animation: blob-sunburst-celebrate 2.2s cubic-bezier(0.45, 1.4, 0.55, 0.9) forwards;
+      transform-box: view-box;
+      transform-origin: 75px 75px;
+    }
+    /* During the connect-burst, hide the ambient sunburst so the new
+       backdrop owns the moment. Without this, ultra-safe + Replay Connect
+       Burst would render both layers at once. !important required to beat
+       `.mascot-area.ultra-safe .blob-sunburst { transform: scale(1); opacity: 1 }`. */
+    .mascot-area.is-celebrating .blob-sunburst {
+      opacity: 0 !important;
+      transform: scale(0) !important;
     }
     .mascot-area.is-celebrating .mascot-blob {
       animation: blob-celebrate-flash 2.6s ease-out forwards;
@@ -2743,15 +2775,14 @@
       animation: blob-meltdown-pulse 9.6s ease-in-out infinite;
       animation-play-state: paused;
     }
-    /* Slow scale pulse 100% → 125% — heavy/exhausted heartbeat read.
-       Capped at 1.25x (down from the original 1.8x) because animating
-       scale on an `<image>` of a vector SVG re-rasterizes on iOS Safari
-       and Mali-G52 GPUs at every cycle past the cached size. 1.25x keeps
-       the emotional swell with ~30% the texture-memory peak — critical
-       for low-end Android in low-bandwidth markets. */
+    /* Slow scale pulse 100% → 150% — heavy/exhausted heartbeat read.
+       Compromise between the original 1.8x (visually perfect but heavy
+       on Mali-G52 texture memory) and 1.25x (perf-safe but visually
+       imperceptible — the bg felt static). 1.5x reads as a clear swell
+       at ~50% the texture-memory peak of 1.8x. */
     @keyframes blob-meltdown-pulse {
       0%, 100% { transform: scale(1); }
-      50%      { transform: scale(1.25); }
+      50%      { transform: scale(1.5); }
     }
     /* Slower than the sunburst shimmer so the two states read distinctly. */
     .blob-meltdown-bg-shimmer {
@@ -4894,7 +4925,7 @@
           <summary>Borrow</summary>
           <div class="folder-items">
             <button onclick="showScreen('borrow')">Borrow</button>
-            <button onclick="showScreen('borrow-connected')">Borrow+</button>
+            <button onclick="enterBorrowConnected()">Borrow+</button>
             <button onclick="setBorrowInitial()">Initial</button>
             <button onclick="setBorrowHealth('ultra-safe')">Ultra Safe</button>
             <button onclick="setBorrowHealth('looking-good')">Looking Good</button>
@@ -5376,7 +5407,7 @@
 
         <div class="borrow-col-sidebar">
         <div class="mascot-area happy">
-          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
+          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="connect-burst-bg"><image href="assets/00-Connect-Burst-bg.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
           <img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="Purinta with money" style="pointer-events:none;">
           <span class="mascot-text">Connect your wallet to start borrowing</span>
         </div>
@@ -5530,7 +5561,7 @@
             <svg class="sp6" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#C8E4B0"/></svg>
             <svg class="sp7" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
           </div>
-          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
+          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="connect-burst-bg"><image href="assets/00-Connect-Burst-bg.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
           <object id="health-emote" class="mascot-illustration" data="assets/v2-emote-00-basic-money.svg" type="image/svg+xml" style="pointer-events:none;"></object>
           <span id="health-text" class="mascot-text">Supply PEPE and start printing</span>
         </div>
@@ -6038,7 +6069,7 @@
         <div class="positions-title">My Positions</div>
       </div>
       <div class="mascot-area happy" style="margin-top:8px; width:100%; border-radius:32px;">
-        <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
+        <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="connect-burst-bg"><image href="assets/00-Connect-Burst-bg.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
         <img class="mypositions-blob-img" src="assets/mypositions-blob.svg" alt="" aria-hidden="true">
         <img class="mascot-illustration" src="assets/empty-state-mascot.png" alt="Purinta sad - no active positions" style="pointer-events:none;">
       </div>
@@ -6216,7 +6247,7 @@
             <svg class="sp6" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#C8E4B0"/></svg>
             <svg class="sp7" viewBox="0 0 19 19" fill="none"><path d="M8.88 2.28c.14-.38.67-.38.82 0l1.78 4.73c.04.11.13.2.24.25l4.58 1.88c.36.15.36.66 0 .81l-4.58 1.88c-.11.05-.2.13-.24.25l-1.78 4.73c-.14.38-.68.38-.82 0L7.09 12.08c-.04-.11-.13-.2-.24-.25L2.27 9.95c-.36-.15-.36-.66 0-.81l4.58-1.88c.11-.05.2-.13.24-.25l1.79-4.73z" fill="#9ECF84"/></svg>
           </div>
-          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
+          <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="connect-burst-bg"><image href="assets/00-Connect-Burst-bg.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
           <object id="health-emote-modify" class="mascot-illustration" data="assets/Emote-01-Ultra-safe.svg" type="image/svg+xml" style="pointer-events:none;"></object>
           <span id="health-text-modify" class="mascot-text">Ultra safe! Maximum protection</span>
         </div>
@@ -7828,6 +7859,19 @@ function toggleNoFundsBanner() {
     if (row && typeof selectToken === 'function') selectToken(row);
   });
 }
+// Borrow+ entry: simulates the wallet just connecting. Same celebration
+// beat as setBorrowInitial — this is the OTHER path the user takes to
+// see the connect-burst (Initial pre-sets the sliders to 0 + happy state;
+// Borrow+ leaves whatever state is current). Both should fire the burst
+// because both represent the moment of connection. State buttons (Ultra
+// Safe / Looking Good / etc.) intentionally do NOT fire it.
+function enterBorrowConnected() {
+  showScreen('borrow-connected');
+  setTimeout(function() {
+    if (typeof replayConnectCelebration === 'function') replayConnectCelebration();
+  }, 120);
+}
+
 // Initial state on borrow-connected: wallet is connected but no supply yet.
 // Sliders at 0, mascot in "happy" state with the "Supply X and start
 // printing" line, supply slider thumb pulses to draw the eye, and the
@@ -8268,7 +8312,7 @@ function populateSkeletonBorrow(suffix) {
     mascotArea.className = 'mascot-area happy';
     mascotArea.removeAttribute('id');
     mascotArea.innerHTML =
-      '<div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>' +
+      '<div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="connect-burst-bg"><image href="assets/00-Connect-Burst-bg.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>' +
       '<img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="" style="pointer-events:none;">' +
       textHtml;
   }
@@ -8343,7 +8387,7 @@ function populateSkeletonUpdate(suffix) {
     mascotArea.className = 'mascot-area happy';
     mascotArea.removeAttribute('id');
     mascotArea.innerHTML =
-      '<div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>' +
+      '<div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="connect-burst-bg"><image href="assets/00-Connect-Burst-bg.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>' +
       '<img class="mascot-illustration" src="assets/v2-emote-00-basic-money.svg" alt="" style="pointer-events:none;">' +
       textHtml;
   }
@@ -9278,6 +9322,19 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
   var text = document.getElementById(textId);
   if (!area || !text) return;
   var screen = document.getElementById(screenId);
+
+  // Cancel any in-flight connect-burst before changing state. mascot-celebrate
+  // runs for 1.2 s; if the user moves to a health state mid-flight, the
+  // animation continues with the new (larger) ultra-safe size and reads as
+  // "mascot grows then shrinks". Clear .is-celebrating + its cleanup timer
+  // so the new state lands clean.
+  if (area.classList.contains('is-celebrating')) {
+    area.classList.remove('is-celebrating');
+    if (area._celebrateTimer) {
+      clearTimeout(area._celebrateTimer);
+      area._celebrateTimer = null;
+    }
+  }
 
   // [#7] Exit gesture — if we're leaving ultra-safe, briefly tag the area so
   // the rays can collect back into the blob shape on their way out. Cleaned
