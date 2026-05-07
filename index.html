@@ -2600,14 +2600,19 @@
        `.is-celebrating` class persists for the entire animation; the
        element ends naturally at the 100% keyframe (scale 0, opacity 0)
        and matches the rest state without needing a follow-up transition. */
+    /* Entry: bouncy in to peak (1.55) by 14%. Sustain near-peak through
+       50% so the artwork reads. THEN single monotonic shrink+fade from
+       55% → 100% — no sub-1.0 wobble on the way out. The previous
+       keyframe dipped through scale 0.92 → 0.65 → 0 with opacity 0.7 →
+       0.3 → 0, which paired with the (0.4, 1) bezier on exit created a
+       perceptible "stall" at sub-1.0 scales where the artwork stayed
+       visible an extra beat before disappearing. */
     @keyframes blob-sunburst-celebrate {
       0%       { transform: scale(0)    rotate(-18deg); opacity: 0; }
       14%      { transform: scale(1.55) rotate(0deg);   opacity: 1; }
       28%      { transform: scale(1.25) rotate(10deg);  opacity: 1; }
-      48%      { transform: scale(1.15) rotate(-3deg);  opacity: 1; }
-      62%      { transform: scale(1.08) rotate(0deg);   opacity: 0.95; }
-      78%      { transform: scale(0.92) rotate(0deg);   opacity: 0.7; }
-      90%      { transform: scale(0.65) rotate(0deg);   opacity: 0.3; }
+      48%      { transform: scale(1.10) rotate(-3deg);  opacity: 1; }
+      55%      { transform: scale(1.00) rotate(0deg);   opacity: 0.95; }
       100%     { transform: scale(0)    rotate(0deg);   opacity: 0; }
     }
     @keyframes blob-celebrate-flash {
@@ -2637,7 +2642,11 @@
       pointer-events: none;
     }
     .mascot-area.is-celebrating .connect-burst-bg {
-      animation: blob-sunburst-celebrate 2.6s cubic-bezier(0.5, 1.4, 0.4, 1) forwards;
+      /* Bezier `(0.45, 1.4, 0.55, 0.9)` — overshoot on entry preserved,
+         exit lands at y=0.9 (instead of 1) so the curve doesn't decelerate
+         into the final keyframe. With the old (0.4, 1) the exit eased
+         AGAINST a 0 keyframe and visibly stalled near the end. */
+      animation: blob-sunburst-celebrate 2.2s cubic-bezier(0.45, 1.4, 0.55, 0.9) forwards;
       transform-box: view-box;
       transform-origin: 75px 75px;
     }
