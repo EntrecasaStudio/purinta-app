@@ -2743,15 +2743,14 @@
       animation: blob-meltdown-pulse 9.6s ease-in-out infinite;
       animation-play-state: paused;
     }
-    /* Slow scale pulse 100% → 125% — heavy/exhausted heartbeat read.
-       Capped at 1.25x (down from the original 1.8x) because animating
-       scale on an `<image>` of a vector SVG re-rasterizes on iOS Safari
-       and Mali-G52 GPUs at every cycle past the cached size. 1.25x keeps
-       the emotional swell with ~30% the texture-memory peak — critical
-       for low-end Android in low-bandwidth markets. */
+    /* Slow scale pulse 100% → 150% — heavy/exhausted heartbeat read.
+       Compromise between the original 1.8x (visually perfect but heavy
+       on Mali-G52 texture memory) and 1.25x (perf-safe but visually
+       imperceptible — the bg felt static). 1.5x reads as a clear swell
+       at ~50% the texture-memory peak of 1.8x. */
     @keyframes blob-meltdown-pulse {
       0%, 100% { transform: scale(1); }
-      50%      { transform: scale(1.25); }
+      50%      { transform: scale(1.5); }
     }
     /* Slower than the sunburst shimmer so the two states read distinctly. */
     .blob-meltdown-bg-shimmer {
@@ -4894,7 +4893,7 @@
           <summary>Borrow</summary>
           <div class="folder-items">
             <button onclick="showScreen('borrow')">Borrow</button>
-            <button onclick="showScreen('borrow-connected')">Borrow+</button>
+            <button onclick="enterBorrowConnected()">Borrow+</button>
             <button onclick="setBorrowInitial()">Initial</button>
             <button onclick="setBorrowHealth('ultra-safe')">Ultra Safe</button>
             <button onclick="setBorrowHealth('looking-good')">Looking Good</button>
@@ -7828,6 +7827,19 @@ function toggleNoFundsBanner() {
     if (row && typeof selectToken === 'function') selectToken(row);
   });
 }
+// Borrow+ entry: simulates the wallet just connecting. Same celebration
+// beat as setBorrowInitial — this is the OTHER path the user takes to
+// see the connect-burst (Initial pre-sets the sliders to 0 + happy state;
+// Borrow+ leaves whatever state is current). Both should fire the burst
+// because both represent the moment of connection. State buttons (Ultra
+// Safe / Looking Good / etc.) intentionally do NOT fire it.
+function enterBorrowConnected() {
+  showScreen('borrow-connected');
+  setTimeout(function() {
+    if (typeof replayConnectCelebration === 'function') replayConnectCelebration();
+  }, 120);
+}
+
 // Initial state on borrow-connected: wallet is connected but no supply yet.
 // Sliders at 0, mascot in "happy" state with the "Supply X and start
 // printing" line, supply slider thumb pulses to draw the eye, and the
