@@ -645,6 +645,20 @@
       width: 100%; height: auto; display: block; position: relative; z-index: 1;
       filter: drop-shadow(0 4px 12px rgba(8, 60, 32, 0.15));
     }
+    /* Animated-mascot host: the hero <img> is the static base shown until the
+       JS-driven mascot replaces it with a live SVG (eyes blinking, breath,
+       sway, hand sway). The animated div sits over the static image and
+       fades in once the script has parsed and rebuilt the SVG groups. */
+    .hero-mascot.mascot-anim-host > .mascot-static {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: contain; z-index: 1;
+      transition: opacity 0.5s ease-out;
+    }
+    .hero-mascot.mascot-anim-host > .mascot-animated {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      opacity: 0; z-index: 1;
+      transition: opacity 0.5s ease-out 0.1s;
+    }
     /* Organic blob behind the mascot — thick fluid in zero gravity */
     .hero-blob {
       position: absolute;
@@ -1036,7 +1050,12 @@
     /* Bottom navigation bar */
     /* Quick Repay modal (triggered from position cards' "Quick Repay" button) */
     .quick-repay-overlay {
-      position: absolute; inset: 0;    /* scoped to the host phone, not the browser viewport */
+      position: fixed; inset: 0;       /* mobile: viewport-relative so the dialog
+                                         stays centred in the visible viewport,
+                                         not relative to the (potentially long)
+                                         positions scroll content. Desktop
+                                         override below scopes it back inside
+                                         the phone frame for the demo aesthetic. */
       display: none;
       align-items: center; justify-content: center;
       z-index: 10000;
@@ -1045,6 +1064,10 @@
       -webkit-backdrop-filter: var(--scrim-commit-blur);
       padding: 20px;
     }
+    /* Desktop: keep the same viewport-fixed positioning as mobile so the
+       dialog is always centred in the user's visible viewport, even when
+       My Positions has scrolled the phone-frame's content area down past
+       the dialog's natural midpoint. */
     .quick-repay-overlay.is-open { display: flex; animation: qr-fade 180ms ease-out; }
     @keyframes qr-fade { from { opacity: 0; } to { opacity: 1; } }
     .quick-repay-dialog {
@@ -1070,7 +1093,8 @@
       font-size: var(--ds-md);
     }
     .phone.desktop .quick-repay-close { top: 32px; right: 32px; }
-    .phone.desktop .quick-repay-close:hover { background: var(--cream-100); color: var(--text-primary); }
+    .phone.desktop .quick-repay-close:hover { background: var(--mint-100); color: var(--green-600); }
+    .phone:not(.desktop) .quick-repay-close:active { background: var(--mint-100); color: var(--green-600); }
     .quick-repay-mascot {
       width: 96px; height: 96px;
       border-radius: 50%;
@@ -1166,7 +1190,8 @@
       font-size: var(--ds-md);
     }
     .phone.desktop .bundle-modal-close { top: 32px; right: 32px; }
-    .phone.desktop .bundle-modal-close:hover { background: var(--cream-100); color: var(--text-primary); }
+    .phone.desktop .bundle-modal-close:hover { background: var(--mint-100); color: var(--green-600); }
+    .phone:not(.desktop) .bundle-modal-close:active { background: var(--mint-100); color: var(--green-600); }
     /* Mascot appears only on Done — the celebration moment. Hidden by default
        (max-height:0); on .is-done grows to 96px with a spring-in pop + gentle
        wobble + sparkle burst drifting outward. Modal breathes up around it. */
@@ -1294,7 +1319,7 @@
       }
     }
     .bundle-modal-rows {
-      display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%;
+      display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%;
       transition: gap 720ms cubic-bezier(0.22, 1, 0.36, 1);
     }
     .bundle-row { display: flex; flex-direction: column; align-items: center; gap: 2px; }
@@ -1561,7 +1586,7 @@
        .is-stacked on .bundle-modal-rows. Switch to column with mobile-style
        horizontal lines flanking the "&". */
     .phone.desktop .bundle-modal-rows.is-stacked {
-      flex-direction: column; gap: 8px;
+      flex-direction: column; gap: 12px;
     }
     .phone.desktop .bundle-modal-rows.is-stacked .bundle-sep {
       width: 100%; height: 20px; max-height: 20px; padding: 0;
@@ -1811,11 +1836,23 @@
     }
     .close-btn {
       width: 32px; height: 32px; border-radius: 50%; border: none;
-      background: transparent; cursor: pointer; font-size: 24px;
+      background: transparent; cursor: pointer;
       color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
       transition: all 0.2s;
+      padding: 0;
     }
-    .close-btn:hover { background: var(--mint-100); color: var(--green-600); -webkit-text-stroke: 0.5px currentColor; }
+    .phone.desktop .close-btn:hover { background: var(--mint-100); color: var(--green-600); }
+    .phone:not(.desktop) .close-btn:active { background: var(--mint-100); color: var(--green-600); }
+    /* Reusable Figma close X (32×32 frame, 2px stroke). Uses mask-image so the
+       icon colour follows currentColor on its host button — same SVG file is
+       reused on every modal close + the Modify-Position close-btn, with the
+       button's own :hover rules driving any colour transitions. */
+    .close-icon {
+      display: block; width: 32px; height: 32px;
+      background-color: currentColor;
+      -webkit-mask: url('assets/icon-close-32.svg') no-repeat center / 32px 32px;
+              mask: url('assets/icon-close-32.svg') no-repeat center / 32px 32px;
+    }
     .token-select-wrap {
       position: relative; z-index: 20; align-self: center;
       width: 184px; height: 46px;
@@ -4512,7 +4549,8 @@
       font-size: var(--ds-md);
     }
     .phone.desktop .switch-network-close { top: 32px; right: 32px; }
-    .phone.desktop .switch-network-close:hover { background: var(--cream-100); color: var(--text-primary); }
+    .phone.desktop .switch-network-close:hover { background: var(--mint-100); color: var(--green-600); }
+    .phone:not(.desktop) .switch-network-close:active { background: var(--mint-100); color: var(--green-600); }
     /* Illustration is intentionally NOT square (208 × 171, ratio ~1.217)
        and stays the same size on both breakpoints per Figma node 1995-206305. */
     .switch-network-mascot {
@@ -4863,6 +4901,8 @@
       <summary class="dev-nav-label"><span class="nav-emoji">✨</span>Animations</summary>
       <div class="dev-nav-group" style="flex-direction:column;gap:4px;">
         <!-- Status dots: 🟢 done, 🟠 in progress, 🔴 todo. -->
+        <!-- Hero idle loop (lives on homepage + homepage-connected) -->
+        <button onclick="goHome()"><span class="anim-dot anim-dot-progress"></span>Home Mascot · breath/blink</button>
         <!-- One-shot triggers (re-fire on demand) -->
         <button onclick="replayConnectCelebration()"><span class="anim-dot anim-dot-done"></span>Replay Connect Burst</button>
         <button onclick="punchActiveMascot()"><span class="anim-dot anim-dot-done"></span>Replay State Punch</button>
@@ -5028,10 +5068,10 @@
     <div class="hero-wrap reveal-in">
       <div class="hero-section">
         <div class="hero-mascot-wrap">
-          <div class="hero-mascot" id="heroMascot">
+          <div class="hero-mascot mascot-anim-host">
             <div class="hero-blob"><img src="assets/Mascot-Blobs1.svg" alt="" aria-hidden="true"></div>
-            <img id="mascotStatic" src="assets/mascot-base.svg" alt="Purinta-chan" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity 0.5s ease-out; z-index: 1;">
-            <div id="mascotAnimated" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.5s ease-out 0.1s; z-index: 1;"></div>
+            <img class="mascot-static" src="assets/mascot-base.svg" alt="Purinta-chan">
+            <div class="mascot-animated" aria-hidden="true"></div>
           </div>
           <span class="hero-mascot-shadow"></span>
         </div>
@@ -5138,9 +5178,10 @@
     <div class="hero-wrap">
       <div class="hero-section">
         <div class="hero-mascot-wrap">
-          <div class="hero-mascot">
+          <div class="hero-mascot mascot-anim-host">
             <div class="hero-blob"><img src="assets/Mascot-Blobs1.svg" alt="" aria-hidden="true"></div>
-            <img src="assets/mascot-base.svg" alt="Purinta-chan" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;">
+            <img class="mascot-static" src="assets/mascot-base.svg" alt="Purinta-chan">
+            <div class="mascot-animated" aria-hidden="true"></div>
           </div>
           <span class="hero-mascot-shadow"></span>
         </div>
@@ -5991,7 +6032,7 @@
   <div id="switch-network" class="screen">
     <div class="switch-network-scrim"></div>
     <div class="switch-network-card">
-      <button class="switch-network-close" aria-label="Close" onclick="showScreen('homepage')"><img src="assets/icon-close-32.svg" alt="" aria-hidden="true" width="32" height="32"></button>
+      <button class="switch-network-close" aria-label="Close" onclick="showScreen('homepage')"><span class="close-icon" aria-hidden="true"></span></button>
       <img class="switch-network-mascot" src="assets/Graphic-Switch-Network.svg" alt="" aria-hidden="true">
       <h2 class="switch-network-title">Switch your network to Ethereum</h2>
       <p class="switch-network-sub">Purinta's markets are only available on Ethereum</p>
@@ -6072,7 +6113,7 @@
         <div class="borrow-title">
           Modify Position
         </div>
-        <button class="close-btn" aria-label="Close" onclick="showScreen('positions')"><i class="ph-light ph-x"></i></button>
+        <button class="close-btn" aria-label="Close" onclick="showScreen('positions')"><span class="close-icon" aria-hidden="true"></span></button>
       </div>
 
       <div class="slider-section">
@@ -6172,7 +6213,7 @@
   <!-- Bundle modal — Modify Position confirmation (phone-a / Option A only) -->
   <div class="bundle-modal-overlay" id="bundle-modal-overlay" role="dialog" aria-modal="true" aria-hidden="true" onclick="if(event.target===this)closeBundleModal()">
     <div class="bundle-modal-dialog">
-      <button class="bundle-modal-close" onclick="closeBundleModal()" aria-label="Close"><img src="assets/icon-close-32.svg" alt="" aria-hidden="true" width="32" height="32"></button>
+      <button class="bundle-modal-close" onclick="closeBundleModal()" aria-label="Close"><span class="close-icon" aria-hidden="true"></span></button>
       <!-- Two-column layout on desktop: values | divider | mascot+stepper+banner+CTA.
            Wrappers use display: contents on mobile so children flow vertically as before. -->
       <div class="bundle-modal-col bundle-modal-col-values">
@@ -6378,7 +6419,7 @@
   <!-- Quick Repay modal — triggered from the "Quick Repay" button on position cards -->
   <div class="quick-repay-overlay" id="quick-repay-overlay" role="dialog" aria-modal="true" aria-labelledby="qr-amount-text" aria-hidden="true" onclick="if(event.target===this)closeQuickRepay()">
     <div class="quick-repay-dialog">
-      <button class="quick-repay-close" onclick="closeQuickRepay()" aria-label="Close repay dialog"><img src="assets/icon-close-32.svg" alt="" aria-hidden="true" width="32" height="32"></button>
+      <button class="quick-repay-close" onclick="closeQuickRepay()" aria-label="Close repay dialog"><span class="close-icon" aria-hidden="true"></span></button>
       <div class="quick-repay-mascot"><img src="assets/Purinta-Confirmed.svg" alt="" aria-hidden="true"></div>
       <div class="quick-repay-meta">
         <div class="qr-label">Repay</div>
@@ -9309,23 +9350,81 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
   }
   function g(id) { return el('g', { id: id }); }
 
-  var wrapper = document.getElementById('mascotAnimated');
-  var staticImg = document.getElementById('mascotStatic');
-  if (!wrapper) return;
+  var hosts = document.querySelectorAll('.mascot-anim-host');
+  if (!hosts.length) return;
 
+  // Single rAF loop drives every registered instance. New instances push
+  // their step(time) function on init and the loop fan-outs each frame.
+  // Cheaper than one rAF per host and gives a single place to throttle.
+  var TICK_INSTANCES = [];
+  var tickerOn = false;
+  function startTicker() {
+    if (tickerOn) return; tickerOn = true;
+    (function tick(time) {
+      for (var i = 0; i < TICK_INSTANCES.length; i++) TICK_INSTANCES[i](time);
+      requestAnimationFrame(tick);
+    })(performance.now());
+  }
+  // Reduced motion: keep the static base, never register tick / blink.
+  var REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Single fetch shared by every host (homepage + homepage-connected today,
+  // and any future sibling that opts in via .mascot-anim-host). Keeps load
+  // cost the same as the old single-instance script.
+  var svgTextCache = null;
+  var pendingCbs = [];
   function loadSVG(callback) {
+    if (svgTextCache) { callback(svgTextCache); return; }
+    pendingCbs.push(callback);
+    if (pendingCbs.length > 1) return;
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'assets/mascot-base.svg', true);
-    xhr.onload = function() { if (xhr.status === 200 || xhr.status === 0) callback(xhr.responseText); };
-    xhr.onerror = function() {
-      /* fallback: use the static img's SVG if XHR fails */
-      if (staticImg) { fetch(staticImg.src).then(function(r){return r.text();}).then(callback).catch(function(){}); }
+    xhr.onload = function() {
+      if (xhr.status === 200 || xhr.status === 0) {
+        svgTextCache = xhr.responseText;
+        var queue = pendingCbs.slice(); pendingCbs.length = 0;
+        queue.forEach(function(cb) { cb(svgTextCache); });
+      }
     };
+    xhr.onerror = function() { pendingCbs.length = 0; };
     xhr.send();
   }
 
-  loadSVG(function(text) {
+  // Two hosts in the same document → SVG internal IDs (defs / gradients /
+  // clip-path) collide and url(#X) resolves to the first match only,
+  // breaking the second instance's masks. Suffix every id + reference per
+  // instance so each host's SVG references its own definitions.
+  function uniquifyIds(svgEl, suffix) {
+    var temp = document.createElement('div');
+    temp.appendChild(svgEl);
+    var html = temp.innerHTML;
+    var ids = new Set(), idRe = /\bid="([^"]+)"/g, m;
+    while ((m = idRe.exec(html)) !== null) ids.add(m[1]);
+    ids.forEach(function(id) {
+      var esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      html = html.replace(new RegExp('\\bid="' + esc + '"', 'g'), 'id="' + id + suffix + '"');
+      html = html.replace(new RegExp('url\\(#' + esc + '\\)', 'g'), 'url(#' + id + suffix + ')');
+      html = html.replace(new RegExp('(\\b(?:xlink:)?href=)"#' + esc + '"', 'g'), '$1"#' + id + suffix + '"');
+    });
+    temp.innerHTML = html;
+    return temp.firstElementChild;
+  }
+
+  function attachMascot(host, idx) {
+    var wrapper = host.querySelector('.mascot-animated');
+    var staticImg = host.querySelector('.mascot-static');
+    if (!wrapper) return;
+    loadSVG(function(text) {
+      runMascot(wrapper, staticImg, text, '-m' + idx);
+    });
+  }
+
+  function runMascot(wrapper, staticImg, text, suffix) {
     var svg = new DOMParser().parseFromString(text, 'image/svg+xml').documentElement;
+    // Suffix the parsed SVG's three internal IDs (defs / gradient /
+    // clip-path) before manipulation so each instance owns its own
+    // url(#…) targets.
+    svg = uniquifyIds(svg, suffix);
     svg.style.width = '100%'; svg.style.height = '100%';
 
     var allKids = Array.from(svg.children);
@@ -9371,9 +9470,26 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
     if (staticImg) staticImg.style.opacity = '0';
     setTimeout(function() { if (staticImg) staticImg.style.display = 'none'; }, 600);
 
+    // Reduced motion: SVG is in place and visible, but skip the rAF + blink
+    // loops entirely. The static-base img already faded out; the inert SVG
+    // stays as a still image (functionally identical to a static SVG).
+    if (REDUCED_MOTION) return;
+
     var tongueCx = 350, tongueCy = 445, teethCx = 350, teethCy = 395;
 
+    // Throttle to ~30 FPS (33 ms). The body sway / blink frequencies are all
+    // sub-2 Hz, so 30 FPS is visually indistinguishable from 60 FPS but
+    // halves the per-frame setAttribute cost. lastT is local to this
+    // instance so multiple hosts stay in lockstep with their own throttle.
+    var lastT = 0;
     function tick(time) {
+      // Skip everything if the host is in a screen that's display:none
+      // (offsetParent === null). The closure stays registered to the
+      // global ticker; when the host becomes visible again we pick up
+      // where we left off without re-arming anything.
+      if (!wrapper.offsetParent) return;
+      if (time - lastT < 33) return;
+      lastT = time;
       var t = time * 0.001;
       var bv = noise(t, 1.8, BREATH_NOISE), bn = bv * 0.5 + 0.5;
       var sy = 1 + bn * 0.035 + Math.sin(t * 1.1) * 0.008;
@@ -9411,20 +9527,26 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
       var tesx = 1 + (1 - bn) * 0.012;
       var tesy = 1 + bn * 0.015;
       teeth.setAttribute('transform', 'translate(' + (teethCx + tex) + ' ' + (teethCy + tey) + ') scale(' + tesx + ' ' + tesy + ') translate(' + (-teethCx) + ' ' + (-teethCy) + ')');
-
-      requestAnimationFrame(tick);
     }
-    requestAnimationFrame(tick);
+    TICK_INSTANCES.push(tick);
+    startTicker();
 
-    /* Blink loop */
+    /* Blink loop — async, throttles itself when the host isn't visible
+       (display:none ancestor) so it doesn't fire wink()/unwink() against
+       an inert SVG. Resumes naturally when offsetParent comes back. */
     function wink() { eyesOpen.style.display = 'none'; eyesWink.style.display = ''; }
     function unwink() { eyesOpen.style.display = ''; eyesWink.style.display = 'none'; }
     function blink(dur) { return new Promise(function(ok) { wink(); setTimeout(function() { unwink(); ok(); }, dur + Math.random() * 40); }); }
     function wait(ms) { return new Promise(function(ok) { setTimeout(ok, ms); }); }
+    async function gateVisible() {
+      while (!wrapper.offsetParent) await wait(400);
+    }
     async function blinkLoop() {
       while (true) {
+        await gateVisible();
         unwink();
         await wait(2200 + Math.random() * 1000);
+        if (!wrapper.offsetParent) continue;
         await blink(110);
         await wait(1800 + Math.random() * 800);
         if (Math.random() < 0.6) { await blink(85); await wait(120 + Math.random() * 50); await blink(95); await wait(1400 + Math.random() * 600); }
@@ -9436,7 +9558,9 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
       }
     }
     blinkLoop();
-  });
+  }
+
+  hosts.forEach(function(host, idx) { attachMascot(host, idx); });
 })();
 </script>
 
