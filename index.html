@@ -102,14 +102,16 @@
     /* Turntable mascot — 13-frame strip (Back → Left → Front, source order
        1 → 13). JS-driven ping-pong reuses the strip mirrored for the
        reverse half. v6 (2026-05-06) was delivered as 13 separate SVGs
-       (Back-1, 2..6, Left-7, 8..12, Front-13); we stitch them into a
-       single sprite via `<g transform="translate(N*352 0)">` wrappers,
-       then pass through SVGO. Strip is 4576x285 native (was 5335x288 in
-       v5). Display frame height 144px keeps the 0.505 native→display
-       scale; container width 200px continues to work because each
-       displayed frame is ~178px wide and centres horizontally. */
+       and stitched into a single sprite with each frame in its own
+       clip-path-bounded group, then run through SVGO.
+       Native frame: 352 × 285. Display height: 144 (scale ≈ 0.505).
+       Display frame WIDTH: 352 × 0.505 ≈ 178 — the container MUST be
+       sized to the frame's display width, otherwise the leftover margin
+       on either side either bleeds the neighbouring frame in (mid-strip)
+       or shows blank canvas (at the strip's edges, e.g. when the
+       animation lands on the front-most frame). 178×144 fixes both. */
     .loading-screen-overlay .loading-mascot {
-      width: 200px; height: 144px;
+      width: 178px; height: 144px;
       background-image: url('assets/turntable-v6/Mascot-Loading-v6.svg');
       background-repeat: no-repeat;
       background-size: auto 144px;
@@ -8685,7 +8687,7 @@ function updateHealthForScreenV2(screenId, areaId, emoteContainerId, textId) {
 // turntable.
 var LOADING_MASCOT_FRAMES = [4400, 4048, 3696, 3344, 2992, 2640, 2288, 1936, 1584, 1232, 880, 528, 176];
 var LOADING_MASCOT_SCALE = 144 / 285; // native viewBox height → display height
-var LOADING_MASCOT_DISPLAY_W = 200;
+var LOADING_MASCOT_DISPLAY_W = 178;   // matches displayed frame width (352 * SCALE)
 
 // Drives the ping-pong spin on a .loading-mascot element. Returns a stop fn.
 function startLoadingMascotSpin(mascotEl) {
