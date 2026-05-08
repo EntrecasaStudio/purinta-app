@@ -122,14 +122,22 @@
        sized to the frame's display width, otherwise the leftover margin
        on either side either bleeds the neighbouring frame in (mid-strip)
        or shows blank canvas (at the strip's edges, e.g. when the
-       animation lands on the front-most frame). 178×144 fixes both. */
+       animation lands on the front-most frame). 178×144 fixes both.
+       Default ships WebP @2x (q80) for crisp retina rendering with no
+       SVG-parse cost on first paint; phone-b (Option B "Variations")
+       falls back to the SVG so we can A/B both versions side-by-side. */
     .loading-screen-overlay .loading-mascot {
       width: 178px; height: 144px;
-      background-image: url('assets/turntable-v6/Mascot-Loading-v6.svg');
+      background-image: url('assets/turntable-v6/Mascot-Loading-v6.webp');
       background-repeat: no-repeat;
       background-size: auto 144px;
       background-position: 0 0;
       will-change: background-position, transform;
+    }
+    /* Option B (Variations) — keep the SVG strip on phone-b so we can
+       compare against the WebP build that ships on phone-a/-c. */
+    #phone-b .loading-screen-overlay .loading-mascot {
+      background-image: url('assets/turntable-v6/Mascot-Loading-v6.svg');
     }
 
     /* Boot splash — full-viewport overlay that masks the first-paint flash on
