@@ -2903,6 +2903,31 @@
     .mascot-area.happy img.mascot-illustration { width: 114px; top: 16px; animation: none; }
     /* V2 basic-money in happy state: SVG has internal animation, no outer bob; ~15% smaller than health emotes */
     .mascot-area.happy .emote-v2.mascot-illustration { width: 117px; top: 7px; animation: none; }
+    /* basic-money idle micro-animations — only fire when the SVG is
+       inline (V2 stack injects it into .emote-v2-melt > svg). The asset
+       also carries SMIL bob + breathe + bill-emerge; these CSS rules
+       layer the eye blink and the symmetric arm/leg sway, both of
+       which need a transform-origin that SMIL can't provide cleanly.
+       For the disconnected `<img>` rendering of the same asset (line
+       5346) only the SMIL animations run — the static image still
+       breathes and emits bills, just doesn't blink/sway. Acceptable.
+    */
+    .mascot-area.happy .emote-v2-melt svg .bm-eyes {
+      transform-box: view-box;
+      transform-origin: 58px 24px;
+      animation: bm-blink 5.4s ease-in-out infinite;
+    }
+    /* Two quick squishes in a single cycle — natural human-blink rhythm
+       (~5 s between blinks, ~150 ms per blink). 92.5–95.5% window for
+       the squish so the eyes are open most of the time. */
+    @keyframes bm-blink {
+      0%, 92%, 100%        { transform: scaleY(1); }
+      94%                  { transform: scaleY(0.06); }
+      96%                  { transform: scaleY(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .mascot-area.happy .emote-v2-melt svg .bm-eyes { animation: none; }
+    }
     .mascot-area.ultra-safe .mascot-illustration,
     .mascot-area.looking-good .mascot-illustration,
     .mascot-area.getting-risky .mascot-illustration,
