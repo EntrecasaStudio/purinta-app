@@ -9040,8 +9040,17 @@ function parseV2Emote(svgString, emoteKey) {
   var ordered = priority.concat(rest);
   var loaded = 0;
 
+  // Cache-bust the V2 emote fetch with the document's lastModified
+  // timestamp. Without this, the browser's HTTP cache holds onto the
+  // previously fetched SVG forever (Python http.server doesn't set
+  // Cache-Control headers, so the browser uses heuristic caching ≈
+  // 10% of age — which for asset files modified yesterday means hours
+  // of stale serving). Edits to the SVG asset wouldn't show without a
+  // manual cache clear. Tying the URL to document.lastModified makes
+  // every page load fetch fresh assets when index.html changes.
+  var v2CacheBust = '?v=' + (document.lastModified || '').replace(/\D+/g, '');
   ordered.forEach(function(key) {
-    fetch(v2EmoteUrls[key]).then(function(r) { return r.text(); }).then(function(svg) {
+    fetch(v2EmoteUrls[key] + v2CacheBust).then(function(r) { return r.text(); }).then(function(svg) {
       v2ExprParts[key] = parseV2Emote(svg, key);
       loaded++;
       if (loaded === keys.length) {
