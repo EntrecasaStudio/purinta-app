@@ -2938,6 +2938,22 @@
       transform-origin: 58px 24px;
       animation: bm-blink 4s ease-in-out infinite;
     }
+    /* Hands counter-bob — body's SMIL bob translates the root <g> by
+       0,-8 at the 50 % keyframe (3 s cycle, same ease-in-out spline as
+       this animation). The hands group is a child of that root, so
+       inheriting the bob makes them rise WITH the body. We add a
+       local translateY in the OPPOSITE direction (+10 px at midpoint)
+       so the cumulative motion at peak = body(-8) + hands(+10) = +2
+       — hands sag down slightly when the body rises, selling the
+       weight of the bills they're holding. Same 3 s duration as the
+       bob so they stay phase-locked. */
+    .mascot-area.happy .emote-v2-melt svg .bm-hands {
+      animation: bm-hands-counter 3s ease-in-out infinite;
+    }
+    @keyframes bm-hands-counter {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(10px); }
+    }
     /* Two quick squishes in a single cycle — natural human-blink rhythm
        (~5 s between blinks, ~150 ms per blink). 92.5–95.5% window for
        the squish so the eyes are open most of the time. */
@@ -2948,7 +2964,8 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .mascot-area.happy .emote-v2-melt svg,
-      .mascot-area.happy .emote-v2-melt svg .bm-eyes { animation: none; }
+      .mascot-area.happy .emote-v2-melt svg .bm-eyes,
+      .mascot-area.happy .emote-v2-melt svg .bm-hands { animation: none; }
     }
     .mascot-area.ultra-safe .mascot-illustration,
     .mascot-area.looking-good .mascot-illustration,
