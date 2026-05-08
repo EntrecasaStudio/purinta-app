@@ -2903,15 +2903,29 @@
     .mascot-area.happy img.mascot-illustration { width: 114px; top: 16px; animation: none; }
     /* V2 basic-money in happy state: SVG has internal animation, no outer bob; ~15% smaller than health emotes */
     .mascot-area.happy .emote-v2.mascot-illustration { width: 117px; top: 7px; animation: none; }
-    /* basic-money idle micro-animations — only fire when the SVG is
-       inline (V2 stack injects it into .emote-v2-melt > svg). The asset
-       also carries SMIL bob + breathe + bill-emerge; these CSS rules
-       layer the eye blink and the symmetric arm/leg sway, both of
-       which need a transform-origin that SMIL can't provide cleanly.
+    /* basic-money idle micro-animations — applied via CSS to the inline
+       SVG (V2 stack injects it into .emote-v2-melt > svg). The asset
+       carries SMIL bob (translate) + bill-emerge (slot-clipped translate)
+       on its own.
+       Why CSS for breathing instead of SMIL: SMIL `<animateTransform>`
+       scales from the SVG origin (0,0), which displaces the slot+bill
+       differently from the head and creates a visible drift between
+       the bill and the body. CSS transform-box + transform-origin let
+       us scale from the body center — the slot, bill, and body all
+       scale together, so the bill stays connected to the slot.
        For the disconnected `<img>` rendering of the same asset (line
-       5346) only the SMIL animations run — the static image still
-       breathes and emits bills, just doesn't blink/sway. Acceptable.
+       5346) only SMIL animations apply — the static image still bobs
+       and emits bills, just doesn't breathe/blink. Acceptable.
     */
+    .mascot-area.happy .emote-v2-melt svg {
+      transform-box: view-box;
+      transform-origin: 58px 50px;          /* body centroid */
+      animation: bm-breathe 4.2s ease-in-out infinite;
+    }
+    @keyframes bm-breathe {
+      0%, 100% { transform: scale(1, 1); }
+      50%      { transform: scale(1.018, 1.012); }
+    }
     .mascot-area.happy .emote-v2-melt svg .bm-eyes {
       transform-box: view-box;
       transform-origin: 58px 24px;
@@ -2926,6 +2940,7 @@
       96%                  { transform: scaleY(1); }
     }
     @media (prefers-reduced-motion: reduce) {
+      .mascot-area.happy .emote-v2-melt svg,
       .mascot-area.happy .emote-v2-melt svg .bm-eyes { animation: none; }
     }
     .mascot-area.ultra-safe .mascot-illustration,
