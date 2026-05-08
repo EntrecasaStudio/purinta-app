@@ -2917,19 +2917,26 @@
        5346) only SMIL animations apply — the static image still bobs
        and emits bills, just doesn't breathe/blink. Acceptable.
     */
+    /* `transform-box: view-box` applies the transform-origin in the
+       SVG's viewBox coord system. Used for elements INSIDE the SVG
+       (path/g/rect). For the outer <svg> element itself we use
+       fill-box (its rendered DOM box) so the centered scale lands at
+       the visible mascot center, not viewBox 50%. */
     .mascot-area.happy .emote-v2-melt svg {
-      transform-box: view-box;
-      transform-origin: 58px 50px;          /* body centroid */
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
       animation: bm-breathe 4.2s ease-in-out infinite;
     }
     @keyframes bm-breathe {
       0%, 100% { transform: scale(1, 1); }
-      50%      { transform: scale(1.018, 1.012); }
+      50%      { transform: scale(1.035, 1.025); }
     }
+    /* Eyes wrapper is INSIDE the SVG → use view-box. Origin in viewBox
+       coords (0 -8 117 114) at the inter-eye centroid (58, 24). */
     .mascot-area.happy .emote-v2-melt svg .bm-eyes {
       transform-box: view-box;
       transform-origin: 58px 24px;
-      animation: bm-blink 5.4s ease-in-out infinite;
+      animation: bm-blink 4s ease-in-out infinite;
     }
     /* Two quick squishes in a single cycle — natural human-blink rhythm
        (~5 s between blinks, ~150 ms per blink). 92.5–95.5% window for
