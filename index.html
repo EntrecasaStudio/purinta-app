@@ -128,7 +128,13 @@
       background-image: url('assets/turntable-v6/Mascot-Loading-v6.svg');
       background-repeat: no-repeat;
       background-size: auto 144px;
-      background-position: 0 0;
+      /* Default position lands on the front-facing frame (Front-13, source
+         order index 13 of 13). The strip is laid out Back-1 → … → Front-13
+         left-to-right; centring the rightmost frame in the 178 px window
+         needs bgX = -(4400 × 144/285 − 89) ≈ -2134 px. This is the same
+         value the JS ping-pong sets via setFrame(0,…) so when the spin
+         starts there is no jump from the static base frame. */
+      background-position: -2134px 0;
       will-change: background-position, transform;
     }
 
@@ -9586,13 +9592,23 @@ function startLoadingMascotSpin(mascotEl) {
     mascotEl.style.backgroundPosition = bgX + 'px 0';
     mascotEl.style.transform = mirrored ? 'scaleX(-1)' : 'none';
   }
-  setFrame(0, false);
+  setFrame(0, false);                  // Park on Front-13 (rest pose)
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return function() {};
   }
+
+  // Hold the static front frame until the strip is fully decoded — that way
+  // the user always sees the rest pose first and the ping-pong only kicks
+  // in once the asset is loaded. We use an Image() preloader because the
+  // background-image's load event isn't observable on a CSS-painted div.
+  // A floor delay (WARMUP_FLOOR_MS) keeps the rest pose visible long enough
+  // to read as "static" even when the SVG is already cached.
   var FRAME_INTERVAL = 100;
+  var WARMUP_FLOOR_MS = 500;
   var LAST = LOADING_MASCOT_FRAMES.length - 1;
   var i = 0, dir = 1, mirrored = false, lastT = 0, raf = null;
+  var stopped = false, warmupTimer = null;
+
   var tick = function(t) {
     if (t - lastT >= FRAME_INTERVAL) {
       lastT = t;
@@ -9603,8 +9619,32 @@ function startLoadingMascotSpin(mascotEl) {
     }
     raf = requestAnimationFrame(tick);
   };
-  raf = requestAnimationFrame(tick);
-  return function() { if (raf) cancelAnimationFrame(raf); };
+
+  function startSpin() {
+    if (stopped) return;
+    raf = requestAnimationFrame(tick);
+  }
+
+  var startedAt = performance.now();
+  var preloader = new Image();
+  preloader.onload = preloader.onerror = function() {
+    var elapsed = performance.now() - startedAt;
+    var wait = Math.max(0, WARMUP_FLOOR_MS - elapsed);
+    warmupTimer = setTimeout(function() { warmupTimer = null; startSpin(); }, wait);
+  };
+  // Same URL as the CSS background-image so the browser fetch dedupes.
+  preloader.src = 'assets/turntable-v6/Mascot-Loading-v6.svg';
+  // If the image is already cached, .onload may not fire; fall back to the
+  // floor delay alone.
+  if (preloader.complete) {
+    warmupTimer = setTimeout(function() { warmupTimer = null; startSpin(); }, WARMUP_FLOOR_MS);
+  }
+
+  return function() {
+    stopped = true;
+    if (warmupTimer) { clearTimeout(warmupTimer); warmupTimer = null; }
+    if (raf) cancelAnimationFrame(raf);
+  };
 }
 
 // Holds the stop fn for the dev-only #loading-loop screen so showScreen can
