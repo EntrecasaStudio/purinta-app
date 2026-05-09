@@ -2925,6 +2925,70 @@
     .mascot-area.happy img.mascot-illustration { width: 114px; top: 16px; animation: none; }
     /* V2 basic-money in happy state: SVG has internal animation, no outer bob; ~15% smaller than health emotes */
     .mascot-area.happy .emote-v2.mascot-illustration { width: 117px; top: 7px; animation: none; }
+    /* basic-money idle micro-animations — applied via CSS to the inline
+       SVG (V2 stack injects it into .emote-v2-melt > svg). The asset
+       carries SMIL bob (translate) + bill-emerge (slot-clipped translate)
+       on its own.
+       Why CSS for breathing instead of SMIL: SMIL `<animateTransform>`
+       scales from the SVG origin (0,0), which displaces the slot+bill
+       differently from the head and creates a visible drift between
+       the bill and the body. CSS transform-box + transform-origin let
+       us scale from the body center — the slot, bill, and body all
+       scale together, so the bill stays connected to the slot.
+       For the disconnected `<img>` rendering of the same asset (line
+       5346) only SMIL animations apply — the static image still bobs
+       and emits bills, just doesn't breathe/blink. Acceptable.
+    */
+    /* `transform-box: view-box` applies the transform-origin in the
+       SVG's viewBox coord system. Used for elements INSIDE the SVG
+       (path/g/rect). For the outer <svg> element itself we use
+       fill-box (its rendered DOM box) so the centered scale lands at
+       the visible mascot center, not viewBox 50%. */
+    .mascot-area.happy .emote-v2-melt svg {
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+      animation: bm-breathe 4.2s ease-in-out infinite;
+    }
+    @keyframes bm-breathe {
+      0%, 100% { transform: scale(1, 1); }
+      50%      { transform: scale(1.035, 1.025); }
+    }
+    /* Eyes wrapper is INSIDE the SVG → use view-box. Origin in viewBox
+       coords (0 -8 117 114) at the inter-eye centroid (58, 24). */
+    .mascot-area.happy .emote-v2-melt svg .bm-eyes {
+      transform-box: view-box;
+      transform-origin: 58px 24px;
+      animation: bm-blink 4s ease-in-out infinite;
+    }
+    /* Hands counter-bob — body's SMIL bob translates the root <g> by
+       0,-8 at the 50 % keyframe (3 s cycle, same ease-in-out spline as
+       this animation). The hands group is a child of that root, so
+       inheriting the bob makes them rise WITH the body. We add a
+       local translateY in the OPPOSITE direction (+10 px at midpoint)
+       so the cumulative motion at peak = body(-8) + hands(+10) = +2
+       — hands sag down slightly when the body rises, selling the
+       weight of the bills they're holding. Same 3 s duration as the
+       bob so they stay phase-locked. */
+    .mascot-area.happy .emote-v2-melt svg .bm-hands {
+      animation: bm-hands-counter 3s ease-in-out infinite;
+    }
+    @keyframes bm-hands-counter {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(6px); }
+    }
+    /* Two quick squishes in a single cycle — natural human-blink rhythm
+       (~5 s between blinks, ~150 ms per blink). 92.5–95.5% window for
+       the squish so the eyes are open most of the time. */
+    @keyframes bm-blink {
+      0%, 92%, 100%        { transform: scaleY(1); }
+      94%                  { transform: scaleY(0.06); }
+      96%                  { transform: scaleY(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .mascot-area.happy .emote-v2-melt svg,
+      .mascot-area.happy .emote-v2-melt svg .bm-eyes,
+      .mascot-area.happy .emote-v2-melt svg .bm-hands { animation: none; }
+    }
     .mascot-area.ultra-safe .mascot-illustration,
     .mascot-area.looking-good .mascot-illustration,
     .mascot-area.getting-risky .mascot-illustration,
@@ -9082,8 +9146,17 @@ function parseV2Emote(svgString, emoteKey) {
   var ordered = priority.concat(rest);
   var loaded = 0;
 
+  // Cache-bust the V2 emote fetch with the document's lastModified
+  // timestamp. Without this, the browser's HTTP cache holds onto the
+  // previously fetched SVG forever (Python http.server doesn't set
+  // Cache-Control headers, so the browser uses heuristic caching ≈
+  // 10% of age — which for asset files modified yesterday means hours
+  // of stale serving). Edits to the SVG asset wouldn't show without a
+  // manual cache clear. Tying the URL to document.lastModified makes
+  // every page load fetch fresh assets when index.html changes.
+  var v2CacheBust = '?v=' + (document.lastModified || '').replace(/\D+/g, '');
   ordered.forEach(function(key) {
-    fetch(v2EmoteUrls[key]).then(function(r) { return r.text(); }).then(function(svg) {
+    fetch(v2EmoteUrls[key] + v2CacheBust).then(function(r) { return r.text(); }).then(function(svg) {
       v2ExprParts[key] = parseV2Emote(svg, key);
       loaded++;
       if (loaded === keys.length) {
