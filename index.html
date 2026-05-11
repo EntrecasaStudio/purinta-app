@@ -2954,6 +2954,28 @@
       0%, 100% { transform: translateY(0); }
       50%      { transform: translateY(6px); }
     }
+    /* Legs sub-animation — phase-locked to the BREATHING cycle (4.2 s),
+       NOT the bob. When the body inhales (scale peak), the legs spread
+       slightly outward; on exhale they ease back to neutral. The
+       outward direction is mirrored per leg (left = -X, right = +X).
+       Magnitude is tiny (1.6 px) — at the body's centered scale peak
+       the legs already drift ~0.6 px outward via the CSS breathe
+       transform; this layer adds ~1 more px on top so the stance
+       widening reads as a deliberate beat rather than a side effect. */
+    .mascot-area.happy .emote-v2-melt svg .bm-leg-l {
+      animation: bm-leg-spread-l 4.2s ease-in-out infinite;
+    }
+    .mascot-area.happy .emote-v2-melt svg .bm-leg-r {
+      animation: bm-leg-spread-r 4.2s ease-in-out infinite;
+    }
+    @keyframes bm-leg-spread-l {
+      0%, 100% { transform: translateX(0); }
+      50%      { transform: translateX(-1.6px); }
+    }
+    @keyframes bm-leg-spread-r {
+      0%, 100% { transform: translateX(0); }
+      50%      { transform: translateX(1.6px); }
+    }
     /* Two quick squishes in a single cycle — natural human-blink rhythm
        (~5 s between blinks, ~150 ms per blink). 92.5–95.5% window for
        the squish so the eyes are open most of the time. */
@@ -2966,6 +2988,8 @@
       .mascot-area.happy .emote-v2-melt svg,
       .mascot-area.happy .emote-v2-melt svg .bm-eyes,
       .mascot-area.happy .emote-v2-melt svg .bm-hands,
+      .mascot-area.happy .emote-v2-melt svg .bm-leg-l,
+      .mascot-area.happy .emote-v2-melt svg .bm-leg-r,
       .mascot-area.ultra-safe .emote-v2-face svg .us-eyes { animation: none; }
     }
     .mascot-area.ultra-safe .mascot-illustration,
