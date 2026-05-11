@@ -4579,6 +4579,20 @@
     .cards-cascade .position-card.is-first-card {
       animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
     }
+    /* Home cascade — keyframe-based replay of the home's reveal-in entry
+       (matches the native .reveal-in .revealed transition: 500ms ease, 16px
+       translateY, 4px blur). Keyframe-driven instead of transition-driven so
+       the cascade runs reliably under aggressive background-tab throttling
+       (setTimeout-based reveal stalls in headless preview); GPU keyframes
+       restart deterministically on class re-add + reflow. */
+    @keyframes home-section-enter {
+      from { opacity: 0; transform: translateY(16px); filter: blur(4px); }
+      to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+    }
+    .cards-cascade .reveal-in {
+      animation: home-section-enter 500ms ease backwards;
+      animation-delay: var(--section-delay, 0ms);
+    }
     @media (prefers-reduced-motion: reduce) {
       .skel-fading-out { animation-duration: 100ms; }
       .cards-cascade .position-card {
@@ -7352,6 +7366,46 @@ document.addEventListener('click', function(e) {
   var _CASCADE_DELAYS = [0, 80, 148, 206, 256, 300];
   var _skelDemoTimers = {};
 
+  // Per-real-screen cascade handler. Each receives (phone, real) and applies
+  // the section-specific entry animation that we want to "replay" after the
+  // skeleton fades. Add a handler here when a new skel pair needs its own
+  // choreography. Screens without a handler fall back to a plain crossfade
+  // (skel fades out, real appears instantly).
+  var CASCADE_HANDLERS = {
+    // Positions: per-card stagger with micro-decay (motion-expert spec).
+    'positions': function(phone, real) {
+      var cards = real.querySelectorAll('.position-card');
+      cards.forEach(function(c, i) {
+        var delay = _CASCADE_DELAYS[Math.min(i, _CASCADE_DELAYS.length - 1)];
+        c.style.setProperty('--card-delay', delay + 'ms');
+        c.classList.toggle('is-first-card', i === 0);
+      });
+      // Force reflow so re-adding the class restarts the keyframes.
+      // eslint-disable-next-line no-unused-expressions
+      real.offsetWidth;
+      real.classList.add('cards-cascade');
+    },
+    // Home: keyframe-based cascade (same visual as native .reveal-in fade —
+    // 500ms ease, 16px translateY, 4px blur, 80ms stagger). Keyframe instead
+    // of transition because the native .revealed transition is opacity-based
+    // and depends on setTimeout fire times, which background-throttle in
+    // headless preview. @keyframes restart deterministically on class re-add
+    // + forced reflow.
+    'homepage': function(phone, real) {
+      var sections = real.querySelectorAll('.reveal-in');
+      if (!sections.length) return;
+      sections.forEach(function(el, i) {
+        el.style.setProperty('--section-delay', (i * 80) + 'ms');
+      });
+      // eslint-disable-next-line no-unused-expressions
+      real.offsetWidth;
+      real.classList.add('cards-cascade');
+    }
+    // homepage-connected has no .reveal-in elements yet → falls through to
+    // plain crossfade (no per-element cascade). Add an entry here if/when
+    // those classes get added to its hero/token sections.
+  };
+
   function _getSkelDemoTargets(phone, suffix) {
     var active = phone.querySelector('.screen.active');
     if (!active) return null;
@@ -7401,6 +7455,7 @@ document.addEventListener('click', function(e) {
     var slot = _skelDemoTimers[phoneId];
     if (slot) { clearTimeout(slot.t1); clearTimeout(slot.t2); clearTimeout(slot.t3); }
     skel.classList.remove('skel-fading-out');
+    // Reset positions-specific cascade state (no-op for other screens).
     real.classList.remove('cards-cascade');
     real.querySelectorAll('.position-card.is-first-card').forEach(function(c) {
       c.classList.remove('is-first-card');
@@ -7408,19 +7463,17 @@ document.addEventListener('click', function(e) {
     // Show skeleton (hide every other screen first)
     phone.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
     skel.classList.add('active');
+    var realId = real.id.replace(/-(b|c)$/, ''); // canonical id for handler lookup
     var t1 = setTimeout(function() {
-      // True crossfade — kick skel fade-out AND cards cascade at the same tick.
+      // True crossfade — skel fade-out and real activation at the same tick.
       skel.classList.add('skel-fading-out');
-      var cards = real.querySelectorAll('.position-card');
-      cards.forEach(function(c, i) {
-        var delay = _CASCADE_DELAYS[Math.min(i, _CASCADE_DELAYS.length - 1)];
-        c.style.setProperty('--card-delay', delay + 'ms');
-        c.classList.toggle('is-first-card', i === 0);
-      });
-      // Force reflow so animation restart actually picks up the new delays.
+      real.classList.add('active');
+      // Force reflow before dispatching so the handler's class toggles re-run
+      // keyframes / transitions cleanly.
       // eslint-disable-next-line no-unused-expressions
       real.offsetWidth;
-      real.classList.add('active', 'cards-cascade');
+      var handler = CASCADE_HANDLERS[realId];
+      if (handler) handler(phone, real);
       // Tear down the faded skel after its 200ms fade-out completes.
       var t3 = setTimeout(function() {
         skel.classList.remove('active', 'skel-fading-out');
