@@ -4530,7 +4530,7 @@
        Phone-a renders Op A (Neutral palette), phone-b/c render Op B (Cream).
        Shimmer sweeps a lighter band (300) across a base (200) every 1.7s. */
     .skel-block {
-      background: linear-gradient(90deg,
+      background: linear-gradient(110deg,
         var(--neutral-200) 0%,
         var(--neutral-100) 50%,
         var(--neutral-200) 100%);
@@ -4548,31 +4548,43 @@
     @media (prefers-reduced-motion: reduce) {
       .skel-block { animation: none; background: var(--neutral-200); }
     }
-    /* Skeleton → My Positions transition. The demo Play button (.phone-play-btn)
-       triggers .skel-fading-out on the skel screen and .cards-cascade on the
-       real #positions screen at the same time, with a ~100ms head-start so the
-       cards lift in just as the skeleton fades. Stagger is :nth-child only —
-       no setTimeout scheduling — capped at 6 cards (anything past that reuses
-       the last delay). Tuned to expert spec: 360ms ease-out-expo card enter,
-       70ms stagger, 10px translate-Y, 200ms skel fade-out. */
+    /* Skeleton → My Positions transition. Premium polish per motion-expert spec:
+         - True crossfade: skel fade-out and cards cascade start simultaneously
+           (no relay gap) so the eye never sees a vacío between states.
+         - Micro-decay stagger (80/68/58/50/44ms gaps) instead of uniform 70ms
+           reads as "flows in" rather than "counts in". Cumulative delays are
+           injected via --card-delay (set in JS) — robust to non-card siblings
+           like .positions-title-row that break :nth-child counting.
+         - Translate-Y 8px + scale 0.985→1 sells "materialize" instead of just
+           "slide up" (Stripe Dashboard pattern).
+         - First card uses a more decisive easing (cubic-bezier 0.22, 1, 0.36, 1)
+           so it anchors the sequence visually; rest use the calmer ease-out-expo.
+         - will-change hints the compositor; safe to leave on since the class is
+           removed when the demo replay completes.
+       prefers-reduced-motion: opacity-only, 150ms, no stagger, no transform. */
     @keyframes skel-fade-out {
       from { opacity: 1; }
       to   { opacity: 0; }
     }
     .skel-fading-out { animation: skel-fade-out 200ms ease-out forwards; pointer-events: none; }
     @keyframes pos-card-enter {
-      from { opacity: 0; transform: translate3d(0, 10px, 0); }
-      to   { opacity: 1; transform: translate3d(0, 0, 0); }
+      from { opacity: 0; transform: translate3d(0, 8px, 0) scale(0.985); }
+      to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
     }
     .cards-cascade .position-card {
       animation: pos-card-enter 360ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
-      animation-delay: calc(var(--card-i, 0) * 70ms);
+      animation-delay: var(--card-delay, 0ms);
+      will-change: transform, opacity;
+    }
+    .cards-cascade .position-card.is-first-card {
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
     }
     @media (prefers-reduced-motion: reduce) {
       .skel-fading-out { animation-duration: 100ms; }
       .cards-cascade .position-card {
         animation: pos-card-enter 150ms ease-out backwards;
         animation-delay: 0ms !important;
+        will-change: auto;
       }
       @keyframes pos-card-enter {
         from { opacity: 0; }
@@ -4713,7 +4725,7 @@
     #skel-home .token-rate-badge,
     #skel-home-b .token-rate-badge,
     #skel-home-c .token-rate-badge {
-      background: linear-gradient(90deg,
+      background: linear-gradient(110deg,
         var(--neutral-200) 0%, var(--neutral-100) 50%, var(--neutral-200) 100%);
       background-size: 200% 100%;
       animation: skel-shimmer 1.7s ease-in-out infinite;
@@ -5154,8 +5166,8 @@
 <div class="phones-container">
 <div class="phone-wrap" id="wrap-a">
   <div class="phone-label">A</div>
-  <button class="phone-play-btn" type="button" aria-label="Replay positions load animation"
-          onclick="playPositionsLoadDemo('')"><i class="ph-light ph-play"></i></button>
+  <button class="phone-play-btn" type="button" aria-label="Replay skeleton load animation"
+          onclick="playSkelDemo('')"><i class="ph-light ph-play"></i></button>
   <div class="phone" id="phone-a">
 
   <!-- ═══ SCREEN 1: HOMEPAGE ═══ -->
@@ -6557,8 +6569,8 @@
 </div>
 <div class="phone-wrap hidden" id="wrap-b">
   <div class="phone-label">B</div>
-  <button class="phone-play-btn" type="button" aria-label="Replay positions load animation"
-          onclick="playPositionsLoadDemo('-b')"><i class="ph-light ph-play"></i></button>
+  <button class="phone-play-btn" type="button" aria-label="Replay skeleton load animation"
+          onclick="playSkelDemo('-b')"><i class="ph-light ph-play"></i></button>
   <div class="phone" id="phone-b"></div>
 </div>
 </div>
@@ -7307,52 +7319,118 @@ document.addEventListener('click', function(e) {
     var bpBtn = document.querySelector('.bp-btn[data-bp="' + w + '"]'); if (bpBtn) bpBtn.classList.add('active');
   }
 
-  // Demo: replay the skeleton → my-positions transition for screenshots / QA.
-  // Holds the skeleton ~700ms so the shimmer is visible, then fires the
-  // crossfade: skel fades out (200ms) while #positions activates with the
-  // cascade class, so the cards lift in with a 70ms stagger overlapping the
-  // last 100ms of the skel fade-out. Re-entrant: cancels in-flight timers and
-  // resets state so users can mash the button without breaking the sequence.
-  var _posDemoTimers = {};
-  function playPositionsLoadDemo(suffix) {
+  // Demo: replay the skel → real loading transition for the CURRENT screen.
+  // Context-aware: if the active screen has no skel counterpart, the Play
+  // button hides (see updateSkelDemoButtonVisibility, wired into showScreen).
+  //
+  // Timing (motion-expert spec):
+  //   t=0   click → activate skel
+  //   t=700 skel fade-out (200ms) AND cards-cascade start *simultaneously* —
+  //         true crossfade, no relay gap (eliminates the "vacío" blink).
+  //   t=900 skel fully faded, deactivated.
+  //
+  // Cascade params (per-card, set via JS into --card-delay):
+  //   cumulative delays 0/80/148/206/256/300ms = decay-gap 80/68/58/50/44ms.
+  //   First card gets .is-first-card (more decisive easing).
+  //
+  // Re-entrant: cancels in-flight timers so mashing the button replays cleanly.
+  var SCREEN_SKEL_PAIRS = {
+    'homepage':           'skel-home',
+    'homepage-connected': 'skel-home',
+    'borrow':             'skel-borrow',
+    'borrow-connected':   'skel-borrow',
+    'update':             'skel-update',
+    'positions':          'skel-positions'
+  };
+  var SKEL_TO_REAL = {
+    'skel-home':      'homepage-connected',
+    'skel-borrow':    'borrow-connected',
+    'skel-update':    'update',
+    'skel-positions': 'positions'
+  };
+  // Cumulative cascade delays (ms) per card index. Decay gaps 80/68/58/50/44.
+  var _CASCADE_DELAYS = [0, 80, 148, 206, 256, 300];
+  var _skelDemoTimers = {};
+
+  function _getSkelDemoTargets(phone, suffix) {
+    var active = phone.querySelector('.screen.active');
+    if (!active) return null;
+    var id = active.id;
+    // Strip suffix (-b / -c) so we can look up against the canonical map.
+    var canonical = suffix ? id.replace(new RegExp(suffix + '$'), '') : id;
+    var skelId, realId;
+    if (SCREEN_SKEL_PAIRS[canonical]) {
+      skelId = SCREEN_SKEL_PAIRS[canonical];
+      realId = canonical;
+    } else if (SKEL_TO_REAL[canonical]) {
+      skelId = canonical;
+      realId = SKEL_TO_REAL[canonical];
+    } else {
+      return null;
+    }
+    return {
+      skel: document.getElementById(skelId + suffix),
+      real: document.getElementById(realId + suffix)
+    };
+  }
+
+  // Show/hide each phone's Play button based on whether its current screen has
+  // a skel counterpart. Called by showScreen() after every navigation.
+  function updateSkelDemoButtonVisibility() {
+    document.querySelectorAll('.phone-wrap').forEach(function(wrap) {
+      var phone = wrap.querySelector('.phone');
+      var btn = wrap.querySelector('.phone-play-btn');
+      if (!phone || !btn) return;
+      var suffix = wrap.id === 'wrap-a' ? '' : (wrap.id === 'wrap-b' ? '-b' : '-c');
+      var targets = _getSkelDemoTargets(phone, suffix);
+      btn.style.display = (targets && targets.skel && targets.real) ? 'flex' : 'none';
+    });
+  }
+  window.updateSkelDemoButtonVisibility = updateSkelDemoButtonVisibility;
+
+  function playSkelDemo(suffix) {
     suffix = suffix || '';
-    var phoneId = 'phone-' + (suffix === '' ? 'a' : suffix.replace('-', ''));
+    var phoneId = suffix === '' ? 'phone-a' : 'phone-' + suffix.replace('-', '');
     var phone = document.getElementById(phoneId);
-    var skel = document.getElementById('skel-positions' + suffix);
-    var real = document.getElementById('positions' + suffix);
-    if (!phone || !skel || !real) return;
-    // Clear any in-flight run for this phone
-    var slot = _posDemoTimers[phoneId];
-    if (slot) { clearTimeout(slot.t1); clearTimeout(slot.t2); }
+    if (!phone) return;
+    var targets = _getSkelDemoTargets(phone, suffix);
+    if (!targets || !targets.skel || !targets.real) return;
+    var skel = targets.skel;
+    var real = targets.real;
+    // Cancel any in-flight run for this phone
+    var slot = _skelDemoTimers[phoneId];
+    if (slot) { clearTimeout(slot.t1); clearTimeout(slot.t2); clearTimeout(slot.t3); }
     skel.classList.remove('skel-fading-out');
     real.classList.remove('cards-cascade');
-    // Show skeleton
+    real.querySelectorAll('.position-card.is-first-card').forEach(function(c) {
+      c.classList.remove('is-first-card');
+    });
+    // Show skeleton (hide every other screen first)
     phone.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
     skel.classList.add('active');
     var t1 = setTimeout(function() {
-      // Begin skel fade-out and activate real cascade with 100ms head-start
+      // True crossfade — kick skel fade-out AND cards cascade at the same tick.
       skel.classList.add('skel-fading-out');
-      var t2 = setTimeout(function() {
-        // Activate real screen and re-trigger cascade keyframes via reflow.
-        // --card-i drives the per-card stagger delay (calc in CSS); set here
-        // so :nth-child can't be confused by non-card siblings (.title-row,
-        // empty-state nodes that may sit between the cards in some layouts).
-        real.classList.remove('cards-cascade');
-        var cards = real.querySelectorAll('.position-card');
-        cards.forEach(function(c, i) { c.style.setProperty('--card-i', Math.min(i, 5)); });
-        // eslint-disable-next-line no-unused-expressions
-        real.offsetWidth;
-        real.classList.add('active', 'cards-cascade');
-        // After the skel fade-out completes, deactivate it
-        var t3 = setTimeout(function() {
-          skel.classList.remove('active', 'skel-fading-out');
-        }, 200);
-        _posDemoTimers[phoneId].t3 = t3;
-      }, 100);
-      _posDemoTimers[phoneId].t2 = t2;
+      var cards = real.querySelectorAll('.position-card');
+      cards.forEach(function(c, i) {
+        var delay = _CASCADE_DELAYS[Math.min(i, _CASCADE_DELAYS.length - 1)];
+        c.style.setProperty('--card-delay', delay + 'ms');
+        c.classList.toggle('is-first-card', i === 0);
+      });
+      // Force reflow so animation restart actually picks up the new delays.
+      // eslint-disable-next-line no-unused-expressions
+      real.offsetWidth;
+      real.classList.add('active', 'cards-cascade');
+      // Tear down the faded skel after its 200ms fade-out completes.
+      var t3 = setTimeout(function() {
+        skel.classList.remove('active', 'skel-fading-out');
+      }, 200);
+      _skelDemoTimers[phoneId].t3 = t3;
     }, 700);
-    _posDemoTimers[phoneId] = { t1: t1 };
+    _skelDemoTimers[phoneId] = { t1: t1 };
   }
+  // Backward-compat alias used by older onclick handlers.
+  function playPositionsLoadDemo(suffix) { return playSkelDemo(suffix); }
 // Wallet pill: single delegated handler that targets `.wallet-badge` in
 // ANY phone (a / b / c). Was previously gated to phone-a only (and a stale
 // phone-c handler that never fires since phone-c is retired) — phone-b's
@@ -8274,7 +8352,11 @@ function showScreen(id) {
   // Update bottom nav + top nav active state + fill icons
   document.querySelectorAll('.bottom-nav-item, .top-nav-link').forEach(function(btn) {
     var screen = btn.getAttribute('data-screen');
-    var isActive = screen === id || (screen === 'homepage-connected' && id === 'homepage') || (screen === 'homepage' && id === 'homepage-connected') || (screen === 'borrow-connected' && (id === 'borrow' || id === 'skel-borrow')) || (screen === 'positions' && (id === 'update' || id === 'skel-update' || id === 'positions-empty' || id === 'positions-disconnected'));
+    var isActive = screen === id
+      || (screen === 'homepage-connected' && (id === 'homepage' || id === 'skel-home'))
+      || (screen === 'homepage' && (id === 'homepage-connected' || id === 'skel-home'))
+      || (screen === 'borrow-connected' && (id === 'borrow' || id === 'skel-borrow'))
+      || (screen === 'positions' && (id === 'update' || id === 'skel-update' || id === 'skel-positions' || id === 'positions-empty' || id === 'positions-disconnected'));
     btn.classList.toggle('active', isActive);
     var icon = btn.querySelector('i');
     if (icon) {
@@ -8282,6 +8364,9 @@ function showScreen(id) {
       icon.classList.add(isActive ? 'ph-fill' : 'ph-light');
     }
   });
+  // Sync the demo Play button (outside the device frame) — hide if the new
+  // screen has no skel counterpart.
+  if (typeof updateSkelDemoButtonVisibility === 'function') updateSkelDemoButtonVisibility();
 }
 // Auto-inject the info tooltip next to every "Borrow Rate" stat-label (My Positions screen).
 // Idempotent — skips labels that already have it.
@@ -8292,6 +8377,8 @@ document.addEventListener('DOMContentLoaded', function() {
       el.insertAdjacentHTML('beforeend', INFO_HTML);
     }
   });
+  // Initial Play-button visibility sync (showScreen handles subsequent updates)
+  if (typeof updateSkelDemoButtonVisibility === 'function') updateSkelDemoButtonVisibility();
   // Populate skeleton screens by cloning the populated counterparts and
   // skeletonizing only the on-chain / DB-fetched data slots. Hardcoded UI
   // (icons, labels, CTAs, hero, header) renders normally.
