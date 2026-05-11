@@ -4582,14 +4582,17 @@
     /* Home cascade — keyframe-based replay of the home's reveal-in entry
        (matches the native .reveal-in .revealed transition: 500ms ease, 16px
        translateY, 4px blur). Keyframe-driven instead of transition-driven so
-       the cascade runs reliably under aggressive background-tab throttling
-       (setTimeout-based reveal stalls in headless preview); GPU keyframes
-       restart deterministically on class re-add + reflow. */
+       the cascade runs reliably even when the underlying CSS transition is
+       inhibited by other state, and so it restarts deterministically on
+       class re-add + reflow. Targets .cascade-section (added by the home
+       handler at demo-replay time) — works for both #homepage (which already
+       has .reveal-in on its sections) and #homepage-connected (which doesn't
+       — handler still adds .cascade-section to its top-level children). */
     @keyframes home-section-enter {
       from { opacity: 0; transform: translateY(16px); filter: blur(4px); }
       to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
     }
-    .cards-cascade .reveal-in {
+    .cards-cascade .cascade-section {
       animation: home-section-enter 500ms ease backwards;
       animation-delay: var(--section-delay, 0ms);
     }
@@ -7385,26 +7388,34 @@ document.addEventListener('click', function(e) {
       real.offsetWidth;
       real.classList.add('cards-cascade');
     },
-    // Home: keyframe-based cascade (same visual as native .reveal-in fade —
-    // 500ms ease, 16px translateY, 4px blur, 80ms stagger). Keyframe instead
-    // of transition because the native .revealed transition is opacity-based
-    // and depends on setTimeout fire times, which background-throttle in
-    // headless preview. @keyframes restart deterministically on class re-add
-    // + forced reflow.
-    'homepage': function(phone, real) {
-      var sections = real.querySelectorAll('.reveal-in');
-      if (!sections.length) return;
-      sections.forEach(function(el, i) {
-        el.style.setProperty('--section-delay', (i * 80) + 'ms');
-      });
-      // eslint-disable-next-line no-unused-expressions
-      real.offsetWidth;
-      real.classList.add('cards-cascade');
-    }
-    // homepage-connected has no .reveal-in elements yet → falls through to
-    // plain crossfade (no per-element cascade). Add an entry here if/when
-    // those classes get added to its hero/token sections.
+    // Home (both connected + disconnected). Keyframe-based cascade matching
+    // the native .reveal-in look (500ms ease · 16px translateY · 4px blur ·
+    // 80ms stagger). Keyframe rather than the .revealed transition because
+    // on demo replay the elements already sit at opacity:1 — a sync
+    // remove→re-add would barely budge the 500ms transition. @keyframes
+    // restart deterministically via reflow + class.
+    //
+    // Targets: prefer .reveal-in (homepage), fall back to top-level chrome
+    // sections (homepage-connected, which doesn't ship with .reveal-in on
+    // its children). Tagged with .cascade-section so the CSS rule matches a
+    // single selector regardless of source markup.
+    'homepage':           _runHomeCascade,
+    'homepage-connected': _runHomeCascade
   };
+  function _runHomeCascade(phone, real) {
+    var sections = real.querySelectorAll('.reveal-in');
+    if (!sections.length) {
+      sections = real.querySelectorAll(':scope > .app-header, :scope > .hero-wrap, :scope > .token-list');
+    }
+    if (!sections.length) return;
+    sections.forEach(function(el, i) {
+      el.classList.add('cascade-section');
+      el.style.setProperty('--section-delay', (i * 80) + 'ms');
+    });
+    // eslint-disable-next-line no-unused-expressions
+    real.offsetWidth;
+    real.classList.add('cards-cascade');
+  }
 
   function _getSkelDemoTargets(phone, suffix) {
     var active = phone.querySelector('.screen.active');
