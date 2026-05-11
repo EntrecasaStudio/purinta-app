@@ -2965,7 +2965,8 @@
     @media (prefers-reduced-motion: reduce) {
       .mascot-area.happy .emote-v2-melt svg,
       .mascot-area.happy .emote-v2-melt svg .bm-eyes,
-      .mascot-area.happy .emote-v2-melt svg .bm-hands { animation: none; }
+      .mascot-area.happy .emote-v2-melt svg .bm-hands,
+      .mascot-area.ultra-safe .emote-v2-face svg .us-eyes { animation: none; }
     }
     .mascot-area.ultra-safe .mascot-illustration,
     .mascot-area.looking-good .mascot-illustration,
@@ -3068,6 +3069,18 @@
       animation: ultra-safe-cheek-beat 1.4s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center;
+    }
+    /* Ultra-safe blink — wraps both eye mask+masked-g pairs in a
+       <g class="us-eyes">. scaleY squish in a brief window, same
+       rhythm as basic-money's bm-blink (4.6 s cycle, slightly slower
+       so the two states feel distinct when transitioning between
+       them). Origin at the inter-eye centroid (68, 26) in viewBox
+       coords so the eyes squish toward each other horizontally
+       rather than collapsing to (0,0). */
+    .mascot-area.ultra-safe .emote-v2-face svg .us-eyes {
+      transform-box: view-box;
+      transform-origin: 68px 26px;
+      animation: bm-blink 4.6s ease-in-out infinite;
     }
     .mascot-area.ultra-safe .emote-v2-face svg .m-eye-star {
       animation: ultra-safe-star-grow 1.8s ease-in-out infinite;
