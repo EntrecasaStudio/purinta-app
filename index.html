@@ -2927,9 +2927,13 @@
       transform-origin: 50% 50%;
       animation: bm-breathe 4.2s ease-in-out infinite;
     }
+    /* Almost no horizontal change (1.008) — a balanced 2-axis scale
+       reads as zoom in/out (forward/backward depth), not breathing.
+       Vertical-dominant scale (1.028) makes the chest visibly rise
+       and fall, which is what reads as breath. */
     @keyframes bm-breathe {
       0%, 100% { transform: scale(1, 1); }
-      50%      { transform: scale(1.035, 1.025); }
+      50%      { transform: scale(1.008, 1.028); }
     }
     /* Eyes wrapper is INSIDE the SVG → use view-box. Origin in viewBox
        coords (0 -8 117 114) at the inter-eye centroid (58, 24). */
