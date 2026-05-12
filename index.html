@@ -1477,6 +1477,81 @@
     .bundle-modal-overlay.is-error .bundle-modal-cta {
       pointer-events: auto; opacity: 1;
     }
+    /* ════════════════════════════════════════
+       SKELETON state — minimal per Figma 2692:138319.
+       Only the stepper rows and the CTA button render as shimmers; the
+       message banner is HIDDEN entirely (it appears once loading
+       completes alongside the real step list). Everything else (mascot
+       artwork, summary rows with real Supply/Repay values) renders as
+       the hardcoded layout. When the dApp resolves the step list, JS
+       swaps the placeholder steps for real ones, the message banner
+       fades in, and runDialogHeightTransition animates the dialog's
+       height delta.
+       ════════════════════════════════════════ */
+    .bundle-modal-overlay.is-skel .bundle-message { display: none; }
+    .bundle-modal-overlay.is-skel .bundle-step-text { visibility: hidden; position: relative; }
+    /* Per Figma 2692:141537: pill is 246×21 (4px corners). Sits centered
+       to the row's text baseline. */
+    .bundle-modal-overlay.is-skel .bundle-step-text::after {
+      content: ''; position: absolute; top: 50%; left: 0;
+      transform: translateY(-50%);
+      width: 246px; height: 21px; border-radius: 4px;
+      visibility: visible;
+      background: linear-gradient(90deg, var(--neutral-200) 0%, var(--neutral-100) 50%, var(--neutral-200) 100%);
+      background-size: 200% 100%;
+      animation: skel-shimmer 1.7s ease-in-out infinite;
+    }
+    /* Step number dot collapses to an empty outlined circle while
+       the step list resolves. Re-skinned to .skel-block colours so it
+       reads as "loading" rather than an active step. */
+    .bundle-modal-overlay.is-skel .bundle-step-num {
+      background: var(--neutral-200) !important;
+      border: none !important;
+      animation: skel-shimmer 1.7s ease-in-out infinite;
+      background-image: linear-gradient(90deg, var(--neutral-200) 0%, var(--neutral-100) 50%, var(--neutral-200) 100%) !important;
+      background-size: 200% 100% !important;
+    }
+    .bundle-modal-overlay.is-skel .bundle-step-num::after { display: none !important; }
+    /* Stepper connector line between dots — keep it but neutralise the
+       colour so it blends with the shimmer placeholders. */
+    .bundle-modal-overlay.is-skel .bundle-step:not(:last-child)::before {
+      background: var(--neutral-200) !important;
+    }
+    /* CTA: the WHOLE button surface is the skel. Replace btn-primary's
+       green gradient with the standard neutral shimmer; hide the label
+       via visibility (preserves the button's intrinsic height so when
+       we drop is-skel and reveal the real label, the height transition
+       has no extra delta to absorb). pointer-events off so the user
+       can't click an unloaded action. */
+    .bundle-modal-overlay.is-skel .bundle-modal-cta {
+      pointer-events: none;
+      background: linear-gradient(90deg,
+        var(--neutral-200) 0%,
+        var(--neutral-100) 50%,
+        var(--neutral-200) 100%) !important;
+      background-size: 200% 100% !important;
+      animation: skel-shimmer 1.7s ease-in-out infinite;
+      color: transparent !important;
+      box-shadow: none !important;
+    }
+    .bundle-modal-overlay.is-skel .bundle-modal-cta > span { visibility: hidden; }
+    /* Suppress btn-primary's hover transform during skel — the pointer-
+       events:none already neutralises interaction, but on touch devices
+       :active can still trigger the scale tween. */
+    .bundle-modal-overlay.is-skel .bundle-modal-cta:hover,
+    .bundle-modal-overlay.is-skel .bundle-modal-cta:active {
+      transform: none !important;
+    }
+    /* Smooth height resolve between skel and loaded. JS sets the
+       explicit pixel height on the dialog, transitions to the new
+       value, then clears so the dialog returns to auto layout. */
+    .bundle-modal-dialog.is-height-transitioning {
+      transition: height 320ms cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bundle-modal-dialog.is-height-transitioning { transition: none; }
+    }
     .bundle-message {
       display: flex; align-items: flex-start; gap: 8px;
       /* Ready state default: info blue — "here's what will happen".
@@ -5061,6 +5136,7 @@
             <button onclick="setBorrowHealth('meltdown')">Meltdown</button>
             <button onclick="devOpenBundle()">Confirmation modal</button>
             <button onclick="devOpenBundleError()">Confirmation modal Error</button>
+            <button onclick="devOpenBundleSkel()">Confirmation modal skel</button>
             <button onclick="toggleNoFundsBanner()">Toggle No-Funds Banner</button>
             <button onclick="showScreen('skel-borrow')">Skel</button>
           </div>
@@ -5107,6 +5183,7 @@
         <button onclick="showScreen('error-404')"><span class="anim-dot anim-dot-todo"></span>404 Mascot</button>
         <button onclick="devOpenBundle()"><span class="anim-dot anim-dot-todo"></span>Confirmation modal</button>
         <button onclick="devOpenBundleError()"><span class="anim-dot anim-dot-progress"></span>Confirmation modal Error</button>
+        <button onclick="devOpenBundleSkel()" style="display:inline-flex;align-items:center;gap:6px;"><span class="anim-dot anim-dot-progress"></span>Confirmation modal skel<i class="ph-light ph-play" style="font-size:11px;margin-left:auto;opacity:0.75;"></i></button>
         <!-- State-emote idle loops (live on borrow-connected) -->
         <button onclick="setBorrowInitial()"><span class="anim-dot anim-dot-done"></span>Initial · supply pulse</button>
         <button onclick="setBorrowHealth('ultra-safe')"><span class="anim-dot anim-dot-done"></span>Ultra Safe · idle loops</button>
@@ -6455,7 +6532,7 @@
           <div class="bundle-message-ready"><strong>Ready to go</strong><br>Initiate the transaction by clicking the button below.</div>
           <div class="bundle-message-processing"><strong>Proceed in wallet</strong><br>Continue your transaction in your connected wallet.</div>
           <div class="bundle-message-done"><strong>Done!</strong><br>Transaction completed successfully.</div>
-          <div class="bundle-message-error"><strong>Error</strong><br>Something went wrong. Please try again later.</div>
+          <div class="bundle-message-error"><strong>Couldn't execute transaction</strong><br>Your funds are safe. Nothing was sent. Please try again later.</div>
         </div>
       </div>
         <button class="btn btn-primary btn-full bundle-modal-cta" onclick="bundleModalCtaClick()">
@@ -7642,24 +7719,26 @@ function openBundleModal(data, btn) {
   var overlay = document.getElementById('bundle-modal-overlay');
   if (!overlay) return;
   _attachOverlayToHostPhone(overlay, btn);
-  // Reset to "ready" state each time it opens
-  overlay.classList.remove('is-processing', 'is-done', 'is-error');
+  // Reset to "ready" state each time it opens. is-skel flips on/off per
+  // invocation so devOpenBundleSkel → openBundleModal resolve path
+  // toggles cleanly.
+  overlay.classList.remove('is-processing', 'is-done', 'is-error', 'is-skel');
   overlay.classList.add('is-ready');
+  if (data.skel) overlay.classList.add('is-skel');
   // Stash an errorAt index on the overlay if the caller wants the second
   // step to fail (used by devOpenBundleError). bundleModalCtaClick reads it.
   overlay.dataset.errorAt = (data.errorAt != null) ? String(data.errorAt) : '';
   // Render the summary rows dynamically — one per non-zero operation, with "&"
   // separators between them. An empty bundle (no changes) shows a single "—" row.
+  // Skel state renders the SAME row content as ready — per Figma 2692:138319,
+  // only the stepper and CTA are skeletonised; everything else (mascot, rows,
+  // message) shows hardcoded values.
   var rowsWrap = overlay.querySelector('.bundle-modal-rows');
   var operations = (data.operations || []).filter(function(op) { return op && op.amount && op.amount !== '—'; });
   if (!operations.length) operations = [{ label: 'No changes', amount: '—', token: '', tokenClass: '' }];
   rowsWrap.innerHTML = operations.map(function(op, idx) {
     var iconHtml = op.tokenClass ? '<span class="mini-icon ' + op.tokenClass + '"></span>' : '';
-    // Strip leading "$" — the token name + icon already convey the currency,
-    // so the dollar prefix is redundant on the amount.
     var amountText = String(op.amount || '').replace(/^\$\s*/, '');
-    // amount + token wrapped in .bundle-row-value so Done state can morph them
-    // from stacked (column) → inline (row) + shrink the amount in one FLIP.
     var row = '<div class="bundle-row"><div class="bundle-row-label">' + op.label + '</div>' +
               '<div class="bundle-row-value">' +
                 '<span class="bundle-row-amount">' + amountText + '</span>' +
@@ -7668,11 +7747,12 @@ function openBundleModal(data, btn) {
     if (idx < operations.length - 1) row += '<div class="bundle-sep">&amp;</div>';
     return row;
   }).join('');
-  // Render steps dynamically — only the approvals that are actually needed + execute
+  // Render steps dynamically — only the approvals that are actually needed + execute.
+  // In skel mode the text content stays empty; the CSS .is-skel rules render a
+  // shimmer over each .bundle-step-text + recolour .bundle-step-num as a placeholder.
   var stepsWrap = overlay.querySelector('.bundle-steps');
   var steps = (data.steps && data.steps.length) ? data.steps : ['Execute the bundle'];
   stepsWrap.innerHTML = steps.map(function(s) {
-    // New stepper: dot + text. The dot fills with a check on done state.
     return '<li class="bundle-step"><span class="bundle-step-num"></span>' +
            '<span class="bundle-step-text">' + s + '</span></li>';
   }).join('');
@@ -7878,6 +7958,92 @@ function devOpenBundle() {
       'Execute the bundle'
     ]
   }, null);
+}
+
+/* Bundle Confirmation — Skeleton variant.
+   Mirrors the real loading flow on screens that depend on async bundle
+   metadata (oracle prices, dynamic step list). The modal opens directly
+   in the .is-skel state with 2 step placeholders + skel-blocks in every
+   data slot. After SKEL_HOLD_MS the dev demo swaps to the real content
+   (devOpenBundle's default 3-step bundle) and animates the dialog
+   height delta so the user perceives a single fluid resolve.
+
+   Used by the dev-nav "Confirmation modal skel" button. The play affordance
+   on the entry replays the same sequence on demand. */
+var SKEL_HOLD_MS = 1600;
+function devOpenBundleSkel() {
+  // Per Figma 2692:138319: rows, mascot and message render with the real
+  // hardcoded payload from the moment the modal opens — only the stepper
+  // (2 placeholder rows) and CTA show shimmer. When the (mock) async step
+  // list resolves, the stepper grows to 3 real entries and the CTA reveals
+  // its label.
+  openBundleModal({
+    operations: [
+      { label: 'Supply', amount: '0.0000367', token: 'MORPHO', tokenClass: 'morpho' },
+      { label: 'Repay',  amount: '0.00006',   token: 'USDC',   tokenClass: 'usdc' }
+    ],
+    steps: ['', ''],   /* exactly 2 placeholder rows per Figma */
+    skel: true
+  }, null);
+  // Hold the skel for SKEL_HOLD_MS, then resolve to the real bundle.
+  // We re-use devOpenBundle's payload as the "loaded" target. If we ever
+  // need a 1-step variant, swap the steps array — the height-transition
+  // helper handles either case identically.
+  setTimeout(function() {
+    var overlay = document.getElementById('bundle-modal-overlay');
+    var dialog = overlay && overlay.querySelector('.bundle-modal-dialog');
+    // If the user closed the modal or kicked off a different flow,
+    // don't suddenly pop the resolved bundle in.
+    if (!overlay || !dialog) return;
+    if (!overlay.classList.contains('is-open')) return;
+    if (!overlay.classList.contains('is-skel')) return;
+    runDialogHeightTransition(dialog, function() {
+      // Re-render the modal with the real data. openBundleModal already
+      // clears state flags and rebuilds rows/steps.
+      openBundleModal({
+        operations: [
+          { label: 'Supply', amount: '0.0000367', token: 'MORPHO', tokenClass: 'morpho' },
+          { label: 'Repay',  amount: '0.00006',   token: 'USDC',   tokenClass: 'usdc' }
+        ],
+        steps: [
+          'Sign approval for transferring MORPHO',
+          'Sign approval for transferring USDC',
+          'Execute the bundle'
+        ]
+      }, null);
+    });
+  }, SKEL_HOLD_MS);
+}
+
+/* FLIP-style height transition. Measures the dialog before/after the
+   mutation, sets the explicit pixel height, kicks the CSS transition on
+   .is-height-transitioning, then clears the height back to auto so the
+   modal stays responsive to further content changes (state flips, row
+   stack, etc.). */
+function runDialogHeightTransition(dialog, mutate) {
+  if (!dialog || typeof mutate !== 'function') { if (typeof mutate === 'function') mutate(); return; }
+  var startHeight = dialog.offsetHeight;
+  mutate();
+  // Force layout to read the new height.
+  var endHeight = dialog.offsetHeight;
+  if (startHeight === endHeight) return;
+  dialog.style.height = startHeight + 'px';
+  dialog.classList.add('is-height-transitioning');
+  // Double rAF so the first frame paints the start height before the
+  // browser interpolates to the end value.
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      dialog.style.height = endHeight + 'px';
+    });
+  });
+  var clear = function() {
+    dialog.style.height = '';
+    dialog.classList.remove('is-height-transitioning');
+    dialog.removeEventListener('transitionend', clear);
+  };
+  dialog.addEventListener('transitionend', clear);
+  // Safety net if transitionend never fires (e.g. reduced-motion path).
+  setTimeout(clear, 380);
 }
 
 /* Bundle Confirmation — Error variant. Same flow as devOpenBundle but the
