@@ -1,0 +1,11 @@
+{
+  "name": "purinta-app",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Static site for Purinta — design tokens, UI system, and prototype HTML.",
+  "scripts": {
+    "start": "npx --yes http-server . -p 8000 -c-1 -o",
+    "serve": "npx --yes http-server . -p 8000 -c-1",
+    "serve:python": "python3 -m http.server 8000"
+  }
+}
