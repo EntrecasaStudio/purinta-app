@@ -483,11 +483,6 @@
     /* All children pointer-events none when collapsed — click goes to badge */
     .wallet-badge:not(.expanded) > * { pointer-events: none; }
     .wallet-badge.expanded > .wallet-disconnect-zone { pointer-events: auto; }
-    @keyframes wallet-pulse {
-      0%, 100% { background: var(--green-300); }
-      50% { background: var(--green-100); }
-    }
-
     /* BUTTONS */
     .btn {
       font-family: var(--font-display); font-weight: 500; font-size: var(--ds-sm); letter-spacing: 0.3px;
@@ -771,26 +766,6 @@
     #phone-a .token-rate-badge--boosted { background: var(--mint-100); }
 
     #phone-b .token-rate-badge--boosted { background: var(--mint-100); }
-    /* Home "Option B" (phone-b) — variation for comparison vs Option A:
-       · Flat background: all badges on mint-50 (boosted bg override to match non-boosted)
-       · Sparkles still animate on viewport entry, but STAY visible at the end
-         (no fade-out in the last keyframe). Option A keeps the fade. */
-    @keyframes sparkle-burst-stay {
-      0%   { opacity: 0; transform: scale(0); }
-      14%  { opacity: 1; transform: scale(1.3); }
-      28%  { opacity: 1; transform: scale(1); }
-      42%  { opacity: 1; transform: scale(1.25); }
-      58%  { opacity: 1; transform: scale(1); }
-      100% { opacity: 1; transform: scale(1); }   /* stay visible — no fade */
-    }
-    @keyframes sparkle-burst-small-stay {
-      0%   { opacity: 0; transform: scale(0); }
-      14%  { opacity: .9; transform: scale(1.2); }
-      28%  { opacity: .9; transform: scale(1); }
-      42%  { opacity: .9; transform: scale(1.15); }
-      58%  { opacity: .9; transform: scale(1); }
-      100% { opacity: .9; transform: scale(1); }
-    }
     .token-rate-num {
       position: relative; z-index: 1;
       font-family: var(--font-ui);
@@ -2917,23 +2892,32 @@
        5346) only SMIL animations apply — the static image still bobs
        and emits bills, just doesn't breathe/blink. Acceptable.
     */
-    /* `transform-box: view-box` applies the transform-origin in the
-       SVG's viewBox coord system. Used for elements INSIDE the SVG
-       (path/g/rect). For the outer <svg> element itself we use
-       fill-box (its rendered DOM box) so the centered scale lands at
-       the visible mascot center, not viewBox 50%. */
-    .mascot-area.happy .emote-v2-melt svg {
-      transform-box: fill-box;
-      transform-origin: 50% 50%;
-      animation: bm-breathe 4.2s ease-in-out infinite;
+    /* Breath is applied to the `<g class="bm-body">` wrapper (whole
+       character minus the root g's SMIL containers), NOT the outer
+       <svg>. Two changes vs the old "scale outer svg from center"
+       approach:
+         1. Foot-line pivot — transform-origin 58.5px 95px in the
+            view-box (the bottom of the printer chassis). Feet stay
+            grounded; the visible expansion happens above the belly.
+            Without this anchor a uniform 50/50 scale reads as
+            "object inflating" / zoom-in-out, not "chest rising."
+         2. Asymmetric curve — 0→42% inhale, 42→100% exhale (1.4:1
+            ratio). Real lungs are NOT a 50/50 sine; the slower exhale
+            is what sells respiration vs mechanical pulse.
+       The eyes rise ~2 px and the head ~2.5 px while the feet move
+       0 px — that vertical gradient IS the breath. No separate
+       per-element rise needed: the eyes/face/hands all inherit the
+       transform via the wrapper. */
+    .mascot-area.happy .emote-v2-melt svg .bm-body {
+      transform-box: view-box;
+      transform-origin: 58.5px 95px;
+      animation: bm-breathe 4.2s cubic-bezier(.37,0,.63,1) infinite;
     }
-    /* Almost no horizontal change (1.008) — a balanced 2-axis scale
-       reads as zoom in/out (forward/backward depth), not breathing.
-       Vertical-dominant scale (1.028) makes the chest visibly rise
-       and fall, which is what reads as breath. */
     @keyframes bm-breathe {
-      0%, 100% { transform: scale(1, 1); }
-      50%      { transform: scale(1.008, 1.028); }
+      0%   { transform: translateY(0)      scale(1,     1);     }
+      42%  { transform: translateY(-0.6px) scale(1.004, 1.022); }
+      58%  { transform: translateY(-0.5px) scale(1.004, 1.020); }
+      100% { transform: translateY(0)      scale(1,     1);     }
     }
     /* Eyes wrapper is INSIDE the SVG → use view-box. Origin in viewBox
        coords (0 -8 117 114) at the inter-eye centroid (58, 24). */
@@ -2942,44 +2926,14 @@
       transform-origin: 58px 24px;
       animation: bm-blink 4s ease-in-out infinite;
     }
-    /* Hands counter-bob — body's SMIL bob translates the root <g> by
-       0,-8 at the 50 % keyframe (3 s cycle, same ease-in-out spline as
-       this animation). The hands group is a child of that root, so
-       inheriting the bob makes them rise WITH the body. We add a
-       local translateY in the OPPOSITE direction (+10 px at midpoint)
-       so the cumulative motion at peak = body(-8) + hands(+10) = +2
-       — hands sag down slightly when the body rises, selling the
-       weight of the bills they're holding. Same 3 s duration as the
-       bob so they stay phase-locked. */
-    .mascot-area.happy .emote-v2-melt svg .bm-hands {
-      animation: bm-hands-counter 3s ease-in-out infinite;
-    }
-    @keyframes bm-hands-counter {
-      0%, 100% { transform: translateY(0); }
-      50%      { transform: translateY(6px); }
-    }
-    /* Legs sub-animation — phase-locked to the BREATHING cycle (4.2 s),
-       NOT the bob. When the body inhales (scale peak), the legs spread
-       slightly outward; on exhale they ease back to neutral. The
-       outward direction is mirrored per leg (left = -X, right = +X).
-       Magnitude is tiny (1.6 px) — at the body's centered scale peak
-       the legs already drift ~0.6 px outward via the CSS breathe
-       transform; this layer adds ~1 more px on top so the stance
-       widening reads as a deliberate beat rather than a side effect. */
-    .mascot-area.happy .emote-v2-melt svg .bm-leg-l {
-      animation: bm-leg-spread-l 4.2s ease-in-out infinite;
-    }
-    .mascot-area.happy .emote-v2-melt svg .bm-leg-r {
-      animation: bm-leg-spread-r 4.2s ease-in-out infinite;
-    }
-    @keyframes bm-leg-spread-l {
-      0%, 100% { transform: translateX(0); }
-      50%      { transform: translateX(-1.6px); }
-    }
-    @keyframes bm-leg-spread-r {
-      0%, 100% { transform: translateX(0); }
-      50%      { transform: translateX(1.6px); }
-    }
+    /* Removed: bm-hands-counter (3 px counter against 0.6 px body rise
+       = ~1 px net visible, sub-perceptual at 117 px viewBox) and
+       bm-leg-spread-l/r (±1.6 px translateX over body that already
+       spreads ~0.6 px via centered scaleX 1.004 = net <1 px visible).
+       Both freed always-on animation layers on the most-viewed screen.
+       The wrappers `<g class="bm-hands">` and `<g class="bm-leg-l/r">`
+       are still in the SVG but harmless without the animations — they
+       just render as static groups. */
     /* Two quick squishes in a single cycle — natural human-blink rhythm
        (~5 s between blinks, ~150 ms per blink). 92.5–95.5% window for
        the squish so the eyes are open most of the time. */
@@ -2988,13 +2942,54 @@
       94%                  { transform: scaleY(0.06); }
       96%                  { transform: scaleY(1); }
     }
+    /* prefers-reduced-motion — cover EVERY new layer added by the
+       unified breath system plus all background ambient loops. The
+       wildcard `.reduced-data-mode * { animation: none !important }`
+       elsewhere covers Save-Data users; this block targets accessibility
+       users who explicitly opted into less motion. */
     @media (prefers-reduced-motion: reduce) {
-      .mascot-area.happy .emote-v2-melt svg,
+      /* basic-money idle stack */
+      .mascot-area.happy .emote-v2-melt svg .bm-body,
       .mascot-area.happy .emote-v2-melt svg .bm-eyes,
       .mascot-area.happy .emote-v2-melt svg .bm-hands,
       .mascot-area.happy .emote-v2-melt svg .bm-leg-l,
       .mascot-area.happy .emote-v2-melt svg .bm-leg-r,
-      .mascot-area.ultra-safe .emote-v2-face svg .us-eyes { animation: none; }
+      /* per-state breath (body + face wrappers) — face was missing for
+         all 4 non-happy non-meltdown states. */
+      .mascot-area.ultra-safe .emote-v2-body,
+      .mascot-area.ultra-safe .emote-v2-face,
+      .mascot-area.looking-good .emote-v2-body,
+      .mascot-area.looking-good .emote-v2-face,
+      .mascot-area.getting-risky .emote-v2-body,
+      .mascot-area.getting-risky .emote-v2-face,
+      .mascot-area.danger-zone .emote-v2-body,
+      .mascot-area.danger-zone .emote-v2-face,
+      /* eye blinks per state */
+      .mascot-area.ultra-safe .emote-v2-face svg .us-eyes,
+      .mascot-area.getting-risky .emote-v2-face svg .m-eyes,
+      .mascot-area.danger-zone .emote-v2-face svg .m-eyes,
+      .mascot-area.danger-zone .emote-v2-face svg .m-mouth-group,
+      .mascot-area.ultra-safe .emote-v2-face svg .m-eye-star-small,
+      /* mascot-blob ambient loops + connect-burst layers + outer bob */
+      .mascot-blob,
+      .mascot-area.meltdown .mascot-blob,
+      .blob-meltdown-bg-pulse,
+      .blob-meltdown-bg-shimmer,
+      .blob-sunburst-shimmer,
+      .connect-burst-bg,
+      .mascot-illustration,
+      .mascot-area.is-celebrating .mascot-illustration { animation: none !important; }
+    }
+    /* Offscreen pause — companion to the IntersectionObserver in the
+       script section below. When `.mascot-area` leaves the viewport
+       (with a 100 px buffer for scroll smoothness), the IO toggles
+       `.is-offscreen` and all descendant animations pause. Resume on
+       re-intersection. Saves continuous GPU/CPU cost when the mascot
+       isn't visible — biggest single battery win on mobile per the
+       perf audit. */
+    .mascot-area.is-offscreen,
+    .mascot-area.is-offscreen * {
+      animation-play-state: paused !important;
     }
     .mascot-area.ultra-safe .mascot-illustration,
     .mascot-area.looking-good .mascot-illustration,
@@ -3063,10 +3058,11 @@
        a "joy" arc, hands wave overhead. Each part is identified by a class
        added directly to the SVG (.m-cheek/.m-eye-star/.m-eyebrow/.m-hand)
        so the same scheme can be reused across other emotes. */
-    @keyframes ultra-safe-breathe {
-      0%, 100% { transform: scale(1, 1); }
-      50%      { transform: scale(1.025, 1.04); }
-    }
+    /* ultra-safe-breathe keyframe removed — ultra-safe now reuses the
+       basic-money keyframe `bm-breathe` (asymmetric 42/58, translateY +
+       scale, same amplitude). Applied to BOTH .emote-v2-body and
+       .emote-v2-face below so chassis and face rise together; feet
+       stay anchored. */
     @keyframes ultra-safe-cheek-beat {
       0%, 60%, 100% { transform: scale(1); }
       15%           { transform: scale(1.18); }
@@ -3089,8 +3085,18 @@
       0%, 100% { transform: translateY(0) rotate(0deg); }
       50%      { transform: translateY(-3px) rotate(-8deg); }
     }
-    .mascot-area.ultra-safe .emote-v2-body {
-      animation: ultra-safe-breathe 3.5s ease-in-out infinite;
+    /* Match basic-money breath: shared `bm-breathe` keyframe at 4.2 s
+       with asymmetric 42/58 curve. Applied to body wrapper AND face
+       wrapper (next rule) so they rise together. transform-origin:
+       center bottom anchors at the foot line — feet (separate sibling
+       div) stay grounded. Kill the legacy `mascot-bob` on the outer
+       .mascot-illustration so transform isn't being competed-for. */
+    .mascot-area.ultra-safe .emote-v2.mascot-illustration {
+      animation: none;
+    }
+    .mascot-area.ultra-safe .emote-v2-body,
+    .mascot-area.ultra-safe .emote-v2-face {
+      animation: bm-breathe 4.2s cubic-bezier(.37, 0, .63, 1) infinite;
       transform-origin: center bottom;
     }
     .mascot-area.ultra-safe .emote-v2-face svg .m-cheek {
@@ -3159,10 +3165,10 @@
        a calmer personality: slower breathing, gentler cheek pulse, near-still
        hands. The SVG uses smile-curves for eyes (no eye-stars) so we don't
        animate those. Mouth and eyes left static for a relaxed feel. */
-    @keyframes looking-good-breathe {
-      0%, 100% { transform: scale(1, 1); }
-      50%      { transform: scale(1.018, 1.028); }
-    }
+    /* looking-good-breathe keyframe removed — looking-good now reuses
+       the basic-money keyframe `bm-breathe` (asymmetric 42/58,
+       translateY + scale, same amplitude). Applied to both
+       .emote-v2-body and .emote-v2-face below. */
     @keyframes looking-good-cheek-pulse {
       0%, 100% { scale: 1; }
       50%      { scale: 1.08; }
@@ -3182,8 +3188,15 @@
       0%, 100% { transform: translateY(0) rotate(0deg); }
       50%      { transform: translateY(-1.5px) rotate(-3deg); }
     }
-    .mascot-area.looking-good .emote-v2-body {
-      animation: looking-good-breathe 4.5s ease-in-out infinite;
+    /* Match basic-money breath: shared `bm-breathe` keyframe at 4.2 s
+       on body+face wrappers; mascot-bob on .mascot-illustration killed
+       so transform isn't contested. Feet (sibling div) stay anchored. */
+    .mascot-area.looking-good .emote-v2.mascot-illustration {
+      animation: none;
+    }
+    .mascot-area.looking-good .emote-v2-body,
+    .mascot-area.looking-good .emote-v2-face {
+      animation: bm-breathe 4.2s cubic-bezier(.37, 0, .63, 1) infinite;
       transform-origin: center bottom;
     }
     .mascot-area.looking-good .emote-v2-face svg .m-cheek {
@@ -3242,7 +3255,10 @@
        with a baseline tremor, eyes pulse + tremble, eyebrows tremble, hands
        tremble, mouth wave loops via clip-path, sweat drops fall on staggered
        cycles, and a celeste gradient overlays the body to read as "pale". */
-    @keyframes gr-body-breathe { 0%, 100% { scale: 1; } 50% { scale: 1.018 1.028; } }
+    /* gr-body-breathe keyframe removed — getting-risky now reuses
+       bm-breathe (asymmetric 42/58, foot-anchored via center-bottom).
+       Tremor is preserved via gr-tremor on a different property
+       (`translate:`). */
     @keyframes gr-tremor {
       0%, 100% { translate: 0 0; }
       20% { translate: -0.4px 0.2px; }
@@ -3250,11 +3266,7 @@
       60% { translate: -0.2px -0.3px; }
       80% { translate: 0.4px 0.2px; }
     }
-    @keyframes gr-eye-pulse {
-      0%, 30%, 60%, 100% { scale: 1; }
-      15% { scale: 1.10; }
-      45% { scale: 1.07; }
-    }
+    /* gr-eye-pulse keyframe removed — see .m-eyes rule below. */
     @keyframes gr-mouth-wave {
       0% { transform: translateX(0); }
       100% { transform: translateX(-8px); } /* one full wave period (2 q-segments × 4 units) */
@@ -3265,12 +3277,32 @@
       45%  { opacity: 0.8; transform: translateY(3px); }
       60%, 100% { opacity: 0; transform: translateY(4.5px); }
     }
+    /* Same breath pattern as basic-money / ultra-safe / looking-good
+       (bm-breathe asymmetric 42/58) but slightly faster duration (3.4 s
+       vs the calm 4.2 s baseline) — anxious chest rises faster.
+       gr-tremor stays on body via `translate:` (independent of
+       `transform`) so the shake AND the breath layer cleanly.
+       Face wrapper also gets the breath so chassis + face rise
+       together; feet anchor at center-bottom. mascot-bob killed on
+       .emote-v2.mascot-illustration to avoid transform contention. */
+    .mascot-area.getting-risky .emote-v2.mascot-illustration {
+      animation: none;
+    }
     .mascot-area.getting-risky .emote-v2-body {
-      animation: gr-body-breathe 3s ease-in-out infinite, gr-tremor 0.32s ease-in-out infinite;
+      animation: gr-tremor 0.32s ease-in-out infinite,
+                 bm-breathe 3.4s cubic-bezier(.37, 0, .63, 1) infinite;
       transform-origin: center bottom;
     }
+    .mascot-area.getting-risky .emote-v2-face {
+      animation: bm-breathe 3.4s cubic-bezier(.37, 0, .63, 1) infinite;
+      transform-origin: center bottom;
+    }
+    /* gr-eye-pulse (scale grow) removed — was reading as a recurring
+       widening pop that felt off vs the rest of the anxious palette.
+       Tremble + blink remain; they cover the "alive eyes" beat. */
     .mascot-area.getting-risky .emote-v2-face svg .m-eyes {
-      animation: gr-eye-pulse 1.8s ease-in-out infinite, gr-tremor 0.3s ease-in-out infinite;
+      animation: gr-tremor 0.3s ease-in-out infinite,
+                 bm-blink 4.6s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center;
     }
@@ -3279,11 +3311,10 @@
       transform-box: fill-box;
       transform-origin: center;
     }
-    .mascot-area.getting-risky .emote-v2-face svg .m-hand {
-      animation: gr-tremor 0.26s ease-in-out infinite;
-      transform-box: fill-box;
-      transform-origin: center;
-    }
+    /* Removed: gr-tremor on .m-hand — the body wrapper (.emote-v2-body)
+       already runs gr-tremor at 0.32 s, and hands render inside that
+       wrapper visually, so the per-hand tremor was redundant. The
+       parent shake carries the hand silhouette with it. */
     .mascot-area.getting-risky .emote-v2-face svg .m-mouth-inner {
       animation: gr-mouth-wave 1.2s linear infinite;
     }
@@ -3441,16 +3472,47 @@
       80%  { transform: skewX(-3deg) scaleY(1.02) rotate(0deg); }
     }
     /* Body shakes hard on a 0.25s cycle (V1 head-shake timing) */
+    /* Match basic-money breath PATTERN (asymmetric 42/58 via bm-breathe)
+       but shorter cycle for the hyperventilation read — panic = fast,
+       shallow chest rise. Both body and face wrappers animate; feet
+       (sibling div) stay anchored.
+       Tremor is preserved: dz-tremor uses the individual `translate:`
+       property while bm-breathe uses `transform` — they compose without
+       overriding. Visual: shaky chest rising and falling fast.
+       Color animations (dz-flush gradient stop on m-body-overlay,
+       dz-cheek-flush fill) animate `stop-color`/`fill`, fully
+       independent of transform — preserved intact. */
+    .mascot-area.danger-zone .emote-v2.mascot-illustration {
+      animation: none;
+    }
     .mascot-area.danger-zone .emote-v2-body {
-      animation: dz-tremor 0.25s ease-in-out infinite;
+      animation: dz-tremor 0.25s ease-in-out infinite,
+                 bm-breathe 2.8s cubic-bezier(.37, 0, .63, 1) infinite;
       transform-origin: center bottom;
     }
+    .mascot-area.danger-zone .emote-v2-face {
+      animation: bm-breathe 2.8s cubic-bezier(.37, 0, .63, 1) infinite;
+      transform-origin: center bottom;
+    }
+    /* Tremble + blink layered. dz-face-tremble uses `translate:` (individual
+       property) and bm-blink uses `transform: scaleY(...)` — different
+       property targets compose without override. Visual: eyes that shake
+       AND blink periodically. */
     .mascot-area.danger-zone .emote-v2-face svg .m-eyes {
-      animation: dz-face-tremble 0.15s ease-in-out infinite;
+      animation: dz-face-tremble 0.15s ease-in-out infinite,
+                 bm-blink 4.6s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center;
     }
     .mascot-area.danger-zone .emote-v2-face svg .m-eyebrow {
+      animation: dz-face-tremble 0.15s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    /* Mouth tremble — same beat as eyes/eyebrows so the whole face
+       shakes coherently. Without this the mouth (tongue + outline +
+       inner) reads as stationary while everything around it jitters. */
+    .mascot-area.danger-zone .emote-v2-face svg .m-mouth-group {
       animation: dz-face-tremble 0.15s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center;
@@ -3633,13 +3695,6 @@
       from { transform: rotate(0deg); }
       to   { transform: rotate(360deg); }
     }
-    /* Eyebrows tremble subtly (slower than danger-zone, weaker overall) */
-    @keyframes md-eyebrow-tremor {
-      0%, 100% { translate: 0 0; }
-      25% { translate: -0.5px 0.3px; }
-      50% { translate: 0.4px -0.3px; }
-      75% { translate: -0.3px 0.4px; }
-    }
     /* Melted body parts slowly drip (subtle Y shift + scale) */
     @keyframes md-melt-drip {
       0%, 100% { transform: translateY(0) scaleY(1); }
@@ -3665,11 +3720,10 @@
       transform-box: fill-box;
       transform-origin: center;
     }
-    .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow {
-      animation: md-eyebrow-tremor 0.4s ease-in-out infinite;
-      transform-box: fill-box;
-      transform-origin: center;
-    }
+    /* Removed: md-eyebrow-tremor — md-body-tremor already runs on the
+       entire emote SVG wrapper (0.5 s), so the per-eyebrow tremor was
+       layered on top of the already-shaking parent and added no visible
+       motion beyond paint cost. */
     /* Drippy upper-body line (the wavy melt outline above the eyes — line +
        its cream shadow) stretches downward in a slow loop, reinforcing the
        sense the head is melting. Anchored at the top so the drips extend
@@ -3799,7 +3853,6 @@
       .mascot-area.getting-risky .emote-v2-body,
       .mascot-area.getting-risky .emote-v2-face svg .m-eyes,
       .mascot-area.getting-risky .emote-v2-face svg .m-eyebrow,
-      .mascot-area.getting-risky .emote-v2-face svg .m-hand,
       .mascot-area.getting-risky .emote-v2-face svg .m-mouth-inner,
       .mascot-area.getting-risky .emote-v2-face svg [class^="m-drop"],
       .mascot-area.getting-risky .emote-v2-face svg .m-cheek,
@@ -3825,7 +3878,6 @@
       .mascot-area.meltdown .emote-v2-melt svg .m-foot-r,
       .mascot-area.meltdown .emote-v2-melt svg .m-eye-x-cross,
       .mascot-area.meltdown .emote-v2-melt svg .m-eye-spiral,
-      .mascot-area.meltdown .emote-v2-melt svg .m-eyebrow,
       .mascot-area.meltdown .emote-v2-melt svg [class^="m-melt"],
       .mascot-area.meltdown .emote-v2-melt svg [class^="m-puddle"],
       .mascot-area.meltdown .emote-v2-melt svg .m-drool,
@@ -9151,6 +9203,42 @@ function parseV2Emote(svgString, emoteKey) {
       }
     }).catch(function() { loaded++; });
   });
+})();
+
+/* ===== IO pause — pause mascot animations when offscreen =====
+   The mascot system runs 5–12 concurrent CSS animations per state.
+   When the user scrolls/navigates away from a mascot screen, those
+   keep burning GPU/CPU on Mali-G52. IntersectionObserver toggles
+   `.is-offscreen` on each `.mascot-area` when it leaves the viewport
+   (with 100 px buffer to avoid pause-flicker at scroll boundaries).
+   The CSS rule above pairs with this and sets `animation-play-state:
+   paused` for the area + descendants.
+   Safe-to-resume loops dominate (breath, tremor, wobble — all
+   symmetric); one-shot fires (celebrate, state-punch,
+   blob-sunburst-celebrate) only trigger on user interaction while
+   the mascot IS visible, so the pause never catches them mid-flight.
+   The two delayed re-scans (500 ms + 2 s) catch dynamically added
+   mascot-areas — phone-b clone via initPhoneB lands within that
+   window. */
+(function() {
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      e.target.classList.toggle('is-offscreen', !e.isIntersecting);
+    });
+  }, { rootMargin: '100px' });
+  function observeAll() {
+    document.querySelectorAll('.mascot-area').forEach(function(el) {
+      if (!el._ioObserved) {
+        io.observe(el);
+        el._ioObserved = true;
+      }
+    });
+  }
+  observeAll();
+  setTimeout(observeAll, 500);
+  setTimeout(observeAll, 2000);
+  window._observeMascotAreas = observeAll; // exposed for explicit re-scan
 })();
 
 /* Apply expression to a v2 container (instant, no transition) */

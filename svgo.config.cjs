@@ -67,8 +67,14 @@
 //      coordinate space. collapseGroups moved the class to the inner
 //      path → transform anchors at a different point → scale animation
 //      reads wrong (or doesn't fire visibly).
+// `floatPrecision: 1` at the global config level applies the precision
+// drop across every numeric plugin (cleanupNumericValues, convertPathData,
+// convertTransform, cleanupListOfValues). 1 decimal is invisible at the
+// 117-150 px viewBox-rendered sizes; mascot details are >2 px so a 0.05
+// position drift is sub-pixel.
 module.exports = {
   multipass: true,
+  floatPrecision: 1,
   plugins: [
     {
       name: 'preset-default',
@@ -79,7 +85,7 @@ module.exports = {
           cleanupIds: false,
           inlineStyles: false,
           collapseGroups: false,
-          convertPathData: { forceAbsolutePath: true },
+          convertPathData: { forceAbsolutePath: true, floatPrecision: 1 },
           removeUnknownsAndDefaults: {
             keepDataAttrs: true,
             keepAriaAttrs: true,
