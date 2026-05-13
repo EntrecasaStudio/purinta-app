@@ -328,22 +328,6 @@
     .phone-label { font-family: 'SF Mono', 'Menlo', monospace; font-size: 20px; font-weight: 500;
       color: rgba(255,255,255,0.6); background: rgba(30,30,30,0.85); border: 1px solid rgba(255,255,255,0.1);
       border-radius: 8px; padding: 6px 12px; position: absolute; left: -48px; top: 54px; }
-    /* Demo control: replays the skeleton → my-positions cascade animation.
-       Mirrors the .phone-label visual style so it reads as part of the dev
-       chrome (outside the device frame), not part of the product UI. */
-    .phone-play-btn {
-      position: absolute; left: -48px; top: 104px;
-      width: 36px; height: 36px;
-      display: flex; align-items: center; justify-content: center;
-      color: rgba(255,255,255,0.7);
-      background: rgba(30,30,30,0.85); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 50%; cursor: pointer; padding: 0;
-      font-size: 16px; line-height: 0;
-      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-    }
-    .phone-play-btn:hover { background: rgba(50,50,50,0.95); color: #fff; }
-    .phone-play-btn:active { transform: scale(0.92); }
-    .phone-play-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .phone-wrap { display: flex; flex-direction: column; align-items: center; position: relative; }
     .phone-wrap.hidden { display: none; }
 
@@ -4716,13 +4700,12 @@
     @media (prefers-reduced-motion: reduce) {
       .skel-block { animation: none; background: var(--neutral-200); }
     }
-    /* Skeleton → My Positions transition. The demo Play button (.phone-play-btn)
-       triggers .skel-fading-out on the skel screen and .cards-cascade on the
-       real #positions screen at the same time, with a ~100ms head-start so the
-       cards lift in just as the skeleton fades. Stagger is :nth-child only —
-       no setTimeout scheduling — capped at 6 cards (anything past that reuses
-       the last delay). Tuned to expert spec: 360ms ease-out-expo card enter,
-       70ms stagger, 10px translate-Y, 200ms skel fade-out. */
+    /* Skeleton → loaded transition. Triggered automatically by showScreen()
+       when the user navigates to any skel-* dev screen — the helper holds
+       the shimmer for SKEL_DEMO_HOLD_MS, then fades .skel-fading-out while
+       activating the real screen. .cards-cascade drives a 70ms-stagger
+       lift-in for #positions cards (360ms ease-out-expo, 10 px translate-Y);
+       other screens use their own reveal-in cascade or simple fade. */
     @keyframes skel-fade-out {
       from { opacity: 1; }
       to   { opacity: 0; }
@@ -5324,8 +5307,6 @@
 <div class="phones-container">
 <div class="phone-wrap" id="wrap-a">
   <div class="phone-label">A</div>
-  <button class="phone-play-btn" type="button" aria-label="Replay positions load animation"
-          onclick="playPositionsLoadDemo('')"><i class="ph-light ph-play"></i></button>
   <div class="phone" id="phone-a">
 
   <!-- ═══ SCREEN 1: HOMEPAGE ═══ -->
@@ -6727,8 +6708,6 @@
 </div>
 <div class="phone-wrap hidden" id="wrap-b">
   <div class="phone-label">B</div>
-  <button class="phone-play-btn" type="button" aria-label="Replay positions load animation"
-          onclick="playPositionsLoadDemo('-b')"><i class="ph-light ph-play"></i></button>
   <div class="phone" id="phone-b"></div>
 </div>
 </div>
@@ -7477,52 +7456,92 @@ document.addEventListener('click', function(e) {
     var bpBtn = document.querySelector('.bp-btn[data-bp="' + w + '"]'); if (bpBtn) bpBtn.classList.add('active');
   }
 
-  // Demo: replay the skeleton → my-positions transition for screenshots / QA.
-  // Holds the skeleton ~700ms so the shimmer is visible, then fires the
-  // crossfade: skel fades out (200ms) while #positions activates with the
-  // cascade class, so the cards lift in with a 70ms stagger overlapping the
-  // last 100ms of the skel fade-out. Re-entrant: cancels in-flight timers and
-  // resets state so users can mash the button without breaking the sequence.
-  var _posDemoTimers = {};
-  function playPositionsLoadDemo(suffix) {
-    suffix = suffix || '';
-    var phoneId = 'phone-' + (suffix === '' ? 'a' : suffix.replace('-', ''));
-    var phone = document.getElementById(phoneId);
-    var skel = document.getElementById('skel-positions' + suffix);
-    var real = document.getElementById('positions' + suffix);
-    if (!phone || !skel || !real) return;
-    // Clear any in-flight run for this phone
-    var slot = _posDemoTimers[phoneId];
-    if (slot) { clearTimeout(slot.t1); clearTimeout(slot.t2); }
-    skel.classList.remove('skel-fading-out');
-    real.classList.remove('cards-cascade');
-    // Show skeleton
-    phone.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
-    skel.classList.add('active');
-    var t1 = setTimeout(function() {
-      // Begin skel fade-out and activate real cascade with 100ms head-start
-      skel.classList.add('skel-fading-out');
-      var t2 = setTimeout(function() {
-        // Activate real screen and re-trigger cascade keyframes via reflow.
-        // --card-i drives the per-card stagger delay (calc in CSS); set here
-        // so :nth-child can't be confused by non-card siblings (.title-row,
-        // empty-state nodes that may sit between the cards in some layouts).
-        real.classList.remove('cards-cascade');
-        var cards = real.querySelectorAll('.position-card');
-        cards.forEach(function(c, i) { c.style.setProperty('--card-i', Math.min(i, 5)); });
-        // eslint-disable-next-line no-unused-expressions
-        real.offsetWidth;
-        real.classList.add('active', 'cards-cascade');
-        // After the skel fade-out completes, deactivate it
-        var t3 = setTimeout(function() {
-          skel.classList.remove('active', 'skel-fading-out');
-        }, 200);
-        _posDemoTimers[phoneId].t3 = t3;
-      }, 100);
-      _posDemoTimers[phoneId].t2 = t2;
-    }, 700);
-    _posDemoTimers[phoneId] = { t1: t1 };
+  // Skel → loaded auto-demo. Called by showScreen() whenever the user
+  // navigates to a skel-* dev screen so the shimmer → content reveal
+  // plays automatically — no manual play button required.
+  //
+  // SKEL_DEMO_HOLD_MS — long enough for the shimmer sweep to read
+  // clearly (the .skel-block keyframe is 1.7 s, so anything under that
+  // never lets the highlight complete a single pass). 2500 ms gives
+  // ~1.5 sweeps: one full sweep visible from edge to edge plus the
+  // start of a second pass, which is what the eye needs to perceive
+  // the direction and rhythm. Realism vs design demo: real RPC is
+  // usually faster, but this screen is for stakeholders evaluating the
+  // animation, not for measuring latency. Slow > unreadable.
+  var SKEL_DEMO_HOLD_MS = 2500;
+  var SKEL_DEMO_MAP = {
+    'skel-home':      { real: 'homepage-connected', reveal: 'reveal-in' },
+    'skel-borrow':    { real: 'borrow-connected',   reveal: 'crossfade' },
+    'skel-positions': { real: 'positions',          reveal: 'cards-cascade' },
+    'skel-update':    { real: 'update',             reveal: 'crossfade' }
+  };
+  var _skelDemoTimers = {};
+
+  function playSkelDemo(skelId) {
+    var cfg = SKEL_DEMO_MAP[skelId];
+    if (!cfg) return;
+    // For every visible phone (a / b / a+b layouts) run the demo against
+    // the suffixed skel / real pair. The unsuffixed phone-a path is the
+    // most common; phone-b iterates via the same code path.
+    document.querySelectorAll('.phone-wrap:not(.hidden)').forEach(function(wrap) {
+      var sfx = wrap.id === 'wrap-a' ? '' : ('-' + wrap.id.replace('wrap-', ''));
+      var phone = wrap.querySelector('.phone');
+      if (!phone) return;
+      var skel = phone.querySelector('#' + skelId + sfx);
+      var real = phone.querySelector('#' + cfg.real + sfx);
+      if (!skel || !real) return;
+      var key = wrap.id;
+      var slot = _skelDemoTimers[key];
+      if (slot) { clearTimeout(slot.t1); clearTimeout(slot.t2); clearTimeout(slot.t3); }
+      skel.classList.remove('skel-fading-out');
+      real.classList.remove('cards-cascade');
+      var t1 = setTimeout(function() {
+        skel.classList.add('skel-fading-out');
+        var t2 = setTimeout(function() {
+          // Deactivate every other screen so only the real target is on top.
+          phone.querySelectorAll('.screen').forEach(function(s) {
+            if (s !== real && s !== skel) s.classList.remove('active');
+          });
+          if (cfg.reveal === 'cards-cascade') {
+            real.classList.remove('cards-cascade');
+            var cards = real.querySelectorAll('.position-card');
+            cards.forEach(function(c, i) { c.style.setProperty('--card-i', Math.min(i, 5)); });
+            // eslint-disable-next-line no-unused-expressions
+            real.offsetWidth;     // force reflow so the cascade keyframes re-arm
+            real.classList.add('active', 'cards-cascade');
+          } else if (cfg.reveal === 'reveal-in') {
+            real.classList.add('active');
+            if (typeof revealHomepageElements === 'function') {
+              revealHomepageElements(phone);
+            }
+          } else {
+            // crossfade = real just snaps in while the skel is mid-fade-out.
+            // The 100 ms overlap makes the visual read as a single
+            // dissolve, not two discrete steps.
+            real.classList.add('active');
+          }
+          var t3 = setTimeout(function() {
+            skel.classList.remove('active', 'skel-fading-out');
+          }, 200);
+          _skelDemoTimers[key].t3 = t3;
+        }, 100);
+        _skelDemoTimers[key].t2 = t2;
+      }, SKEL_DEMO_HOLD_MS);
+      _skelDemoTimers[key] = { t1: t1 };
+    });
   }
+
+  function cancelSkelDemos() {
+    Object.keys(_skelDemoTimers).forEach(function(k) {
+      var slot = _skelDemoTimers[k];
+      if (slot) { clearTimeout(slot.t1); clearTimeout(slot.t2); clearTimeout(slot.t3); }
+      delete _skelDemoTimers[k];
+    });
+  }
+  // Make them callable from anywhere (showScreen lives in another script
+  // block; explicit window. attaches keep the global wiring readable).
+  window.playSkelDemo = playSkelDemo;
+  window.cancelSkelDemos = cancelSkelDemos;
 // Wallet pill: single delegated handler that targets `.wallet-badge` in
 // ANY phone (a / b / c). Was previously gated to phone-a only (and a stale
 // phone-c handler that never fires since phone-c is retired) — phone-b's
@@ -8414,6 +8433,11 @@ function showScreen(id) {
   // they don't keep covering the next screen we navigate to.
   document.querySelectorAll('.bundle-modal-overlay.is-open').forEach(function(o) { o.classList.remove('is-open'); });
   if (typeof closeQuickRepay === 'function') closeQuickRepay();
+  // Cancel any pending skel→loaded auto-demo before navigating. If the
+  // user clicked a skel screen and then immediately clicked elsewhere,
+  // we don't want the stale timer to fire 1.2 s later and force us back
+  // to the resolved-state screen.
+  if (typeof cancelSkelDemos === 'function') cancelSkelDemos();
   // (Wallet-connect celebration auto-trigger removed.) The big sunburst
   // burst was firing on every "first visit" to any *-connected screen,
   // including dev-nav state-preset clicks (Ultra Safe, Looking Good, etc.)
@@ -8496,6 +8520,12 @@ function showScreen(id) {
         revealHomepageElements(document.getElementById('phone-' + sfx));
       }
     });
+  }
+  // Skel-* entry: auto-play the shimmer → content reveal so designers and
+  // devs see the production fetch flow on every dev-nav click. No manual
+  // play button. SKEL_DEMO_HOLD_MS in playSkelDemo controls the dwell.
+  if (/^skel-/.test(id) && typeof playSkelDemo === 'function') {
+    playSkelDemo(id);
   }
   // Loading-loop dev screen: keep the mascot spinning while it's active, stop
   // on exit. Scope to whichever phone is currently visible (phone-a on Op A/C,
