@@ -3424,19 +3424,18 @@
       opacity: 1;
     }
     .mascot-area.ultra-safe .mascot-stars { display: block; }
-    /* The green dot floating at the upper-left of the mascot was the
-       right-foot shine ellipse. Each V2 emote SVG has two highlight
-       ellipses (m-foot-l, m-foot-r). The LEFT one uses absolute cx/cy
-       at the foot's actual position, so its CSS animation only re-orients
-       it. The RIGHT one uses `cx="1.5" cy="1.9"` and relies on a SVG
-       `transform="matrix(...)"` attribute to translate it to the foot.
-       Once the per-state CSS animations on `.m-foot-r` apply their own
-       `transform: rotate/skew/scale(...)`, the SVG matrix is REPLACED
-       (CSS transform doesn't compose with SVG transform attributes), and
-       the ellipse falls back to its raw 1.5/1.9 coords — i.e. the
-       upper-left of the SVG viewBox. Hide it; the highlight is tiny and
-       not load-bearing visually. */
-    .emote-v2-feet svg ellipse.m-foot-r { display: none; }
+    /* Foot-shine ellipses are now authored with absolute cx/cy on the
+       mascot-left foot (viewer's right) in every V2 emote SVG. The
+       previous broken `cx="1.5" cy="1.9" + transform="rotate ... scale(1 -1)"`
+       authoring would fall back to the SVG's upper-left corner the
+       moment a CSS animation overwrote the SVG transform attribute,
+       which is why the highlight floated up-left in meltdown and was
+       hidden in the other states. Now the per-state CSS animations on
+       `.m-foot-r` (heel rock, tremor, etc.) compose around the
+       transform-origin set on the rule itself, and the ellipse stays
+       pinned on the actual foot. Meltdown's `.m-foot-l` was likewise
+       re-anchored from its stale (10.4, 64.9) position onto the
+       melted left foot at (5, 87). */
     .mascot-stars svg { position: absolute; }
     /* Upper-left, near the left hand-raise */
     .mascot-stars .sp1 { width: 22px; height: 22px; top: 6px; left: 10px; animation: star-twinkle 2.2s ease-in-out infinite 0s; }
@@ -8864,6 +8863,10 @@ function setBorrowHealth(level) {
   // Mirror the preset to phones B and C so multi-phone views stay in sync.
   ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('borrow-connected' + sfx, level); });
   _markStateBtnActive('setBorrowHealth', level);
+  // Persist the health preset so a page reload lands the user back on the
+  // same state instead of the default. Cleared by setBorrowInitial (which
+  // represents the "fresh wallet-just-connected" entry point).
+  try { localStorage.setItem('purinta-borrow-health', level); } catch (e) {}
 }
 // Toggle the "token not in your wallet" warning banner on borrow-connected
 // for design review. Routes through the real token-selection flow so the
@@ -8928,6 +8931,10 @@ function setBorrowInitial() {
     });
   });
   _markStateBtnActive('setBorrowInitial', null);
+  // "Initial" represents the fresh wallet-just-connected entry, so any
+  // saved health preset from a previous session should be cleared — a
+  // subsequent reload should land back here, not on the prior state.
+  try { localStorage.removeItem('purinta-borrow-health'); } catch (e) {}
   setTimeout(function() {
     if (typeof replayConnectCelebration === 'function') replayConnectCelebration();
   }, 120);
@@ -11019,6 +11026,22 @@ function playLoadingIntro(phone) {
     try { return localStorage.getItem('purinta-modal'); } catch (e) { return null; }
   })();
   showScreen(savedScreen);
+  // Restore the saved borrow health preset (meltdown / danger-zone / etc.)
+  // if the user reloaded while on borrow-connected. Without this, the
+  // reload always lands on the default state regardless of which preset
+  // they had selected via the dev nav. rAF defer so showScreen's layout
+  // settles before _applyHealthPreset reads + mutates DOM.
+  if (/^borrow-connected/.test(savedScreen)) {
+    var savedHealth = (function() {
+      try { return localStorage.getItem('purinta-borrow-health'); } catch (e) { return null; }
+    })();
+    if (savedHealth && typeof _applyHealthPreset === 'function') {
+      requestAnimationFrame(function() {
+        ['', '-b', '-c'].forEach(function(sfx) { _applyHealthPreset('borrow-connected' + sfx, savedHealth); });
+        if (typeof _markStateBtnActive === 'function') _markStateBtnActive('setBorrowHealth', savedHealth);
+      });
+    }
+  }
   // Re-open the dev-nav modal that was active when the user last left,
   // on top of the restored screen. rAF defer so the screen reveal
   // animations don't fight the modal's qr-pop entrance keyframe.
