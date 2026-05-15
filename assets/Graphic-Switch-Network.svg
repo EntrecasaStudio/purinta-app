@@ -2,11 +2,21 @@
 <style><![CDATA[
   /* Self-contained animation — runs even when the SVG is rendered as an
      img element. transform-box: fill-box anchors each group's
-     transform-origin to its own bounding box. The cloud + background blob
-     are intentionally NOT wrapped, so they stay fixed while the rest moves.
+     transform-origin to its own bounding box. Only the cloud stays fully
+     fixed now; the blob has its own slow breath cycle (different period
+     from the jump so they drift out of phase organically).
      Wrapped in CDATA so the CSS body can't be mis-parsed as XML. */
-  .sn-mascot, .sn-diamond, .sn-eyes, .sn-hand-up, .sn-hand-down,
+  .sn-mascot, .sn-diamond, .sn-eyes, .sn-hand-up, .sn-hand-down, .sn-blob, .sn-eth,
   .sn-float-gems, .sn-float-spark-a, .sn-float-spark-b { transform-box: fill-box; }
+  /* ETH emblem on top of the diamond — gentle scale pulse on top of the
+     parent .sn-diamond bounce, so it reads as "energy" without competing
+     with the impact squash. Period is offset from jump (2.4s vs 3s) so the
+     pulse drifts in and out of phase with the bounce — feels alive. */
+  .sn-eth          { transform-origin: center;   animation: sn-eth-pulse 2.4s ease-in-out infinite; }
+  /* Background blob — gentle 5s breath with a touch of rotation so the
+     organic shape feels alive instead of stamped down. Subtle enough that
+     it never competes with the mascot's motion. */
+  .sn-blob         { transform-origin: 50% 50%; animation: sn-blob-breathe 5s ease-in-out infinite; }
   .sn-mascot       { transform-origin: 50% 100%; animation: sn-jump 3s cubic-bezier(0.34,1.56,0.64,1) infinite; }
   .sn-diamond      { transform-origin: 50% 100%; animation: sn-diamond-bounce 3s ease-in-out infinite; }
   .sn-eyes         { transform-origin: center;   animation: sn-blink 4.2s ease-in-out infinite; }
@@ -18,29 +28,55 @@
      cancels part of the parent's lift, so it reads as hanging behind under
      gravity), then rebounds on landing. Mirrors sn-hand-up out of phase. */
   .sn-hand-down    { transform-origin: 50% 0%;   animation: sn-hand-down 3s cubic-bezier(0.34,1.56,0.64,1) infinite; }
-  .sn-float-gems   { transform-origin: center;   animation: sn-float 4s   ease-in-out infinite; }
-  .sn-float-spark-a{ transform-origin: center;   animation: sn-float 3.4s ease-in-out infinite 0.5s; }
-  .sn-float-spark-b{ transform-origin: center;   animation: sn-float 3.8s ease-in-out infinite 1s; }
-  /* Jump cycle: gentle breath in the first half, crouch -> leap -> land in
-     the second. At 86% the mascot kisses the diamond top, then at 88% it
-     sinks WITH the diamond's full squash (translateY +9px ≈ amount the
-     diamond's top drops), then both rebound together at 94%. Without this
-     follow-through the mascot looked weightless during the impact. */
+  /* Twinkle: appear / disappear with scale + (for sparkles) rotation.
+     Ports the V1 star-twinkle pattern used in ultra-safe. */
+  /* Gems: synced to the 3 s jump cycle. Same appear/disappear feel as
+     before, but the rhythm is now narrative — gems tuck inward toward
+     the SVG center (≈ where the mascot lands) during the crouch+apex,
+     then burst outward at the moment of impact (88 %, peak scale 1.3
+     with a back-ease overshoot). Group scaling around its centroid
+     naturally produces a radial burst: each gem ends up 30 % further
+     from center than its design position. */
+  .sn-float-gems   { transform-origin: center;   animation: sn-gem-burst 3s ease-in-out infinite; }
+  /* Sparkles: animation is applied PER PATH (not per group) so each star
+     rotates around its own center, not the group centroid. transform-box:
+     fill-box on each path makes the transform-origin pivot at the path's
+     own bounding-box center. */
+  .sn-float-spark-a > path,
+  .sn-float-spark-b > path { transform-box: fill-box; transform-origin: center; animation: sn-spark-twinkle 3.4s ease-in-out infinite; }
+  /* Stagger individual stars with nth-child delays — no two blink in
+     unison. spark-b uses a slightly different period for extra drift. */
+  .sn-float-spark-a > path:nth-child(2) { animation-delay: 0.6s; }
+  .sn-float-spark-a > path:nth-child(3) { animation-delay: 1.2s; }
+  .sn-float-spark-a > path:nth-child(4) { animation-delay: 0.3s; }
+  .sn-float-spark-a > path:nth-child(5) { animation-delay: 0.9s; }
+  .sn-float-spark-a > path:nth-child(6) { animation-delay: 1.5s; }
+  .sn-float-spark-b > path { animation-duration: 3.8s; }
+  .sn-float-spark-b > path:nth-child(1) { animation-delay: 1.7s; }
+  .sn-float-spark-b > path:nth-child(2) { animation-delay: 0.8s; }
+  /* Jump cycle. The parent's back-ease (cubic-bezier(0.34,1.56,0.64,1)) is
+     perfect for the takeoff spring, but it decelerates the descent —
+     gravity should ACCELERATE, not brake. So we override the timing per
+     keyframe: ease-in for the fall+slam (apex 75% → max compression 88%),
+     back-ease for the recoil. The descent and compression are one
+     continuous motion (no intermediate "kiss the ground" frame), so the
+     mascot pushes into the diamond the moment it lands. */
   @keyframes sn-jump {
     0%   { transform: translateY(0)     scaleY(1); }
     25%  { transform: translateY(0)     scaleY(1.02); }
     50%  { transform: translateY(0)     scaleY(0.99); }
     62%  { transform: translateY(0)     scaleY(0.93); }
-    75%  { transform: translateY(-14px) scaleY(1.05); }
-    86%  { transform: translateY(2px)   scaleY(0.96); }
-    88%  { transform: translateY(9px)   scaleY(0.90); }
-    94%  { transform: translateY(-2px)  scaleY(1.04); }
+    75%  { transform: translateY(-14px) scaleY(1.05); animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19); }
+    88%  { transform: translateY(9px)   scaleY(0.88); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+    94%  { transform: translateY(-2px)  scaleY(1.04); animation-timing-function: ease-out; }
     100% { transform: translateY(0)     scaleY(1); }
   }
-  /* Diamond stays still until the mascot lands (~86%), then squashes + recovers. */
+  /* Diamond stays still until the mascot slams into it. Ease-in on the
+     compression so it feels like the diamond gets hit (not pre-anticipated);
+     spring-back on the recovery. */
   @keyframes sn-diamond-bounce {
-    0%, 84% { transform: scaleY(1); }
-    88%     { transform: scaleY(0.82); }
+    0%, 84% { transform: scaleY(1);    animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19); }
+    88%     { transform: scaleY(0.80); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
     94%     { transform: scaleY(1.04); }
     100%    { transform: scaleY(1); }
   }
@@ -53,9 +89,51 @@
     95%           { transform: rotate(15deg) scaleY(0.1); }
     97%           { transform: rotate(0deg)  scaleY(1); }
   }
-  @keyframes sn-float {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-3px); }
+  /* Sparkles (4-point stars): appear in place, spin on their own axis,
+     disappear shrinking. Mirrors the V1 star-twinkle from index.html
+     line 4360 — no translateY because they pop on/off where they sit. */
+  @keyframes sn-spark-twinkle {
+    0%, 100% { opacity: 0;    transform: scale(0.4) rotate(0deg); }
+    20%      { opacity: 1;    transform: scale(1)   rotate(20deg); }
+    50%      { opacity: 0.8;  transform: scale(0.9) rotate(-10deg); }
+    80%      { opacity: 1;    transform: scale(1.1) rotate(15deg); }
+  }
+  /* Small diamond facets: synced to jump. No rotation (geometric facets
+     look weird spinning) and no overshoot — the previous back-ease made
+     the burst feel jarring. Now the emergence is smooth ease-in-out:
+       0–45 %: idle visibility at design size (gentle opacity pulse)
+       45–62 %: dimming as the mascot prepares the leap
+       62–75 %: tucked behind the mascot (scale 0.3, opacity 0)
+       75–88 %: gradual emerge from behind — opacity ramps as mascot
+                falls, gems peek out + scale grows progressively
+       88 %  : peak at impact (scale 1.15, full opacity) — visibly
+                bigger than rest but not exploding
+       88–100 %: settle + fade back to the cycle start */
+  @keyframes sn-gem-burst {
+    0%       { opacity: 0;    transform: scale(0.5); }
+    20%      { opacity: 0.6;  transform: scale(0.9); }
+    40%      { opacity: 0.7;  transform: scale(0.95); }
+    55%      { opacity: 0.4;  transform: scale(0.75); }
+    65%      { opacity: 0;    transform: scale(0.35); }
+    78%      { opacity: 0.25; transform: scale(0.65); }
+    88%      { opacity: 1;    transform: scale(1.15); }
+    94%      { opacity: 0.75; transform: scale(1.02); }
+    100%     { opacity: 0;    transform: scale(0.5); }
+  }
+  /* Breath inverted: rest is slightly contracted, peak hits scale(1)
+     which equals the SVG's original design size. The blob path already
+     extends ~10px past the viewBox on each side at scale 1 (intentional
+     bleed), so any peak > 1 makes the right side clip visibly. By
+     capping the peak at 1, the maximum visible extent is identical to
+     the design at rest — no extra clipping introduced by the animation,
+     and the breath still reads clearly as a contract → expand cycle. */
+  @keyframes sn-blob-breathe {
+    0%, 100% { transform: scale(0.97, 0.975); }
+    50%      { transform: scale(1,    1); }
+  }
+  @keyframes sn-eth-pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.08); }
   }
   /* Hand-up = punch into the air on takeoff, lag behind on landing.
      Phases (synced to sn-jump):
@@ -65,32 +143,33 @@
        92% overshoot    → small bounce up before settling */
   /* Hand-up: translateY does the propulsion + landing lag, rotate adds
      a small wind-up → punch → settle swing so the fist doesn't move
-     like a rigid puppet. Pivots from wrist (50% 100%). */
+     like a rigid puppet. Pivots from wrist (50% 100%). Aligned to the
+     new 88% impact frame and ease-in descent. */
   @keyframes sn-hand-up {
     0%, 50% { transform: translateY(0)    rotate(0deg); }
     62%     { transform: translateY(1px)  rotate(-4deg); }
-    75%     { transform: translateY(-4px) rotate(6deg); }
-    86%     { transform: translateY(2px)  rotate(-3deg); }
-    92%     { transform: translateY(-1px) rotate(2deg); }
+    75%     { transform: translateY(-4px) rotate(6deg);  animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19); }
+    88%     { transform: translateY(-2px) rotate(2deg);  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+    94%     { transform: translateY(2px)  rotate(-2deg); animation-timing-function: ease-out; }
     100%    { transform: translateY(0)    rotate(0deg); }
   }
   /* Mirrors hand-up: positive translateY at apex (lags / falls behind),
-     plus rotation outward as it hangs, then a swing-back on landing.
-     Pivots from wrist (50% 0% — top of the hand where it meets the arm). */
+     plus rotation outward as it hangs. Keeps falling past the impact
+     moment (inertia), then snaps up. Pivots from wrist (50% 0%). */
   @keyframes sn-hand-down {
     0%, 50% { transform: translateY(0)      rotate(0deg); }
     62%     { transform: translateY(-0.5px) rotate(3deg); }
-    75%     { transform: translateY(3px)    rotate(-5deg); }
-    86%     { transform: translateY(-1.5px) rotate(3deg); }
-    92%     { transform: translateY(0.5px)  rotate(-1deg); }
+    75%     { transform: translateY(3px)    rotate(-5deg); animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19); }
+    88%     { transform: translateY(4px)    rotate(-2deg); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+    94%     { transform: translateY(-1.5px) rotate(2deg);  animation-timing-function: ease-out; }
     100%    { transform: translateY(0)      rotate(0deg); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .sn-mascot, .sn-diamond, .sn-eyes, .sn-hand-up, .sn-hand-down,
+    .sn-mascot, .sn-diamond, .sn-eyes, .sn-hand-up, .sn-hand-down, .sn-blob, .sn-eth,
     .sn-float-gems, .sn-float-spark-a, .sn-float-spark-b { animation: none; }
   }
 ]]></style>
-<path d="M172.465 160.034C124.932 200.185 89.2876 196.874 52.7731 153.647C16.2587 110.421 -9.04467 77.7333 38.4879 37.5816C86.0204 -2.57012 147.924 18.3436 184.438 61.5703C220.953 104.797 219.997 119.882 172.465 160.034Z" fill="#FFEDF9"/>
+<g class="sn-blob"><path d="M172.465 160.034C124.932 200.185 89.2876 196.874 52.7731 153.647C16.2587 110.421 -9.04467 77.7333 38.4879 37.5816C86.0204 -2.57012 147.924 18.3436 184.438 61.5703C220.953 104.797 219.997 119.882 172.465 160.034Z" fill="#FFEDF9"/></g>
 <g class="sn-float-spark-a"><path d="M157.172 115.803C156.779 114.802 156.723 113.524 156.083 112.68C155.274 111.612 153.823 111.808 152.56 111.197L154.851 110.611C155.37 110.478 156.209 109.962 156.363 109.438L157.206 106.59C157.691 107.77 157.622 108.983 158.372 109.897C159.048 110.721 160.362 110.791 161.32 111.051L161.676 111.147C162.189 111.287 159.171 111.625 158.37 112.577C157.632 113.457 157.636 114.633 157.17 115.802L157.172 115.803Z" fill="#80B4FF"/>
 <path d="M164.279 49.152C163.972 48.3722 163.929 47.376 163.431 46.7185C162.8 45.8863 161.669 46.0389 160.685 45.563L162.47 45.1059C162.875 45.0024 163.528 44.6004 163.648 44.1923L164.305 41.9727C164.683 42.8923 164.63 43.8374 165.214 44.55C165.74 45.1919 166.765 45.2464 167.511 45.4487L167.789 45.524C168.189 45.6329 165.836 45.8964 165.213 46.6385C164.637 47.3235 164.641 48.2404 164.278 49.1513L164.279 49.152Z" fill="#80B4FF"/>
 <path d="M49.786 140.84C49.4435 139.961 49.3978 138.902 48.8552 138.225C48.1547 137.35 46.8694 137.34 45.7842 137.026L47.9779 136.35C48.5809 136.165 49.083 135.649 49.2486 135.052L49.83 132.962C50.2458 133.967 50.169 135.236 50.9868 135.918C51.7856 136.584 53.0227 136.696 53.9733 137.035C52.7509 137.263 51.7675 137.5 50.7599 138.114L49.7851 140.84H49.786Z" fill="#80B4FF"/>
@@ -98,8 +177,8 @@
 <path d="M82.3158 89.925C80.4481 90.3382 80.38 90.5651 79.8288 92.4776L79.2439 90.7273C79.0869 90.2572 77.9206 90.1347 77.3857 89.8595C77.968 89.6128 78.9359 89.5489 79.2249 89.0538C79.5346 88.5224 79.6485 87.9539 79.871 87.3311C80.3679 89.1383 80.5189 89.3617 82.3158 89.925Z" fill="#80B4FF"/>
 <path d="M46.9238 87.8202C46.7038 87.0283 46.5899 85.9681 46.1327 85.2357C45.6358 84.4387 44.4695 84.6103 43.625 84.1609L46.0551 83.2396C46.5347 82.4787 46.6762 81.4642 46.9255 80.5464C47.2067 81.3116 47.2102 82.4226 47.7769 83.0912C48.3437 83.7598 49.5402 83.8063 50.3131 84.141C49.4971 84.4956 48.398 84.5266 47.8209 85.1745C47.23 85.837 47.1938 86.9334 46.9238 87.822V87.8202Z" fill="#80B4FF"/></g>
 <path d="M154.993 159.063C154.138 153.215 150.173 149.728 144.738 147.716C144.738 114.486 60.593 114.502 60.593 147.716C55.1575 149.728 51.1925 153.215 50.3376 159.063C41.0659 160.078 34.7073 167.953 35.205 177.085C35.8822 185.271 42.1511 191.836 50.3445 192.749H154.986C163.18 191.836 169.448 185.271 170.126 177.085C170.623 167.953 164.265 160.078 154.993 159.063Z" fill="url(#paint0_linear_1995_205384)" stroke="#E0ECFF" stroke-width="1.52508"/>
-<path d="M67.2872 140.795L71.5867 145.114L103.982 176.948L136.351 145.114L140.65 140.795L141.377 140.067L144.775 136.922L145.953 135.714L153.827 128.043C154.12 127.758 153.89 127.21 153.601 126.942L144.377 118.391L139.244 113.651L122.446 109.161H103.983H85.4919L68.693 113.651L63.5606 118.391L54.3363 126.942C54.0473 127.21 53.8178 127.758 54.1102 128.043L61.9845 135.714L63.162 136.922L66.56 140.067L67.2872 140.795Z" fill="#E0ECFF"/>
-<g class="sn-diamond"><path d="M122.211 111.451C123.246 111.727 132.49 114.188 136.678 115.357C133.228 117.155 128.058 119.746 123.829 122.03H84.1641C79.9348 119.746 74.7631 117.155 71.3135 115.357C75.4953 114.19 84.7216 111.732 85.7773 111.451H122.211Z" fill="url(#paint1_linear_1995_205384)" stroke="#FEFEFE" stroke-width="1.52508"/>
+<g class="sn-diamond"><path d="M67.2872 140.795L71.5867 145.114L103.982 176.948L136.351 145.114L140.65 140.795L141.377 140.067L144.775 136.922L145.953 135.714L153.827 128.043C154.12 127.758 153.89 127.21 153.601 126.942L144.377 118.391L139.244 113.651L122.446 109.161H103.983H85.4919L68.693 113.651L63.5606 118.391L54.3363 126.942C54.0473 127.21 53.8178 127.758 54.1102 128.043L61.9845 135.714L63.162 136.922L66.56 140.067L67.2872 140.795Z" fill="#E0ECFF"/>
+<path d="M122.211 111.451C123.246 111.727 132.49 114.188 136.678 115.357C133.228 117.155 128.058 119.746 123.829 122.03H84.1641C79.9348 119.746 74.7631 117.155 71.3135 115.357C75.4953 114.19 84.7216 111.732 85.7773 111.451H122.211Z" fill="url(#paint1_linear_1995_205384)" stroke="#FEFEFE" stroke-width="1.52508"/>
 <path d="M66.7412 131.519L82.2969 152.419L57.2988 127.921L57.3916 127.89L66.7412 131.519Z" fill="url(#paint2_linear_1995_205384)" stroke="#FEFEFE" stroke-width="1.52508"/>
 <path d="M67.0361 131.584L56.9102 127.678L69.1094 116.345L67.0361 131.584Z" fill="url(#paint3_linear_1995_205384)" stroke="#FEFEFE" stroke-width="1.52508"/>
 <path d="M79.2793 135.92L67.5596 131.758L83.4512 123.18L79.2793 135.92Z" fill="url(#paint4_linear_1995_205384)" stroke="#FEFEFE" stroke-width="1.52508"/>
@@ -109,10 +188,10 @@
 <path d="M140.905 131.583L151.031 127.677L138.832 116.344L140.905 131.583Z" fill="url(#paint8_linear_1995_205384)" stroke="#FEFEFE" stroke-width="1.52508"/>
 <path d="M128.662 135.919L140.382 131.757L124.49 123.179L128.662 135.919Z" fill="url(#paint9_linear_1995_205384)" stroke="#FEFEFE" stroke-width="1.52508"/>
 <path d="M122.348 109.924L138.866 114.339L143.859 118.951L153.083 127.502C153.099 127.517 153.125 127.546 153.15 127.587C153.157 127.598 153.16 127.611 153.166 127.622L145.421 135.168L145.407 135.182L144.24 136.378L140.859 139.508L140.849 139.518L140.838 139.528L140.111 140.256L140.109 140.257L135.816 144.57L103.981 175.878L72.1211 144.57L67.8281 140.257L67.8262 140.256L67.0996 139.528L67.0889 139.518L67.0781 139.508L63.6963 136.378L62.5303 135.182L62.5166 135.168L54.7705 127.622C54.7761 127.611 54.7799 127.599 54.7871 127.587L54.8545 127.502L64.0781 118.951L69.0703 114.339L85.5898 109.924H122.348Z" stroke="#B2D0FF" stroke-width="1.52508"/>
-<path d="M90.1047 137.383L103.526 115.118C103.659 114.897 103.998 114.991 103.998 115.249V145.486C103.998 145.683 103.782 145.804 103.613 145.704L90.1943 137.734C90.0731 137.662 90.0319 137.504 90.1047 137.383Z" fill="url(#paint10_linear_1995_205384)" stroke="#B2D0FF" stroke-width="1.01672"/>
+<g class="sn-eth"><path d="M90.1047 137.383L103.526 115.118C103.659 114.897 103.998 114.991 103.998 115.249V145.486C103.998 145.683 103.782 145.804 103.613 145.704L90.1943 137.734C90.0731 137.662 90.0319 137.504 90.1047 137.383Z" fill="url(#paint10_linear_1995_205384)" stroke="#B2D0FF" stroke-width="1.01672"/>
 <path d="M103.998 148.868V159.17C103.998 159.418 103.681 159.519 103.537 159.319L90.6794 141.38C90.519 141.156 90.7791 140.873 91.0158 141.013L103.874 148.65C103.951 148.695 103.998 148.778 103.998 148.868Z" fill="url(#paint11_linear_1995_205384)" stroke="#B2D0FF" stroke-width="1.01672" stroke-linejoin="round"/>
 <path d="M104.009 148.868V159.17C104.009 159.418 104.326 159.519 104.47 159.319L117.327 141.38C117.488 141.156 117.228 140.873 116.991 141.013L104.133 148.65C104.056 148.695 104.009 148.778 104.009 148.868Z" fill="url(#paint12_linear_1995_205384)" stroke="#B2D0FF" stroke-width="1.01672"/>
-<path d="M117.889 137.383L104.468 115.118C104.335 114.897 103.996 114.991 103.996 115.249V145.486C103.996 145.683 104.21 145.805 104.38 145.704L117.802 137.733C117.923 137.661 117.962 137.504 117.889 137.383Z" fill="url(#paint13_linear_1995_205384)" stroke="#B2D0FF" stroke-width="1.01672" stroke-linejoin="round"/></g>
+<path d="M117.889 137.383L104.468 115.118C104.335 114.897 103.996 114.991 103.996 115.249V145.486C103.996 145.683 104.21 145.805 104.38 145.704L117.802 137.733C117.923 137.661 117.962 137.504 117.889 137.383Z" fill="url(#paint13_linear_1995_205384)" stroke="#B2D0FF" stroke-width="1.01672" stroke-linejoin="round"/></g></g>
 <g class="sn-float-gems"><path d="M40.9364 109.033L42.2847 98.2548C42.298 98.1481 42.4434 98.1266 42.4871 98.2249L47.6159 109.77C47.6493 109.846 47.5875 109.929 47.5057 109.919L41.0301 109.152C40.9716 109.145 40.9291 109.092 40.9364 109.033Z" fill="url(#paint14_linear_1995_205384)" stroke="#B2D0FF" stroke-width="0.508361"/>
 <path d="M48.1897 111.062L49.9371 114.996C49.979 115.09 49.8753 115.183 49.7863 115.131L41.8339 110.462C41.7347 110.404 41.7859 110.251 41.9002 110.265L48.1051 111C48.1423 111.004 48.1744 111.028 48.1897 111.062Z" fill="url(#paint15_linear_1995_205384)" stroke="#B2D0FF" stroke-width="0.508361" stroke-linejoin="round"/>
 <path d="M48.1936 111.06L49.941 114.994C49.9829 115.088 50.1212 115.073 50.1421 114.972L52.009 105.942C52.0323 105.829 51.8849 105.765 51.8184 105.859L48.204 110.956C48.1823 110.986 48.1784 111.026 48.1936 111.06Z" fill="url(#paint16_linear_1995_205384)" stroke="#B2D0FF" stroke-width="0.508361"/>
