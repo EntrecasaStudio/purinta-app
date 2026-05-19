@@ -347,6 +347,14 @@
     .anim-dot-done     { background: #4ade80; box-shadow: 0 0 4px rgba(74, 222, 128, 0.5); }
     .anim-dot-progress { background: #fb923c; box-shadow: 0 0 4px rgba(251, 146, 60, 0.5); }
     .anim-dot-todo     { background: #f87171; box-shadow: 0 0 4px rgba(248, 113, 113, 0.5); }
+    /* Date stamp inside dev-nav buttons — last-updated marker. Smaller +
+       dimmer than the label so it reads as secondary metadata. Hover on
+       the button bumps it slightly (still secondary, just less faded). */
+    .anim-date {
+      margin-left: 6px; font-size: 9px; font-weight: 400;
+      color: rgba(255,255,255,0.35); letter-spacing: 0.2px;
+    }
+    .dev-nav-group button:hover .anim-date { color: rgba(255,255,255,0.55); }
     .phones-container { display: flex; gap: 96px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
     .phone-label { font-family: 'SF Mono', 'Menlo', monospace; font-size: 20px; font-weight: 500;
       color: rgba(255,255,255,0.6); background: rgba(30,30,30,0.85); border: 1px solid rgba(255,255,255,0.1);
@@ -5739,11 +5747,11 @@
         <button data-modal="bundle-skel"  onclick="devOpenBundleSkel()" style="display:inline-flex;align-items:center;gap:6px;"><span class="anim-dot anim-dot-done"></span>Confirmation modal skel<i class="ph-light ph-play" style="font-size:11px;margin-left:auto;opacity:0.75;"></i></button>
         <!-- State-emote idle loops (live on borrow-connected) -->
         <button onclick="setBorrowInitial()"><span class="anim-dot anim-dot-done"></span>Initial · supply pulse</button>
-        <button onclick="setBorrowHealth('ultra-safe')"><span class="anim-dot anim-dot-done"></span>Ultra Safe · idle loops</button>
-        <button onclick="setBorrowHealth('looking-good')"><span class="anim-dot anim-dot-done"></span>Looking Good · idle loops</button>
-        <button onclick="setBorrowHealth('getting-risky')"><span class="anim-dot anim-dot-done"></span>Getting Risky · tremors</button>
-        <button onclick="setBorrowHealth('danger-zone')"><span class="anim-dot anim-dot-done"></span>Danger Zone · tremors</button>
-        <button onclick="setBorrowHealth('meltdown')"><span class="anim-dot anim-dot-done"></span>Meltdown · drips/pulses</button>
+        <button onclick="setBorrowHealth('ultra-safe')"><span class="anim-dot anim-dot-done"></span>Ultra Safe · idle loops<span class="anim-date">[15-05]</span></button>
+        <button onclick="setBorrowHealth('looking-good')"><span class="anim-dot anim-dot-done"></span>Looking Good · idle loops<span class="anim-date">[15-05]</span></button>
+        <button onclick="setBorrowHealth('getting-risky')"><span class="anim-dot anim-dot-done"></span>Getting Risky · tremors<span class="anim-date">[15-05]</span></button>
+        <button onclick="setBorrowHealth('danger-zone')"><span class="anim-dot anim-dot-done"></span>Danger Zone · tremors<span class="anim-date">[15-05]</span></button>
+        <button onclick="setBorrowHealth('meltdown')"><span class="anim-dot anim-dot-done"></span>Meltdown · drips/pulses<span class="anim-date">[15-05]</span></button>
       </div>
     </details>
     <details class="dev-nav-section" data-section="icons">

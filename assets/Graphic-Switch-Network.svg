@@ -30,7 +30,11 @@
   .sn-hand-down    { transform-origin: 50% 0%;   animation: sn-hand-down 3s cubic-bezier(0.34,1.56,0.64,1) infinite; }
   /* Twinkle: appear / disappear with scale + (for sparkles) rotation.
      Ports the V1 star-twinkle pattern used in ultra-safe. */
-  .sn-float-gems   { transform-origin: center;   animation: sn-gem-twinkle 4s ease-in-out infinite; }
+  /* Gems: always 100% opacity — they tuck behind the mascot via scale
+     only (shrink toward the group centroid ≈ where the mascot lands,
+     visually overlapped by the mascot), then come back out when she
+     lands. Synced to the 3s jump cycle. */
+  .sn-float-gems   { transform-origin: center;   animation: sn-gem-twinkle 3s ease-in-out infinite; }
   /* Sparkles: animation is applied PER PATH (not per group) so each star
      rotates around its own center, not the group centroid. transform-box:
      fill-box on each path makes the transform-origin pivot at the path's
@@ -91,13 +95,21 @@
     50%      { opacity: 0.8;  transform: scale(0.9) rotate(-10deg); }
     80%      { opacity: 1;    transform: scale(1.1) rotate(15deg); }
   }
-  /* Small diamond facets: same opacity + scale rhythm as the V1 star
-     twinkle, but no rotation (geometric facets look weird spinning). */
+  /* Small diamond facets: always 100% opacity. "Tuck behind / come out"
+     reads purely through scale around the group's centroid.
+     Both the shrink AND the grow are now ONE continuous segment each,
+     both ease-in (accelerating). No intermediate keyframes, no
+     ease-in-out → no perceived brake anywhere in the shrink-grow cycle.
+       0–50 %  : full size (rest)
+       50–75 % : continuous accelerating shrink, scale 1 → 0.45
+       75–88 % : continuous accelerating grow, scale 0.45 → 1.05
+       88 %    : peak at impact, velocity reverses sharply at the top
+       88–100 %: ease-out settle from 1.05 → 1 */
   @keyframes sn-gem-twinkle {
-    0%, 100% { opacity: 0;    transform: translateY(0)    scale(0.6); }
-    25%      { opacity: 1;    transform: translateY(-2px) scale(1); }
-    60%      { opacity: 0.75; transform: translateY(-3px) scale(0.95); }
-    85%      { opacity: 1;    transform: translateY(-1px) scale(1.05); }
+    0%, 50%  { transform: translateY(-2px) scale(1);    animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19); }
+    75%      { transform: translateY(0)    scale(0.3);  animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19); }
+    88%      { transform: translateY(-2px) scale(1.05); animation-timing-function: ease-out; }
+    100%     { transform: translateY(-2px) scale(1); }
   }
   /* Breath inverted: rest is slightly contracted, peak hits scale(1)
      which equals the SVG's original design size. The blob path already
