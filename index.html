@@ -347,6 +347,16 @@
     .anim-dot-done     { background: #4ade80; box-shadow: 0 0 4px rgba(74, 222, 128, 0.5); }
     .anim-dot-progress { background: #fb923c; box-shadow: 0 0 4px rgba(251, 146, 60, 0.5); }
     .anim-dot-todo     { background: #f87171; box-shadow: 0 0 4px rgba(248, 113, 113, 0.5); }
+    /* "Recently updated" treatment: when a row carries a date stamp the
+       green dot gets a soft outer ring + brighter glow so the freshly
+       promoted items pop out of the list at a glance. Two-stack
+       box-shadow = inner translucent ring (no blur, gives the halo) +
+       outer blurred glow. */
+    .dev-nav-group button:has(.anim-date) .anim-dot-done {
+      box-shadow:
+        0 0 0 2px rgba(74, 222, 128, 0.30),
+        0 0 8px rgba(74, 222, 128, 0.85);
+    }
     /* Date stamp inside dev-nav buttons — last-updated marker. Smaller +
        dimmer than the label so it reads as secondary metadata. Hover on
        the button bumps it slightly (still secondary, just less faded). */
@@ -1246,8 +1256,17 @@
       width: 120%; height: 120%;
       z-index: 0; pointer-events: none;
       transform-origin: 50% 50%;
+      /* Idle breath in the initial state — slow, subtle (3% scale, tiny
+         rotation), so the blob feels alive from the moment the modal
+         opens. Overridden by the pop+float pair when the overlay flips
+         to .is-done (more specific selector below wins the cascade). */
+      animation: bundle-blob-idle-breathe 5.4s ease-in-out infinite;
     }
     .bundle-mascot-blob path { fill: var(--mint-200); }
+    @keyframes bundle-blob-idle-breathe {
+      0%, 100% { transform: scale(1)    rotate(0deg); }
+      50%      { transform: scale(1.03) rotate(-0.8deg); }
+    }
     /* Blob enters first with a wider, looser rebound, then hands off to the idle float */
     .bundle-modal-overlay.is-done .bundle-mascot-blob {
       animation: bundle-blob-pop   1400ms cubic-bezier(0.45, 0, 0.55, 1)   0ms both,
@@ -1268,6 +1287,7 @@
       75%      { transform: scale(1.02) rotate(0.5deg); }
     }
     @media (prefers-reduced-motion: reduce) {
+      .bundle-mascot-blob,
       .bundle-modal-overlay.is-done .bundle-mascot-blob { animation: none; }
     }
     .bundle-modal-mascot img {
@@ -5733,25 +5753,25 @@
       <div class="dev-nav-group" style="flex-direction:column;gap:4px;">
         <!-- Status dots: 🟢 done, 🟠 in progress, 🔴 todo. -->
         <!-- Hero idle loop (lives on homepage + homepage-connected) -->
-        <button onclick="goHome()"><span class="anim-dot anim-dot-progress"></span>Home Mascot · breath/blink</button>
+        <button onclick="goHome()"><span class="anim-dot anim-dot-done"></span>Home Mascot</button>
         <!-- One-shot triggers (re-fire on demand) -->
         <button onclick="replayConnectCelebration()"><span class="anim-dot anim-dot-done"></span>Replay Connect Burst</button>
         <button onclick="punchActiveMascot()"><span class="anim-dot anim-dot-done"></span>Replay State Punch</button>
         <!-- Direct entries to screens with hero animations -->
         <button onclick="showScreen('loading-loop')"><span class="anim-dot anim-dot-progress"></span>Loading Mascot</button>
-        <button onclick="showScreen('positions-empty')"><span class="anim-dot anim-dot-done"></span>My Positions Empty/Disconnected · breath/tremor</button>
-        <button onclick="showScreen('switch-network')"><span class="anim-dot anim-dot-progress"></span>Switch Network</button>
-        <button onclick="showScreen('error-404')"><span class="anim-dot anim-dot-done"></span>404 Mascot · sigh/breath/smoke</button>
-        <button data-modal="bundle"       onclick="devOpenBundle()"><span class="anim-dot anim-dot-done"></span>Confirmation modal</button>
-        <button data-modal="bundle-error" onclick="devOpenBundleError()"><span class="anim-dot anim-dot-done"></span>Confirmation modal Error · breath/blink/tremor</button>
+        <button onclick="showScreen('positions-empty')"><span class="anim-dot anim-dot-done"></span>My Positions Empty/Disconnected</button>
+        <button onclick="showScreen('switch-network')"><span class="anim-dot anim-dot-done"></span>Switch Network<span class="anim-date">[19-05]</span></button>
+        <button onclick="showScreen('error-404')"><span class="anim-dot anim-dot-done"></span>404 Mascot</button>
+        <button data-modal="bundle"       onclick="devOpenBundle()"><span class="anim-dot anim-dot-done"></span>Confirmation modal<span class="anim-date">[19-05]</span></button>
+        <button data-modal="bundle-error" onclick="devOpenBundleError()"><span class="anim-dot anim-dot-todo"></span>Confirmation modal Error</button>
         <button data-modal="bundle-skel"  onclick="devOpenBundleSkel()" style="display:inline-flex;align-items:center;gap:6px;"><span class="anim-dot anim-dot-done"></span>Confirmation modal skel<i class="ph-light ph-play" style="font-size:11px;margin-left:auto;opacity:0.75;"></i></button>
         <!-- State-emote idle loops (live on borrow-connected) -->
-        <button onclick="setBorrowInitial()"><span class="anim-dot anim-dot-done"></span>Initial · supply pulse</button>
-        <button onclick="setBorrowHealth('ultra-safe')"><span class="anim-dot anim-dot-done"></span>Ultra Safe · idle loops<span class="anim-date">[15-05]</span></button>
-        <button onclick="setBorrowHealth('looking-good')"><span class="anim-dot anim-dot-done"></span>Looking Good · idle loops<span class="anim-date">[15-05]</span></button>
-        <button onclick="setBorrowHealth('getting-risky')"><span class="anim-dot anim-dot-done"></span>Getting Risky · tremors<span class="anim-date">[15-05]</span></button>
-        <button onclick="setBorrowHealth('danger-zone')"><span class="anim-dot anim-dot-done"></span>Danger Zone · tremors<span class="anim-date">[15-05]</span></button>
-        <button onclick="setBorrowHealth('meltdown')"><span class="anim-dot anim-dot-done"></span>Meltdown · drips/pulses<span class="anim-date">[15-05]</span></button>
+        <button onclick="setBorrowInitial()"><span class="anim-dot anim-dot-done"></span>Initial</button>
+        <button onclick="setBorrowHealth('ultra-safe')"><span class="anim-dot anim-dot-done"></span>Ultra Safe<span class="anim-date">[15-05]</span></button>
+        <button onclick="setBorrowHealth('looking-good')"><span class="anim-dot anim-dot-done"></span>Looking Good<span class="anim-date">[15-05]</span></button>
+        <button onclick="setBorrowHealth('getting-risky')"><span class="anim-dot anim-dot-done"></span>Getting Risky<span class="anim-date">[15-05]</span></button>
+        <button onclick="setBorrowHealth('danger-zone')"><span class="anim-dot anim-dot-done"></span>Danger Zone<span class="anim-date">[15-05]</span></button>
+        <button onclick="setBorrowHealth('meltdown')"><span class="anim-dot anim-dot-done"></span>Meltdown<span class="anim-date">[15-05]</span></button>
       </div>
     </details>
     <details class="dev-nav-section" data-section="icons">
