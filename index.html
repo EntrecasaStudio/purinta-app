@@ -380,6 +380,114 @@
     .screen { display: none; }
     .screen.active { display: flex; flex-direction: column; min-height: 100%; }
 
+    /* ERROR BANNER — fetch failed after retries.
+       Visually consistent with .supply-warning-banner (light fill + strong
+       stroke + 6px strip + ph-warning icon) but uses DS Error palette and
+       dark error text. Page-level: sits between header and borrow-content,
+       centered to the content area width (20px inset on mobile, 40px on
+       desktop). Sticky at 8px so rounded top stays visible when stuck. */
+    .error-banner {
+      display: none;
+      position: sticky; top: 8px; z-index: 9;
+      margin: 8px 20px 12px;
+      background: var(--error-50);
+      border: 1.5px solid var(--error-500);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      font-family: var(--font-ui);
+      box-shadow: 0 4px 12px rgba(250, 75, 190, 0.10);
+    }
+    /* Only show when fetching has failed (body class) AND we're on a
+       skeleton screen. The banner element itself is parented to
+       #borrow-connected so populateSkeletonBorrow clones it into the
+       skel screens; this selector keeps it hidden on the loaded screen
+       so the user never sees "Couldn't load" next to real data.
+       Slide-in animation runs on the display:none→block flip because
+       @keyframes fire when the element enters layout. */
+    body.show-error-banner .screen[id^="skel-"].active .error-banner {
+      display: block;
+      animation: errorBannerSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes errorBannerSlideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* Center everything — icon, text and Retry as one group. Mirrors
+       .supply-warning-banner's justify-content:center.
+       Asymmetric vertical padding (13 / 11) compensates for the 6 px
+       error-strip at the bottom: equal padding would make the content
+       sit visually higher than centered. */
+    .error-banner-content {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      padding: 13px 14px 11px;
+    }
+    /* Desktop: give the CTA more breathing room from the message group
+       (banner is 720 px wide, the extra 8 px keeps the pill from
+       crowding the text now that the strip width is dramatic). */
+    .phone.desktop .error-banner-content { gap: 20px; }
+    /* Tighter icon→text spacing inside the message itself (6 px, same
+       as .swb-content). The 12 px gap above puts breathing room between
+       the message group and the CTA. */
+    .error-banner-text-group {
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .error-banner-icon {
+      flex-shrink: 0;
+      font-size: 20px; line-height: 1;
+      color: var(--error-500);
+      display: inline-flex; align-items: center;
+    }
+    .error-banner-text { flex: 1; min-width: 0; }
+    /* Match .supply-warning-banner typography (13px / 21px / 0.26px letter-spacing)
+       and weight = 500 (same as .swb-token-name). */
+    .error-banner-title {
+      font-size: 13px; line-height: 21px; font-weight: 500;
+      letter-spacing: 0.26px;
+      color: var(--error-900);
+    }
+    /* Retry — instance of DS Button: Type=Secondary, Status=Default,
+       Size=Extra Small, Tone=Destructive (Figma node 2411:290161).
+       Lighter solid fill (error-100) vs the Primary's gradient. Same
+       stroke, type, padding, radius. Icon dropped on purpose — the
+       banner's alert icon is the single semantic anchor, "Retry" alone
+       is unambiguous, and the DS treats iconLeadingSm as optional. */
+    .error-banner-retry {
+      flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 7px 17px;
+      border-radius: var(--r-full);
+      border: 1px solid var(--error-500);
+      background: var(--error-100);
+      color: var(--error-900);
+      font-family: var(--font-display);
+      font-size: 13px; line-height: 21px; font-weight: 400;
+      letter-spacing: 0.39px;
+      cursor: pointer;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  background 0.15s ease;
+    }
+    .phone.desktop .error-banner-retry:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 0 0 var(--error-500), 0 10px 20px rgba(250, 75, 190, 0.12);
+    }
+    .error-banner-retry:active {
+      transform: translateY(2px) scale(0.95);
+      box-shadow: 0 1px 0 0 var(--error-300);
+      background: var(--error-200);
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    .error-banner-retry.loading { pointer-events: none; opacity: 0.9; }
+    /* Banner on → freeze the skeleton: pause the shimmer animation but
+       KEEP the gradient (don't override background) so the placeholders
+       still read as skeletons, just stopped in place. */
+    body.show-error-banner .skel-block { animation-play-state: paused; }
+    .error-banner .swb-strip { height: 6px; background: var(--error-500); }
+    /* Desktop: match the .borrow-content width contract — max 720 px,
+       centered, width 100% so the flex-column parent doesn't collapse
+       the banner to content-width (auto margins alone shrink-wrap it). */
+    .phone.desktop .error-banner { max-width: 720px; width: 100%; margin-left: auto; margin-right: auto; }
+
     /* HEADER */
     .app-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -5722,6 +5830,7 @@
           <div class="folder-items">
             <button onclick="showScreen('borrow')">Borrow</button>
             <button onclick="enterBorrowConnected()">Borrow+</button>
+            <button onclick="showBorrowError()">Borrow · Error</button>
             <button onclick="setBorrowInitial()">Initial</button>
             <button onclick="setBorrowHealth('ultra-safe')">Ultra Safe</button>
             <button onclick="setBorrowHealth('looking-good')">Looking Good</button>
@@ -6269,6 +6378,16 @@
           <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect <span class="icon-power btn-icon" aria-hidden="true"></span></button>
         </div>
       </div>
+    </div>
+    <div class="error-banner" role="alert" aria-live="assertive">
+      <div class="error-banner-content">
+        <span class="error-banner-text-group">
+          <i class="ph-fill ph-warning error-banner-icon" aria-hidden="true"></i>
+          <span class="error-banner-title">Couldn't load market data</span>
+        </span>
+        <button class="error-banner-retry" type="button" onclick="handleErrorRetry(this)">Retry</button>
+      </div>
+      <div class="swb-strip" aria-hidden="true"></div>
     </div>
     <div class="borrow-content">
       <div class="borrow-header">
@@ -9137,6 +9256,50 @@ function enterBorrowConnected() {
   }, 120);
 }
 
+// ERROR BANNER — fetch failed after auto-retries. Banner slides in below
+// header, retains [Retry]. Dev-nav surfaces this via "Borrow / Error".
+function setErrorBanner(on) {
+  document.body.classList.toggle('show-error-banner', !!on);
+}
+function toggleErrorBanner() {
+  document.body.classList.toggle('show-error-banner');
+}
+// Retry replays the failure choreography: banner disappears (back to
+// the live shimmer = "retries in flight"), then 1.5 s later it slides
+// back in via the same @keyframes errorBannerSlideIn. The .loading
+// class guards against double-clicks while the timer is in flight.
+var _retryTimer = null;
+function handleErrorRetry(btn) {
+  if (!btn || btn.classList.contains('loading')) return;
+  btn.classList.add('loading');
+  if (_retryTimer) clearTimeout(_retryTimer);
+  setErrorBanner(false);
+  _retryTimer = setTimeout(function() {
+    btn.classList.remove('loading');
+    setErrorBanner(true);
+    _retryTimer = null;
+  }, 1500);
+}
+// "Borrow / Error" — small choreography so the dev nav demos the actual
+// failure UX: (1) skeleton appears, shimmer plays = retries in flight;
+// (2) ~1.5 s later, retries are deemed failed → shimmer freezes (body
+// class pauses the animation) and the error banner slides in.
+//
+// We cancel the playSkelDemo auto-fade so the skel doesn't dissolve
+// into the loaded screen, and we clear any prior error-banner state so
+// repeated clicks replay the transition from a clean slate.
+var _showBorrowErrorTimer = null;
+function showBorrowError() {
+  if (_showBorrowErrorTimer) { clearTimeout(_showBorrowErrorTimer); _showBorrowErrorTimer = null; }
+  setErrorBanner(false);
+  showScreen('skel-borrow');
+  if (typeof cancelSkelDemos === 'function') cancelSkelDemos();
+  _showBorrowErrorTimer = setTimeout(function() {
+    setErrorBanner(true);
+    _showBorrowErrorTimer = null;
+  }, 1500);
+}
+
 // Initial state on borrow-connected: wallet is connected but no supply yet.
 // Sliders at 0, mascot in "happy" state with the "Supply X and start
 // printing" line, supply slider thumb pulses to draw the eye, and the
@@ -9834,7 +9997,8 @@ function disableSkeletonCtas(root) {
     '.bottom-nav',          // mobile bottom nav
     '.top-nav',             // desktop top nav (just in case it's outside .app-header)
     '.disconnect-dropdown', // wallet disconnect popup
-    '.dev-nav'              // dev-tools panel — never disable
+    '.dev-nav',             // dev-tools panel — never disable
+    '.error-banner'         // page-level error banner — Retry must stay clickable on skel screens
   ];
   function isInsideNav(el) {
     for (var i = 0; i < NAV_SELECTORS.length; i++) {
