@@ -391,7 +391,11 @@
       position: sticky; top: 8px; z-index: 9;
       margin: 8px 20px 12px;
       background: var(--error-50);
-      border: 1.5px solid var(--error-500);
+      /* Border softened to error-400 to mirror the confirmation error
+         message and the warning-400 stroke on .supply-warning-banner —
+         keeps the "feedback container" family coherent (Figma OpB
+         nodes 3040:299374 / 3040:299400). */
+      border: 1.5px solid var(--error-400);
       border-radius: var(--r-md);
       overflow: hidden;
       font-family: var(--font-ui);
@@ -413,13 +417,12 @@
       to   { opacity: 1; transform: translateY(0); }
     }
     /* Center everything — icon, text and Retry as one group. Mirrors
-       .supply-warning-banner's justify-content:center.
-       Asymmetric vertical padding (13 / 11) compensates for the 6 px
-       error-strip at the bottom: equal padding would make the content
-       sit visually higher than centered. */
+       .supply-warning-banner's justify-content:center. Symmetric
+       vertical padding now that OpB drops the bottom strip (no
+       optical offset to compensate). */
     .error-banner-content {
       display: flex; align-items: center; justify-content: center; gap: 12px;
-      padding: 13px 14px 11px;
+      padding: 12px 14px;
     }
     /* Desktop: give the CTA more breathing room from the message group
        (banner is 720 px wide, the extra 8 px keeps the pill from
@@ -438,26 +441,30 @@
       display: inline-flex; align-items: center;
     }
     .error-banner-text { flex: 1; min-width: 0; }
-    /* Match .supply-warning-banner typography (13px / 21px / 0.26px letter-spacing)
-       and weight = 500 (same as .swb-token-name). */
+    /* Typography: UI/xs-medium (Rubik Medium 13/21, +0.26 px). Color
+       neutral-900 — mirrors the confirmation modal's error message
+       body text. The severity is carried by the error-400 border and
+       the error-500 icon; the body stays readable and brand-coherent. */
     .error-banner-title {
       font-size: 13px; line-height: 21px; font-weight: 500;
       letter-spacing: 0.26px;
-      color: var(--error-900);
+      color: var(--neutral-900);
     }
-    /* Retry — instance of DS Button: Type=Secondary, Status=Default,
-       Size=Extra Small, Tone=Destructive (Figma node 2411:290161).
-       Lighter solid fill (error-100) vs the Primary's gradient. Same
-       stroke, type, padding, radius. Icon dropped on purpose — the
-       banner's alert icon is the single semantic anchor, "Retry" alone
-       is unambiguous, and the DS treats iconLeadingSm as optional. */
+    /* Retry — instance of DS Button: Type=Terciary, Status=Default,
+       Size=Extra Small, Tone=Destructive (Figma node 2411:293214 used
+       in OpB banner). Cream-50 fill against the error-50 banner bg
+       creates the "lift" effect (different hue family reads as
+       elevated card, not flat pill). Lighter error-300 stroke
+       complements the error-400 border. Same Display type, pill
+       radius, 7×17 padding. Icon dropped — alert icon is the only
+       semantic anchor; "Retry" alone is unambiguous. */
     .error-banner-retry {
       flex-shrink: 0;
       display: inline-flex; align-items: center; justify-content: center;
       padding: 7px 17px;
       border-radius: var(--r-full);
-      border: 1px solid var(--error-500);
-      background: var(--error-100);
+      border: 1px solid var(--error-300);
+      background: var(--cream-50);
       color: var(--error-900);
       font-family: var(--font-display);
       font-size: 13px; line-height: 21px; font-weight: 400;
@@ -465,16 +472,17 @@
       cursor: pointer;
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
                   box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  background 0.15s ease;
+                  background 0.15s ease, border-color 0.15s ease;
     }
     .phone.desktop .error-banner-retry:hover {
       transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 6px 0 0 var(--error-500), 0 10px 20px rgba(250, 75, 190, 0.12);
+      border-color: var(--error-400);
+      box-shadow: 0 6px 0 0 var(--error-300), 0 10px 20px rgba(255, 128, 214, 0.18);
     }
     .error-banner-retry:active {
       transform: translateY(2px) scale(0.95);
-      box-shadow: 0 1px 0 0 var(--error-300);
-      background: var(--error-200);
+      box-shadow: 0 1px 0 0 var(--error-200);
+      background: var(--error-50);
       transition: transform 0.1s ease, box-shadow 0.1s ease;
     }
     .error-banner-retry.loading { pointer-events: none; opacity: 0.9; }
@@ -482,7 +490,6 @@
        KEEP the gradient (don't override background) so the placeholders
        still read as skeletons, just stopped in place. */
     body.show-error-banner .skel-block { animation-play-state: paused; }
-    .error-banner .swb-strip { height: 6px; background: var(--error-500); }
     /* Desktop: match the .borrow-content width contract — max 720 px,
        centered, width 100% so the flex-column parent doesn't collapse
        the banner to content-width (auto margins alone shrink-wrap it). */
@@ -6387,7 +6394,6 @@
         </span>
         <button class="error-banner-retry" type="button" onclick="handleErrorRetry(this)">Retry</button>
       </div>
-      <div class="swb-strip" aria-hidden="true"></div>
     </div>
     <div class="borrow-content">
       <div class="borrow-header">
