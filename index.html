@@ -490,6 +490,13 @@
        KEEP the gradient (don't override background) so the placeholders
        still read as skeletons, just stopped in place. */
     body.show-error-banner .skel-block { animation-play-state: paused; }
+    /* Hide the mascot caption in the error state. The mascot itself is a
+       hardcoded neutral emote, but its caption is health/CTA copy ("Supply
+       PEPE and start printing") the user can't act on while data is
+       missing — the banner already owns the error message, so a second
+       line below would just compete. visibility (not display) keeps the
+       caption's box in flow so the mascot doesn't shift position. */
+    body.show-error-banner .screen[id^="skel-"].active .mascot-text { visibility: hidden; }
     /* Desktop: match the .borrow-content width contract — max 720 px,
        centered, width 100% so the flex-column parent doesn't collapse
        the banner to content-width (auto margins alone shrink-wrap it). */
