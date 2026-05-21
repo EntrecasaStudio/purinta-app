@@ -1943,20 +1943,32 @@
        its bbox (legs/feet take more space, head reads smaller); bumping
        up balances perceived size. The mirror lives on the <img> itself;
        pop animations are scoped to .bundle-mascot-done so this stays put. */
+    /* 200×220: the asset's viewBox was expanded to 0 -20 200 220 so the
+       rising/dissipating smoke (which the pc-body breath compounds ~5 px
+       further up) has 20 px of transparent headroom and stops clipping
+       at the canvas top edge. Width stays 200 so 1 viewBox unit = 1 px —
+       the mascot itself is NOT rescaled, the 20 px is pure headroom. */
     #phone-a .bundle-mascot-error,
     #phone-b .bundle-mascot-error {
       width: 200px;
-      height: 200px; max-height: 200px;
+      height: 220px; max-height: 220px;
     }
     /* The base `.bundle-modal-mascot` is sized at 131 px on phones (ID-
-       specificity wins over the .is-done max-height: 168 rule). The new
-       error illustration is 200×200 with smoke clusters extending up to
-       y≈19 — at 131 px the top ~35 px gets clipped behind the dialog's
-       close button + padding. Bump the container only in the error
-       state so the rest of the bundle modal layout stays untouched. */
+       specificity wins over the .is-done max-height: 168 rule). The error
+       illustration is 200×220 — at 131 px the top gets clipped behind the
+       dialog's close button + padding. Bump the container only in the
+       error state so the rest of the bundle modal layout stays untouched. */
     #phone-a .bundle-modal-overlay.is-error .bundle-modal-mascot,
     #phone-b .bundle-modal-overlay.is-error .bundle-modal-mascot {
-      height: 200px; max-height: 200px;
+      height: 220px; max-height: 220px;
+    }
+    /* The 20 px of viewBox headroom sits ABOVE the mascot, so the mascot
+       body's centre is ~10 px below the (now taller) container centre.
+       The blob tracks the container centre by default — nudge it down
+       10 px in the error state so it stays centred on the body, not on
+       the empty headroom. */
+    .bundle-modal-overlay.is-error .bundle-mascot-blob {
+      top: calc(-10% + 10px);
     }
     /* Error blob — Error/50 (#FFEDF9) instead of Mint/200 to theme the
        background to the failure state. Path is a single <path> inside
@@ -3469,9 +3481,14 @@
        the bill and the body. CSS transform-box + transform-origin let
        us scale from the body center — the slot, bill, and body all
        scale together, so the bill stays connected to the slot.
-       For the disconnected `<img>` rendering of the same asset (line
-       5346) only SMIL animations apply — the static image still bobs
-       and emits bills, just doesn't breathe/blink. Acceptable.
+       For the `<img>` rendering of the same asset (skeleton borrow +
+       disconnected borrow) external CSS can't reach the internal
+       classes, so the SVG file ALSO carries its own <style> block with
+       bm-breathe-img / bm-blink-img — same values as the keyframes
+       below. The SVG-internal keyframes are -img suffixed so they never
+       collide when the asset is injected inline; in that case THESE
+       rules win on specificity (.mascot-area.happy … .bm-body beats a
+       bare .bm-body) and the internal block is inert.
     */
     /* Breath is applied to the `<g class="bm-body">` wrapper (whole
        character minus the root g's SMIL containers), NOT the outer
@@ -5900,7 +5917,7 @@
         <button onclick="showScreen('switch-network')"><span class="anim-dot anim-dot-done"></span>Switch Network<span class="anim-date">[19-05]</span></button>
         <button onclick="showScreen('error-404')"><span class="anim-dot anim-dot-done"></span>404 Mascot</button>
         <button data-modal="bundle"       onclick="devOpenBundle()"><span class="anim-dot anim-dot-done"></span>Confirmation modal<span class="anim-date">[19-05]</span></button>
-        <button data-modal="bundle-error" onclick="devOpenBundleError()"><span class="anim-dot anim-dot-done"></span>Confirmation modal Error<span class="anim-date">[19-05]</span></button>
+        <button data-modal="bundle-error" onclick="devOpenBundleError()"><span class="anim-dot anim-dot-done"></span>Confirmation modal Error<span class="anim-date">[20-05]</span></button>
         <button data-modal="bundle-skel"  onclick="devOpenBundleSkel()" style="display:inline-flex;align-items:center;"><span class="anim-dot anim-dot-done"></span>Confirmation modal skel<i class="ph-light ph-play" style="font-size:11px;margin-left:auto;opacity:0.75;"></i></button>
         <!-- State-emote idle loops (live on borrow-connected) -->
         <button onclick="setBorrowInitial()"><span class="anim-dot anim-dot-done"></span>Initial</button>
@@ -7455,7 +7472,7 @@
                  injection at runtime, still render the mascot). -->
             <img class="pc-mascot-fallback" src="assets/Purinta-Confirmed.svg" alt="">
           </div>
-          <img class="bundle-mascot-img bundle-mascot-error mascot-illustration-svg" src="assets/Purinta-Confirmation-Error.svg" alt="" aria-hidden="true">
+          <img class="bundle-mascot-img bundle-mascot-error mascot-illustration-svg" src="assets/Purinta-Confirmation-Error.svg?v=3" alt="" aria-hidden="true">
           <span class="bundle-mascot-sparkle bms-1"></span>
           <span class="bundle-mascot-sparkle bms-2"></span>
           <span class="bundle-mascot-sparkle bms-3"></span>
