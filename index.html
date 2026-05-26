@@ -2336,6 +2336,62 @@
       -webkit-mask-position: center;   mask-position: center;
       -webkit-mask-size: 24px 24px;    mask-size: 24px 24px;
     }
+    /* Modify Position primary CTA icon — native 24×24 viewBox with
+       stroke 1.5 baked in (two horizontal sliders with knobs). Rendered
+       1:1, no scaling. Used on the big commit "Modify Position" CTA. */
+    .icon-modify-cta {
+      display: inline-block; width: 24px; height: 24px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/icon-levels-24.svg'); mask-image: url('assets/icon-levels-24.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 24px 24px;    mask-size: 24px 24px;
+    }
+    /* Position-card secondary "Modify Position" icon — 16×16 levels SVG
+       at default 1 px stroke. Replaces ph ph-sliders-horizontal in the
+       smaller card secondary buttons. */
+    .icon-modify-card {
+      display: inline-block; width: 16px; height: 16px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/icon-levels-16.svg'); mask-image: url('assets/icon-levels-16.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 16px 16px;    mask-size: 16px 16px;
+    }
+    /* Position-card "Quick Withdraw" icon — circle with up-arrow,
+       16×16 / 1 px stroke. Replaces ph ph-arrow-circle-up. */
+    .icon-withdraw-card {
+      display: inline-block; width: 16px; height: 16px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/icon-upload-16.svg'); mask-image: url('assets/icon-upload-16.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 16px 16px;    mask-size: 16px 16px;
+    }
+    /* Position-card "Quick Repay" icon — circular arrow with $ symbol,
+       16×16. The SVG carries mixed weights baked in (1 px on the curved
+       arrow + 0.9 px on the $) which preserves the DS visual hierarchy
+       between the outer motion and the inner currency mark. Replaces
+       ph ph-arrow-counter-clockwise. */
+    .icon-repay-card {
+      display: inline-block; width: 16px; height: 16px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/icon-repay-16.svg'); mask-image: url('assets/icon-repay-16.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 16px 16px;    mask-size: 16px 16px;
+    }
+    /* Bundle modal "Processing" spinner — sun-ray dial at 24×24 / 1.5
+       stroke. Rotated by the existing .bundle-spin animation (1 s
+       linear infinite) on the parent span. */
+    .icon-loading-cta {
+      display: inline-block; width: 24px; height: 24px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/icon-load-24.svg'); mask-image: url('assets/icon-load-24.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 24px 24px;    mask-size: 24px 24px;
+    }
     /* Default state: show custom outline, hide Phosphor filled.
        Active state: show Phosphor filled, hide custom outline.
        The existing JS (showScreen) flips the `<i>` between ph-light and
@@ -6616,8 +6672,8 @@
               <div class="health-hearts"></div>
             </div>
             <div class="position-buttons">
-              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-              <button class="btn btn-secondary"><i class="ph ph-arrow-circle-up btn-icon"></i> Quick Withdraw</button>
+              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><span class="icon-modify-card" aria-hidden="true"></span> Modify Position</button>
+              <button class="btn btn-secondary"><span class="icon-withdraw-card" aria-hidden="true"></span> Quick Withdraw</button>
             </div>
           </div>
         </div>
@@ -6630,8 +6686,8 @@
           <div style="text-align: right;"><div class="stat-big accent">—<span style="font-size: var(--ds-xs); color: var(--text-secondary);"> /yr</span></div><div class="stat-label">Borrow Rate</div></div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-secondary"><i class="ph ph-arrow-circle-up btn-icon"></i> Quick Withdraw</button>
+          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><span class="icon-modify-card" aria-hidden="true"></span> Modify Position</button>
+          <button class="btn btn-secondary"><span class="icon-withdraw-card" aria-hidden="true"></span> Quick Withdraw</button>
         </div>
       </div>
 
@@ -6687,8 +6743,8 @@
                             </div>
             </div>
             <div class="position-buttons">
-              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><span class="icon-modify-card" aria-hidden="true"></span> Modify Position</button>
+              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><span class="icon-repay-card" aria-hidden="true"></span> Quick Repay</button>
             </div>
           </div>
         </div>
@@ -6719,8 +6775,8 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><span class="icon-modify-card" aria-hidden="true"></span> Modify Position</button>
+          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><span class="icon-repay-card" aria-hidden="true"></span> Quick Repay</button>
         </div>
       </div>
 
@@ -6776,8 +6832,8 @@
                             </div>
             </div>
             <div class="position-buttons">
-              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><span class="icon-modify-card" aria-hidden="true"></span> Modify Position</button>
+              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><span class="icon-repay-card" aria-hidden="true"></span> Quick Repay</button>
             </div>
           </div>
         </div>
@@ -6808,8 +6864,8 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><span class="icon-modify-card" aria-hidden="true"></span> Modify Position</button>
+          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><span class="icon-repay-card" aria-hidden="true"></span> Quick Repay</button>
         </div>
       </div>
 
@@ -6865,8 +6921,8 @@
                             </div>
             </div>
             <div class="position-buttons">
-              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><span class="icon-modify-card" aria-hidden="true"></span> Modify Position</button>
+              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><span class="icon-repay-card" aria-hidden="true"></span> Quick Repay</button>
             </div>
           </div>
         </div>
@@ -6897,8 +6953,8 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><span class="icon-modify-card" aria-hidden="true"></span> Modify Position</button>
+          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><span class="icon-repay-card" aria-hidden="true"></span> Quick Repay</button>
         </div>
       </div>
 
@@ -6954,8 +7010,8 @@
                             </div>
             </div>
             <div class="position-buttons">
-              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+              <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><span class="icon-modify-card" aria-hidden="true"></span> Modify Position</button>
+              <button class="btn btn-secondary" onclick="openQuickRepay(this)"><span class="icon-repay-card" aria-hidden="true"></span> Quick Repay</button>
             </div>
           </div>
         </div>
@@ -6986,8 +7042,8 @@
           </div>
         </div>
         <div class="position-actions">
-          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><i class="ph ph-sliders-horizontal btn-icon"></i> Modify Position</button>
-          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Quick Repay</button>
+          <button class="btn btn-secondary" onclick="modifyFromPosition(this)"><span class="icon-modify-card" aria-hidden="true"></span> Modify Position</button>
+          <button class="btn btn-secondary" onclick="openQuickRepay(this)"><span class="icon-repay-card" aria-hidden="true"></span> Quick Repay</button>
         </div>
       </div>
 
@@ -7414,13 +7470,13 @@
           </div>
         </div>
         <div class="borrow-cta-inner">
-          <button class="btn btn-primary btn-full btn-lg" disabled onclick="commitModify(this)"><i class="ph-light ph-sliders-horizontal btn-icon-lg"></i> Modify Position</button>
+          <button class="btn btn-primary btn-full btn-lg" disabled onclick="commitModify(this)"><span class="icon-modify-cta" aria-hidden="true"></span> Modify Position</button>
         </div>
         </div>
       </div>
     </div>
     <div class="borrow-cta">
-      <button class="btn btn-primary btn-full btn-lg" disabled onclick="commitModify(this)"><i class="ph-light ph-sliders-horizontal btn-icon-lg"></i> Modify Position</button>
+      <button class="btn btn-primary btn-full btn-lg" disabled onclick="commitModify(this)"><span class="icon-modify-cta" aria-hidden="true"></span> Modify Position</button>
     </div>
     <div class="app-footer">
       <a href="#">Docs</a> &nbsp;|&nbsp; <a href="#">Terms & Conditions</a>
@@ -7488,7 +7544,7 @@
       </div>
         <button class="btn btn-primary btn-full bundle-modal-cta" onclick="bundleModalCtaClick()">
           <span class="bundle-cta-ready">Begin</span>
-          <span class="bundle-cta-processing"><i class="ph-light ph-circle-notch bundle-spin"></i> Processing</span>
+          <span class="bundle-cta-processing"><span class="icon-loading-cta bundle-spin" aria-hidden="true"></span> Processing</span>
           <span class="bundle-cta-done"><i class="ph ph-cards-three btn-icon"></i> View Positions</span>
           <span class="bundle-cta-error"><i class="ph-light ph-arrow-clockwise btn-icon"></i> Try again</span>
         </button>
@@ -7653,7 +7709,7 @@
       </div>
       <div class="quick-repay-message" id="qr-message">Review the amount, then confirm to repay the position from your wallet.</div>
       <div class="quick-repay-actions">
-        <button class="btn btn-primary quick-repay-cta" onclick="confirmQuickRepay()"><i class="ph ph-arrow-counter-clockwise btn-icon"></i> Repay</button>
+        <button class="btn btn-primary quick-repay-cta" onclick="confirmQuickRepay()"><span class="icon-repay-card" aria-hidden="true"></span> Repay</button>
         <button class="quick-repay-modify" onclick="quickRepayGoModify()">Modify Positions</button>
       </div>
     </div>
