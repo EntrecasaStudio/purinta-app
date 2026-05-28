@@ -325,6 +325,28 @@
     }
     .dev-folder[open] > summary::before { transform: rotate(90deg); }
     .dev-folder > summary:hover { background: rgba(255,255,255,0.08); }
+    /* Phosphor filled icon inside dev-folder summary (replaces emoji prefix
+       for Home / Borrow / My Positions — mirrors the app's active top-nav
+       icons). Sized a touch larger than the 10px summary text so the glyph
+       reads as a peer to the label, not a subscript. */
+    .dev-folder > summary .dev-folder-icon {
+      font-size: 13px; line-height: 1;
+      color: rgba(255,255,255,0.85);
+    }
+    /* Breadcrumb trail — when a screen is active, _openAncestorFolders
+       (in JS) adds .has-active to every `<details class="dev-folder">` on
+       the path to the leaf button. The leaf already gets its own primary
+       green-700 fill; ancestors get a quieter ambient signal so the eye
+       can trace the path Borrow → 03 · Confirmation → Skel at a glance
+       without the panel turning into a wall of green. Inset box-shadow
+       acts as a 2px rail on the left edge, and the top-level Phosphor
+       icon flips to brand green as the section anchor. */
+    .dev-folder.has-active > summary {
+      box-shadow: inset 2px 0 0 var(--green-500);
+    }
+    .dev-folder.has-active > summary .dev-folder-icon {
+      color: var(--green-500);
+    }
     .dev-folder .folder-items {
       display: flex; flex-direction: column; gap: 4px;
       align-items: stretch; justify-content: flex-start;
@@ -359,6 +381,49 @@
     .dev-folder .dev-folder .folder-items {
       padding: 4px 4px 4px 12px;
       background: transparent;
+    }
+    /* Figma-link icons in dev nav. Any button inside the dev-nav panel
+       gets a Figma-mark icon next to its label by adding
+       `data-figma-url="..."` to the button. A small decorator script
+       (in the inline init block near </body>) wraps such buttons in a
+       `.dev-row` flex container and appends an `<a class="figma-link">`
+       as a sibling. Keeping the link as a sibling (not nested inside
+       the <button>) avoids invalid interactive-in-interactive HTML and
+       sidesteps event bubbling — the existing onclick handlers stay
+       untouched. Button widths must drop from 100% to flex:1 inside
+       a .dev-row so the icon can occupy its own space on the right. */
+    .dev-row {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      gap: 4px;
+    }
+    .dev-row > button {
+      flex: 1 1 0;
+      width: auto !important;
+      min-width: 0;
+    }
+    .dev-row > .figma-link {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      border-radius: 4px;
+      text-decoration: none;
+      opacity: 0.22;
+      transition: opacity 0.12s ease, background 0.12s ease;
+    }
+    .dev-row:hover > .figma-link { opacity: 0.55; }
+    .dev-row > .figma-link:hover {
+      opacity: 1;
+      background: rgba(255,255,255,0.08);
+    }
+    .dev-row > .figma-link img {
+      display: block;
+      width: 10px;
+      height: 15px;
+      pointer-events: none;
     }
     /* Status dots prefixed to Animations buttons. Tracks implementation
        progress per animation: green = shipped, orange = in flight, red = todo. */
@@ -512,7 +577,10 @@
     /* Banner on → freeze the skeleton: pause the shimmer animation but
        KEEP the gradient (don't override background) so the placeholders
        still read as skeletons, just stopped in place. */
-    body.show-error-banner .skel-block { animation-play-state: paused; }
+    body.show-error-banner .skel-block,
+    body.show-error-banner #skel-home .token-rate-badge,
+    body.show-error-banner #skel-home-b .token-rate-badge,
+    body.show-error-banner #skel-home-c .token-rate-badge { animation-play-state: paused; }
     /* Hide the mascot caption in the error state. The mascot itself is a
        hardcoded neutral emote, but its caption is health/CTA copy ("Supply
        PEPE and start printing") the user can't act on while data is
@@ -1799,6 +1867,16 @@
     .bundle-modal-overlay.is-processing .bundle-message-processing { display: block; }
     .bundle-modal-overlay.is-done .bundle-message-done { display: block; }
     .bundle-modal-overlay.is-error .bundle-message-error { display: block; }
+    /* LOADING ERROR — server failed to resolve transaction details. Same
+       visual treatment as Transaction Error (pink banner, sad mascot, Try
+       Again CTA) but with NO stepper (steps never loaded) and a different
+       message body. Implementation: overlay carries both .is-error AND
+       .is-loading-error so all the existing .is-error styles (mascot swap,
+       blob recolor, banner palette, CTA Try Again) apply for free; the
+       .is-loading-error class adds two overrides. Per Figma 2700:365206. */
+    .bundle-modal-overlay.is-loading-error .bundle-steps { display: none; }
+    .bundle-modal-overlay.is-loading-error .bundle-message-error { display: none; }
+    .bundle-modal-overlay.is-loading-error .bundle-message-loading-error { display: block; }
     .bundle-modal-overlay.is-processing .bundle-message {
       background: var(--warning-100); border-color: var(--warning-400);
     }
@@ -5991,70 +6069,83 @@
              both Borrow and Modify and the dispatcher routes by the
              currently active screen. -->
         <details class="dev-folder" open>
-          <summary><span class="nav-emoji">🏠</span>Home</summary>
+          <summary><i class="ph-fill ph-house dev-folder-icon" aria-hidden="true"></i>Home</summary>
           <div class="folder-items">
-            <button class="active" onclick="showScreen('homepage')">01 · Home</button>
+            <button class="active" onclick="showScreen('homepage')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2505-288709&t=OR2avVoah2tGBXiK-1">01 · Home</button>
             <details class="dev-folder">
               <summary>States</summary>
               <div class="folder-items">
-                <button onclick="showScreen('homepage-connected')">Connected</button>
-                <button onclick="showScreen('skel-home')">Skel</button>
+                <button onclick="showScreen('homepage-connected')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=3363-122672&t=OR2avVoah2tGBXiK-1">Connected</button>
+                <button onclick="showScreen('skel-home')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2435-306033&t=OR2avVoah2tGBXiK-1">Skel</button>
+                <button onclick="showHomeError()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=3127-351604&t=OR2avVoah2tGBXiK-1">Home · Error</button>
               </div>
             </details>
           </div>
         </details>
         <details class="dev-folder">
-          <summary><span class="nav-emoji">💸</span>Borrow</summary>
+          <summary><i class="ph-fill ph-currency-circle-dollar dev-folder-icon" aria-hidden="true"></i>Borrow</summary>
           <div class="folder-items">
-            <button onclick="showScreen('borrow')">01 · Disconnected</button>
-            <button onclick="enterBorrowConnected()">02 · Connected</button>
-            <details class="dev-folder">
-              <summary>03 · Confirmation</summary>
-              <div class="folder-items">
-                <button data-modal="bundle"       onclick="devOpenBundle()">Modal</button>
-                <button data-modal="bundle-error" onclick="devOpenBundleError()">Modal · Error</button>
-                <button data-modal="bundle-skel"  onclick="devOpenBundleSkel()">Modal · Skel</button>
-              </div>
-            </details>
-            <details class="dev-folder">
-              <summary>States</summary>
-              <div class="folder-items">
-                <button onclick="showBorrowError()">Borrow · Error</button>
-                <button onclick="setBorrowInitial()">Initial</button>
-                <button onclick="toggleNoFundsBanner()">No-Funds Banner</button>
-                <button onclick="showScreen('skel-borrow')">Skel</button>
-              </div>
-            </details>
-          </div>
-        </details>
-        <details class="dev-folder">
-          <summary><span class="nav-emoji">📊</span>My Positions</summary>
-          <div class="folder-items">
-            <button onclick="showScreen('positions-disconnected')">01 · Disconnected</button>
+            <button onclick="showScreen('borrow')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2505-288706&t=OR2avVoah2tGBXiK-1">01 · Disconnected</button>
             <details class="dev-folder">
               <summary>02 · Connected</summary>
               <div class="folder-items">
-                <button onclick="showScreen('positions')">With positions</button>
-                <button onclick="showScreen('positions-empty')">Empty</button>
+                <button onclick="setBorrowInitial()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2505-288702&t=OR2avVoah2tGBXiK-1">Initial</button>
+                <button onclick="toggleNoFundsBanner()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2505-288703&t=OR2avVoah2tGBXiK-1">No-Funds Banner</button>
               </div>
             </details>
-            <button onclick="showScreen('update')">03 · Modify</button>
-            <button data-modal="quick-repay" onclick="devOpenQuickRepay()">04 · Quick Repay</button>
+            <details class="dev-folder">
+              <summary>03 · Confirmation</summary>
+              <div class="folder-items">
+                <button data-modal="bundle"       onclick="devOpenBundle()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=3127-354047&t=OR2avVoah2tGBXiK-1">Transaction Ok</button>
+                <button data-modal="bundle-error" onclick="devOpenBundleError()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=3127-354047&t=OR2avVoah2tGBXiK-1">Transaction Error</button>
+                <button data-modal="bundle-skel"  onclick="devOpenBundleSkel()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2692-142539&t=OR2avVoah2tGBXiK-1">Skel</button>
+                <button data-modal="bundle-loading-error" onclick="devOpenBundleLoadingError()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2700-365206&t=OR2avVoah2tGBXiK-1">Loading Error</button>
+              </div>
+            </details>
             <details class="dev-folder">
               <summary>States</summary>
               <div class="folder-items">
-                <button onclick="showScreen('skel-positions')">Skel</button>
-                <button onclick="showScreen('skel-update')">Modify · Skel</button>
+                <button onclick="showScreen('skel-borrow')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2435-306034&t=OR2avVoah2tGBXiK-1">Skel</button>
+                <button onclick="showBorrowError()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=3127-353236&t=OR2avVoah2tGBXiK-1">Borrow · Error</button>
               </div>
             </details>
           </div>
         </details>
         <details class="dev-folder">
-          <summary><span class="nav-emoji">⚙️</span>System</summary>
+          <summary><i class="ph-fill ph-cards-three dev-folder-icon" aria-hidden="true"></i>My Positions</summary>
           <div class="folder-items">
-            <button onclick="showScreen('switch-network')">Switch Network</button>
-            <button onclick="showScreen('loading-loop')">Loading</button>
-            <button onclick="showScreen('error-404')">404</button>
+            <button onclick="showScreen('positions-disconnected')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=3128-356203&t=OR2avVoah2tGBXiK-1">01 · Disconnected</button>
+            <details class="dev-folder">
+              <summary>02 · Connected</summary>
+              <div class="folder-items">
+                <button onclick="showScreen('positions')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=320-33683&t=OR2avVoah2tGBXiK-1">With positions</button>
+                <button onclick="showScreen('positions-empty')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2241-298726&t=OR2avVoah2tGBXiK-1">Empty</button>
+              </div>
+            </details>
+            <details class="dev-folder">
+              <summary>03 · Modify</summary>
+              <div class="folder-items">
+                <button onclick="showScreen('update')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=320-33691&t=OR2avVoah2tGBXiK-1">Default</button>
+                <button onclick="showScreen('skel-update')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2435-306818&t=OR2avVoah2tGBXiK-1">Skel</button>
+                <button onclick="showModifyError()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=3128-357781&t=OR2avVoah2tGBXiK-1">Loading Error</button>
+              </div>
+            </details>
+            <button data-modal="quick-repay" onclick="devOpenQuickRepay()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=1126-87584&t=OR2avVoah2tGBXiK-1">04 · Quick Repay</button>
+            <details class="dev-folder">
+              <summary>States</summary>
+              <div class="folder-items">
+                <button onclick="showScreen('skel-positions')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=2435-306814&t=OR2avVoah2tGBXiK-1">Skel</button>
+                <button onclick="showPositionsError()" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=3128-356222&t=OR2avVoah2tGBXiK-1">Positions · Error</button>
+              </div>
+            </details>
+          </div>
+        </details>
+        <details class="dev-folder">
+          <summary><i class="ph-fill ph-gear-six dev-folder-icon" aria-hidden="true"></i>System</summary>
+          <div class="folder-items">
+            <button onclick="showScreen('switch-network')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=1995-206305&t=OR2avVoah2tGBXiK-1">Switch Network</button>
+            <button onclick="showScreen('loading-loop')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=1210-117856&t=OR2avVoah2tGBXiK-1">Loading</button>
+            <button onclick="showScreen('error-404')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=1018-17879&t=OR2avVoah2tGBXiK-1">404</button>
           </div>
         </details>
       </div>
@@ -6116,6 +6207,34 @@
       if (!p) return;
       if (saved !== '0') p.classList.add('open');
     } catch(e) {}
+  })();
+  // Decorate any dev-nav button that has data-figma-url="..." with a
+  // small Figma-mark icon link that opens the corresponding design in a
+  // new tab. Wrapping in a .dev-row sibling div (not nesting <a> inside
+  // <button>) keeps the HTML valid and avoids event-bubble surprises.
+  // Runs immediately since the dev-nav DOM is fully parsed by the time
+  // this script tag executes (it sits right after the panel markup).
+  (function(){
+    var panel = document.querySelector('.dev-nav-panel');
+    if (!panel) return;
+    panel.querySelectorAll('button[data-figma-url]').forEach(function(btn){
+      if (btn.parentElement && btn.parentElement.classList.contains('dev-row')) return;
+      var url = btn.getAttribute('data-figma-url');
+      if (!url) return;
+      var row = document.createElement('div');
+      row.className = 'dev-row';
+      btn.parentNode.insertBefore(row, btn);
+      row.appendChild(btn);
+      var a = document.createElement('a');
+      a.className = 'figma-link';
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.title = 'Open in Figma';
+      a.innerHTML = '<img src="assets/icon-figma-white.svg" alt="Figma" width="10" height="15">';
+      a.addEventListener('click', function(e){ e.stopPropagation(); });
+      row.appendChild(a);
+    });
   })();
 </script>
 <div class="phones-container">
@@ -6242,6 +6361,24 @@
         <div class="disconnect-dropdown">
           <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect <span class="icon-power btn-icon" aria-hidden="true"></span></button>
         </div>
+      </div>
+    </div>
+    <!-- Error banner: identical instance to the one in #borrow-connected.
+         Hidden by default (.error-banner { display: none }); shown only on
+         skel screens when body.show-error-banner is set. populateSkeletonHome
+         clones #homepage-connected wholesale into #skel-home, so this banner
+         comes along for the ride and the existing CSS rule
+         `body.show-error-banner .screen[id^="skel-"].active .error-banner`
+         lights it up on the Home skel. Sits between header and hero-wrap so
+         it pushes the hero down on entry (slide-in), then sticky:top:8 keeps
+         it pinned as the user scrolls — same UX as Borrow Error. -->
+    <div class="error-banner" role="alert" aria-live="assertive">
+      <div class="error-banner-content">
+        <span class="error-banner-text-group">
+          <i class="ph-fill ph-warning error-banner-icon" aria-hidden="true"></i>
+          <span class="error-banner-title">Couldn't load market data</span>
+        </span>
+        <button class="error-banner-retry" type="button" onclick="handleErrorRetry(this)">Retry</button>
       </div>
     </div>
     <div class="hero-wrap">
@@ -6617,6 +6754,21 @@
         <div class="disconnect-dropdown">
           <button class="btn-disconnect" onclick="showScreen('homepage')">Disconnect <span class="icon-power btn-icon" aria-hidden="true"></span></button>
         </div>
+      </div>
+    </div>
+    <!-- Error banner: cloned into #skel-positions by populateSkeletonPositions
+         (clones #positions wholesale). Same pattern as #homepage-connected and
+         #borrow-connected — hidden by default, surfaces only on skel screens
+         when body.show-error-banner is set. Sits between header and content
+         so it pushes the positions list down on entry; sticky:top:8 pins it
+         while the user scrolls. -->
+    <div class="error-banner" role="alert" aria-live="assertive">
+      <div class="error-banner-content">
+        <span class="error-banner-text-group">
+          <i class="ph-fill ph-warning error-banner-icon" aria-hidden="true"></i>
+          <span class="error-banner-title">Couldn't load market data</span>
+        </span>
+        <button class="error-banner-retry" type="button" onclick="handleErrorRetry(this)">Retry</button>
       </div>
     </div>
     <div class="positions-content">
@@ -7381,6 +7533,18 @@
         </div>
       </div>
     </div>
+    <!-- Error banner: cloned into #skel-update by populateSkeletonUpdate
+         (clones #update wholesale). Hidden by default; surfaces only on
+         skel screens when body.show-error-banner is set. -->
+    <div class="error-banner" role="alert" aria-live="assertive">
+      <div class="error-banner-content">
+        <span class="error-banner-text-group">
+          <i class="ph-fill ph-warning error-banner-icon" aria-hidden="true"></i>
+          <span class="error-banner-title">Couldn't load market data</span>
+        </span>
+        <button class="error-banner-retry" type="button" onclick="handleErrorRetry(this)">Retry</button>
+      </div>
+    </div>
     <div class="borrow-content">
       <div class="borrow-header">
         <div class="borrow-title">
@@ -7540,6 +7704,7 @@
           <div class="bundle-message-processing"><strong>Proceed in wallet</strong><br>Continue your transaction in your connected wallet.</div>
           <div class="bundle-message-done"><strong>Done!</strong><br>Transaction completed successfully.</div>
           <div class="bundle-message-error"><strong>Couldn't execute transaction</strong><br>Your funds are safe. Nothing was sent. Please try again later.</div>
+          <div class="bundle-message-loading-error"><strong>Couldn't load transaction details</strong><br>Your funds are safe. Nothing was sent. Please try again.</div>
         </div>
       </div>
         <button class="btn btn-primary btn-full bundle-modal-cta" onclick="bundleModalCtaClick()">
@@ -8768,7 +8933,7 @@ function openBundleModal(data, btn) {
   // Reset to "ready" state each time it opens. is-skel flips on/off per
   // invocation so devOpenBundleSkel → openBundleModal resolve path
   // toggles cleanly.
-  overlay.classList.remove('is-processing', 'is-done', 'is-error', 'is-skel');
+  overlay.classList.remove('is-processing', 'is-done', 'is-error', 'is-loading-error', 'is-skel');
   overlay.classList.add('is-ready');
   if (data.skel) overlay.classList.add('is-skel');
   // Stash an errorAt index on the overlay if the caller wants the second
@@ -8997,15 +9162,27 @@ function markDevNavModal(modalKey) {
     if (modalKey) localStorage.setItem('purinta-modal', modalKey);
     else localStorage.removeItem('purinta-modal');
   } catch (e) {}
-  if (!modalKey) return;
-  document.querySelectorAll('.dev-nav button[data-modal="' + modalKey + '"]').forEach(function(b) {
-    b.classList.add('active');
-    // Open every ancestor folder + the section so the active button is
-    // visible without manual expansion. Walks all the way up because the
-    // modal triggers (Modal / Modal · Error / Modal · Skel) now live
-    // inside a nested folder Borrow > 03 · Confirmation.
-    if (typeof _openAncestorFolders === 'function') _openAncestorFolders(b);
+  if (modalKey) {
+    document.querySelectorAll('.dev-nav button[data-modal="' + modalKey + '"]').forEach(function(b) {
+      b.classList.add('active');
+    });
+  }
+  // Recompute the breadcrumb trail from scratch based on whichever
+  // .screen-nav button is currently .active. Opening a modal makes the
+  // modal button .active (its trail wins); closing returns the trail to
+  // the previously-active screen button (e.g. Borrow · Error after the
+  // Confirmation modal closes). Without this, modal opens accumulated
+  // stale rails and modal closes left no rails at all. querySelector
+  // returns the FIRST .active match in DOM order, which is what we want
+  // — when a modal is open, both modal + screen buttons may be .active
+  // and the modal is earlier in DOM under the section it belongs to.
+  document.querySelectorAll('.screen-nav .dev-folder.has-active').forEach(function(d) {
+    d.classList.remove('has-active');
   });
+  var activeBtn = document.querySelector('.screen-nav button.active');
+  if (activeBtn && typeof _openAncestorFolders === 'function') {
+    _openAncestorFolders(activeBtn);
+  }
 }
 
 // Dev-nav shortcut: open Quick Repay with demo amount without needing a position card.
@@ -9087,6 +9264,11 @@ function devOpenBundleSkel() {
           'Execute the bundle'
         ]
       }, null);
+      // Auto-resolve transitioned skel → loaded; the dev-nav active state
+      // should follow so "Skel" doesn't stay highlighted while the modal
+      // visually shows the Confirmation (success) state. Mirror that on
+      // localStorage so a reload restores Confirmation, not Skel.
+      markDevNavModal('bundle');
     });
   }, SKEL_HOLD_MS);
 }
@@ -9120,6 +9302,41 @@ function runDialogHeightTransition(dialog, mutate) {
   dialog.addEventListener('transitionend', clear);
   // Safety net if transitionend never fires (e.g. reduced-motion path).
   setTimeout(clear, 380);
+}
+
+/* Bundle Confirmation — Loading Error variant. The user opened the modal,
+   data fetch failed (no steps came back), and the modal needs to surface
+   the failure without ever rendering a stepper. Choreography mirrors
+   devOpenBundleSkel for the first beat (1.6 s of skel shimmer) so the
+   transition reads as "we tried, it failed" rather than dumping straight
+   into an error; after the hold we strip is-skel and add is-error +
+   is-loading-error. The combined class set reuses every existing .is-error
+   rule (pink mascot, blob recolor, banner palette, Try Again CTA) and the
+   .is-loading-error rules add the deltas (hide steps, swap banner copy).
+   Per Figma 2700:365206. */
+function devOpenBundleLoadingError() {
+  // Reuse devOpenBundleSkel's opening payload — rows + 2 placeholder steps.
+  openBundleModal({
+    operations: [
+      { label: 'Supply', amount: '0.0000367', token: 'MORPHO', tokenClass: 'morpho' },
+      { label: 'Repay',  amount: '0.00006',   token: 'USDC',   tokenClass: 'usdc' }
+    ],
+    steps: ['', ''],
+    skel: true
+  }, null);
+  markDevNavModal('bundle-loading-error');
+  setTimeout(function() {
+    var overlay = document.getElementById('bundle-modal-overlay');
+    var dialog = overlay && overlay.querySelector('.bundle-modal-dialog');
+    if (!overlay || !dialog) return;
+    if (!overlay.classList.contains('is-open')) return;
+    if (!overlay.classList.contains('is-skel')) return;
+    runDialogHeightTransition(dialog, function() {
+      overlay.classList.remove('is-skel');
+      overlay.classList.add('is-error');
+      overlay.classList.add('is-loading-error');
+    });
+  }, SKEL_HOLD_MS);
 }
 
 /* Bundle Confirmation — Error variant. Same flow as devOpenBundle but the
@@ -9402,15 +9619,78 @@ function handleErrorRetry(btn) {
 // We cancel the playSkelDemo auto-fade so the skel doesn't dissolve
 // into the loaded screen, and we clear any prior error-banner state so
 // repeated clicks replay the transition from a clean slate.
+// Helper: override the screen-nav active state that showScreen() just set.
+// showScreen marks the FIRST button whose onclick matches its own argument
+// (e.g. showScreen('skel-home') lights up the literal "Skel" button), but
+// here we want our Error button highlighted instead so the dev nav reflects
+// which user path got us to the skel screen.
+function _markErrorBtnActive(fnFragment) {
+  document.querySelectorAll('.screen-nav button').forEach(function(b) { b.classList.remove('active'); });
+  var btn = document.querySelector('.screen-nav button[onclick*="' + fnFragment + '"]');
+  if (btn) {
+    btn.classList.add('active');
+    if (typeof _openAncestorFolders === 'function') _openAncestorFolders(btn);
+  }
+}
 var _showBorrowErrorTimer = null;
 function showBorrowError() {
   if (_showBorrowErrorTimer) { clearTimeout(_showBorrowErrorTimer); _showBorrowErrorTimer = null; }
   setErrorBanner(false);
   showScreen('skel-borrow');
   if (typeof cancelSkelDemos === 'function') cancelSkelDemos();
+  _markErrorBtnActive('showBorrowError');
   _showBorrowErrorTimer = setTimeout(function() {
     setErrorBanner(true);
     _showBorrowErrorTimer = null;
+  }, 1500);
+}
+// "Home / Error" — same choreography as showBorrowError but targets the
+// Home skeleton. The banner element is cloned into #skel-home by
+// populateSkeletonHome (from #homepage-connected), and the body class +
+// CSS selector handle the slide-in + shimmer freeze identically. Sharing
+// _showHomeErrorTimer scope so rapid dev-nav clicks across both Error
+// buttons don't pile up timers.
+var _showHomeErrorTimer = null;
+function showHomeError() {
+  if (_showHomeErrorTimer) { clearTimeout(_showHomeErrorTimer); _showHomeErrorTimer = null; }
+  setErrorBanner(false);
+  showScreen('skel-home');
+  if (typeof cancelSkelDemos === 'function') cancelSkelDemos();
+  _markErrorBtnActive('showHomeError');
+  _showHomeErrorTimer = setTimeout(function() {
+    setErrorBanner(true);
+    _showHomeErrorTimer = null;
+  }, 1500);
+}
+// "My Positions / Loading Error" — same choreography as the other two.
+// Banner is cloned into #skel-positions by populateSkeletonPositions
+// (from #positions), shimmer freeze handled by the existing .skel-block
+// pause rule.
+var _showPositionsErrorTimer = null;
+function showPositionsError() {
+  if (_showPositionsErrorTimer) { clearTimeout(_showPositionsErrorTimer); _showPositionsErrorTimer = null; }
+  setErrorBanner(false);
+  showScreen('skel-positions');
+  if (typeof cancelSkelDemos === 'function') cancelSkelDemos();
+  _markErrorBtnActive('showPositionsError');
+  _showPositionsErrorTimer = setTimeout(function() {
+    setErrorBanner(true);
+    _showPositionsErrorTimer = null;
+  }, 1500);
+}
+// "Modify / Loading Error" — same choreography, targets skel-update.
+// Banner is cloned into #skel-update by populateSkeletonUpdate (from
+// #update), shimmer freeze handled by the existing .skel-block rule.
+var _showModifyErrorTimer = null;
+function showModifyError() {
+  if (_showModifyErrorTimer) { clearTimeout(_showModifyErrorTimer); _showModifyErrorTimer = null; }
+  setErrorBanner(false);
+  showScreen('skel-update');
+  if (typeof cancelSkelDemos === 'function') cancelSkelDemos();
+  _markErrorBtnActive('showModifyError');
+  _showModifyErrorTimer = setTimeout(function() {
+    setErrorBanner(true);
+    _showModifyErrorTimer = null;
   }, 1500);
 }
 
@@ -11591,6 +11871,7 @@ function playLoadingIntro(phone) {
       'bundle':       function() { if (typeof devOpenBundle === 'function')      devOpenBundle(); },
       'bundle-error': function() { if (typeof devOpenBundleError === 'function') devOpenBundleError(); },
       'bundle-skel':  function() { if (typeof devOpenBundleSkel === 'function')  devOpenBundleSkel(); },
+      'bundle-loading-error': function() { if (typeof devOpenBundleLoadingError === 'function') devOpenBundleLoadingError(); },
       'quick-repay':  function() { if (typeof devOpenQuickRepay === 'function')  devOpenQuickRepay(); }
     };
     // rAF defer so the showScreen reveal animations don't fight the
