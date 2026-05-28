@@ -762,15 +762,42 @@
     i.btn-icon, i.btn-icon-lg { width: auto; height: auto; display: inline-flex; align-items: center; }
     i.btn-icon { font-size: 20px; }
     i.btn-icon-lg { font-size: 24px; }
-    /* Disabled state for primary buttons (used by Modify CTA when deltas=0) */
+    /* Disabled state per Figma Button component (node 89:9755). NEVER uses
+       opacity — every disabled variant swaps to a documented pale-palette
+       so the hue family stays intact and the disabled cue reads as "inert"
+       rather than "faded screenshot."
+       Primary disabled: green-50 fill + neutral-200 border + green-200
+       text/icon (the gradient is replaced by a flat tint + a border).
+       Used by the Modify CTA when deltas=0 and any other primary-style
+       button in a disabled context. */
     .btn-primary:disabled, .btn-primary[disabled] {
-      background: var(--mint-100) !important;
+      background: var(--green-50) !important;
+      background-image: none !important;
+      border: 1px solid var(--neutral-200) !important;
       color: var(--green-200) !important;
       cursor: not-allowed;
       pointer-events: none;
       box-shadow: none !important;
       filter: none !important;
     }
+    .btn-primary:disabled i, .btn-primary[disabled] i { color: var(--green-200) !important; }
+    /* Secondary disabled: mint-50 fill + neutral-200 border + green-200
+       text/icon. Applies globally so every secondary button (Modify
+       Position / Quick Repay / Quick Withdraw / Claim Rewards) inherits
+       the same palette when disabled. Previously this rule was missing
+       and the browser fell back to a 50% opacity fade that muddied the
+       intended hues — see disableSkeletonCtas which marks every body
+       button disabled=true when cloning into a skel screen. */
+    .btn-secondary:disabled, .btn-secondary[disabled] {
+      background: var(--mint-50) !important;
+      border-color: var(--neutral-200) !important;
+      color: var(--green-200) !important;
+      cursor: not-allowed;
+      pointer-events: none;
+      box-shadow: none !important;
+      filter: none !important;
+    }
+    .btn-secondary:disabled i, .btn-secondary[disabled] i { color: var(--green-200) !important; }
     /* :hover gated to desktop phones — mobile shows :active only as tap feedback.
        :not(:disabled) stays defensive in case we add [disabled] buttons later. */
     .phone.desktop .btn:hover:not(:disabled) { transform: translateY(-3px); }
@@ -5126,6 +5153,23 @@
     .positions-title-row .total-row { margin-bottom: 0; margin-left: 0; margin-right: 0; align-items: baseline; gap: 8px; position: relative; top: -1px; }
     .positions-title-row .total-label, .positions-title-row .total-value { line-height: 1; }
     .btn.btn-sm { font-size: var(--ds-xs); padding: 6.5px 14px; } /* 28px ×4 */
+    /* Claim rewards header button (My Positions). Per Figma spec the pill
+       is a fixed 40 px tall, same dimensions on mobile and desktop — does
+       NOT inherit the responsive sizing of the other CTA pills. Padding
+       overrides the .btn-secondary default (44 px, padding 11/24/13) so the
+       size lock is honored. The trailing arrow-square-out is the standard
+       "external action" cue from the spec; 4 px gap keeps it tight to the
+       label. */
+    .claim-rewards-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      height: 40px;
+      padding: 0 20px;
+      font-size: var(--ds-xs);
+      line-height: 1;
+    }
+    .claim-rewards-btn i { font-size: 14px; line-height: 1; }
+    /* Disabled state inherits from the global .btn-secondary:disabled rule
+       above — mint-50 / neutral-200 / green-200 per Figma node 3202:353461. */
     /* Option C: Peek-behind card */
     .new-borrow-peek {
       background: linear-gradient(135deg, var(--green-50) 0%, var(--cream-100) 100%);
@@ -6775,6 +6819,12 @@
       <div class="positions-title-row">
         <div class="positions-header-line">
           <div class="positions-title">My Positions</div>
+          <!-- Claim rewards — mint pill on the right side of the title row.
+               Space-between on .positions-header-line auto-aligns it. The
+               external-link icon (ph-arrow-square-out) signals "opens a
+               separate flow." Placeholder onclick until the rewards flow
+               is implemented. -->
+          <button class="btn btn-secondary claim-rewards-btn" onclick="claimRewards()">Claim rewards <i class="ph ph-arrow-square-out" aria-hidden="true"></i></button>
           <!-- Total removed: ambiguous (borrows vs supplies) -->
           <!--<div class="total-row">
             <span class="total-label">Total</span>
@@ -7711,7 +7761,7 @@
           <span class="bundle-cta-ready">Begin</span>
           <span class="bundle-cta-processing"><span class="icon-loading-cta bundle-spin" aria-hidden="true"></span> Processing</span>
           <span class="bundle-cta-done"><i class="ph ph-cards-three btn-icon"></i> View Positions</span>
-          <span class="bundle-cta-error"><i class="ph-light ph-arrow-clockwise btn-icon"></i> Try again</span>
+          <span class="bundle-cta-error">Try again</span>
         </button>
       </div>
     </div>
@@ -9738,6 +9788,12 @@ function setModifyHealth(level) {
   _markStateBtnActive('setModifyHealth', level);
 }
 
+// Claim rewards header CTA — placeholder for the prototype until the
+// rewards flow is designed. Kept as a named function (not inline no-op)
+// so the dev-nav active-state matchers can find it later if needed.
+function claimRewards() {
+  // TODO: wire to the actual claim rewards flow when designed.
+}
 function modifyFromPosition(btn) {
   var KNOWN = ['pepe','morpho','comp','syrup','doge','eth','shib','wif','dai','usdc','usdt'];
   var card = btn.closest('.position-card, .position-card-inner');
