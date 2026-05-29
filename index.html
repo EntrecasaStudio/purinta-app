@@ -1260,6 +1260,13 @@
       cursor: help;
       vertical-align: middle;
     }
+    /* When the custom DS info icon is on a .rate-info-icon host (position
+       cards), shrink the mask to the existing 12 px footprint. Same glyph
+       used at 16 px elsewhere; the simple circle-with-i scales acceptably. */
+    .rate-info-icon.icon-info {
+      width: 12px; height: 12px;
+      -webkit-mask-size: 12px 12px; mask-size: 12px 12px;
+    }
     /* Option A positions cards: nudge the "i" up 1px and tighten 2px to the
        label on its left. Position: relative is layout-neutral so neighbors stay. */
     #phone-a .position-card .rate-info-icon { position: relative; top: -1px; margin-left: 2px; }
@@ -1446,6 +1453,14 @@
       backdrop-filter: var(--scrim-commit-blur);
       -webkit-backdrop-filter: var(--scrim-commit-blur);
       padding: 20px;
+      /* Allow scroll when the dialog is taller than the phone frame
+         (mobile, small viewport). `place-items: safe center` keeps the
+         dialog centered while content fits, but falls back to start
+         alignment when it overflows so the top of the dialog never gets
+         clipped above the scroll area. */
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      place-items: safe center;
     }
     /* Desktop: keep the overlay scoped to the phone frame so the backdrop
        doesn't bleed past the device illusion. Use sticky on the dialog so
@@ -1662,6 +1677,11 @@
       position: relative; width: 100%; text-align: center;
       height: 20px; max-height: 20px; opacity: 1; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
+      /* 12 px breathing room above/below the "&" divider per Figma node
+         2237:255498. Parent .bundle-modal-rows gap (12 px) stacks on top
+         to give the visually balanced clearance. .is-done state still
+         collapses this via its own higher-specificity margin: 0 rule. */
+      margin: 12px 0;
       transition: max-height 600ms cubic-bezier(0.22, 1, 0.36, 1),
                   opacity 500ms ease,
                   margin 600ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -1690,7 +1710,15 @@
       color: var(--text-secondary);
       position: relative;
     }
-    .bundle-step-text { flex: 1; text-align: left; }
+    .bundle-step-text {
+      flex: 1; text-align: left;
+      /* Force single line: longer step labels (e.g. "Sign approval for
+         transferring MORPHO") fit in the narrow mobile dialog at the cost
+         of overflowing the dialog's right padding by a few px — accepted
+         per Figma direction since wrapping breaks the stepper visual
+         rhythm more than a slight horizontal spill. */
+      white-space: nowrap;
+    }
     .bundle-step-num {
       width: 24px; height: 24px; border-radius: 50%;
       background: var(--cream-200);
@@ -1870,11 +1898,30 @@
       transition: background 0.2s ease, border-color 0.2s ease;
     }
     .bundle-message strong { font-weight: 500; }
-    .bundle-message-icon {
+    /* Specificity bumped to .bundle-modal-overlay .bundle-message-icon so
+       the base hide wins over the .icon-info / .icon-seal-check /
+       .icon-exclamation-octagon default display: inline-block declared
+       later in the stylesheet. The state-specific show rules below sit at
+       the same specificity but come later in source order, so they still
+       reveal the right variant per overlay state. */
+    .bundle-modal-overlay .bundle-message-icon {
       font-size: 16px; flex-shrink: 0; margin-top: 2px;
       display: none;
       color: var(--info-700);                      /* ready default */
       transition: color 200ms ease;
+    }
+    /* Override the default 16 px size from .icon-info / .icon-seal-check
+       / .icon-exclamation-octagon when used as a modal banner indicator.
+       Per Figma spec these read at 20 px in the confirmation modal — bigger
+       than the 16 px summary/cards usage because the modal banner has more
+       breathing room and a heavier message anchor. Source SVGs are 16 px
+       native; mask-size up-scaling adds ~1.25× stroke thickness which is
+       acceptable for these simple glyphs. */
+    .bundle-message-icon.icon-info,
+    .bundle-message-icon.icon-seal-check,
+    .bundle-message-icon.icon-exclamation-octagon {
+      width: 20px; height: 20px;
+      -webkit-mask-size: 20px 20px; mask-size: 20px 20px;
     }
     /* State-specific icon swap: info for ready/processing, seal-check for done */
     .bundle-modal-overlay .bmi-ready { display: inline-block; }
@@ -1960,6 +2007,9 @@
       font-size: var(--ds-sm);
       position: relative; overflow: visible;
       box-sizing: border-box;
+      /* Desktop sep is part of a horizontal row (between Supply / Repay
+         columns), no vertical margin needed — reset the mobile rule. */
+      margin: 0;
     }
     .phone.desktop .bundle-sep::before,
     .phone.desktop .bundle-sep::after {
@@ -2428,6 +2478,73 @@
       -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
       -webkit-mask-position: center;   mask-position: center;
       -webkit-mask-size: 24px 24px;    mask-size: 24px 24px;
+    }
+    /* Warning triangle (exclamation-triangle) custom DS SVG at native 20×20.
+       Replaces the Phosphor ph-fill ph-warning used on:
+         • Error banners (Home/Borrow/Positions/Update skel screens)
+         • Supply warning banner (no-funds state)
+       Color inherits from the host via currentColor so the same asset
+       renders pink in error banners and orange in the supply warning. */
+    .icon-warning {
+      display: inline-block; width: 20px; height: 20px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/icon-warning-20.svg'); mask-image: url('assets/icon-warning-20.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 20px 20px;    mask-size: 20px 20px;
+    }
+    /* Exclamation octagon (modal error banner). Native 16×16; the DS swap
+       from circle to octagon happened upstream — same semantic role
+       (.bmi-error → error indicator), new glyph. Color via currentColor
+       picks up var(--error-500) from .bundle-modal-overlay.is-error. */
+    .icon-exclamation-octagon {
+      display: inline-block; width: 16px; height: 16px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/icon-exclamation-octagon-16.svg'); mask-image: url('assets/icon-exclamation-octagon-16.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 16px 16px;    mask-size: 16px 16px;
+    }
+    /* Seal-check (modal done banner). Native 16×16, used in the success
+       state of the confirmation modal. Color via currentColor picks up
+       var(--green-600) from .bmi-done. */
+    .icon-seal-check {
+      display: inline-block; width: 16px; height: 16px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/icon-seal-check-16.svg'); mask-image: url('assets/icon-seal-check-16.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 16px 16px;    mask-size: 16px 16px;
+    }
+    /* Check tick — reuses the existing assets/check-icon.svg (16×16, native
+       stroke 2.5). Used by the token-dropdown selected row indicator;
+       step-done state in the bundle modal already paints the same SVG via
+       a ::after pseudo-element so JS-injected i.ph-check tags are
+       intentionally a no-op there. Color via currentColor inherits from
+       the host (green-700 on selected rows). */
+    .icon-check {
+      display: inline-block; width: 16px; height: 16px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/check-icon.svg'); mask-image: url('assets/check-icon.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 16px 16px;    mask-size: 16px 16px;
+    }
+    /* Info "i" tooltip indicator (circle with i). Native 16×16; the asset
+       has 1 px stroke that renders crisp at 16. Replaces ph ph-info used
+       on summary blocks, bundle modal banners (ready/processing), and
+       position cards. For the smaller 12 px variant (.rate-info-icon in
+       position cards) we scale the mask down — same glyph, sub-pixel
+       stroke at 12 px is acceptable for the simple circle-with-dot shape.
+       Color via currentColor so each host context (text-secondary on
+       summary, info-700 on modal banner) is honored without duplication. */
+    .icon-info {
+      display: inline-block; width: 16px; height: 16px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/icon-info-16.svg'); mask-image: url('assets/icon-info-16.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 16px 16px;    mask-size: 16px 16px;
     }
     /* Connect Wallet CTA icon — native 24×24 viewBox with 1.5 stroke
        baked in. Rendered 1:1 so the stroke is exactly 1.5 px (no
@@ -6419,7 +6536,7 @@
     <div class="error-banner" role="alert" aria-live="assertive">
       <div class="error-banner-content">
         <span class="error-banner-text-group">
-          <i class="ph-fill ph-warning error-banner-icon" aria-hidden="true"></i>
+          <span class="icon-warning error-banner-icon" aria-hidden="true"></span>
           <span class="error-banner-title">Couldn't load market data</span>
         </span>
         <button class="error-banner-retry" type="button" onclick="handleErrorRetry(this)">Retry</button>
@@ -6601,7 +6718,7 @@
           <div class="summary-details">
             <div class="summary-row"><span class="summary-row-label">You supply</span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
             <div class="summary-row"><span class="summary-row-label">You repay</span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
-            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><i class="ph ph-info summary-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span></span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
+            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><span class="icon-info summary-info-icon" aria-hidden="true"></span><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span></span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
             <div class="summary-row"><span class="summary-row-label">(Token) Price</span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
             <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value" style="color: var(--text-muted);">—</span></div>
           </div>
@@ -6640,7 +6757,7 @@
     <div class="error-banner" role="alert" aria-live="assertive">
       <div class="error-banner-content">
         <span class="error-banner-text-group">
-          <i class="ph-fill ph-warning error-banner-icon" aria-hidden="true"></i>
+          <span class="icon-warning error-banner-icon" aria-hidden="true"></span>
           <span class="error-banner-title">Couldn't load market data</span>
         </span>
         <button class="error-banner-retry" type="button" onclick="handleErrorRetry(this)">Retry</button>
@@ -6661,7 +6778,7 @@
              padding shrinks. The banner never affects flow. -->
         <div class="supply-warning-banner" id="swb-a" aria-hidden="true">
           <div class="swb-content">
-            <i class="ph-fill ph-warning swb-icon" aria-hidden="true"></i>
+            <span class="icon-warning swb-icon" aria-hidden="true"></span>
             <span class="swb-text">Add <span class="swb-token-name">MORPHO</span> to your wallet to get started.</span>
           </div>
           <div class="swb-strip"></div>
@@ -6680,7 +6797,7 @@
                 <div class="token-dropdown-row selected" data-token="pepe" onclick="event.stopPropagation(); selectToken(this)">
                   <span class="mini-icon pepe"></span>
                   <span class="token-name">PEPE</span>
-                  <i class="ph ph-check check-icon" style="color: var(--green-700);"></i>
+                  <span class="icon-check check-icon" style="color: var(--green-700);" aria-hidden="true"></span>
                 </div>
                 <div class="token-dropdown-row" data-token="morpho" onclick="event.stopPropagation(); selectToken(this)">
                   <span class="mini-icon morpho"></span>
@@ -6764,7 +6881,7 @@
           <div class="summary-details">
             <div class="summary-row"><span class="summary-row-label">Your supply</span><span class="summary-row-value">—</span></div>
             <div class="summary-row"><span class="summary-row-label">You repay</span><span class="summary-row-value">—</span></div>
-            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><i class="ph ph-info summary-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span></span><span class="summary-row-value">5.25%<span class="rate-suffix">/yr</span></span></div>
+            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><span class="icon-info summary-info-icon" aria-hidden="true"></span><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span></span><span class="summary-row-value">5.25%<span class="rate-suffix">/yr</span></span></div>
             <div class="summary-row"><span class="summary-row-label">(Token) Price</span><span class="summary-row-value">$0.041200</span></div>
             <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value">$0.05714 <span style="font-size: var(--ds-2xs); font-weight: 400; color: var(--text-secondary);">(-38.6%)</span></span></div>
           </div>
@@ -6809,7 +6926,7 @@
     <div class="error-banner" role="alert" aria-live="assertive">
       <div class="error-banner-content">
         <span class="error-banner-text-group">
-          <i class="ph-fill ph-warning error-banner-icon" aria-hidden="true"></i>
+          <span class="icon-warning error-banner-icon" aria-hidden="true"></span>
           <span class="error-banner-title">Couldn't load market data</span>
         </span>
         <button class="error-banner-retry" type="button" onclick="handleErrorRetry(this)">Retry</button>
@@ -7589,7 +7706,7 @@
     <div class="error-banner" role="alert" aria-live="assertive">
       <div class="error-banner-content">
         <span class="error-banner-text-group">
-          <i class="ph-fill ph-warning error-banner-icon" aria-hidden="true"></i>
+          <span class="icon-warning error-banner-icon" aria-hidden="true"></span>
           <span class="error-banner-title">Couldn't load market data</span>
         </span>
         <button class="error-banner-retry" type="button" onclick="handleErrorRetry(this)">Retry</button>
@@ -7678,7 +7795,7 @@
           <div class="summary-details">
             <div class="summary-row"><span class="summary-row-label">You supply</span><span class="summary-row-value"><span class="update-arrow"><span class="old">1000</span> <span class="arr">→</span> <span class="new">1500 PEPE</span></span></span></div>
             <div class="summary-row"><span class="summary-row-label">You repay</span><span class="summary-row-value">700,000 USDC</span></div>
-            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><i class="ph ph-info summary-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span></span><span class="summary-row-value">5.25%<span class="rate-suffix">/yr</span></span></div>
+            <div class="summary-row"><span class="summary-row-label">Borrow Rate <span class="rate-info-wrap"><span class="icon-info summary-info-icon" aria-hidden="true"></span><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span></span><span class="summary-row-value">5.25%<span class="rate-suffix">/yr</span></span></div>
             <div class="summary-row"><span class="summary-row-label">(Token) Price</span><span class="summary-row-value">$0.041200</span></div>
             <div class="summary-row"><span class="summary-row-label">Liquidation Price</span><span class="summary-row-value liq-arrow"><span class="old"><span class="liq-price">$0.05714</span><span class="liq-pct">(-38.6%)</span></span><span class="arr">→</span><span class="new"><span class="liq-price">$0.05714</span><span class="liq-pct">(-42.1%)</span></span></span></div>
           </div>
@@ -7745,10 +7862,10 @@
           <li class="bundle-step"><span class="bundle-step-num"></span><span class="bundle-step-text">Execute the bundle</span></li>
         </ol>
       <div class="bundle-message">
-        <i class="ph ph-info bundle-message-icon bmi-ready" aria-hidden="true"></i>
-        <i class="ph ph-info bundle-message-icon bmi-processing" aria-hidden="true"></i>
-        <i class="ph-fill ph-seal-check bundle-message-icon bmi-done" aria-hidden="true"></i>
-        <i class="ph-fill ph-warning-circle bundle-message-icon bmi-error" aria-hidden="true"></i>
+        <span class="icon-info bundle-message-icon bmi-ready" aria-hidden="true"></span>
+        <span class="icon-info bundle-message-icon bmi-processing" aria-hidden="true"></span>
+        <span class="icon-seal-check bundle-message-icon bmi-done" aria-hidden="true"></span>
+        <span class="icon-exclamation-octagon bundle-message-icon bmi-error" aria-hidden="true"></span>
         <div class="bundle-message-body">
           <div class="bundle-message-ready"><strong>Ready to go</strong><br>Initiate the transaction by clicking the button below.</div>
           <div class="bundle-message-processing"><strong>Proceed in wallet</strong><br>Continue your transaction in your connected wallet.</div>
@@ -8508,7 +8625,7 @@ function selectToken(row) {
   });
   row.classList.add('selected');
   if (!row.querySelector('.check-icon')) {
-    row.insertAdjacentHTML('beforeend', '<i class="ph ph-check check-icon" style="color: var(--green-700);"></i>');
+    row.insertAdjacentHTML('beforeend', '<span class="icon-check check-icon" style="color: var(--green-700);" aria-hidden="true"></span>');
   }
   // Update the trigger
   var trigger = select.querySelector('.token-select-trigger');
@@ -9099,7 +9216,7 @@ function runBundleSequence() {
       prev.classList.add('is-done');
       // Replace the number with a check glyph on completion
       var numEl = prev.querySelector('.bundle-step-num');
-      if (numEl) numEl.innerHTML = '<i class="ph-light ph-check"></i>';
+      if (numEl) numEl.innerHTML = '';
     }
     if (i >= steps.length) {
       overlay.classList.remove('is-processing');
@@ -9423,7 +9540,7 @@ function devOpenBundleError() {
     var num = s.querySelector('.bundle-step-num');
     if (i < errorAt) {
       s.classList.add('is-done');
-      if (num) num.innerHTML = '<i class="ph-light ph-check"></i>';
+      if (num) num.innerHTML = '';
     } else if (i === errorAt) {
       s.classList.add('is-error');
       if (num) num.innerHTML =
@@ -9478,7 +9595,7 @@ function runBundleErrorSequence(errorAt) {
       }
       prev.classList.add('is-done');
       var pn = prev.querySelector('.bundle-step-num');
-      if (pn) pn.innerHTML = '<i class="ph-light ph-check"></i>';
+      if (pn) pn.innerHTML = '';
     }
     if (i >= steps.length) {
       overlay.classList.remove('is-processing');
@@ -10131,7 +10248,7 @@ function showScreen(id) {
 // Auto-inject the info tooltip next to every "Borrow Rate" stat-label (My Positions screen).
 // Idempotent — skips labels that already have it.
 document.addEventListener('DOMContentLoaded', function() {
-  var INFO_HTML = ' <span class="rate-info-wrap"><i class="ph ph-info rate-info-icon"></i><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span>';
+  var INFO_HTML = ' <span class="rate-info-wrap"><span class="icon-info rate-info-icon" aria-hidden="true"></span><span class="info-tooltip">Variable rate that changes with market conditions. Negative rates include token rewards.</span></span>';
   document.querySelectorAll('.stat-label').forEach(function(el) {
     if (el.textContent.trim() === 'Borrow Rate' && !el.querySelector('.rate-info-wrap')) {
       el.insertAdjacentHTML('beforeend', INFO_HTML);
