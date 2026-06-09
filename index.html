@@ -3036,6 +3036,62 @@
     }
     .slider-info-label { color: var(--text-secondary); font-size: var(--ds-xs); }
     .slider-info-value { color: var(--text-primary); font-weight: 500; font-size: var(--ds-xs); letter-spacing: 0; }
+    /* Modify Position: value + reset icon stay grouped on the right of
+       slider-info via space-between. The reset icon only renders when the
+       parent .slider-info has .has-delta (slider moved from its seeded
+       start position) — see updateModifyCtaState in JS. gap is 0 so the
+       collapsed (width: 0) button leaves no visual void; margin-left on
+       the button animates IN once it has content to show. */
+    .slider-info-right {
+      display: inline-flex; align-items: center; gap: 0;
+      min-width: 0;
+    }
+    .slider-reset-btn {
+      /* Collapsed by default — flex-basis / padding / margin animate so
+         the button slides out from the right edge of the value, pushing
+         the number to the left only when it actually becomes visible.
+         height stays at 24 px both states so the row height never jumps.
+         The collapsed-to-expanded values are applied by JS via
+         updateModifyCtaState (inline styles) because the cascade with the
+         default rule below ignores per-property overrides from a class
+         selector — likely due to the `flex` shorthand expanding to
+         multiple longhands at parse time. Inline styles bypass the
+         issue and animate smoothly via the transition declared here. */
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: none;
+      flex: 0 0 0px; height: 24px; padding: 0; margin-left: 0;
+      overflow: hidden; opacity: 0;
+      color: var(--text-secondary); cursor: pointer;
+      font-size: 16px; line-height: 1;
+      border-radius: 50%;
+      transition: flex-basis 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+                  padding 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+                  margin-left 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+                  opacity 0.18s ease,
+                  color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+    }
+    .phone.desktop .slider-reset-btn:hover { color: var(--green-700); background: var(--mint-100); }
+    .slider-reset-btn:active { transform: scale(0.92); }
+    /* Initial state (no slider moved) shows ONLY the .new value — the
+       strikethrough .old + .arr collapse so the row reads as a single
+       number. The .new span always reflects the current slider position
+       via updateBorrowValues, so it equals the seeded "old" value at
+       entry. When the user moves a slider, .has-delta on that
+       .slider-info reveals the strikethrough + arrow + reset icon. */
+    .slider-info:not(.has-delta) .update-arrow .old,
+    .slider-info:not(.has-delta) .update-arrow .arr {
+      display: none;
+    }
+    /* Summary block (Your supply / Liquidation Price) uses a screen-level
+       .has-changes toggle so its strikethroughs only appear once the user
+       has begun editing the position. JS sets .has-changes when either
+       slider has moved from its seeded start. */
+    .screen[id^="update"]:not(.has-changes) .summary-row .update-arrow .old,
+    .screen[id^="update"]:not(.has-changes) .summary-row .update-arrow .arr,
+    .screen[id^="update"]:not(.has-changes) .summary-row .liq-arrow .old,
+    .screen[id^="update"]:not(.has-changes) .summary-row .liq-arrow .arr {
+      display: none;
+    }
     /* Update loan: diagonal stripes between old and new position */
     .slider-track-delta {
       position: absolute; height: 12px; top: 10px; z-index: 1;
@@ -5262,7 +5318,7 @@
       min-height: 32px; margin-bottom: 16px;
     }
     .positions-title-row .positions-header-line {
-      display: flex; align-items: baseline; justify-content: space-between; width: 100%;
+      display: flex; align-items: center; justify-content: space-between; width: 100%;
       padding-left: 0; padding-right: 0;
     }
     .positions-title-row .positions-header-line .positions-title { margin-bottom: 0; align-items: baseline; line-height: 1; }
@@ -7397,8 +7453,16 @@
       </div>
     </div>
     <div class="positions-content" style="display:flex; flex-direction:column; align-items:center; flex:1;">
-      <div style="width:100%;">
-        <div class="positions-title">My Positions</div>
+      <div class="positions-title-row" style="width:100%;">
+        <div class="positions-header-line">
+          <div class="positions-title">My Positions</div>
+          <!-- Claim rewards — same component as the With-positions screen,
+               but rendered in the disabled state on the empty state since
+               there are no positions yet to accrue rewards from. The
+               disabled attribute triggers the DS .btn-secondary:disabled
+               palette (mint-50 / neutral-200 / green-200) automatically. -->
+          <button class="btn btn-secondary claim-rewards-btn" onclick="claimRewards()" disabled>Claim rewards <i class="ph ph-arrow-square-out" aria-hidden="true"></i></button>
+        </div>
       </div>
       <div class="mascot-area happy" style="margin-top:8px; width:100%; border-radius:32px;">
         <div class="mascot-blob"><svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible"><path class="blob-fill" d="M142.935 57.0297C151.14 106.236 135.254 129.281 92.7097 136.376C50.1657 143.47 16.7784 121.241 8.57314 72.0351C0.367861 22.8287 21.5945 26.9985 64.1384 19.9042C106.682 12.8099 134.73 7.82341 142.935 57.0297Z" fill="#FEFEFE"/><g class="blob-sunburst"><circle class="blob-sunburst-vignette" cx="75" cy="75" r="160" fill="url(#mascot-sunburst-vignette)"/><g class="blob-sunburst-rotor"><g class="blob-sunburst-shimmer"><image href="assets/Mascot-Sunburst.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g><g class="connect-burst-bg"><image href="assets/00-Connect-Burst-bg.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g><g class="blob-meltdown-bg"><circle class="blob-meltdown-bg-vignette" cx="75" cy="75" r="160" fill="url(#mascot-meltdown-vignette)"/><g class="blob-meltdown-bg-pulse"><g class="blob-meltdown-bg-shimmer"><image href="assets/Mascot-Meltdown-Radial.svg" x="-175" y="-175" width="500" height="500" preserveAspectRatio="xMidYMid meet"/></g></g></g></svg></div>
@@ -7744,7 +7808,10 @@
         </div>
         <div class="slider-info">
           <span class="slider-info-label">Supplying</span>
-          <span class="update-arrow"><span class="old">210,34B</span> <span class="arr">→</span> <span class="new">315,51B</span></span>
+          <span class="slider-info-right">
+            <span class="update-arrow"><span class="old">210,34B</span> <span class="arr">→</span> <span class="new">315,51B</span></span>
+            <button class="slider-reset-btn" type="button" onclick="resetSliderFromInfo(this)" aria-label="Reset to original value"><i class="ph ph-arrow-clockwise"></i></button>
+          </span>
         </div>
 
         <div class="slider-divider"></div>
@@ -7771,7 +7838,10 @@
         </div>
         <div class="slider-info">
           <span class="slider-info-label">Borrowing</span>
-          <span class="update-arrow"><span class="old">$1.5M</span> <span class="arr">→</span> <span class="new">$700K USDC</span></span>
+          <span class="slider-info-right">
+            <span class="update-arrow"><span class="old">$1.5M</span> <span class="arr">→</span> <span class="new">$700K USDC</span></span>
+            <button class="slider-reset-btn" type="button" onclick="resetSliderFromInfo(this)" aria-label="Reset to original value"><i class="ph ph-arrow-clockwise"></i></button>
+          </span>
         </div>
         </div>
 
@@ -9975,13 +10045,61 @@ function updateModifyCtaState(screen) {
   if (!tracks[1].dataset.startPct) tracks[1].dataset.startPct = String(pcts.borrow);
   var supplyStart = parseFloat(tracks[0].dataset.startPct) || 0;
   var borrowStart = parseFloat(tracks[1].dataset.startPct) || 0;
-  var hasChange = Math.abs(pcts.supply - supplyStart) > 0.5
-               || Math.abs(pcts.borrow - borrowStart) > 0.5;
+  var supplyChanged = Math.abs(pcts.supply - supplyStart) > 0.5;
+  var borrowChanged = Math.abs(pcts.borrow - borrowStart) > 0.5;
+  var hasChange = supplyChanged || borrowChanged;
   // Toggle ALL matching CTAs — desktop renders the inner one, mobile the outer
   // one. querySelector would only catch the first, leaving the visible button
   // stuck in its HTML disabled state.
   var ctas = screen.querySelectorAll('.btn-primary.btn-full.btn-lg');
   ctas.forEach(function(cta) { cta.disabled = !hasChange; });
+  // Per-slider reset icon visibility: .has-delta on a .slider-info reveals
+  // the old → arrow → new strikethrough. Tracks and infos are in matching
+  // DOM order (label → pct-buttons → slider-track → slider-info), so the
+  // 1st info maps to the 1st track. We also push the expanded/collapsed
+  // values onto the .slider-reset-btn as inline styles — see the comment
+  // on `.slider-reset-btn` in CSS for why this can't live on a class rule.
+  var sliderInfos = screen.querySelectorAll('.slider-info');
+  function syncResetBtn(info, expanded) {
+    if (!info) return;
+    info.classList.toggle('has-delta', expanded);
+    var btn = info.querySelector('.slider-reset-btn');
+    if (!btn) return;
+    if (expanded) {
+      btn.style.flex = '0 0 24px';
+      btn.style.padding = '4px';
+      btn.style.marginLeft = '8px';
+      btn.style.opacity = '1';
+    } else {
+      btn.style.flex = '';
+      btn.style.padding = '';
+      btn.style.marginLeft = '';
+      btn.style.opacity = '';
+    }
+  }
+  syncResetBtn(sliderInfos[0], supplyChanged);
+  syncResetBtn(sliderInfos[1], borrowChanged);
+  // Screen-level .has-changes drives the summary-block strikethroughs
+  // (Your supply / Liquidation Price). Stays off until the user actually
+  // edits the position so the initial state reads as a single value.
+  screen.classList.toggle('has-changes', hasChange);
+}
+
+// Reset a single Modify-Position slider back to its seeded start position.
+// Called from the inline reset icon (↻) inside .slider-info. Finds the
+// matching .slider-track by walking previous siblings of the parent
+// .slider-info, then re-uses setSliderPct so all downstream UI (delta
+// stripes, fill, marker, mascot, summary values, CTA enable state) updates
+// through the existing path.
+function resetSliderFromInfo(btn) {
+  var info = btn.closest('.slider-info');
+  if (!info) return;
+  var sib = info.previousElementSibling;
+  while (sib && !sib.classList.contains('slider-track')) sib = sib.previousElementSibling;
+  if (!sib) return;
+  var startPct = parseFloat(sib.dataset.startPct);
+  if (isNaN(startPct)) return;
+  setSliderPct(sib, startPct);
 }
 
 function extractPositionData(card, token) {
