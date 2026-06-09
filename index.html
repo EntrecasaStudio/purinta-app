@@ -2493,6 +2493,18 @@
       -webkit-mask-position: center;   mask-position: center;
       -webkit-mask-size: 20px 20px;    mask-size: 20px 20px;
     }
+    /* Reset / counter-clockwise arrow (Modify Position per-slider reset).
+       Native 16×16, 1 px stroke. Color via currentColor so the host (the
+       .slider-reset-btn) drives the visual tone — text-secondary at rest,
+       green-700 on hover, etc. */
+    .icon-reset {
+      display: inline-block; width: 16px; height: 16px;
+      background-color: currentColor; flex-shrink: 0;
+      -webkit-mask-image: url('assets/icon-reset-16.svg'); mask-image: url('assets/icon-reset-16.svg');
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center;   mask-position: center;
+      -webkit-mask-size: 16px 16px;    mask-size: 16px 16px;
+    }
     /* Exclamation octagon (modal error banner). Native 16×16; the DS swap
        from circle to octagon happened upstream — same semantic role
        (.bmi-error → error indicator), new glyph. Color via currentColor
@@ -7810,7 +7822,7 @@
           <span class="slider-info-label">Supplying</span>
           <span class="slider-info-right">
             <span class="update-arrow"><span class="old">210,34B</span> <span class="arr">→</span> <span class="new">315,51B</span></span>
-            <button class="slider-reset-btn" type="button" onclick="resetSliderFromInfo(this)" aria-label="Reset to original value"><i class="ph ph-arrow-clockwise"></i></button>
+            <button class="slider-reset-btn" type="button" onclick="resetSliderFromInfo(this)" aria-label="Reset to original value"><span class="icon-reset" aria-hidden="true"></span></button>
           </span>
         </div>
 
@@ -7840,7 +7852,7 @@
           <span class="slider-info-label">Borrowing</span>
           <span class="slider-info-right">
             <span class="update-arrow"><span class="old">$1.5M</span> <span class="arr">→</span> <span class="new">$700K USDC</span></span>
-            <button class="slider-reset-btn" type="button" onclick="resetSliderFromInfo(this)" aria-label="Reset to original value"><i class="ph ph-arrow-clockwise"></i></button>
+            <button class="slider-reset-btn" type="button" onclick="resetSliderFromInfo(this)" aria-label="Reset to original value"><span class="icon-reset" aria-hidden="true"></span></button>
           </span>
         </div>
         </div>
