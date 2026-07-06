@@ -10774,8 +10774,10 @@ document.addEventListener('DOMContentLoaded', function() {
   populatePositionsDisconnected();
 
   var params = new URLSearchParams(window.location.search);
+  var bp = params.get('bp');
   var screen = params.get('screen');
   var tab = params.get('tab');
+  if (bp) setBreakpoint(parseInt(bp, 10), false);
   if (screen) {
     setTimeout(function() {
       showScreen(screen);
