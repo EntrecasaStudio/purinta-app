@@ -10772,6 +10772,16 @@ document.addEventListener('DOMContentLoaded', function() {
   populateSkeletonUpdate('');
   populateSkeletonPositions('');
   populatePositionsDisconnected();
+
+  var params = new URLSearchParams(window.location.search);
+  var screen = params.get('screen');
+  var tab = params.get('tab');
+  if (screen) {
+    setTimeout(function() {
+      showScreen(screen);
+      if (tab) switchPositionsTab(tab);
+    }, 100);
+  }
 });
 
 // Wallet-disconnected state for #positions — same layout/graphic as empty,
