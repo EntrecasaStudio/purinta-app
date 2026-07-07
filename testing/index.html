@@ -5450,6 +5450,9 @@
     .activity-table tbody td:last-child { padding-right: 20px; }
     .date-cell { color: var(--text-secondary); font-size: 12px; }
     .market-cell { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+    .market-icons { display: flex; align-items: center; position: relative; width: 44px; height: 32px; flex-shrink: 0; }
+    .market-icons .market-icon:first-child { position: relative; z-index: 1; }
+    .market-icons .market-icon:last-child { position: absolute; left: 18px; z-index: 0; width: 24px; height: 24px; top: 4px; border: 2px solid white; }
     .market-icon {
       width: 32px; height: 32px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
@@ -5500,7 +5503,7 @@
       border-bottom: 1px solid var(--cream-300);
     }
     .activity-card:last-child { border-bottom: none; }
-    .activity-card .market-icon { flex-shrink: 0; }
+    .activity-card .market-icons { width: 44px; height: 32px; flex-shrink: 0; }
     .activity-card-body { flex: 1; min-width: 0; }
     .activity-card-top {
       display: flex; align-items: center; gap: 6px;
@@ -7641,70 +7644,70 @@
             <tbody>
               <tr>
                 <td class="date-cell">5/23/2026, 4:20:23 PM</td>
-                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho">MORPHO</span> MORPHO / USDC</a></td>
+                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
                 <td><span class="type-badge borrow">Borrow</span></td>
                 <td class="amount-cell"><span class="amount-icon usdc"></span> 0.09 USDC</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x70bc...b55b <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
               <tr>
                 <td class="date-cell">5/23/2026, 4:19:59 PM</td>
-                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho">MORPHO</span> MORPHO / USDC</a></td>
+                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
                 <td><span class="type-badge supply-collateral">Supply Collateral</span></td>
                 <td class="amount-cell"><span class="amount-icon morpho"></span><span class="amount-value">0.0<span class="sub-zeros">5</span>1420 MORPHO</span></td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x9a58...a552 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
               <tr>
                 <td class="date-cell">5/23/2026, 4:19:35 PM</td>
-                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho">MORPHO</span> MORPHO / USDC</a></td>
+                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
                 <td><span class="type-badge supply">Supply</span></td>
                 <td class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x87e6...469f <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
               <tr>
                 <td class="date-cell">5/23/2026, 4:11:47 PM</td>
-                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe">PEPE</span> PEPE / USDC</a></td>
+                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
                 <td><span class="type-badge borrow">Borrow</span></td>
                 <td class="amount-cell"><span class="amount-icon usdc"></span> 0.09 USDC</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0xe37b...70a5 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
               <tr>
                 <td class="date-cell">5/23/2026, 4:11:23 PM</td>
-                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe">PEPE</span> PEPE / USDC</a></td>
+                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
                 <td><span class="type-badge supply-collateral">Supply Collateral</span></td>
                 <td class="amount-cell"><span class="amount-icon pepe"></span> 142.42K PEPE</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x04f1...1c67 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
               <tr>
                 <td class="date-cell">5/23/2026, 4:10:59 PM</td>
-                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe">PEPE</span> PEPE / USDC</a></td>
+                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
                 <td><span class="type-badge supply">Supply</span></td>
                 <td class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0xb649...9a7b <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
               <tr>
                 <td class="date-cell">5/22/2026, 2:45:12 PM</td>
-                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho">MORPHO</span> MORPHO / USDC</a></td>
+                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
                 <td><span class="type-badge repay">Repay</span></td>
                 <td class="amount-cell"><span class="amount-icon usdc"></span> 0.05 USDC</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0xa3d2...8f01 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
               <tr>
                 <td class="date-cell">5/22/2026, 2:30:08 PM</td>
-                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho">MORPHO</span> MORPHO / USDC</a></td>
+                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
                 <td><span class="type-badge withdraw">Withdraw</span></td>
                 <td class="amount-cell"><span class="amount-icon usdc"></span> 0.05 USDC</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x5bf9...c42e <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
               <tr>
                 <td class="date-cell">5/21/2026, 11:15:44 AM</td>
-                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe">PEPE</span> PEPE / USDC</a></td>
+                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
                 <td><span class="type-badge withdraw-collateral">Withdraw Collateral</span></td>
                 <td class="amount-cell"><span class="amount-icon pepe"></span> 50K PEPE</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x1e7a...d593 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
               <tr>
                 <td class="date-cell">5/20/2026, 9:02:31 AM</td>
-                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe">PEPE</span> PEPE / USDC</a></td>
+                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
                 <td><span class="type-badge liquidation">Liquidation</span></td>
                 <td class="amount-cell"><span class="amount-icon pepe"></span> 25K PEPE</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0xd4c8...7ab2 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
@@ -7713,7 +7716,7 @@
           </table>
           <div class="activity-card-list">
             <div class="activity-card">
-              <span class="market-icon morpho" title="MORPHO / USDC">MORPHO</span>
+              <a class="market-icons market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
               <div class="activity-card-body">
                 <div class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge borrow">Borrow</span></div>
                 <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:20 PM</span></div>
@@ -7724,7 +7727,7 @@
               </div>
             </div>
             <div class="activity-card">
-              <span class="market-icon morpho" title="MORPHO / USDC">MORPHO</span>
+              <a class="market-icons market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
               <div class="activity-card-body">
                 <div class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge supply-collateral">Supply Col.</span></div>
                 <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:19 PM</span></div>
@@ -7735,7 +7738,7 @@
               </div>
             </div>
             <div class="activity-card">
-              <span class="market-icon morpho" title="MORPHO / USDC">MORPHO</span>
+              <a class="market-icons market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
               <div class="activity-card-body">
                 <div class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge supply">Supply</span></div>
                 <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:19 PM</span></div>
@@ -7746,7 +7749,7 @@
               </div>
             </div>
             <div class="activity-card">
-              <span class="market-icon pepe" title="PEPE / USDC">PEPE</span>
+              <a class="market-icons market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
               <div class="activity-card-body">
                 <div class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge borrow">Borrow</span></div>
                 <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:11 PM</span></div>
@@ -7757,7 +7760,7 @@
               </div>
             </div>
             <div class="activity-card">
-              <span class="market-icon pepe" title="PEPE / USDC">PEPE</span>
+              <a class="market-icons market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
               <div class="activity-card-body">
                 <div class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge supply-collateral">Supply Col.</span></div>
                 <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:11 PM</span></div>
@@ -7768,7 +7771,7 @@
               </div>
             </div>
             <div class="activity-card">
-              <span class="market-icon pepe" title="PEPE / USDC">PEPE</span>
+              <a class="market-icons market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
               <div class="activity-card-body">
                 <div class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge supply">Supply</span></div>
                 <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:10 PM</span></div>
@@ -7779,7 +7782,7 @@
               </div>
             </div>
             <div class="activity-card">
-              <span class="market-icon morpho" title="MORPHO / USDC">MORPHO</span>
+              <a class="market-icons market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
               <div class="activity-card-body">
                 <div class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge repay">Repay</span></div>
                 <div class="activity-card-bottom"><span class="date-cell">5/22/2026, 2:45 PM</span></div>
@@ -7790,7 +7793,7 @@
               </div>
             </div>
             <div class="activity-card">
-              <span class="market-icon morpho" title="MORPHO / USDC">MORPHO</span>
+              <a class="market-icons market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
               <div class="activity-card-body">
                 <div class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge withdraw">Withdraw</span></div>
                 <div class="activity-card-bottom"><span class="date-cell">5/22/2026, 2:30 PM</span></div>
@@ -7801,7 +7804,7 @@
               </div>
             </div>
             <div class="activity-card">
-              <span class="market-icon pepe" title="PEPE / USDC">PEPE</span>
+              <a class="market-icons market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
               <div class="activity-card-body">
                 <div class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge withdraw-collateral">Withdraw Col.</span></div>
                 <div class="activity-card-bottom"><span class="date-cell">5/21/2026, 11:15 AM</span></div>
@@ -7812,7 +7815,7 @@
               </div>
             </div>
             <div class="activity-card">
-              <span class="market-icon pepe" title="PEPE / USDC">PEPE</span>
+              <a class="market-icons market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
               <div class="activity-card-body">
                 <div class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge liquidation">Liquidation</span></div>
                 <div class="activity-card-bottom"><span class="date-cell">5/20/2026, 9:02 AM</span></div>
