@@ -5450,9 +5450,9 @@
     .activity-table tbody td:last-child { padding-right: 20px; }
     .date-cell { color: var(--text-secondary); font-size: 12px; }
     .market-cell { display: flex; align-items: center; gap: 8px; font-weight: 500; }
-    .market-icons { display: flex; align-items: center; position: relative; width: 44px; height: 32px; flex-shrink: 0; }
+    .market-icons { display: flex; align-items: center; position: relative; width: 52px; height: 32px; flex-shrink: 0; }
     .market-icons .market-icon:first-child { position: relative; z-index: 1; }
-    .market-icons .market-icon:last-child { position: absolute; left: 18px; z-index: 0; width: 24px; height: 24px; top: 4px; border: 2px solid white; }
+    .market-icons .market-icon:last-child { position: absolute; left: 20px; z-index: 0; mask: radial-gradient(circle 19px at -4px 16px, transparent 99%, black 100%); -webkit-mask: radial-gradient(circle 19px at -4px 16px, transparent 99%, black 100%); }
     .market-icon {
       width: 32px; height: 32px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
@@ -5478,14 +5478,19 @@
     .type-badge.repay { background: var(--success-100); color: var(--success-600); }
     .type-badge.liquidation { background: var(--error-50); color: var(--error-600); }
     .amount-cell { font-weight: 500; font-variant-numeric: tabular-nums; }
-    .activity-table .amount-cell { display: flex; align-items: center; gap: 6px; }
+    .activity-table .amount-cell { display: table-cell; vertical-align: middle; }
+    .activity-table .amount-cell .amount-icon { vertical-align: middle; margin-right: 4px; }
+    .activity-table .amount-cell .amount-fiat { display: block; }
+    .phone.desktop .activity-table .amount-cell .amount-fiat { display: inline; margin-left: 4px; }
     .amount-icon {
       width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: inline-block; vertical-align: middle;
     }
     .amount-icon.usdc { background: url('../assets/symbols/usdc.svg') center/cover; }
     .amount-icon.morpho { background: url('../assets/symbols/morpho.svg') center/cover; }
     .amount-icon.pepe { background: url('../assets/symbols/pepe-token.png') center/cover; }
-    .market-link { text-decoration: none; color: inherit; }
+    .amount-fiat { color: var(--text-secondary); font-weight: 400; font-size: 11px; margin-left: 2px; }
+    .activity-card-right .amount-fiat { font-size: 10px; }
+    .market-link { text-decoration: none; color: inherit; display: inline-flex; align-items: center; }
     .market-link:hover { color: var(--green-600); }
     .sub-zeros { font-size: var(--ds-3xs); vertical-align: baseline; }
     .tx-link {
@@ -5498,28 +5503,28 @@
     .activity-table { display: none; }
     .activity-card-list { display: block; }
     .activity-card {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px;
       border-bottom: 1px solid var(--cream-300);
     }
     .activity-card:last-child { border-bottom: none; }
     .activity-card .market-icons { width: 44px; height: 32px; flex-shrink: 0; }
-    .activity-card-body { flex: 1; min-width: 0; }
+    .activity-card-body { flex: 1 1 auto; min-width: 0; }
     .activity-card-top {
       display: flex; align-items: center; gap: 6px;
       overflow: hidden;
     }
-    .activity-card-top .market-name { font-weight: 500; font-size: 13px; flex-shrink: 0; }
+    .activity-card-top .market-name { font-weight: 500; font-size: 13px; flex-shrink: 0; display: none; }
     .activity-card-top .type-badge { font-size: 10px; padding: 2px 8px; white-space: nowrap; }
     .activity-card-bottom {
       display: flex; align-items: center; gap: 6px;
-      margin-top: 2px; font-size: 11px; color: var(--text-secondary);
+      margin-top: 4px; font-size: 11px; color: var(--text-secondary);
     }
-    .activity-card-bottom .date-cell { font-size: 11px; }
+    .activity-card-bottom .date-cell { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 2px; }
     .activity-card-right {
-      text-align: right; flex-shrink: 0;
+      text-align: right; flex-shrink: 1; min-width: 0;
     }
-    .activity-card-right .amount-cell { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 4px; white-space: nowrap; justify-content: flex-end; }
+    .activity-card-right .amount-cell { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 3px; white-space: nowrap; justify-content: flex-end; }
     .activity-card-right .amount-icon { width: 14px; height: 14px; }
     .activity-card-right .tx-link { font-size: 10px; display: inline-flex; margin-top: 2px; }
     .activity-card-right .tx-link i { font-size: 10px; }
@@ -5528,11 +5533,43 @@
     .phone.desktop .activity-table { display: table; table-layout: fixed; }
     .phone.desktop .activity-card-list { display: none; }
     .phone.desktop .activity-table-wrap { border-radius: 40px; }
-    .phone.desktop .activity-table col.col-date { width: 22%; }
-    .phone.desktop .activity-table col.col-market { width: 22%; }
-    .phone.desktop .activity-table col.col-type { width: 20%; }
-    .phone.desktop .activity-table col.col-amount { width: 22%; }
-    .phone.desktop .activity-table col.col-tx { width: 14%; }
+    .phone.desktop .activity-table col.col-type { width: 16%; }
+    .phone.desktop .activity-table col.col-market { width: 10%; }
+    .phone.desktop .activity-table col.col-amount { width: 28%; }
+    .phone.desktop .activity-table col.col-date { width: 24%; }
+    .phone.desktop .activity-table col.col-tx { width: 22%; }
+
+    /* Filter chips */
+    .activity-filters {
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 16px 12px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    .activity-filters::-webkit-scrollbar { display: none; }
+    .activity-chip {
+      padding: 5px 14px; border-radius: 20px; border: 1px solid var(--cream-400);
+      background: white; color: var(--text-secondary); font-size: 12px; font-weight: 500;
+      cursor: pointer; white-space: nowrap; transition: all 0.15s ease;
+    }
+    .activity-chip:hover { border-color: var(--green-400); color: var(--text-primary); }
+    .activity-chip.active { background: var(--green-600); color: white; border-color: var(--green-600); }
+    .activity-chip:disabled { opacity: 0.45; cursor: default; pointer-events: none; }
+    .phone.desktop .activity-filters { padding: 0 20px 16px; }
+
+    /* Pagination */
+    .activity-pagination {
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 16px 0 8px; font-size: 13px;
+    }
+    .activity-pagination button {
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--cream-300);
+      background: white; color: var(--text-primary); font-size: 13px; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .activity-pagination button:hover { background: var(--cream-100); border-color: var(--green-300); }
+    .activity-pagination button.active { background: var(--green-600); color: white; border-color: var(--green-600); }
+    .activity-pagination button:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
+    .activity-pagination .page-arrow { font-size: 16px; font-weight: 400; }
 
     /* Option C: Peek-behind card */
     .new-borrow-peek {
@@ -7199,8 +7236,8 @@
       </div>
 
       <div class="positions-tab-bar">
-        <button class="positions-tab-btn active" onclick="switchPositionsTab('positions-list')" data-tab="positions-list"><i class="ph-light ph-cards-three" aria-hidden="true"></i> My Positions</button>
-        <button class="positions-tab-btn" onclick="switchPositionsTab('activity-list')" data-tab="activity-list"><i class="ph-light ph-clock-counter-clockwise" aria-hidden="true"></i> My Activity</button>
+        <button class="positions-tab-btn active" onclick="switchPositionsTab('positions-list', event)" data-tab="positions-list"><i class="ph-light ph-cards-three" aria-hidden="true"></i> My Positions</button>
+        <button class="positions-tab-btn" onclick="switchPositionsTab('activity-list', event)" data-tab="activity-list"><i class="ph-light ph-clock-counter-clockwise" aria-hidden="true"></i> My Activity</button>
       </div>
 
       <div id="positions-list" class="positions-tab-panel active">
@@ -7623,208 +7660,400 @@
       </div><!-- /positions-list -->
 
       <div id="activity-list" class="positions-tab-panel">
+        <div class="activity-filters">
+          <button class="activity-chip active" onclick="filterActivity('all')">All</button>
+          <button class="activity-chip" onclick="filterActivity('market')">Market</button>
+          <button class="activity-chip" disabled title="Coming soon">Vault</button>
+          <button class="activity-chip" onclick="filterActivity('liquidation')">Liquidation</button>
+        </div>
         <div class="activity-table-wrap">
           <table class="activity-table">
             <colgroup>
-              <col class="col-date">
-              <col class="col-market">
               <col class="col-type">
+              <col class="col-market">
               <col class="col-amount">
+              <col class="col-date">
               <col class="col-tx">
             </colgroup>
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Market</th>
                 <th>Type</th>
+                <th>Market</th>
                 <th>Amount</th>
+                <th>Date</th>
                 <th>Transaction</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="date-cell">5/23/2026, 4:20:23 PM</td>
-                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+              <tr data-category="market">
                 <td><span class="type-badge borrow">Borrow</span></td>
-                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.09 USDC</td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.09 USDC <span class="amount-fiat">$0.09</span></td>
+                <td class="date-cell">5/23/2026, 4:20:23 PM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x70bc...b55b <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
-              <tr>
-                <td class="date-cell">5/23/2026, 4:19:59 PM</td>
-                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+              <tr data-category="market">
                 <td><span class="type-badge supply-collateral">Supply Collateral</span></td>
-                <td class="amount-cell"><span class="amount-icon morpho"></span><span class="amount-value">0.0<span class="sub-zeros">5</span>1420 MORPHO</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon morpho"></span><span class="amount-value">0.0<span class="sub-zeros">5</span>1420 MORPHO</span> <span class="amount-fiat">$0.02</span></td>
+                <td class="date-cell">5/23/2026, 4:19:59 PM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x9a58...a552 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
-              <tr>
-                <td class="date-cell">5/23/2026, 4:19:35 PM</td>
-                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+              <tr data-category="market">
                 <td><span class="type-badge supply">Supply</span></td>
-                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC</td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC <span class="amount-fiat">$0.10</span></td>
+                <td class="date-cell">5/23/2026, 4:19:35 PM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x87e6...469f <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
-              <tr>
-                <td class="date-cell">5/23/2026, 4:11:47 PM</td>
-                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+              <tr data-category="market">
                 <td><span class="type-badge borrow">Borrow</span></td>
-                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.09 USDC</td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.09 USDC <span class="amount-fiat">$0.09</span></td>
+                <td class="date-cell">5/23/2026, 4:11:47 PM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0xe37b...70a5 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
-              <tr>
-                <td class="date-cell">5/23/2026, 4:11:23 PM</td>
-                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+              <tr data-category="market">
                 <td><span class="type-badge supply-collateral">Supply Collateral</span></td>
-                <td class="amount-cell"><span class="amount-icon pepe"></span> 142.42K PEPE</td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon pepe"></span> 142.42K PEPE <span class="amount-fiat">$1,847</span></td>
+                <td class="date-cell">5/23/2026, 4:11:23 PM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x04f1...1c67 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
-              <tr>
-                <td class="date-cell">5/23/2026, 4:10:59 PM</td>
-                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+              <tr data-category="market">
                 <td><span class="type-badge supply">Supply</span></td>
-                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC</td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC <span class="amount-fiat">$0.10</span></td>
+                <td class="date-cell">5/23/2026, 4:10:59 PM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0xb649...9a7b <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
-              <tr>
-                <td class="date-cell">5/22/2026, 2:45:12 PM</td>
-                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+              <tr data-category="market">
                 <td><span class="type-badge repay">Repay</span></td>
-                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.05 USDC</td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.05 USDC <span class="amount-fiat">$0.05</span></td>
+                <td class="date-cell">5/22/2026, 2:45:12 PM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0xa3d2...8f01 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
-              <tr>
-                <td class="date-cell">5/22/2026, 2:30:08 PM</td>
-                <td><a class="market-cell market-link" href="#" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+              <tr data-category="market">
                 <td><span class="type-badge withdraw">Withdraw</span></td>
-                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.05 USDC</td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.05 USDC <span class="amount-fiat">$0.05</span></td>
+                <td class="date-cell">5/22/2026, 2:30:08 PM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x5bf9...c42e <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
-              <tr>
-                <td class="date-cell">5/21/2026, 11:15:44 AM</td>
-                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+              <tr data-category="market">
                 <td><span class="type-badge withdraw-collateral">Withdraw Collateral</span></td>
-                <td class="amount-cell"><span class="amount-icon pepe"></span> 50K PEPE</td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon pepe"></span> 50K PEPE <span class="amount-fiat">$649</span></td>
+                <td class="date-cell">5/21/2026, 11:15:44 AM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x1e7a...d593 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
-              <tr>
-                <td class="date-cell">5/20/2026, 9:02:31 AM</td>
-                <td><a class="market-cell market-link" href="#" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+              <tr data-category="liquidation">
                 <td><span class="type-badge liquidation">Liquidation</span></td>
-                <td class="amount-cell"><span class="amount-icon pepe"></span> 25K PEPE</td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon pepe"></span> 25K PEPE <span class="amount-fiat">$324</span></td>
+                <td class="date-cell">5/20/2026, 9:02:31 AM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0xd4c8...7ab2 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
+              </tr>
+              <tr data-category="market" class="activity-page-2" style="display:none">
+                <td><span class="type-badge supply">Supply</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.5 USDC <span class="amount-fiat">$0.50</span></td>
+                <td class="date-cell">5/19/2026, 3:45:12 PM</td>
+                <td><a class="tx-link" href="#" title="View on explorer">0x2f8a...c901 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
+              </tr>
+              <tr data-category="market" class="activity-page-2" style="display:none">
+                <td><span class="type-badge supply-collateral">Supply Collateral</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon morpho"></span><span class="amount-value">0.0<span class="sub-zeros">5</span>2840 MORPHO</span> <span class="amount-fiat">$0.04</span></td>
+                <td class="date-cell">5/19/2026, 3:44:50 PM</td>
+                <td><a class="tx-link" href="#" title="View on explorer">0x91bb...d412 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
+              </tr>
+              <tr data-category="market" class="activity-page-2" style="display:none">
+                <td><span class="type-badge borrow">Borrow</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.15 USDC <span class="amount-fiat">$0.15</span></td>
+                <td class="date-cell">5/18/2026, 11:22:08 AM</td>
+                <td><a class="tx-link" href="#" title="View on explorer">0x44e7...a3f8 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
+              </tr>
+              <tr data-category="market" class="activity-page-2" style="display:none">
+                <td><span class="type-badge supply-collateral">Supply Collateral</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon pepe"></span> 85.6K PEPE <span class="amount-fiat">$1,111</span></td>
+                <td class="date-cell">5/18/2026, 11:21:33 AM</td>
+                <td><a class="tx-link" href="#" title="View on explorer">0xc3d0...7e21 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
+              </tr>
+              <tr data-category="market" class="activity-page-2" style="display:none">
+                <td><span class="type-badge repay">Repay</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.12 USDC <span class="amount-fiat">$0.12</span></td>
+                <td class="date-cell">5/17/2026, 5:09:44 PM</td>
+                <td><a class="tx-link" href="#" title="View on explorer">0x7fa2...b190 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
+              </tr>
+              <tr data-category="market" class="activity-page-2" style="display:none">
+                <td><span class="type-badge withdraw">Withdraw</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.08 USDC <span class="amount-fiat">$0.08</span></td>
+                <td class="date-cell">5/17/2026, 2:33:19 PM</td>
+                <td><a class="tx-link" href="#" title="View on explorer">0xe5c1...4d67 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
+              </tr>
+              <tr data-category="market" class="activity-page-2" style="display:none">
+                <td><span class="type-badge supply">Supply</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.2 USDC <span class="amount-fiat">$0.20</span></td>
+                <td class="date-cell">5/16/2026, 9:15:02 AM</td>
+                <td><a class="tx-link" href="#" title="View on explorer">0x0ab3...f845 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
+              </tr>
+              <tr data-category="market" class="activity-page-2" style="display:none">
+                <td><span class="type-badge withdraw-collateral">Withdraw Collateral</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon pepe"></span> 30K PEPE <span class="amount-fiat">$389</span></td>
+                <td class="date-cell">5/15/2026, 6:48:31 PM</td>
+                <td><a class="tx-link" href="#" title="View on explorer">0xb7d9...2c34 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
+              </tr>
+              <tr data-category="market" class="activity-page-2" style="display:none">
+                <td><span class="type-badge borrow">Borrow</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.03 USDC <span class="amount-fiat">$0.03</span></td>
+                <td class="date-cell">5/14/2026, 10:30:55 AM</td>
+                <td><a class="tx-link" href="#" title="View on explorer">0x6e40...a1b9 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
+              </tr>
+              <tr data-category="market" class="activity-page-2" style="display:none">
+                <td><span class="type-badge supply-collateral">Supply Collateral</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icons"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon pepe"></span> 200K PEPE <span class="amount-fiat">$2,596</span></td>
+                <td class="date-cell">5/13/2026, 4:12:07 PM</td>
+                <td><a class="tx-link" href="#" title="View on explorer">0x39f5...8e02 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
             </tbody>
           </table>
-          <div class="activity-card-list">
-            <div class="activity-card">
-              <a class="market-icons market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
-              <div class="activity-card-body">
-                <div class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge borrow">Borrow</span></div>
-                <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:20 PM</span></div>
+          <div data-category="market" class="activity-card-list">
+            <div data-category="liquidation" class="activity-card">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge borrow">Borrow</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:20 PM</span></div>
               </div>
-              <div class="activity-card-right">
-                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.09 USDC</span>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.09 USDC <span class="amount-fiat">$0.09</span></span>
                 <a class="tx-link" href="#" title="View on explorer">0x70bc...b55b <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
               </div>
             </div>
-            <div class="activity-card">
-              <a class="market-icons market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
-              <div class="activity-card-body">
-                <div class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge supply-collateral">Supply Col.</span></div>
-                <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:19 PM</span></div>
+            <div data-category="market" class="activity-card">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge supply-collateral">Supply Col.</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:19 PM</span></div>
               </div>
-              <div class="activity-card-right">
-                <span class="amount-cell"><span class="amount-icon morpho"></span><span class="amount-value">0.0<span class="sub-zeros">5</span>1420 MORPHO</span></span>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon morpho"></span><span class="amount-value">0.0<span class="sub-zeros">5</span>1420 MORPHO</span> <span class="amount-fiat">$0.02</span></span>
                 <a class="tx-link" href="#" title="View on explorer">0x9a58...a552 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
               </div>
             </div>
-            <div class="activity-card">
-              <a class="market-icons market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
-              <div class="activity-card-body">
-                <div class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge supply">Supply</span></div>
-                <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:19 PM</span></div>
+            <div data-category="market" class="activity-card">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge supply">Supply</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:19 PM</span></div>
               </div>
-              <div class="activity-card-right">
-                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC</span>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC <span class="amount-fiat">$0.10</span></span>
                 <a class="tx-link" href="#" title="View on explorer">0x87e6...469f <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
               </div>
             </div>
-            <div class="activity-card">
-              <a class="market-icons market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
-              <div class="activity-card-body">
-                <div class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge borrow">Borrow</span></div>
-                <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:11 PM</span></div>
+            <div data-category="market" class="activity-card">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge borrow">Borrow</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:11 PM</span></div>
               </div>
-              <div class="activity-card-right">
-                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.09 USDC</span>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.09 USDC <span class="amount-fiat">$0.09</span></span>
                 <a class="tx-link" href="#" title="View on explorer">0xe37b...70a5 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
               </div>
             </div>
-            <div class="activity-card">
-              <a class="market-icons market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
-              <div class="activity-card-body">
-                <div class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge supply-collateral">Supply Col.</span></div>
-                <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:11 PM</span></div>
+            <div data-category="market" class="activity-card">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge supply-collateral">Supply Col.</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:11 PM</span></div>
               </div>
-              <div class="activity-card-right">
-                <span class="amount-cell"><span class="amount-icon pepe"></span> 142.42K PEPE</span>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon pepe"></span> 142.42K PEPE <span class="amount-fiat">$1,847</span></span>
                 <a class="tx-link" href="#" title="View on explorer">0x04f1...1c67 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
               </div>
             </div>
-            <div class="activity-card">
-              <a class="market-icons market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
-              <div class="activity-card-body">
-                <div class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge supply">Supply</span></div>
-                <div class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:10 PM</span></div>
+            <div data-category="market" class="activity-card">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge supply">Supply</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/23/2026, 4:10 PM</span></div>
               </div>
-              <div class="activity-card-right">
-                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC</span>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC <span class="amount-fiat">$0.10</span></span>
                 <a class="tx-link" href="#" title="View on explorer">0xb649...9a7b <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
               </div>
             </div>
-            <div class="activity-card">
-              <a class="market-icons market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
-              <div class="activity-card-body">
-                <div class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge repay">Repay</span></div>
-                <div class="activity-card-bottom"><span class="date-cell">5/22/2026, 2:45 PM</span></div>
+            <div data-category="market" class="activity-card">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge repay">Repay</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/22/2026, 2:45 PM</span></div>
               </div>
-              <div class="activity-card-right">
-                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.05 USDC</span>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.05 USDC <span class="amount-fiat">$0.05</span></span>
                 <a class="tx-link" href="#" title="View on explorer">0xa3d2...8f01 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
               </div>
             </div>
-            <div class="activity-card">
-              <a class="market-icons market-link" href="#" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
-              <div class="activity-card-body">
-                <div class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge withdraw">Withdraw</span></div>
-                <div class="activity-card-bottom"><span class="date-cell">5/22/2026, 2:30 PM</span></div>
+            <div data-category="market" class="activity-card">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge withdraw">Withdraw</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/22/2026, 2:30 PM</span></div>
               </div>
-              <div class="activity-card-right">
-                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.05 USDC</span>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.05 USDC <span class="amount-fiat">$0.05</span></span>
                 <a class="tx-link" href="#" title="View on explorer">0x5bf9...c42e <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
               </div>
             </div>
-            <div class="activity-card">
-              <a class="market-icons market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
-              <div class="activity-card-body">
-                <div class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge withdraw-collateral">Withdraw Col.</span></div>
-                <div class="activity-card-bottom"><span class="date-cell">5/21/2026, 11:15 AM</span></div>
+            <div data-category="market" class="activity-card">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="liquidation" class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge withdraw-collateral">Withdraw Col.</span></div>
+                <div data-category="liquidation" class="activity-card-bottom"><span class="date-cell">5/21/2026, 11:15 AM</span></div>
               </div>
-              <div class="activity-card-right">
-                <span class="amount-cell"><span class="amount-icon pepe"></span> 50K PEPE</span>
+              <div data-category="liquidation" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon pepe"></span> 50K PEPE <span class="amount-fiat">$649</span></span>
                 <a class="tx-link" href="#" title="View on explorer">0x1e7a...d593 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
               </div>
             </div>
-            <div class="activity-card">
-              <a class="market-icons market-link" href="#" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
-              <div class="activity-card-body">
-                <div class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge liquidation">Liquidation</span></div>
-                <div class="activity-card-bottom"><span class="date-cell">5/20/2026, 9:02 AM</span></div>
+            <div data-category="liquidation" class="activity-card">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
+              <div data-category="liquidation" class="activity-card-body">
+                <div data-category="liquidation" class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge liquidation">Liquidation</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/20/2026, 9:02 AM</span></div>
               </div>
-              <div class="activity-card-right">
-                <span class="amount-cell"><span class="amount-icon pepe"></span> 25K PEPE</span>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon pepe"></span> 25K PEPE <span class="amount-fiat">$324</span></span>
                 <a class="tx-link" href="#" title="View on explorer">0xd4c8...7ab2 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
               </div>
             </div>
+            <div data-category="market" class="activity-card activity-page-2" style="display:none">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge supply">Supply</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/19/2026, 3:45 PM</span></div>
+              </div>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.5 USDC <span class="amount-fiat">$0.50</span></span>
+                <a class="tx-link" href="#" title="View on explorer">0x2f8a...c901 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <div data-category="market" class="activity-card activity-page-2" style="display:none">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge supply-collateral">Supply Col.</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/19/2026, 3:44 PM</span></div>
+              </div>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon morpho"></span><span class="amount-value">0.0<span class="sub-zeros">5</span>2840 MORPHO</span> <span class="amount-fiat">$0.04</span></span>
+                <a class="tx-link" href="#" title="View on explorer">0x91bb...d412 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <div data-category="market" class="activity-card activity-page-2" style="display:none">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge borrow">Borrow</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/18/2026, 11:22 AM</span></div>
+              </div>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.15 USDC <span class="amount-fiat">$0.15</span></span>
+                <a class="tx-link" href="#" title="View on explorer">0x44e7...a3f8 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <div data-category="market" class="activity-card activity-page-2" style="display:none">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge supply-collateral">Supply Col.</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/18/2026, 11:21 AM</span></div>
+              </div>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon pepe"></span> 85.6K PEPE <span class="amount-fiat">$1,111</span></span>
+                <a class="tx-link" href="#" title="View on explorer">0xc3d0...7e21 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <div data-category="market" class="activity-card activity-page-2" style="display:none">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge repay">Repay</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/17/2026, 5:09 PM</span></div>
+              </div>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.12 USDC <span class="amount-fiat">$0.12</span></span>
+                <a class="tx-link" href="#" title="View on explorer">0x7fa2...b190 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <div data-category="market" class="activity-card activity-page-2" style="display:none">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge withdraw">Withdraw</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/17/2026, 2:33 PM</span></div>
+              </div>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.08 USDC <span class="amount-fiat">$0.08</span></span>
+                <a class="tx-link" href="#" title="View on explorer">0xe5c1...4d67 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <div data-category="market" class="activity-card activity-page-2" style="display:none">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge supply">Supply</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/16/2026, 9:15 AM</span></div>
+              </div>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.2 USDC <span class="amount-fiat">$0.20</span></span>
+                <a class="tx-link" href="#" title="View on explorer">0x0ab3...f845 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <div data-category="market" class="activity-card activity-page-2" style="display:none">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge withdraw-collateral">Withdraw Col.</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/15/2026, 6:48 PM</span></div>
+              </div>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon pepe"></span> 30K PEPE <span class="amount-fiat">$389</span></span>
+                <a class="tx-link" href="#" title="View on explorer">0xb7d9...2c34 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <div data-category="market" class="activity-card activity-page-2" style="display:none">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">MORPHO</span> <span class="type-badge borrow">Borrow</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/14/2026, 10:30 AM</span></div>
+              </div>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon usdc"></span> 0.03 USDC <span class="amount-fiat">$0.03</span></span>
+                <a class="tx-link" href="#" title="View on explorer">0x6e40...a1b9 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <div data-category="market" class="activity-card activity-page-2" style="display:none">
+              <a class="market-icons market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="PEPE / USDC"><span class="market-icon pepe"></span><span class="market-icon usdc"></span></a>
+              <div data-category="market" class="activity-card-body">
+                <div data-category="market" class="activity-card-top"><span class="market-name">PEPE</span> <span class="type-badge supply-collateral">Supply Col.</span></div>
+                <div data-category="market" class="activity-card-bottom"><span class="date-cell">5/13/2026, 4:12 PM</span></div>
+              </div>
+              <div data-category="market" class="activity-card-right">
+                <span class="amount-cell"><span class="amount-icon pepe"></span> 200K PEPE <span class="amount-fiat">$2,596</span></span>
+                <a class="tx-link" href="#" title="View on explorer">0x39f5...8e02 <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="activity-pagination">
+            <button class="page-arrow" onclick="switchActivityPage(1)" disabled><i class="ph ph-caret-left"></i></button>
+            <button class="active" onclick="switchActivityPage(1)">1</button>
+            <button onclick="switchActivityPage(2)">2</button>
+            <button class="page-arrow" onclick="switchActivityPage(2)"><i class="ph ph-caret-right"></i></button>
           </div>
         </div>
       </div><!-- /activity-list -->
@@ -8767,6 +8996,39 @@ function initPhoneB() {
   // attach a scroll listener to the phone element. Match phone-a's wiring.
   if (typeof window._attachBannerStuckTo === 'function') window._attachBannerStuckTo(phoneB);
   if (typeof window._attachPeekScrollTo === 'function') window._attachPeekScrollTo(phoneB);
+
+  // --- Op B: revert activity to original layout (Date-first, no filter chips, show market name) ---
+  phoneB.querySelectorAll('.activity-filters').forEach(function(f) { f.style.display = 'none'; });
+  phoneB.querySelectorAll('.activity-card-top .market-name').forEach(function(n) { n.style.display = 'inline'; });
+
+  // Reorder table columns: Op A is Type(0)|Market(1)|Amount(2)|Date(3)|Tx(4)
+  // Op B wants Date|Market|Type|Amount|Tx => indices 3,1,0,2,4
+  var reorder = [3,1,0,2,4];
+  phoneB.querySelectorAll('.activity-table').forEach(function(table) {
+    var cg = table.querySelector('colgroup');
+    if (cg) {
+      var cols = cg.querySelectorAll('col');
+      if (cols.length === 5) {
+        cg.innerHTML = '';
+        reorder.forEach(function(i) { cg.appendChild(cols[i]); });
+      }
+    }
+    var hdr = table.querySelector('thead tr');
+    if (hdr) {
+      var ths = Array.from(hdr.children);
+      if (ths.length === 5) {
+        hdr.innerHTML = '';
+        reorder.forEach(function(i) { hdr.appendChild(ths[i]); });
+      }
+    }
+    table.querySelectorAll('tbody tr').forEach(function(row) {
+      var tds = Array.from(row.children);
+      if (tds.length === 5) {
+        row.innerHTML = '';
+        reorder.forEach(function(i) { row.appendChild(tds[i]); });
+      }
+    });
+  });
 }
 
 // On boot: detect ANY indicator that the user is on a constrained device
@@ -10507,11 +10769,55 @@ function resetSliderFromInfo(btn) {
   setSliderPct(sib, startPct);
 }
 
-function switchPositionsTab(tabId) {
-  var panels = document.querySelectorAll('#positions .positions-tab-panel');
-  var btns = document.querySelectorAll('#positions .positions-tab-btn');
-  panels.forEach(function(p) { p.classList.toggle('active', p.id === tabId); });
+function switchPositionsTab(tabId, ev) {
+  var root = (ev && ev.target) ? ev.target.closest('.phone') : null;
+  var suffix = (root && root.id === 'phone-b') ? '-b' : '';
+  var container = document.getElementById('positions' + suffix);
+  if (!container) return;
+  var panels = container.querySelectorAll('.positions-tab-panel');
+  var btns = container.querySelectorAll('.positions-tab-btn');
+  panels.forEach(function(p) { p.classList.toggle('active', p.id === tabId + suffix); });
   btns.forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tabId); });
+}
+
+function switchActivityPage(page) {
+  var p1rows = document.querySelectorAll('#activity-list .activity-table tbody tr:not(.activity-page-2)');
+  var p2rows = document.querySelectorAll('#activity-list .activity-page-2');
+  var p1cards = document.querySelectorAll('#activity-list .activity-card:not(.activity-page-2)');
+  var p2cards = document.querySelectorAll('#activity-list .activity-card.activity-page-2');
+  var showP1 = page === 1;
+  p1rows.forEach(function(r) { r.style.display = showP1 ? '' : 'none'; });
+  p2rows.forEach(function(r) { r.style.display = showP1 ? 'none' : ''; });
+  p1cards.forEach(function(c) { c.style.display = showP1 ? '' : 'none'; });
+  p2cards.forEach(function(c) { c.style.display = showP1 ? 'none' : ''; });
+  var btns = document.querySelectorAll('.activity-pagination button:not(.page-arrow)');
+  btns.forEach(function(b) { b.classList.toggle('active', parseInt(b.textContent) === page); });
+  var arrows = document.querySelectorAll('.activity-pagination .page-arrow');
+  arrows[0].disabled = page === 1;
+  arrows[1].disabled = page === 2;
+}
+
+function filterActivity(category) {
+  var rows = document.querySelectorAll('#activity-list .activity-table tbody tr');
+  var cards = document.querySelectorAll('#activity-list .activity-card');
+  rows.forEach(function(r) {
+    var cat = r.getAttribute('data-category');
+    if (!cat) return;
+    var matchesFilter = category === 'all' || cat === category;
+    r.style.display = matchesFilter ? '' : 'none';
+  });
+  cards.forEach(function(c) {
+    var cat = c.getAttribute('data-category');
+    if (!cat) return;
+    var matchesFilter = category === 'all' || cat === category;
+    c.style.display = matchesFilter ? '' : 'none';
+  });
+  var chips = document.querySelectorAll('.activity-chip');
+  chips.forEach(function(ch) {
+    if (ch.disabled) return;
+    var chipCat = ch.textContent.trim().toLowerCase();
+    ch.classList.toggle('active', chipCat === category);
+  });
 }
 
 function extractPositionData(card, token) {
