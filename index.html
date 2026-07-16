@@ -86,6 +86,7 @@
       --shadow-lg: 0 8px 24px rgba(26,58,42,0.1);
       --shadow-cute: 0 4px 16px rgba(232,160,160,0.15);
       --shadow-card: 0 2px 8px rgba(139,135,101,0.04), 0 8px 24px rgba(139,135,101,0.06);
+      --shadow-warm-rgb: 215, 204, 186; /* warm tan used by scroll/edge shadows (bottom-nav, activity table) */
       /* Scrims — semantic pairs (reversible vs committing), not a scale.
          blur + brightness are bundled into commit since they're not
          independent knobs — they travel together to sever context. */
@@ -2468,7 +2469,7 @@
          JS sets --nav-shadow-alpha (0…0.35) progressively across the last 48px
          of scroll. Short content (no scroll possible) stays at 0. */
       --nav-shadow-alpha: 0.35;
-      box-shadow: 0 -8px 24px rgba(215, 204, 186, var(--nav-shadow-alpha));
+      box-shadow: 0 -8px 24px rgba(var(--shadow-warm-rgb), var(--nav-shadow-alpha));
       padding: 8px 0 12px; gap: 0;
     }
     .bottom-nav-item {
@@ -5583,8 +5584,8 @@
       background:
         linear-gradient(to right, white 30%, rgba(255,255,255,0)) 0 0,
         linear-gradient(to left, white 30%, rgba(255,255,255,0)) 100% 0,
-        radial-gradient(farthest-side at 0 50%, rgba(215,204,186,0.55), rgba(215,204,186,0)) 0 0,
-        radial-gradient(farthest-side at 100% 50%, rgba(215,204,186,0.55), rgba(215,204,186,0)) 100% 0;
+        radial-gradient(farthest-side at 0 50%, rgba(var(--shadow-warm-rgb),0.55), rgba(var(--shadow-warm-rgb),0)) 0 0,
+        radial-gradient(farthest-side at 100% 50%, rgba(var(--shadow-warm-rgb),0.55), rgba(var(--shadow-warm-rgb),0)) 100% 0;
       background-repeat: no-repeat;
       background-size: 40px 100%, 40px 100%, 16px 100%, 16px 100%;
       background-attachment: local, local, scroll, scroll;
