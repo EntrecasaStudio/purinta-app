@@ -5453,10 +5453,10 @@
     }
     .activity-table thead th:first-child { padding-left: 20px; }
     .activity-table thead th:last-child { padding-right: 20px; }
-    .activity-table tbody tr {
-      border-bottom: 1px solid var(--cream-300); transition: background 0.15s ease;
-    }
-    .activity-table tbody tr:last-child { border-bottom: none; }
+    /* No internal row dividers — zebra striping provides the separation */
+    .activity-table tbody tr { border-bottom: none; transition: background 0.15s ease; }
+    .activity-table tbody tr:nth-child(odd) { background: var(--cream-100); }
+    .activity-table tbody tr:nth-child(even) { background: var(--neutral-50); }
     .activity-table tbody tr:hover { background: var(--cream-50); }
     .activity-table tbody td {
       padding: 12px; color: var(--text-primary); vertical-align: middle; white-space: nowrap;
@@ -5503,7 +5503,7 @@
     .activity-table .amount-cell .amount-inner { display: flex; align-items: center; gap: 7px; }
     .activity-table .amount-cell .amount-body { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
     .activity-table .amount-cell .amount-val { font-weight: 500; white-space: nowrap; }
-    .activity-table .amount-cell .amount-icon { width: 24px; height: 24px; margin: 0; flex-shrink: 0; }
+    .activity-table .amount-cell .amount-icon { display: none; }
     .activity-table .amount-cell .amount-fiat { display: block; margin: 0; font-size: 11px; }
     .phone.desktop .activity-table .amount-cell .amount-fiat { display: block; margin: 0; }
     /* Functional sort carets */
@@ -5627,8 +5627,8 @@
     .activity-pagination button:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
     .activity-pagination .page-arrow { font-size: 16px; font-weight: 400; }
     /* Arrows sit slightly apart from the number group (Figma) */
-    .phone.desktop .activity-pagination .page-arrow:first-of-type { margin-right: 4px; }
-    .phone.desktop .activity-pagination .page-arrow:last-of-type { margin-left: 4px; }
+    .phone.desktop .activity-pagination .page-arrow:first-of-type { margin-right: 20px; }
+    .phone.desktop .activity-pagination .page-arrow:last-of-type { margin-left: 20px; }
     .activity-pagination .page-ellipsis { width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 13px; border-radius: 8px; border: 1px solid var(--cream-400); background: white; pointer-events: none; }
     .activity-pagination .page-indicator { display: none; font-size: 13px; font-family: var(--font-ui); color: var(--text-secondary); padding: 0 12px; white-space: nowrap; height: 32px; line-height: 32px; border-radius: 8px; border: 1px solid var(--cream-300); background: white; }
     .activity-pagination .page-num { }
