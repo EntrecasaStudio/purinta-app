@@ -5453,8 +5453,8 @@
     }
     .activity-table thead th:first-child { padding-left: 20px; }
     .activity-table thead th:last-child { padding-right: 20px; }
-    /* No internal row dividers — zebra striping provides the separation */
-    .activity-table tbody tr { border-bottom: none; transition: background 0.15s ease; }
+    .activity-table tbody tr { border-bottom: 1px solid var(--cream-300); transition: background 0.15s ease; }
+    .activity-table tbody tr:last-child { border-bottom: none; }
     .activity-table tbody tr:nth-child(odd) { background: var(--cream-100); }
     .activity-table tbody tr:nth-child(even) { background: var(--neutral-50); }
     .activity-table tbody tr:hover { background: var(--cream-50); }
