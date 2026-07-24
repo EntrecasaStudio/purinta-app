@@ -1652,10 +1652,10 @@
     .bms-1 { top: 5.88px;   right: 11.15px; width: 18px; height: 18px; }
     .bms-1::before { transform: rotate(-13.48deg); }
     .bms-2 { top: 32.73px;  left: 2px;   width: 14px; height: 14px; color: var(--green-300); }
-    .bms-3 { bottom: 52.69px; right: 9.96px; width: 12px; height: 12px; color: var(--green-500); }
+    .bms-3 { bottom: 37.22px; right: 9.96px; width: 12px; height: 12px; color: var(--green-500); }
     .bms-3::before { transform: rotate(11.12deg); }
     .bms-4 { top: 62.73px;  right: -2px; width: 10px; height: 10px; }
-    .bms-5 { bottom: 51.75px; left: 6.02px; width: 16px; height: 16px; color: var(--green-300); }
+    .bms-5 { bottom: 36.28px; left: 6.02px; width: 16px; height: 16px; color: var(--green-300); }
     .bms-5::before { transform: rotate(-7.55deg); }
     /* Two-phase animation per sparkle: drift burst settles at 0.35 opacity, then
        each sparkle twinkles independently with desynced periods (Notion-shimmer style).
@@ -1686,8 +1686,8 @@
       100% { opacity: 1; transform: scale(1)   rotate(0deg); }
     }
     @keyframes bundle-sparkle-idle {
-      0%, 100% { opacity: 0.7; }
-      50%      { opacity: 1; }
+      0%, 100% { opacity: 0.7; transform: scale(1) rotate(-2deg); }
+      50%      { opacity: 1;   transform: scale(1) rotate(2deg); }
     }
     @media (prefers-reduced-motion: reduce) {
       .bundle-modal-overlay.is-done .bundle-mascot-sparkle {
