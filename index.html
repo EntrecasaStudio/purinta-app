@@ -13146,16 +13146,22 @@ function playLoadingIntro(phone) {
   }
   // Hash deep links (#bundle-confirm, #bundle-error, etc.) always win
   // over the localStorage-saved modal so the URL is reliably shareable.
-  var hashModal = location.hash.replace('#', '');
   var hashDispatch = {
     'bundle-confirm': function() { devOpenBundle(); },
     'bundle-error':   function() { devOpenBundleError(); },
     'bundle-skel':    function() { devOpenBundleSkel(); },
     'quick-repay':    function() { devOpenQuickRepay(); }
   };
-  if (hashModal && hashDispatch[hashModal]) {
-    requestAnimationFrame(function() { hashDispatch[hashModal](); });
-  } else if (savedModal) {
+  var hashHandled = false;
+  function tryHashOpen() {
+    if (hashHandled) return;
+    var h = location.hash.replace('#', '');
+    if (h && hashDispatch[h]) { hashHandled = true; hashDispatch[h](); }
+  }
+  tryHashOpen();
+  if (!hashHandled) setTimeout(tryHashOpen, 300);
+  window.addEventListener('hashchange', function() { tryHashOpen(); });
+  if (!hashHandled && savedModal) {
     var modalDispatch = {
       'bundle':       function() { if (typeof devOpenBundle === 'function')      devOpenBundle(); },
       'bundle-error': function() { if (typeof devOpenBundleError === 'function') devOpenBundleError(); },
@@ -13164,7 +13170,7 @@ function playLoadingIntro(phone) {
       'quick-repay':  function() { if (typeof devOpenQuickRepay === 'function')  devOpenQuickRepay(); }
     };
     requestAnimationFrame(function() {
-      if (modalDispatch[savedModal]) modalDispatch[savedModal]();
+      if (!hashHandled && modalDispatch[savedModal]) modalDispatch[savedModal]();
     });
   }
   // Boot splash: fade out after the restored screen has had a frame to lay
