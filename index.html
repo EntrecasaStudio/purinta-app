@@ -13144,10 +13144,18 @@ function playLoadingIntro(phone) {
       });
     }
   }
-  // Re-open the dev-nav modal that was active when the user last left,
-  // on top of the restored screen. rAF defer so the screen reveal
-  // animations don't fight the modal's qr-pop entrance keyframe.
-  if (savedModal) {
+  // Hash deep links (#bundle-confirm, #bundle-error, etc.) always win
+  // over the localStorage-saved modal so the URL is reliably shareable.
+  var hashModal = location.hash.replace('#', '');
+  var hashDispatch = {
+    'bundle-confirm': function() { devOpenBundle(); },
+    'bundle-error':   function() { devOpenBundleError(); },
+    'bundle-skel':    function() { devOpenBundleSkel(); },
+    'quick-repay':    function() { devOpenQuickRepay(); }
+  };
+  if (hashModal && hashDispatch[hashModal]) {
+    requestAnimationFrame(function() { hashDispatch[hashModal](); });
+  } else if (savedModal) {
     var modalDispatch = {
       'bundle':       function() { if (typeof devOpenBundle === 'function')      devOpenBundle(); },
       'bundle-error': function() { if (typeof devOpenBundleError === 'function') devOpenBundleError(); },
@@ -13155,25 +13163,9 @@ function playLoadingIntro(phone) {
       'bundle-loading-error': function() { if (typeof devOpenBundleLoadingError === 'function') devOpenBundleLoadingError(); },
       'quick-repay':  function() { if (typeof devOpenQuickRepay === 'function')  devOpenQuickRepay(); }
     };
-    // rAF defer so the showScreen reveal animations don't fight the
-    // modal's qr-pop entrance keyframe.
     requestAnimationFrame(function() {
       if (modalDispatch[savedModal]) modalDispatch[savedModal]();
     });
-  }
-  // Hash deep links: #bundle-confirm, #bundle-error, #bundle-skel, #quick-repay
-  // open the matching modal on page load so the URL is shareable.
-  var hashModal = location.hash.replace('#', '');
-  if (hashModal && !savedModal) {
-    var hashDispatch = {
-      'bundle-confirm': function() { devOpenBundle(); },
-      'bundle-error':   function() { devOpenBundleError(); },
-      'bundle-skel':    function() { devOpenBundleSkel(); },
-      'quick-repay':    function() { devOpenQuickRepay(); }
-    };
-    if (hashDispatch[hashModal]) {
-      requestAnimationFrame(function() { hashDispatch[hashModal](); });
-    }
   }
   // Boot splash: fade out after the restored screen has had a frame to lay
   // out and paint. Two rAFs guarantee at least one painted frame before the
