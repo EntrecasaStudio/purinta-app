@@ -13144,24 +13144,33 @@ function playLoadingIntro(phone) {
       });
     }
   }
-  // Hash deep links (#bundle-confirm, #bundle-error, etc.) always win
-  // over the localStorage-saved modal so the URL is reliably shareable.
-  var hashDispatch = {
+  // Deep links: ?modal=bundle-confirm (query param, survives all
+  // redirects) or #bundle-confirm (hash, may be stripped by Safari
+  // during GitHub Pages' trailing-slash 301). Query param wins.
+  var deepLinkDispatch = {
     'bundle-confirm': function() { devOpenBundle(); },
     'bundle-error':   function() { devOpenBundleError(); },
     'bundle-skel':    function() { devOpenBundleSkel(); },
     'quick-repay':    function() { devOpenQuickRepay(); }
   };
-  var hashHandled = false;
-  function tryHashOpen() {
-    if (hashHandled) return;
+  var deepLinkHandled = false;
+  function getDeepLinkKey() {
+    var params = new URLSearchParams(location.search);
+    var q = params.get('modal');
+    if (q && deepLinkDispatch[q]) return q;
     var h = location.hash.replace('#', '');
-    if (h && hashDispatch[h]) { hashHandled = true; hashDispatch[h](); }
+    if (h && deepLinkDispatch[h]) return h;
+    return '';
   }
-  tryHashOpen();
-  if (!hashHandled) setTimeout(tryHashOpen, 300);
-  window.addEventListener('hashchange', function() { tryHashOpen(); });
-  if (!hashHandled && savedModal) {
+  function tryDeepLinkOpen() {
+    if (deepLinkHandled) return;
+    var key = getDeepLinkKey();
+    if (key) { deepLinkHandled = true; deepLinkDispatch[key](); }
+  }
+  tryDeepLinkOpen();
+  if (!deepLinkHandled) setTimeout(tryDeepLinkOpen, 300);
+  window.addEventListener('hashchange', function() { tryDeepLinkOpen(); });
+  if (!deepLinkHandled && savedModal) {
     var modalDispatch = {
       'bundle':       function() { if (typeof devOpenBundle === 'function')      devOpenBundle(); },
       'bundle-error': function() { if (typeof devOpenBundleError === 'function') devOpenBundleError(); },
@@ -13170,7 +13179,7 @@ function playLoadingIntro(phone) {
       'quick-repay':  function() { if (typeof devOpenQuickRepay === 'function')  devOpenQuickRepay(); }
     };
     requestAnimationFrame(function() {
-      if (!hashHandled && modalDispatch[savedModal]) modalDispatch[savedModal]();
+      if (!deepLinkHandled && modalDispatch[savedModal]) modalDispatch[savedModal]();
     });
   }
   // Boot splash: fade out after the restored screen has had a frame to lay
