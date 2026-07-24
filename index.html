@@ -1545,7 +1545,7 @@
        wobble + sparkle burst drifting outward. Modal breathes up around it. */
     .bundle-modal-mascot {
       max-height: 0; opacity: 0; overflow: visible;
-      width: 216px; margin: 0;                         /* 180 × 1.2 — 20% larger than #confirm hero */
+      width: 180px; margin: 18px 0 0;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; position: relative;
       transition: max-height 520ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -1553,28 +1553,46 @@
     }
     /* Organic blob background pulled from the home hero — softer + brand-consistent shape.
        Animated gentle float + breath so it feels alive without pulling focus. */
-    .bundle-mascot-blob {
-      /* +20% surface vs the .bundle-modal-mascot container. Negative
-         inset keeps it centered while leaving the pop/float keyframe
-         transforms free to compose on top. */
+    .bundle-blob-clip {
       position: absolute;
-      top: -10%; left: -10%;
-      width: 120%; height: 120%;
+      left: -12px; top: -3.27px;
+      width: 200px; height: 200px;
+      overflow: hidden;
       z-index: 0; pointer-events: none;
+    }
+    .bundle-mascot-blob {
+      position: absolute;
+      left: 13px; top: 0px;
+      width: 180px; height: 160px;
+      overflow: visible;
       transform-origin: 50% 50%;
-      /* Idle breath in the initial state — slow, subtle (3% scale, tiny
-         rotation), so the blob feels alive from the moment the modal
-         opens. Overridden by the pop+float pair when the overlay flips
-         to .is-done (more specific selector below wins the cascade). */
       animation: bundle-blob-idle-breathe 5.4s ease-in-out infinite;
     }
-    .bundle-mascot-blob path { fill: var(--mint-200); }
+    .bundle-mascot-blob path {
+      fill: var(--info-50);
+      transform: rotate(68.38deg);
+      transform-origin: 90px 80px;
+      /* CSS transitions on SVG <path> fill/transform are unreliable in
+         WebKit — the browser fails to interpolate them and the property
+         stays stuck at the initial value.  Both fill and rotation swap
+         atomically when the overlay class changes, which is fine because
+         the blob pop/float @keyframes animation covers the visual
+         entrance anyway. */
+    }
+    .bundle-modal-overlay.is-done .bundle-mascot-blob path {
+      fill: var(--green-50);
+      transform: rotate(156.39deg);
+    }
     @keyframes bundle-blob-idle-breathe {
       0%, 100% { transform: scale(1)    rotate(0deg); }
       50%      { transform: scale(1.03) rotate(-0.8deg); }
     }
     /* Blob enters first with a wider, looser rebound, then hands off to the idle float */
+    .bundle-modal-overlay.is-done .bundle-blob-clip {
+      left: -17.49px; top: -4.85px;
+    }
     .bundle-modal-overlay.is-done .bundle-mascot-blob {
+      left: 18px; top: 23px;
       animation: bundle-blob-pop   1400ms cubic-bezier(0.45, 0, 0.55, 1)   0ms both,
                  bundle-blob-float 5s    ease-in-out                    1400ms infinite;
     }
@@ -1598,11 +1616,11 @@
     }
     .bundle-modal-mascot img {
       position: relative; z-index: 1;
-      width: 144px; height: 144px; object-fit: contain;   /* 120 × 1.2 — 20% larger than #confirm */
+      width: 180px; height: auto; object-fit: contain;
     }
 
     .bundle-modal-overlay.is-done .bundle-modal-mascot {
-      max-height: 168px; opacity: 1;                       /* 140 × 1.2 — keeps blob aspect after upscale */
+      max-height: 180px; height: 180px; opacity: 1;
     }
     /* Mascot enters after the blob and rebounds on its own beat */
     .bundle-modal-overlay.is-done .bundle-modal-mascot img {
@@ -1619,15 +1637,6 @@
       100% { transform: scale(1)    rotate(0deg);  }
     }
 
-    /* 5 drifting sparkle particles around the mascot on Done — mirrors the #confirm hero */
-    .bundle-mascot-sparkle {
-      position: absolute; width: 16px; height: 16px;
-      color: var(--green-400);
-      opacity: 0; pointer-events: none;
-    }
-
-
-    /* 5 drifting sparkle particles around the mascot on Done — mirrors the #confirm-b hero */
     .bundle-mascot-sparkle {
       position: absolute; width: 16px; height: 16px;
       color: var(--green-400);
@@ -1636,13 +1645,17 @@
     .bundle-mascot-sparkle::before {
       content: ''; display: block; width: 100%; height: 100%;
       background: currentColor;
-      clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 15'%3E%3Cpath d='M6.518.27C6.651-.09 7.153-.09 7.295.27L8.981 4.751c.038.104.123.19.227.237l4.34 1.781c.34.142.34.625 0 .767l-4.34 1.781a.41.41 0 0 0-.227.237L7.295 14.035c-.133.36-.644.36-.777 0L4.822 9.554a.41.41 0 0 0-.227-.237L.256 7.536c-.341-.142-.341-.625 0-.767l4.34-1.781A.41.41 0 0 0 4.822 4.751L6.518.27Z' fill='white'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 15'%3E%3Cpath d='M6.518.27C6.651-.09 7.153-.09 7.295.27L8.981 4.751c.038.104.123.19.227.237l4.34 1.781c.34.142.34.625 0 .767l-4.34 1.781a.41.41 0 0 0-.227.237L7.295 14.035c-.133.36-.644.36-.777 0L4.822 9.554a.41.41 0 0 0-.227-.237L.256 7.536c-.341-.142-.341-.625 0-.767l4.34-1.781A.41.41 0 0 0 4.822 4.751L6.518.27Z' fill='white'/%3E%3C/svg%3E") center / contain no-repeat;
     }
-    .bms-1 { top: 6px;   right: 14px; width: 18px; height: 18px; }
-    .bms-2 { top: 34px;  left: 8px;   width: 14px; height: 14px; color: var(--green-300); }
-    .bms-3 { bottom: 28px; right: 4px; width: 12px; height: 12px; color: var(--green-500); }
-    .bms-4 { top: 66px;  right: -4px; width: 10px; height: 10px; color: var(--green-300); }
-    .bms-5 { bottom: 40px; left: 14px; width: 16px; height: 16px; }
+    .bms-1 { top: 5.88px;   right: 11.15px; width: 18px; height: 18px; }
+    .bms-1::before { transform: rotate(-13.48deg); }
+    .bms-2 { top: 32.73px;  left: 2px;   width: 14px; height: 14px; color: var(--green-300); }
+    .bms-3 { bottom: 52.69px; right: 9.96px; width: 12px; height: 12px; color: var(--green-500); }
+    .bms-3::before { transform: rotate(11.12deg); }
+    .bms-4 { top: 62.73px;  right: -2px; width: 10px; height: 10px; }
+    .bms-5 { bottom: 51.75px; left: 6.02px; width: 16px; height: 16px; color: var(--green-300); }
+    .bms-5::before { transform: rotate(-7.55deg); }
     /* Two-phase animation per sparkle: drift burst settles at 0.35 opacity, then
        each sparkle twinkles independently with desynced periods (Notion-shimmer style).
        Alive but not needy — opacity-only, no position change, low amplitude. */
@@ -2122,46 +2135,22 @@
     .bundle-modal-overlay.is-done  .bundle-mascot-done    { display: block; }
     .bundle-modal-overlay.is-error .bundle-mascot-error   { display: block; }
     /* Mascot container always open in option A, no max-height collapse */
-    #phone-a .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
-    #phone-b .bundle-modal-mascot { height: 131px; max-height: 131px; opacity: 1; display: flex; align-items: center; justify-content: center; }
-    /* Mascot heights for option A — height drives the size, width auto-scales
-       by SVG aspect. The Confirmed (done) artwork has more visual presence
-       than Begin (legs / arms / falling bills), so we render Begin 15% smaller
-       to balance the two visually. Container stays pinned at 131px in both
-       cases (centered via flex), so the swap is purely artwork — no layout
-       shift. */
-    #phone-a .bundle-mascot-img  { width: auto; height: 131px; max-height: 131px; }
-    #phone-b .bundle-mascot-img { width: auto; height: 131px; max-height: 131px; }
-    /* Initial (Begin) — 15% smaller than the done state. The default state
-       is the animated home mascot (.bundle-mascot-anim is the new
-       .mascot-anim-host wrapper). Width is derived from the mascot-base
-       aspect ratio (857×933 → 0.92) at 111 px tall ≈ 102 px wide, so the
-       container letterboxing is exactly nil. */
+    #phone-a .bundle-modal-mascot { height: 180px; max-height: 180px; opacity: 1; display: flex; align-items: center; justify-content: center; }
+    #phone-b .bundle-modal-mascot { height: 180px; max-height: 180px; opacity: 1; display: flex; align-items: center; justify-content: center; }
+    /* Mascot heights — 180px matches Figma container. */
+    #phone-a .bundle-mascot-img  { width: 180px; height: 196px; max-height: 196px; }
+    #phone-b .bundle-mascot-img { width: 180px; height: 196px; max-height: 196px; }
+    /* Begin state — same 180px as done for visual consistency. */
     #phone-a .bundle-mascot-default,
-    #phone-b .bundle-mascot-default { height: 111px; max-height: 111px; }
+    #phone-b .bundle-mascot-default { width: 180px; height: 196px; max-height: 196px; }
     #phone-a .bundle-mascot-anim,
     #phone-b .bundle-mascot-anim {
-      /* Original Purinta-Begin.svg is 142×140 (nearly square, artwork fills
-         the viewBox edge-to-edge) and rendered at 111 px tall ≈ 113 px
-         wide. mascot-base.svg is 857×933 with the mascot occupying only
-         ~75% of the viewBox height (feet pivot at y=620 of 933), so the
-         same 102×111 wrapper showed the visible art ~25% smaller.
-         Wrapper sized so the visible mascot lands at ~Purinta-Begin's
-         on-screen footprint: 140 / 0.75 ≈ 105 css px of visible mascot
-         height, width follows the 857/933 aspect (140 → 128.6 ≈ 129). */
-      width: 172px; height: 186px; max-height: 186px;
-      /* Match the home hero's mirror so the artwork reads identically on
-         both surfaces. The done / error states keep their own facing
-         baked into their respective SVG/PNG. */
+      width: 180px; height: 196px; max-height: 196px;
       transform: scaleX(-1);
     }
-    /* Done (Confirmed mascot, the bills one) — bumped +20% over the
-       legacy 131 px so it reads at the same on-screen weight as the
-       initial animated mascot (172×186). max-height also re-stated
-       because .bundle-mascot-img sets max-height:131 globally and would
-       otherwise clamp the new height. */
-    #phone-a .bundle-mascot-done { height: 157px; max-height: 157px; }
-    #phone-b .bundle-mascot-done { height: 157px; max-height: 157px; }
+    /* Done — 180px matches Figma reference. */
+    #phone-a .bundle-mascot-done { width: 180px; height: 196px; max-height: 196px; }
+    #phone-b .bundle-mascot-done { width: 180px; height: 196px; max-height: 196px; }
     /* Error — empty-state mascot, mirrored so it faces right (toward the
        error banner / CTA below). Rendered ~10% larger than the done
        variant (144 vs 131) because the empty-state artwork sits lower in
@@ -2178,11 +2167,7 @@
       width: 200px;
       height: 220px; max-height: 220px;
     }
-    /* The base `.bundle-modal-mascot` is sized at 131 px on phones (ID-
-       specificity wins over the .is-done max-height: 168 rule). The error
-       illustration is 200×220 — at 131 px the top gets clipped behind the
-       dialog's close button + padding. Bump the container only in the
-       error state so the rest of the bundle modal layout stays untouched. */
+    /* Error mascot is 200x220 — bump container in error state. */
     #phone-a .bundle-modal-overlay.is-error .bundle-modal-mascot,
     #phone-b .bundle-modal-overlay.is-error .bundle-modal-mascot {
       height: 220px; max-height: 220px;
@@ -2192,13 +2177,16 @@
        The blob tracks the container centre by default — nudge it down
        10 px in the error state so it stays centred on the body, not on
        the empty headroom. */
-    .bundle-modal-overlay.is-error .bundle-mascot-blob {
+    .bundle-modal-overlay.is-error .bundle-blob-clip {
       top: calc(-10% + 10px);
     }
     /* Error blob — Error/50 (#FFEDF9) instead of Mint/200 to theme the
        background to the failure state. Path is a single <path> inside
        the inline SVG, so a one-line override does it. */
-    .bundle-modal-overlay.is-error .bundle-mascot-blob path { fill: var(--error-50); }
+    .bundle-modal-overlay.is-error .bundle-mascot-blob path {
+      fill: var(--error-50);
+      transform: rotate(156.39deg);
+    }
     /* Error entrance — same logic as the done celebration: pure
        transform-driven squash/stretch, NO opacity transitions (the done
        keyframes don't fade in either, so adding opacity here read as a
@@ -2290,7 +2278,7 @@
        and as a flash-avoider while the SVG fetch is in flight. */
     #phone-a .pc-mascot-host,
     #phone-b .pc-mascot-host {
-      width: 167px;       /* 157 × (177/166) — matches the asset's intrinsic aspect at the post-+20% height */
+      width: 180px;
       position: relative;
     }
     .pc-mascot-host > .pc-mascot-fallback,
@@ -2491,7 +2479,7 @@
     .top-nav-link {
       background: none; border: none; cursor: pointer;
       font-family: var(--font-ui); font-size: var(--ds-xs); font-weight: 400;
-      color: var(--text-secondary); padding: 6px 12px; border-radius: var(--r-full);
+      color: var(--text-secondary); padding: 6px 14px 6px 12px; border-radius: var(--r-full);
       transition: color 0.2s ease, background 0.2s ease;
       display: flex; align-items: center; gap: 6px;
     }
@@ -8614,7 +8602,7 @@
       <div class="bundle-modal-divider"></div>
       <div class="bundle-modal-col bundle-modal-col-actions">
         <div class="bundle-modal-mascot">
-          <svg class="bundle-mascot-blob" viewBox="0 0 140 108" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M122 17C132 42 114 72 82 85C50 97 16 87 7 62C-3 37 14 42 46 30C78 17 113 -8 122 17Z"/></svg>
+          <div class="bundle-blob-clip"><svg class="bundle-mascot-blob" viewBox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M180 103.542C180 152.223 137.403 160 87.6978 160C37.9922 160 0 152.223 0 103.542C0 54.8616 62.6168 0 112.322 0C162.028 0 180 54.8616 180 103.542Z"/></svg></div>
           <div class="bundle-mascot-img bundle-mascot-default bundle-mascot-anim mascot-anim-host" aria-hidden="true">
             <img class="mascot-static" src="assets/mascot-base.svg" alt="">
             <div class="mascot-animated"></div>
