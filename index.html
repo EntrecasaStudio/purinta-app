@@ -6223,6 +6223,19 @@
     .phone.desktop #skel-positions-c .positions-content {
       max-width: 720px; width: 100%; margin-left: auto; margin-right: auto;
     }
+    /* ── Activity skeleton (cloned + skeletonized by populateSkeletonPositions),
+          per Figma 2435:306814: table cells + pagination ── */
+    .activity-table.skel td { vertical-align: middle; }
+    .activity-table.skel .skel-cell { display: flex; flex-direction: column; gap: 6px; }
+    .activity-table.skel .skel-market { display: flex; align-items: center; gap: 8px; }
+    .activity-table.skel .skel-tx { display: flex; align-items: center; gap: 6px; }
+    .activity-table.skel .skel-chain { display: block; width: 20px; height: 20px; border-radius: 5px; margin: 0 auto; }
+    /* Pagination skeleton: arrow · center · arrow (center = numbers on desktop,
+       indicator on mobile). Radius 8px rounded rectangles, not pills. */
+    .activity-pagination.skel-pag { gap: 0; }
+    .skel-pag-btn { width: 32px; height: 32px; border-radius: 8px; }
+    .skel-pag-center { width: 64px; height: 32px; border-radius: 8px; margin: 0 32px; }
+    .phone.desktop .skel-pag-center { width: 160px; margin: 0 48px; }
     /* Switch Network — modal screen with dimmed backdrop and centered card.
        Hide the bottom-nav while it's active so the modal feels like an
        overlay rather than another routable page. */
@@ -8774,48 +8787,11 @@
       </div>
     </div>
     <div class="positions-content">
+      <!-- Content is cloned from #positions and skeletonized at runtime by
+           populateSkeletonPositions(); this static markup is a placeholder. -->
       <div class="positions-title-row" style="padding: 16px 20px 12px;">
         <div class="positions-header-line">
-          <div class="positions-title">Portfolio</div>
-        </div>
-      </div>
-      <!-- 3 position card skeletons -->
-      <div style="padding: 0 20px;">
-        <div class="skel-position-card">
-          <div class="skel-position-row">
-            <span class="skel-block skel-circle" style="width:42px;height:42px;"></span>
-            <span class="skel-block" style="width:120px;height:18px;"></span>
-            <span class="skel-block" style="width:60px;height:14px;margin-left:auto;"></span>
-          </div>
-          <div class="skel-position-row">
-            <div style="display:flex;flex-direction:column;gap:4px;flex:1;"><span class="skel-block" style="width:60px;height:12px;"></span><span class="skel-block" style="width:100px;height:20px;"></span></div>
-            <div style="display:flex;flex-direction:column;gap:4px;flex:1;align-items:flex-end;"><span class="skel-block" style="width:80px;height:12px;"></span><span class="skel-block" style="width:90px;height:20px;"></span></div>
-          </div>
-          <span class="skel-block skel-pill" style="height:36px;"></span>
-        </div>
-        <div class="skel-position-card">
-          <div class="skel-position-row">
-            <span class="skel-block skel-circle" style="width:42px;height:42px;"></span>
-            <span class="skel-block" style="width:140px;height:18px;"></span>
-            <span class="skel-block" style="width:60px;height:14px;margin-left:auto;"></span>
-          </div>
-          <div class="skel-position-row">
-            <div style="display:flex;flex-direction:column;gap:4px;flex:1;"><span class="skel-block" style="width:60px;height:12px;"></span><span class="skel-block" style="width:110px;height:20px;"></span></div>
-            <div style="display:flex;flex-direction:column;gap:4px;flex:1;align-items:flex-end;"><span class="skel-block" style="width:80px;height:12px;"></span><span class="skel-block" style="width:90px;height:20px;"></span></div>
-          </div>
-          <span class="skel-block skel-pill" style="height:36px;"></span>
-        </div>
-        <div class="skel-position-card">
-          <div class="skel-position-row">
-            <span class="skel-block skel-circle" style="width:42px;height:42px;"></span>
-            <span class="skel-block" style="width:130px;height:18px;"></span>
-            <span class="skel-block" style="width:60px;height:14px;margin-left:auto;"></span>
-          </div>
-          <div class="skel-position-row">
-            <div style="display:flex;flex-direction:column;gap:4px;flex:1;"><span class="skel-block" style="width:60px;height:12px;"></span><span class="skel-block" style="width:100px;height:20px;"></span></div>
-            <div style="display:flex;flex-direction:column;gap:4px;flex:1;align-items:flex-end;"><span class="skel-block" style="width:80px;height:12px;"></span><span class="skel-block" style="width:90px;height:20px;"></span></div>
-          </div>
-          <span class="skel-block skel-pill" style="height:36px;"></span>
+          <div class="positions-title">My Positions</div>
         </div>
       </div>
     </div>
@@ -9900,6 +9876,7 @@ function enhanceActivityTable(root) {
   root = root || document;
   // Wrap each table in a horizontal-scroll container (for the scroll-shadow affordance)
   root.querySelectorAll('.activity-table-wrap').forEach(function(wrap) {
+    if (wrap.classList.contains('skel')) return;   // skeleton table: leave untouched
     var table = wrap.querySelector('.activity-table');
     if (table && !table.parentNode.classList.contains('activity-scroll')) {
       var scroll = document.createElement('div');
@@ -9923,6 +9900,7 @@ function enhanceActivityTable(root) {
   });
   // Dedicated Chain column (icon-only) between Type and Market — Figma final.
   root.querySelectorAll('.activity-table').forEach(function(table) {
+    if (table.classList.contains('skel')) return;   // skeleton table: pre-built, not enhanced
     var cg = table.querySelector('colgroup');
     if (cg && !cg.querySelector('.col-chain')) {
       var col = document.createElement('col'); col.className = 'col-chain';
@@ -9947,6 +9925,7 @@ function enhanceActivityTable(root) {
   });
   // Sort carets on headers + make them functional (click = sort, click again = toggle dir)
   root.querySelectorAll('.activity-table thead tr').forEach(function(headRow) {
+    if (headRow.closest('.activity-table').classList.contains('skel')) return;   // skip skeleton
     headRow.querySelectorAll('th').forEach(function(th, idx) {
       if (!th.querySelector('.sort-caret')) {
         var i = document.createElement('i');
@@ -9971,6 +9950,7 @@ function enhanceActivityTable(root) {
   });
   // Rows: type -> black text + simplified, market -> spelled pair, date -> two lines
   root.querySelectorAll('.activity-table tbody tr').forEach(function(tr) {
+    if (tr.closest('.activity-table').classList.contains('skel')) return;   // skip skeleton
     if (tr.dataset.enhanced) return;
     tr.dataset.enhanced = '1';
     var badge = tr.querySelector('.type-badge');
@@ -11674,8 +11654,9 @@ function populateSkeletonPositions(suffix) {
   // load along with the data instead of sitting half-disabled.
   dst.querySelectorAll('.position-card .position-buttons .btn, .position-card .position-actions .btn').forEach(function(btn) {
     var skel = document.createElement('span');
-    skel.className = 'skel-block skel-pill';
-    skel.style.cssText = 'display:block;width:100%;height:40px;border-radius:9999px;';
+    skel.className = 'skel-block';
+    // Figma skeleton: rounded rectangle (16px), not a full pill
+    skel.style.cssText = 'display:block;width:100%;height:40px;border-radius:16px;';
     btn.replaceWith(skel);
   });
   var SKEL_RECT = 'display:inline-block;width:80px;height:20px;border-radius:4px;vertical-align:middle;';
@@ -11736,7 +11717,60 @@ function populateSkeletonPositions(suffix) {
   dst.querySelectorAll('.health-section svg[style*="opacity"]').forEach(function(s) {
     s.removeAttribute('style');
   });
+  skeletonizeActivityTable(dst);
   disableSkeletonCtas(dst);
+}
+
+// Skeletonize the cloned Activity section (filter chips, table rows, pagination)
+// so the whole Portfolio page loads as one skeleton, per Figma 2435:306814.
+function skeletonizeActivityTable(dst) {
+  if (!dst) return;
+  var wrap = dst.querySelector('.activity-table-wrap');
+  if (!wrap) return;
+  // Ensure the cloned table has the final enhanced structure (Chain column,
+  // scroll wrapper) before we skeletonize it, regardless of init order.
+  if (typeof enhanceActivityTable === 'function') enhanceActivityTable(dst);
+  wrap.classList.add('skel');   // mark so enhanceActivityTable never re-processes it
+  // Filter chips stay as real chips in their default (non-active) state — not shimmer
+  dst.querySelectorAll('.activity-filters .activity-chip.active').forEach(function(chip) {
+    chip.classList.remove('active');
+  });
+  var table = wrap.querySelector('.activity-table');
+  if (table) {
+    table.classList.add('skel');
+    // Header: drop any sort carets, keep the labels
+    table.querySelectorAll('thead .sort-caret, thead .caret').forEach(function(c) { c.remove(); });
+    // Rows → skeleton cells, matched by the enhanced cell classes so column
+    // count (Type/Chain/Market/Amount/Date/Transaction) is irrelevant.
+    table.querySelectorAll('tbody tr').forEach(function(tr) {
+      tr.querySelectorAll('td').forEach(function(td) {
+        // Figma skeleton cells: rounded rectangles (4px radius), two lines for
+        // amount/date. Widths/heights per node 2435:306814.
+        if (td.classList.contains('chain-cell')) {
+          td.innerHTML = '<span class="skel-block skel-chain"></span>';
+        } else if (td.querySelector('.market-cell')) {
+          td.innerHTML = '<div class="skel-market"><span class="market-icons"><span class="market-icon skel-block skel-circle"></span><span class="market-icon skel-block skel-circle"></span></span><span class="skel-block" style="width:64px;height:18px;border-radius:4px;"></span></div>';
+        } else if (td.classList.contains('amount-cell')) {
+          td.innerHTML = '<div class="skel-cell"><span class="skel-block" style="width:120px;height:18px;border-radius:4px;"></span><span class="skel-block" style="width:64px;height:14px;border-radius:4px;"></span></div>';
+        } else if (td.classList.contains('date-cell')) {
+          td.innerHTML = '<div class="skel-cell"><span class="skel-block" style="width:72px;height:18px;border-radius:4px;"></span><span class="skel-block" style="width:56px;height:14px;border-radius:4px;"></span></div>';
+        } else if (td.querySelector('.tx-link')) {
+          td.innerHTML = '<div class="skel-tx"><span class="skel-block" style="width:88px;height:18px;border-radius:4px;"></span><span class="skel-block" style="width:16px;height:16px;border-radius:4px;"></span></div>';
+        } else {
+          td.innerHTML = '<span class="skel-block" style="width:64px;height:18px;border-radius:4px;"></span>';
+        }
+      });
+    });
+  }
+  // Pagination → 3 shimmer boxes (arrow · center · arrow), per Figma. The center
+  // block stands in for the page numbers (desktop) / page indicator (mobile).
+  var pag = wrap.querySelector('.activity-pagination');
+  if (pag) {
+    pag.classList.add('skel-pag');
+    pag.innerHTML = '<span class="skel-block skel-pag-btn"></span>' +
+      '<span class="skel-block skel-pag-center"></span>' +
+      '<span class="skel-block skel-pag-btn"></span>';
+  }
 }
 
 // Disable any clickable controls inside a skeleton screen — the data they
