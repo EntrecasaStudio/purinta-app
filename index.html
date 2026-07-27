@@ -1051,7 +1051,8 @@
     .token-icon.orange { background: linear-gradient(135deg, var(--cream-400), #f59e0b); }
     .token-icon.lilac { background: linear-gradient(135deg, #E1DBEE, #D8CFE8); }
     .token-info { }
-    .token-pair-name { font-family: var(--font-display); font-weight: 500; font-size: var(--ds-md); color: var(--text-primary); }
+    .token-pair-name { font-family: var(--font-display); font-weight: 500; font-size: var(--ds-md); color: var(--text-primary); line-height: 32px; }
+    .token-pair-token { margin-top: -6px; display: block; }
     .token-pair-amount { font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary); margin-top: 2px; }
     .token-action { width: 100%; }
     .token-action .btn { padding: 12px 20px; width: 100%; } /* 44px ×4 — inherits default 16px */
@@ -5743,7 +5744,7 @@
     .slider-label-text { font-size: var(--ds-md); font-weight: 400; letter-spacing: 0.4px; }  /* step 2 · 2% */
     .token-select { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }       /* step 3 · 2% */
     .slider-token-badge { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; } /* step 3 · 2% */
-    .token-pair-name { font-size: var(--ds-md); font-weight: 400; letter-spacing: 0.4px; }    /* step 2 · 2% */
+    .token-pair-name { font-size: var(--ds-md); font-weight: 400; letter-spacing: 0.4px; line-height: 32px; }    /* step 2 · 2% */
     .hero-title { font-size: var(--ds-xl); font-weight: 600; letter-spacing: 0.62px; }        /* step 4 · 2% */
     .summary-amount { font-size: var(--ds-xl); font-weight: 600; letter-spacing: 0.62px; }    /* step 4 · 2% */
     .positions-title { font-size: var(--ds-lg); font-weight: 400; letter-spacing: 0.5px; }    /* step 3 · 2% */
@@ -5832,14 +5833,7 @@
 
     .phone.desktop #homepage-b .hero-wrap .hero-title, .phone.desktop #homepage-connected-b .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
     .phone.desktop #homepage-connected-c .hero-wrap .hero-title { text-align: left !important; font-size: var(--ds-4xl); }
-    .phone.desktop #homepage .hero-title .mini-icon,
-    .phone.desktop #homepage-b .hero-title .mini-icon,
-    .phone.desktop #homepage-c .hero-title .mini-icon,
-    .phone.desktop #homepage-connected .hero-title .mini-icon,
-    .phone.desktop #homepage-connected-b .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
-
-    .phone.desktop #homepage-b .hero-title .mini-icon, .phone.desktop #homepage-connected-b .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
-    .phone.desktop #homepage-connected-c .hero-title .mini-icon { width: 52px !important; height: 52px !important; vertical-align: -8px !important; }
+    .phone.desktop .hero-title br { display: none; }
     /* Phone A desktop: 32px gap between cards (brand spec) */
     .phone.desktop #homepage .token-list,
     .phone.desktop #homepage-connected .token-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 32px; max-width: none; }
@@ -6803,7 +6797,7 @@
         </div>
       </div>
       <div class="hero-section" style="padding: 8px 20px 0;">
-        <div class="hero-title" style="text-align: center;">Borrow <span class="mini-icon usdc" style="display: inline-block; width: 28px; height: 28px; vertical-align: -4px;"></span> with Purinta</div>
+        <div class="hero-title" style="text-align: center;">Borrow stables<br> with Purinta</div>
       </div>
     </div>
     <div class="token-list reveal-in">
@@ -6817,7 +6811,7 @@
           </div>
         </div>
         <div class="token-icons"><div class="token-icon pepe"></div></div>
-        <div class="token-info"><div class="token-pair-name">Borrow against PEPE</div></div>
+        <div class="token-info"><div class="token-pair-name">Borrow against<br><span class="token-pair-token">PEPE</span></div></div>
         <div class="token-action"><button class="btn btn-primary"><span class="icon-borrow-cta" aria-hidden="true"></span> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow', 'morpho')">
@@ -6834,7 +6828,7 @@
           </div>
         </div>
         <div class="token-icons"><div class="token-icon morpho"></div></div>
-        <div class="token-info"><div class="token-pair-name">Borrow against MORPHO</div></div>
+        <div class="token-info"><div class="token-pair-name">Borrow against<br><span class="token-pair-token">MORPHO</span></div></div>
         <div class="token-action"><button class="btn btn-primary"><span class="icon-borrow-cta" aria-hidden="true"></span> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow', 'comp')">
@@ -6846,7 +6840,7 @@
           </div>
         </div>
         <div class="token-icons"><div class="token-icon comp"></div></div>
-        <div class="token-info"><div class="token-pair-name">Borrow against COMP</div></div>
+        <div class="token-info"><div class="token-pair-name">Borrow against<br><span class="token-pair-token">COMP</span></div></div>
         <div class="token-action"><button class="btn btn-primary"><span class="icon-borrow-cta" aria-hidden="true"></span> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow', 'syrup')">
@@ -6858,7 +6852,7 @@
           </div>
         </div>
         <div class="token-icons"><div class="token-icon syrup"></div></div>
-        <div class="token-info"><div class="token-pair-name">Borrow against SYRUP</div></div>
+        <div class="token-info"><div class="token-pair-name">Borrow against<br><span class="token-pair-token">SYRUP</span></div></div>
         <div class="token-action"><button class="btn btn-primary"><span class="icon-borrow-cta" aria-hidden="true"></span> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow', 'doge')">
@@ -6875,7 +6869,7 @@
           </div>
         </div>
         <div class="token-icons"><div class="token-icon doge"></div></div>
-        <div class="token-info"><div class="token-pair-name">Borrow against DOGE</div></div>
+        <div class="token-info"><div class="token-pair-name">Borrow against<br><span class="token-pair-token">DOGE</span></div></div>
         <div class="token-action"><button class="btn btn-primary"><span class="icon-borrow-cta" aria-hidden="true"></span> Borrow</button></div>
       </div>
     </div>
@@ -6932,7 +6926,7 @@
         </div>
       </div>
       <div class="hero-section" style="padding: 8px 20px 0;">
-        <div class="hero-title" style="text-align: center;">Borrow <span class="mini-icon usdc" style="display: inline-block; width: 28px; height: 28px; vertical-align: -4px;"></span> with Purinta</div>
+        <div class="hero-title" style="text-align: center;">Borrow stables<br> with Purinta</div>
       </div>
     </div>
     <div class="token-list">
@@ -6946,7 +6940,7 @@
           </div>
         </div>
         <div class="token-icons"><div class="token-icon pepe"></div></div>
-        <div class="token-info"><div class="token-pair-name">Borrow against PEPE</div></div>
+        <div class="token-info"><div class="token-pair-name">Borrow against<br><span class="token-pair-token">PEPE</span></div></div>
         <div class="token-action"><button class="btn btn-primary"><span class="icon-borrow-cta" aria-hidden="true"></span> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow-connected', 'morpho')">
@@ -6963,7 +6957,7 @@
           </div>
         </div>
         <div class="token-icons"><div class="token-icon morpho"></div></div>
-        <div class="token-info"><div class="token-pair-name">Borrow against MORPHO</div></div>
+        <div class="token-info"><div class="token-pair-name">Borrow against<br><span class="token-pair-token">MORPHO</span></div></div>
         <div class="token-action"><button class="btn btn-primary"><span class="icon-borrow-cta" aria-hidden="true"></span> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow-connected', 'comp')">
@@ -6975,7 +6969,7 @@
           </div>
         </div>
         <div class="token-icons"><div class="token-icon comp"></div></div>
-        <div class="token-info"><div class="token-pair-name">Borrow against COMP</div></div>
+        <div class="token-info"><div class="token-pair-name">Borrow against<br><span class="token-pair-token">COMP</span></div></div>
         <div class="token-action"><button class="btn btn-primary"><span class="icon-borrow-cta" aria-hidden="true"></span> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow-connected', 'syrup')">
@@ -6987,7 +6981,7 @@
           </div>
         </div>
         <div class="token-icons"><div class="token-icon syrup"></div></div>
-        <div class="token-info"><div class="token-pair-name">Borrow against SYRUP</div></div>
+        <div class="token-info"><div class="token-pair-name">Borrow against<br><span class="token-pair-token">SYRUP</span></div></div>
         <div class="token-action"><button class="btn btn-primary"><span class="icon-borrow-cta" aria-hidden="true"></span> Borrow</button></div>
       </div>
       <div class="token-card" onclick="borrowWithToken('borrow-connected', 'doge')">
@@ -7004,7 +6998,7 @@
           </div>
         </div>
         <div class="token-icons"><div class="token-icon doge"></div></div>
-        <div class="token-info"><div class="token-pair-name">Borrow against DOGE</div></div>
+        <div class="token-info"><div class="token-pair-name">Borrow against<br><span class="token-pair-token">DOGE</span></div></div>
         <div class="token-action"><button class="btn btn-primary"><span class="icon-borrow-cta" aria-hidden="true"></span> Borrow</button></div>
       </div>
     </div>
