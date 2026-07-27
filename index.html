@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css">
   <!-- Preload emote SVGs for instant transitions -->
   <link rel="prefetch" href="assets/Emote-00-Basic.svg">
   <link rel="prefetch" href="assets/Emote-01-Ultra-safe.svg">
@@ -5442,7 +5443,7 @@
     }
     .activity-table thead th {
       text-align: left; font-weight: 400; color: var(--text-secondary);
-      font-size: 13px; letter-spacing: 0.2px; padding: 20px 12px;
+      font-size: 13px; letter-spacing: 0.2px; padding: 26px 12px;
       border-bottom: 1px solid var(--cream-300); white-space: nowrap;
     }
     .activity-table thead th:first-child { padding-left: 20px; }
@@ -5451,9 +5452,9 @@
     .activity-table tbody tr:last-child { border-bottom: none; }
     .activity-table tbody tr:nth-child(odd) { background: var(--cream-100); }
     .activity-table tbody tr:nth-child(even) { background: var(--neutral-50); }
-    .activity-table tbody tr:hover { background: var(--cream-50); }
+    /* Rows have no hover state; only the token and transaction links highlight (Figma) */
     .activity-table tbody td {
-      padding: 12px; color: var(--text-primary); vertical-align: middle; white-space: nowrap;
+      padding: 10px 12px; color: var(--text-primary); vertical-align: middle; white-space: nowrap;
     }
     .activity-table tbody td:first-child { padding-left: 20px; }
     .activity-table tbody td:last-child { padding-right: 20px; }
@@ -5462,11 +5463,22 @@
     .date-cell .date-time:first-child { font-size: 13px; line-height: 18px; }
     .date-cell .date-time + .date-time { font-size: 11px; line-height: 16px; }
     .market-cell { display: flex; align-items: center; gap: 8px; font-weight: 500; }
-    .market-icons { display: flex; align-items: center; position: relative; width: 52px; height: 32px; flex-shrink: 0; }
+    /* Market pair icons — Figma "Pair Icons sm": 44px pair, 26px icons */
+    .market-icons { display: flex; align-items: center; position: relative; width: 44px; height: 26px; flex-shrink: 0; }
     .market-icons .market-icon:first-child { position: relative; z-index: 1; }
-    .market-icons .market-icon:last-child { position: absolute; left: 20px; z-index: 0; mask: radial-gradient(circle 19px at -4px 16px, transparent 99%, black 100%); -webkit-mask: radial-gradient(circle 19px at -4px 16px, transparent 99%, black 100%); }
+    .market-icons .market-icon:nth-child(2) { position: absolute; left: 18px; z-index: 0; mask: radial-gradient(circle 15px at -5px 13px, transparent 99%, black 100%); -webkit-mask: radial-gradient(circle 15px at -5px 13px, transparent 99%, black 100%); }
+    /* Chain badge — icon-only, centered in the 64px Chain column (header label stays left) */
+    .chain-cell { text-align: center; }
+    .chain-badge {
+      display: inline-block; vertical-align: middle;
+      width: 20px; height: 20px; border-radius: 5px;
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+    }
+    .chain-badge.ethereum { background-image: url('assets/symbols/eth.svg'); background-color: #8A92B2; }
+    .chain-badge.base { background-image: url('assets/symbols/base.svg'); background-color: #0052FF; }
+    .chain-badge.robinhood { background-image: url('assets/symbols/robinhood.svg'); background-color: #CCFF00; background-size: 82%; }
     .market-icon {
-      width: 32px; height: 32px; border-radius: 50%;
+      width: 26px; height: 26px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: 8px; font-weight: 600; color: white; flex-shrink: 0; overflow: hidden;
     }
@@ -5478,6 +5490,8 @@
     .market-icon.doge { background: url('assets/symbols/doge.svg') center/cover; font-size: 0; }
     .market-icon.shib { background: url('assets/symbols/shib.svg') center/cover; font-size: 0; }
     .market-icon.usdc { background: url('assets/symbols/usdc.svg') center/cover; font-size: 0; }
+    .market-icon.cashcat { background: url('assets/symbols/cashcat.svg') center/cover; font-size: 0; }
+    .market-icon.usdg { background: url('assets/symbols/usdg.svg') center/cover; font-size: 0; }
     .type-badge {
       display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px;
       border-radius: var(--r-full); font-size: 11px; font-weight: 500; letter-spacing: 0.2px;
@@ -5500,10 +5514,10 @@
     .activity-table .amount-cell .amount-icon { display: none; }
     .activity-table .amount-cell .amount-fiat { display: block; margin: 0; font-size: 11px; }
     .phone.desktop .activity-table .amount-cell .amount-fiat { display: block; margin: 0; }
-    /* Functional sort carets */
-    .activity-table thead th.sort-active { color: var(--text-primary); }
-    .activity-table thead th .sort-caret-active { color: var(--green-600); }
-    .activity-table thead th:hover .sort-caret { color: var(--text-secondary); }
+    /* Functional sort: caret only on the active column; active = medium + neutral-900 */
+    .activity-table thead th.sort-active { color: var(--neutral-900); font-weight: 500; }
+    .activity-table thead th .sort-caret { display: none; }
+    .activity-table thead th.sort-active .sort-caret { display: inline-block; color: var(--green-600); font-size: 14px; }
     .amount-icon {
       width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: inline-block; vertical-align: middle;
     }
@@ -5513,15 +5527,20 @@
     .amount-fiat { color: var(--text-secondary); font-weight: 400; font-size: 11px; margin-left: 2px; }
     .activity-card-right .amount-fiat { font-size: 10px; }
     .market-link { text-decoration: none; color: inherit; display: inline-flex; align-items: center; }
-    .market-link:hover { color: var(--green-600); }
+    /* Market hover: underline only, text stays gray (no color shift). Figma: 1px, offset 2px */
+    .activity-table .market-link:hover .market-name {
+      text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px;
+    }
     .sub-zeros { font-size: var(--ds-3xs); vertical-align: baseline; }
     .tx-link {
       color: var(--green-600); text-decoration: none;
       font-family: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace; font-size: 13px; font-weight: 500;
-      display: inline-flex; align-items: center; gap: 5px; transition: color 0.2s;
+      display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s;
     }
-    .tx-link:hover { color: var(--green-700); text-decoration: underline; }
-    .tx-link i { font-size: 13px; }
+    /* Tx hover: underline the address only (not the external-link icon). Figma: 1px, offset 2px */
+    .tx-link:hover .tx-hash { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+    /* Figma: external-link icon is 16px */
+    .tx-link i { font-size: 16px; }
     .activity-table { display: none; }
     .activity-card-list { display: block; }
     .activity-card {
@@ -5557,11 +5576,13 @@
     .phone.desktop .activity-table-wrap { border-radius: 32px; }
     /* Keep the horizontal-scroll layer from squaring off the card's rounded corners */
     .activity-scroll { border-radius: inherit; }
-    .phone.desktop .activity-table col.col-type { width: 15%; }
-    .phone.desktop .activity-table col.col-market { width: 25%; }
-    .phone.desktop .activity-table col.col-amount { width: 23%; }
-    .phone.desktop .activity-table col.col-date { width: 14%; }
-    .phone.desktop .activity-table col.col-tx { width: 23%; }
+    /* Exact Figma component widths (720px table): 104/64/168/152/96/136 */
+    .phone.desktop .activity-table col.col-type { width: 14.44%; }
+    .phone.desktop .activity-table col.col-chain { width: 8.89%; }
+    .phone.desktop .activity-table col.col-market { width: 23.33%; }
+    .phone.desktop .activity-table col.col-amount { width: 21.11%; }
+    .phone.desktop .activity-table col.col-date { width: 13.33%; }
+    .phone.desktop .activity-table col.col-tx { width: 18.89%; }
 
     /* ===== Activity: faithful (Figma 4672) — vertical section, table on all breakpoints ===== */
     .activity-table .type-cell { font-weight: 500; color: var(--text-primary); }
@@ -5573,17 +5594,25 @@
     .activity-table { display: table !important; width: 100%; min-width: 600px; }
     .activity-card-list { display: none !important; }
     /* Scroll container with edge scroll-shadow (Lea Verou technique) */
-    .activity-scroll {
-      overflow-x: auto; -webkit-overflow-scrolling: touch;
-      background:
-        linear-gradient(to right, white 30%, rgba(255,255,255,0)) 0 0,
-        linear-gradient(to left, white 30%, rgba(255,255,255,0)) 100% 0,
-        radial-gradient(farthest-side at 0 50%, rgba(var(--shadow-warm-rgb),0.55), rgba(var(--shadow-warm-rgb),0)) 0 0,
-        radial-gradient(farthest-side at 100% 50%, rgba(var(--shadow-warm-rgb),0.55), rgba(var(--shadow-warm-rgb),0)) 100% 0;
-      background-repeat: no-repeat;
-      background-size: 40px 100%, 40px 100%, 16px 100%, 16px 100%;
-      background-attachment: local, local, scroll, scroll;
+    .activity-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Desktop: all columns fit — never scroll horizontally (clip any sub-pixel rounding) */
+    .phone.desktop .activity-scroll { overflow-x: hidden; }
+    /* Edge scroll shadows — overlay on top of the (opaque, zebra-striped) rows.
+       Visibility toggled by JS via .scroll-left / .scroll-right on the wrap. */
+    .activity-table-wrap { position: relative; }
+    /* Figma "Scroll shadow" component: 32px linear gradients, cream-400 @40% → transparent.
+       Covers the scroll (rows) area only; the pagination sits above (z-index) so it isn't covered. */
+    .activity-table-wrap::before,
+    .activity-table-wrap::after {
+      content: ""; position: absolute; top: 0; bottom: 0; width: 32px;
+      pointer-events: none; z-index: 3; opacity: 0; transition: opacity 0.2s ease;
     }
+    .activity-table-wrap::before { left: 0; background: linear-gradient(to right, color-mix(in srgb, var(--cream-400) 40%, transparent), transparent); }
+    .activity-table-wrap::after { right: 0; background: linear-gradient(to left, color-mix(in srgb, var(--cream-400) 40%, transparent), transparent); }
+    .activity-table-wrap.scroll-left::before { opacity: 1; }
+    .activity-table-wrap.scroll-right::after { opacity: 1; }
+    /* Pagination renders above the scroll shadow so the shadow never covers it */
+    .activity-pagination { position: relative; z-index: 4; background: var(--neutral-50); }
     /* On desktop the table fits (no scroll needed) — neutralize min-width so cols fit container */
     .phone.desktop .activity-table { min-width: 0; }
 
@@ -5607,7 +5636,7 @@
     /* Pagination */
     .activity-pagination {
       display: flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 14px 0; font-size: 13px;
+      padding: 18px 0; font-size: 13px;
     }
     .activity-pagination button {
       width: 34px; height: 34px; flex-shrink: 0; border-radius: 8px; border: 1px solid var(--cream-400);
@@ -5616,8 +5645,10 @@
       cursor: pointer; display: flex; align-items: center; justify-content: center;
       transition: all 0.15s ease;
     }
-    .activity-pagination button:hover { background: var(--cream-100); border-color: var(--green-300); }
-    .activity-pagination button.active { background: var(--green-600); color: white; border-color: var(--green-600); }
+    /* Figma: hover = cream-50 bg + green-600 border (not a green fill) */
+    .activity-pagination button:hover { background: var(--cream-50); border-color: var(--green-600); }
+    /* Figma: active = mint-100 bg + green-600 text, no border (not a solid green fill) */
+    .activity-pagination button.active { background: var(--mint-100); color: var(--green-600); border-color: var(--mint-100); font-weight: 500; }
     .activity-pagination button:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
     .activity-pagination .page-arrow { font-size: 16px; font-weight: 400; }
     /* Arrows sit slightly apart from the number group (Figma) */
@@ -6621,7 +6652,7 @@
           </div>
         </details>
         <details class="dev-folder">
-          <summary><i class="ph-fill ph-cards-three dev-folder-icon" aria-hidden="true"></i>My Positions</summary>
+          <summary><i class="ph-fill ph-cards-three dev-folder-icon" aria-hidden="true"></i>Portfolio</summary>
           <div class="folder-items">
             <button onclick="showScreen('positions-disconnected')" data-figma-url="https://www.figma.com/design/U6oz52FnpkQS4dckpUQQ2a/%E2%9D%87%EF%B8%8F-PURINTA---dApp?node-id=3128-356203&t=OR2avVoah2tGBXiK-1">01 · Disconnected</button>
             <details class="dev-folder">
@@ -6685,7 +6716,7 @@
         <button onclick="punchActiveMascot()"><span class="anim-dot anim-dot-done"></span>Replay State Punch</button>
         <!-- Direct entries to screens with hero animations -->
         <button onclick="showScreen('loading-loop')"><span class="anim-dot anim-dot-progress"></span>Loading Mascot</button>
-        <button onclick="showScreen('positions-empty')"><span class="anim-dot anim-dot-done"></span>My Positions Empty/Disconnected</button>
+        <button onclick="showScreen('positions-empty')"><span class="anim-dot anim-dot-done"></span>Portfolio Empty/Disconnected</button>
         <button onclick="showScreen('switch-network')"><span class="anim-dot anim-dot-done"></span>Switch Network<span class="anim-date">[19-05]</span></button>
         <button onclick="showScreen('error-404')"><span class="anim-dot anim-dot-done"></span>404 Mascot</button>
         <button data-modal="bundle"       onclick="devOpenBundle()"><span class="anim-dot anim-dot-done"></span>Confirmation modal<span class="anim-date">[19-05]</span></button>
@@ -7761,8 +7792,8 @@
               </tr>
               <tr data-category="market">
                 <td><span class="type-badge supply">Supply</span></td>
-                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="MORPHO / USDC"><span class="market-icons"><span class="market-icon morpho"></span><span class="market-icon usdc"></span></span></a></td>
-                <td class="amount-cell"><span class="amount-icon usdc"></span> 0.1 USDC <span class="amount-fiat">$0.10</span></td>
+                <td><a class="market-cell market-link" href="javascript:void(0)" onclick="showScreen('borrow-connected')" title="CASHCAT / USDG"><span class="market-icons"><span class="market-icon cashcat"></span><span class="market-icon usdg"></span></span></a></td>
+                <td class="amount-cell"><span class="amount-icon usdg"></span> 0.1 USDG <span class="amount-fiat">$0.10</span></td>
                 <td class="date-cell">5/23/2026, 4:19:35 PM</td>
                 <td><a class="tx-link" href="#" title="View on explorer">0x87e6...469f <i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></td>
               </tr>
@@ -9884,13 +9915,50 @@ function enhanceActivityTable(root) {
       table.parentNode.insertBefore(scroll, table);
       scroll.appendChild(table);
     }
+    // Edge scroll-shadow: toggle .scroll-left / .scroll-right on the wrap by scroll position
+    var sc = wrap.querySelector('.activity-scroll');
+    if (sc && !sc.dataset.shadowBound) {
+      sc.dataset.shadowBound = '1';
+      var update = function() {
+        var max = sc.scrollWidth - sc.clientWidth;
+        wrap.classList.toggle('scroll-left', sc.scrollLeft > 2);
+        wrap.classList.toggle('scroll-right', max > 2 && sc.scrollLeft < max - 2);
+      };
+      sc.addEventListener('scroll', update, { passive: true });
+      if (window.ResizeObserver) { new ResizeObserver(update).observe(sc); }
+      update();
+    }
+  });
+  // Dedicated Chain column (icon-only) between Type and Market — Figma final.
+  root.querySelectorAll('.activity-table').forEach(function(table) {
+    var cg = table.querySelector('colgroup');
+    if (cg && !cg.querySelector('.col-chain')) {
+      var col = document.createElement('col'); col.className = 'col-chain';
+      var tCol = cg.querySelector('.col-type');
+      if (tCol && tCol.nextSibling) cg.insertBefore(col, tCol.nextSibling); else cg.appendChild(col);
+    }
+    var htr = table.querySelector('thead tr');
+    if (htr && !htr.querySelector('.th-chain')) {
+      var th = document.createElement('th'); th.className = 'th-chain'; th.textContent = 'Chain';
+      if (htr.children[0] && htr.children[0].nextSibling) htr.insertBefore(th, htr.children[0].nextSibling); else htr.appendChild(th);
+    }
+    table.querySelectorAll('tbody tr').forEach(function(tr) {
+      if (tr.querySelector('.chain-cell')) return;
+      var mc = tr.querySelector('.market-cell');
+      var title = mc ? (mc.getAttribute('title') || '') : '';
+      var isRobinhood = /CASHCAT/i.test(title);
+      var td = document.createElement('td');
+      td.className = 'chain-cell';
+      td.innerHTML = '<span class="chain-badge ' + (isRobinhood ? 'robinhood' : 'ethereum') + '" title="' + (isRobinhood ? 'Robinhood' : 'Ethereum') + '"></span>';
+      if (tr.children[0] && tr.children[0].nextSibling) tr.insertBefore(td, tr.children[0].nextSibling); else tr.appendChild(td);
+    });
   });
   // Sort carets on headers + make them functional (click = sort, click again = toggle dir)
   root.querySelectorAll('.activity-table thead tr').forEach(function(headRow) {
     headRow.querySelectorAll('th').forEach(function(th, idx) {
       if (!th.querySelector('.sort-caret')) {
         var i = document.createElement('i');
-        i.className = 'ph ph-caret-down sort-caret';
+        i.className = 'ph-bold ph-caret-down sort-caret';
         i.setAttribute('aria-hidden', 'true');
         th.appendChild(document.createTextNode(' '));
         th.appendChild(i);
@@ -9902,11 +9970,11 @@ function enhanceActivityTable(root) {
         th.addEventListener('click', function() { sortActivityTable(th); });
       }
     });
-    // Default sort: Date column (index 3) descending — matches the seeded row order.
+    // Default sort: Date column (now index 4 after the Chain column) descending.
     if (!headRow.dataset.sortCol) {
-      headRow.dataset.sortCol = '3';
+      headRow.dataset.sortCol = '4';
       headRow.dataset.sortDir = 'desc';
-      applySortCarets(headRow, 3, 'desc');
+      applySortCarets(headRow, 4, 'desc');
     }
   });
   // Rows: type -> black text + simplified, market -> spelled pair, date -> two lines
@@ -9931,6 +9999,7 @@ function enhanceActivityTable(root) {
         mcell.appendChild(span);
       }
     }
+    // (Chain badge now lives in its own column — see the Chain-column injection above.)
     var d = tr.querySelector('.date-cell');
     if (d && !d.querySelector('.date-time')) {
       var txt = d.textContent.trim();
@@ -9940,6 +10009,18 @@ function enhanceActivityTable(root) {
         var timePart = txt.slice(ci + 1).trim();
         d.innerHTML = '<span class="date-time">' + datePart + '</span><span class="date-time">' + timePart + '</span>';
       }
+    }
+    // Shorten tx hash to the compact Figma form (0xNN...YYYY) so it fits the narrow column without scroll
+    var tx = tr.querySelector('.tx-link');
+    if (tx && tx.firstChild && tx.firstChild.nodeType === 3) {
+      var m = tx.firstChild.textContent.match(/^\s*(0x)(\w+?)(?:\.\.\.|…)(\w{4})/);
+      if (m) tx.firstChild.textContent = m[1] + m[2].slice(0, 2) + '...' + m[3];
+      else tx.firstChild.textContent = tx.firstChild.textContent.trim();
+      // Wrap the hash so the hover underline covers only the address, not the external-link icon
+      var hashSpan = document.createElement('span');
+      hashSpan.className = 'tx-hash';
+      hashSpan.textContent = tx.firstChild.textContent;
+      tx.replaceChild(hashSpan, tx.firstChild);
     }
     // Amount: wrap icon + (value over fiat) so the token icon centers vertically across both lines
     var ac = tr.querySelector('.amount-cell');
@@ -9973,7 +10054,7 @@ function applySortCarets(headRow, col, dir) {
     h.classList.toggle('sort-active', active);
     var c = h.querySelector('.sort-caret');
     if (c) {
-      c.className = 'ph sort-caret' + (active ? ' sort-caret-active ' + (dir === 'asc' ? 'ph-caret-up' : 'ph-caret-down') : ' ph-caret-down');
+      c.className = 'ph-bold sort-caret' + (active ? ' sort-caret-active ' + (dir === 'asc' ? 'ph-caret-up' : 'ph-caret-down') : ' ph-caret-down');
     }
   });
 }
@@ -9987,7 +10068,7 @@ function sortActivityTable(th) {
   var curDir = headRow.dataset.sortDir || 'desc';
   var dir;
   if (String(col) === String(curCol)) dir = (curDir === 'asc') ? 'desc' : 'asc';
-  else dir = (col === 3) ? 'desc' : 'asc';
+  else dir = 'desc';
   headRow.dataset.sortCol = col;
   headRow.dataset.sortDir = dir;
   applySortCarets(headRow, col, dir);
@@ -10005,9 +10086,11 @@ function sortActivityTable(th) {
 }
 
 function activitySortKey(tr, col) {
-  if (col === 2) { var f = tr.querySelector('.amount-fiat'); return f ? (parseFloat(f.textContent.replace(/[^0-9.]/g, '')) || 0) : 0; }
-  if (col === 3) { var d = tr.querySelector('.date-cell'); var t = Date.parse((d ? d.textContent : '').replace(',', '')); return isNaN(t) ? 0 : t; }
-  var sel = col === 0 ? '.type-cell' : col === 1 ? '.market-name' : col === 4 ? '.tx-link' : null;
+  // Columns: 0 Type · 1 Chain · 2 Market · 3 Amount · 4 Date · 5 Transaction
+  if (col === 3) { var f = tr.querySelector('.amount-fiat'); return f ? (parseFloat(f.textContent.replace(/[^0-9.]/g, '')) || 0) : 0; }
+  if (col === 4) { var d = tr.querySelector('.date-cell'); var t = Date.parse((d ? d.textContent : '').replace(',', '')); return isNaN(t) ? 0 : t; }
+  if (col === 1) { var cb = tr.querySelector('.chain-badge'); return cb ? (cb.getAttribute('title') || '').toLowerCase() : ''; }
+  var sel = col === 0 ? '.type-cell' : col === 2 ? '.market-name' : col === 5 ? '.tx-link' : null;
   var el = sel ? tr.querySelector(sel) : tr.children[col];
   return (el ? el.textContent : '').trim().toLowerCase();
 }
