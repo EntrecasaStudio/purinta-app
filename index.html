@@ -5474,11 +5474,17 @@
        frames: card top sits 69px below the Supply block's top, 33px above
        the table's bottom). Centring put it 18px too high. */
     .phone.desktop .earn-mascot-card { align-self: start; margin-top: 69px; height: 280px; }
-    /* Desktop: lg (200px) blob export, center 27px above card center. */
+    /* Desktop: 200px blob, centre 27px above the card's.
+
+       Deliberately no mask-image swap here. The lg export is the sm path
+       scaled by exactly 4/3, so under `contain` both render identically and
+       only the box size matters. Swapping them also broke going back to
+       mobile: the blob is composited onto its own layer by the breathe
+       animation, and switching mask-image and box size together left the old
+       mask stretched into the new box until something forced a repaint —
+       which is what reloading was doing. */
     .phone.desktop .earn-mascot-blob {
       width: 200px; height: 200px; top: calc(50% - 27px);
-      -webkit-mask-image: url('assets/mascot-blob-lg.svg');
-      mask-image: url('assets/mascot-blob-lg.svg');
     }
     /* Desktop card is 112px taller; the emote box sits 44px lower than on
        mobile (derived from the desktop 0% frame's cheek position). */
