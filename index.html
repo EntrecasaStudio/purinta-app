@@ -12113,8 +12113,14 @@ document.addEventListener('DOMContentLoaded', function() {
   var bp = params.get('bp');
   var screen = params.get('screen');
   var tab = params.get('tab');
+  var earn = params.get('earn');
   if (bp) setBreakpoint(parseInt(bp, 10), false);
-  if (screen) {
+  // ?earn=<pct> lands straight on an Earn emote state, so each one is
+  // shareable on its own (?screen=earn can only reach the 0% default).
+  // It implies the Earn screen, which devEarnState navigates to itself.
+  if (earn !== null && earn !== '' && !isNaN(parseFloat(earn))) {
+    setTimeout(function() { devEarnState(parseFloat(earn)); }, 100);
+  } else if (screen) {
     setTimeout(function() {
       showScreen(screen);
       if (tab) switchPositionsTab(tab);
