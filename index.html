@@ -5236,9 +5236,17 @@
        transform, and one element can't both transition and animate it. */
     .earn-mascot-sunburst {
       /* Centred on the card at both breakpoints (it's a backdrop, so it does
-         not take the art's desktop offset). */
+         not take the art's desktop offset).
+
+         Figma draws "radial_bg" static at 302x304, which just covers the card.
+         A rotating rectangle only covers its inscribed circle, though, so at
+         302 wide the rays swept off the corners and you could see the burst
+         end — radius 151 against a corner 197 away on desktop. Oversized to
+         404 so the inscribed circle clears both breakpoints' corners, keeping
+         Figma's aspect so the rays hold their angles. The card clips the rest.
+         Same reason Borrow's rays are drawn wider than their viewBox. */
       position: absolute; left: 50%; top: 50%;
-      width: 302px; height: 304px;
+      width: 404px; height: 407px;
       transform: translate(-50%, -50%) scale(0); opacity: 0; pointer-events: none;
       transition: transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 400ms ease;
     }
@@ -5321,11 +5329,30 @@
     }
     /* --bill-dur / --bill-delay are set per bill in groupEarnBills(), since
        the number of notes is discovered at runtime from the artwork. */
-    /* Idle loop, shared by the animated states. Nothing is supplied yet at 0%,
-       so it breathes slower and blinks less often than the 75% celebration;
-       the offset cycles also keep the two from reading as the same loop. */
-    .earn-mascot-card.state-0  { --idle-bob: 4.4s; --idle-blink: 6.6s; }
-    .earn-mascot-card.state-75 { --idle-bob: 3.4s; --idle-blink: 5.5s; }
+    /* Idle loop, shared by the animated states. 0% is the calmer of the two:
+       nothing is supplied yet, so it blinks less often than the 75% payoff.
+       Its bob runs at the blob's own 4.2s so torso, hands and blob read as one
+       breath — at 4.4s they drifted out of phase and fought each other. */
+    .earn-mascot-card.state-0  { --idle-bob: 4.2s; --idle-blink: 6.6s; --hand-rot: 1.5deg; --hand-lift: -0.8px; }
+    .earn-mascot-card.state-75 { --idle-bob: 3.4s; --idle-blink: 5.5s; --hand-rot: 2.5deg; --hand-lift: 0px; }
+    /* Hands swing a couple of degrees outward and back. Pivoting at the top
+       keeps the shoulder planted, so only the mitten travels. Mirrored per
+       side, since "outward" is a different direction on each. */
+    @keyframes earn-hand-out-l {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      50%      { transform: rotate(var(--hand-rot, 2deg)) translateY(var(--hand-lift, 0px)); }
+    }
+    @keyframes earn-hand-out-r {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      50%      { transform: rotate(calc(-1 * var(--hand-rot, 2deg))) translateY(var(--hand-lift, 0px)); }
+    }
+    .earn-mascot-card.state-0  .earn-hand,
+    .earn-mascot-card.state-75 .earn-hand {
+      animation: earn-hand-out-l var(--idle-bob) ease-in-out infinite;
+      transform-box: fill-box; transform-origin: 50% 0%;
+    }
+    .earn-mascot-card.state-0  .earn-hand-r,
+    .earn-mascot-card.state-75 .earn-hand-r { animation-name: earn-hand-out-r; }
     .earn-mascot-card.state-0 .earn-torso,
     .earn-mascot-card.state-75 .earn-torso {
       animation: earn-torso-bob var(--idle-bob) ease-in-out infinite;
@@ -5361,9 +5388,10 @@
     .earn-mascot-card.is-punching .earn-eye,
     .earn-mascot-card.is-punching .earn-brow,
     .earn-mascot-card.is-punching .earn-lid,
-    .earn-mascot-card.is-punching .earn-cheek { animation-play-state: paused; }
+    .earn-mascot-card.is-punching .earn-cheek,
+    .earn-mascot-card.is-punching .earn-hand { animation-play-state: paused; }
     @media (prefers-reduced-motion: reduce) {
-      .earn-bill, .earn-torso, .earn-eye, .earn-brow, .earn-lid, .earn-cheek,
+      .earn-bill, .earn-torso, .earn-eye, .earn-brow, .earn-lid, .earn-cheek, .earn-hand,
       .earn-mascot-blob, .earn-mascot-sunburst::before,
       .earn-mascot-card.is-punching .earn-mascot-illustration { animation: none; }
       /* Still needs to arrive, just without the spring. */
@@ -12725,17 +12753,17 @@ function earnStateFor(pct) {
 var _earnSvgCache = {};
 var SVG_NS = 'http://www.w3.org/2000/svg';
 
-function groupEarnBills(svg, shapes) {
-  var boxes = shapes.map(function(n) {
-    try { return n.getBBox(); } catch (e) { return null; }
-  });
+/* Splits a flat list of shapes into the separate objects it draws, by walking
+   overlapping bounding boxes. `pad` grows each box before testing, which
+   bridges the hairline gaps inside one drawn object; pass 0 when the point is
+   to keep touching-but-distinct objects apart. Returns arrays in paint order. */
+function clusterEarnShapes(shapes, boxes, pad) {
   var parent = shapes.map(function(_, i) { return i; });
   function find(i) { while (parent[i] !== i) { parent[i] = parent[parent[i]]; i = parent[i]; } return i; }
   function hits(a, b) {
-    var pad = 2;
-    return a && b &&
-      a.x - pad < b.x + b.width  && b.x - pad < a.x + a.width &&
-      a.y - pad < b.y + b.height && b.y - pad < a.y + a.height;
+    return a && b && a.w && b.w &&
+      a.x - pad < b.x + b.w && b.x - pad < a.x + a.w &&
+      a.y - pad < b.y + b.h && b.y - pad < a.y + a.h;
   }
   for (var i = 0; i < shapes.length; i++) {
     for (var j = i + 1; j < shapes.length; j++) {
@@ -12744,20 +12772,127 @@ function groupEarnBills(svg, shapes) {
   }
   var clusters = {};
   shapes.forEach(function(n, i) { (clusters[find(i)] = clusters[find(i)] || []).push(n); });
-  // Wrap each cluster where its first path sits, preserving paint order.
+  return Object.keys(clusters).map(function(k) { return clusters[k]; });
+}
+
+function earnLocalBoxes(nodes) {
+  return nodes.map(function(n) {
+    try { var b = n.getBBox(); return { x: b.x, y: b.y, w: b.width, h: b.height }; }
+    catch (e) { return null; }
+  });
+}
+
+function earnScreenBoxes(nodes) {
+  return nodes.map(function(n) {
+    var r = n.getBoundingClientRect();
+    if (!r.width && !r.height) return null;
+    return { x: r.left, y: r.top, w: r.width, h: r.height, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+  });
+}
+
+function markEarnBill(g, i) {
   // Durations/offsets are spread with a prime-ish step so the notes never
   // settle into a synchronised pulse, whatever the count turns out to be.
-  var keys = Object.keys(clusters);
-  keys.forEach(function(k, i) {
-    var members = clusters[k];
+  g.setAttribute('class', 'earn-bill');
+  g.style.setProperty('--bill-dur', (4.2 + (i % 4) * 0.47).toFixed(2) + 's');
+  g.style.setProperty('--bill-delay', '-' + ((i * 0.83) % 3.1).toFixed(2) + 's');
+}
+
+function groupEarnBills(svg, shapes) {
+  var clusters = clusterEarnShapes(shapes, earnLocalBoxes(shapes), 2);
+  clusters.forEach(function(members, i) {
     var g = document.createElementNS(SVG_NS, 'g');
-    g.setAttribute('class', 'earn-bill');
-    g.style.setProperty('--bill-dur', (4.2 + (i % 4) * 0.47).toFixed(2) + 's');
-    g.style.setProperty('--bill-delay', '-' + ((i * 0.83) % 3.1).toFixed(2) + 's');
-    svg.insertBefore(g, members[0]);
+    markEarnBill(g, i);
+    svg.insertBefore(g, members[0]);   // where its first path sat, so paint order holds
     members.forEach(function(n) { g.appendChild(n); });
   });
-  return keys.length;
+  return clusters.length;
+}
+
+/* Several emotes draw loose notes and coins *after* the ground shadow, so they
+   land inside the torso group and end up bobbing rigidly with the body instead
+   of drifting on their own. They are physically separate objects, so an
+   unpadded overlap pass isolates them: the body is whichever cluster owns the
+   largest shape, and everything else is a floater. They move out of the torso
+   to just after it, which is where they were already painting. */
+function splitEarnFloaters(svg, torso, startIndex) {
+  var kids = Array.prototype.slice.call(torso.children);
+  var boxes = earnScreenBoxes(kids);
+  var clusters = clusterEarnShapes(kids, boxes, 0);
+  var bodyCluster = null, biggest = -1;
+  clusters.forEach(function(members) {
+    members.forEach(function(n) {
+      var b = boxes[kids.indexOf(n)];
+      var area = b ? b.w * b.h : 0;
+      if (area > biggest) { biggest = area; bodyCluster = members; }
+    });
+  });
+  var moved = 0;
+  clusters.forEach(function(members) {
+    if (members === bodyCluster) return;
+    // Zero-area nodes cluster alone and are nothing to animate; leave them put.
+    if (!members.some(function(n) { return boxes[kids.indexOf(n)]; })) return;
+    var g = document.createElementNS(SVG_NS, 'g');
+    markEarnBill(g, startIndex + moved);
+    torso.parentNode.insertBefore(g, torso.nextSibling);
+    members.forEach(function(n) { g.appendChild(n); });
+    moved++;
+  });
+  return moved;
+}
+
+/* The hands sit outside the body plate on both sides — the one part of the
+   character that clears its silhouette horizontally. Everything else in the
+   torso (face, blush, mouth) falls within it. */
+function tagEarnHands(torso) {
+  var kids = Array.prototype.slice.call(torso.children);
+  var boxes = earnScreenBoxes(kids);
+  var plate = null, biggest = -1;
+  boxes.forEach(function(b) {
+    if (b && b.w * b.h > biggest) { biggest = b.w * b.h; plate = b; }
+  });
+  if (!plate) return 0;
+  var sides = { l: [], r: [] };
+  kids.forEach(function(n, i) {
+    var b = boxes[i];
+    if (!b || b === plate) return;
+    if (b.cx < plate.x) sides.l.push(n);
+    else if (b.cx > plate.x + plate.w) sides.r.push(n);
+  });
+  var plateCy = plate.y + plate.h / 2;
+  var tagged = 0;
+  ['l', 'r'].forEach(function(side) {
+    var members = sides[side];
+    if (!members.length) return;
+    // Sparkles and stray notes also clear the silhouette. The arm is the run
+    // that connects at roughly mid-body, where a shoulder is: take the
+    // connected cluster nearest that height and drop whatever else floats out
+    // there. Any coin the mitten actually overlaps rides along, which is what
+    // holding one looks like.
+    var sideBoxes = members.map(function(n) { return boxes[kids.indexOf(n)]; });
+    var clusters = clusterEarnShapes(members, sideBoxes, 2);
+    if (clusters.length > 1) {
+      var best = null, bestDist = Infinity;
+      clusters.forEach(function(c) {
+        var top = Infinity, bottom = -Infinity;
+        c.forEach(function(n) {
+          var b = boxes[kids.indexOf(n)];
+          if (!b) return;
+          top = Math.min(top, b.y); bottom = Math.max(bottom, b.y + b.h);
+        });
+        var d = Math.abs((top + bottom) / 2 - plateCy);
+        if (d < bestDist) { bestDist = d; best = c; }
+      });
+      members = best || members;
+    }
+    if (!members.length) return;
+    var g = document.createElementNS(SVG_NS, 'g');
+    g.setAttribute('class', 'earn-hand earn-hand-' + side);
+    torso.insertBefore(g, members[0]);
+    members.forEach(function(n) { g.appendChild(n); });
+    tagged++;
+  });
+  return tagged;
 }
 
 /* Parts get wrapped in a fresh <g> rather than classed directly: several of
@@ -12886,7 +13021,7 @@ function setEarnArt(card, st) {
     });
     var shadowAt = shapes.findIndex(function(n) { return n.tagName === 'rect'; });
     var bills = shadowAt > 0 ? shapes.slice(0, shadowAt) : [];
-    if (bills.length) groupEarnBills(svg, bills);
+    var billCount = bills.length ? groupEarnBills(svg, bills) : 0;
     // Everything after the shadow is the character. Its biggest shape is the
     // torso plate, and the legs are always drawn before it — so that shape
     // marks where the torso begins. Bobbing the torso alone (rather than the
@@ -12903,7 +13038,11 @@ function setEarnArt(card, st) {
     torso.setAttribute('class', 'earn-torso');
     svg.insertBefore(torso, rest[torsoAt]);
     rest.slice(torsoAt).forEach(function(n) { torso.appendChild(n); });
+    // Floaters leave first, so the face and hand passes only ever look at the
+    // body and can't mistake a stray coin for an eye or a mitten.
+    splitEarnFloaters(svg, torso, billCount);
     tagEarnFace(torso);
+    tagEarnHands(torso);
   }
   if (_earnSvgCache[st.art]) { inject(_earnSvgCache[st.art]); return; }
   fetch(st.art).then(function(r) { return r.text(); }).then(function(t) {
