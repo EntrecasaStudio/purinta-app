@@ -5123,8 +5123,22 @@
     .earn-supply-block { grid-area: supply; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
     /* The shared .slider-track already carries its own 12px margin-bottom
        (used elsewhere in Borrow); cancel it here so the 24px flex gap above
-       is the ONLY space between the slider and the "Supplying" row. */
-    .earn-supply-block .slider-track { margin-bottom: 0; }
+       is the ONLY space between the slider and the "Supplying" row.
+       Figma's "Slider bar" frame is 20px tall with the 12px bar sitting at
+       its bottom (y=8) and the 32px thumb overflowing, rather than Borrow's
+       32px track — that 12px difference is what pushed the whole left column
+       out of step with the mascot. */
+    .earn-supply-block .slider-track { margin-bottom: 0; height: 20px; }
+    /* Borrow's .pct-buttons carries a 16px bottom margin; drop it so the
+       block's own 24px gap is the only spacing (Figma uses a uniform 24). */
+    .earn-pct-buttons { margin-bottom: 0; }
+    .earn-slider-track .slider-track-bg,
+    .earn-slider-track .slider-track-fill { top: 8px; }
+    .earn-slider-track .slider-thumb { top: -2px; }
+    /* Figma "Category details" is 23px tall; the bare text box is only 16. */
+    .earn-supplying-row { min-height: 23px; }
+    /* Figma's details frame carries 4px above the first row. */
+    .earn-details { padding-top: 4px; }
     .earn-mascot-card { grid-area: mascot; min-width: 0; }
     .earn-details { grid-area: details; }
 
@@ -5238,7 +5252,14 @@
     }
     .earn-detail-row:last-child { border-bottom: none; }
     .earn-detail-label { font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary); }
-    .earn-detail-value { font-family: var(--font-ui); font-size: var(--ds-xs); color: var(--text-secondary); }
+    /* Values are neutral-900 / 500 like Borrow's .summary-row-value (Figma
+       samples #333 on the populated rows); only the em-dash placeholder of
+       the initial state drops back to the label's neutral-700 / 400. */
+    .earn-detail-value {
+      font-family: var(--font-ui); font-size: var(--ds-xs);
+      color: var(--text-primary); font-weight: 500; letter-spacing: 0;
+    }
+    .earn-detail-value.is-empty { color: var(--text-secondary); font-weight: 400; }
 
     .earn-cta { width: 100%; padding: 24px 0 0; }
     .icon-earn-cta {
@@ -5274,7 +5295,8 @@
     .phone.desktop .earn-title-row, .phone.desktop .earn-card-shell { width: 100%; max-width: none; }
     .phone.desktop .earn-card-shell {
       background: var(--neutral-50); border: 1px solid var(--cream-400); border-radius: 40px;
-      padding: 49px;
+      /* Figma pads 49 on top/sides but only 33 at the bottom (card is 532 tall). */
+      padding: 49px 49px 33px;
     }
     .phone.desktop .earn-card {
       background: none; border: none; border-radius: 0; padding: 0;
@@ -5282,9 +5304,11 @@
       grid-template-areas: "supply mascot" "details mascot";
       align-items: stretch;
     }
-    /* Mascot keeps its intrinsic 280px height, vertically centered in the
-       full-height right column (align-self overrides the stretch above). */
-    .phone.desktop .earn-mascot-card { align-self: center; height: 280px; }
+    /* Figma's right column pads the mascot 69px down from the top of the
+       table rather than centring it in the span (measured off the desktop
+       frames: card top sits 69px below the Supply block's top, 33px above
+       the table's bottom). Centring put it 18px too high. */
+    .phone.desktop .earn-mascot-card { align-self: start; margin-top: 69px; height: 280px; }
     /* Desktop: lg (200px) blob export, center 27px above card center. */
     .phone.desktop .earn-mascot-blob {
       width: 200px; height: 200px; top: calc(50% - 27px);
@@ -5298,7 +5322,7 @@
        the card bottom — mobile stays single-line at 16px. */
     .phone.desktop .earn-mascot-text-break { display: inline; }
     .phone.desktop .earn-mascot-text { white-space: normal; bottom: 40px; }
-    .phone.desktop .earn-cta { padding-top: 48px; }
+    .phone.desktop .earn-cta { padding-top: 40px; }
 
     /* star-twinkle keyframe — used by .mascot-stars (V1 emote sparkles).
        The legacy "Confirmation Modal" CSS that originally lived here was
@@ -7396,7 +7420,7 @@
         </div>
         <div class="slider-info">
           <span class="slider-info-label">Supplying</span>
-          <span class="slider-info-value" style="color: var(--text-muted);">—</span>
+          <span class="slider-info-value" style="color: var(--text-secondary); font-weight:400;">—</span>
         </div>
 
         <div class="slider-divider"></div>
@@ -7695,7 +7719,7 @@
             </div>
             <div class="slider-info earn-supplying-row">
               <span class="slider-info-label">Supplying</span>
-              <span class="slider-info-value" style="color: var(--text-muted);">—</span>
+              <span class="slider-info-value" style="color: var(--text-secondary); font-weight: 400;">—</span>
             </div>
           </div>
 
@@ -7718,15 +7742,15 @@
           <div class="earn-details">
             <div class="earn-detail-row">
               <span class="earn-detail-label">Chain</span>
-              <span class="earn-detail-value">—</span>
+              <span class="earn-detail-value is-empty">—</span>
             </div>
             <div class="earn-detail-row">
               <span class="earn-detail-label">You&rsquo;ll supply</span>
-              <span class="earn-detail-value">—</span>
+              <span class="earn-detail-value is-empty">—</span>
             </div>
             <div class="earn-detail-row">
               <span class="earn-detail-label">Vault Rate <span class="rate-info-wrap"><span class="icon-info summary-info-icon" aria-hidden="true"></span><span class="info-tooltip">The variable yield this vault currently pays, net of fees.</span></span></span>
-              <span class="earn-detail-value">—</span>
+              <span class="earn-detail-value is-empty">—</span>
             </div>
           </div>
         </div>
@@ -12555,19 +12579,20 @@ function updateEarnValues(screen) {
   screen.classList.toggle('supply-zero', pct <= 0);
   applyEarnEmote(screen, pct);
   if (pct <= 0) {
-    if (rows[0]) rows[0].textContent = DASH;
-    if (rows[1]) rows[1].textContent = DASH;
-    if (rows[2]) rows[2].textContent = DASH;
-    if (supplying) { supplying.textContent = DASH; supplying.style.color = 'var(--text-muted)'; }
+    for (var i = 0; i < 3; i++) {
+      if (rows[i]) { rows[i].textContent = DASH; rows[i].classList.add('is-empty'); }
+    }
+    if (supplying) { supplying.textContent = DASH; supplying.style.color = 'var(--text-secondary)'; supplying.style.fontWeight = '400'; }
     if (cta) cta.disabled = true;
     return;
   }
   var amount = sd.walletBalance * (pct / 100);
   var amountText = (typeof formatFull === 'function' ? formatFull(amount) : amount.toFixed(2)) + ' ' + sd.name;
-  if (rows[0]) rows[0].textContent = sd.chain;
-  if (rows[1]) rows[1].textContent = amountText;
-  if (rows[2]) rows[2].textContent = sd.vaultRate.toFixed(2) + '%';
-  if (supplying) { supplying.textContent = amountText; supplying.style.color = 'var(--text-primary)'; }
+  var vals = [sd.chain, amountText, sd.vaultRate.toFixed(2) + '%'];
+  for (var j = 0; j < 3; j++) {
+    if (rows[j]) { rows[j].textContent = vals[j]; rows[j].classList.remove('is-empty'); }
+  }
+  if (supplying) { supplying.textContent = amountText; supplying.style.color = 'var(--text-primary)'; supplying.style.fontWeight = '500'; }
   if (cta) cta.disabled = false;
 }
 
