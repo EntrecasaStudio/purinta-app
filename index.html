@@ -5233,6 +5233,48 @@
     /* Mobile: caption on ONE line, so the desktop-only break is removed. */
     .earn-mascot-text-break { display: none; }
 
+    /* ── Emote motion ─────────────────────────────────────────────────────
+       State Punch (Figma spec note): squash → swap → stretch over 250ms on
+       every state change. Reuses Borrow's mascot-state-punch keyframes; the
+       art swap is timed to land mid-squash so the character reads as
+       reacting rather than as one image cutting to another. */
+    .earn-mascot-card.is-punching .earn-mascot-illustration {
+      animation: mascot-state-punch 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* 75% idle: the five bills drift on their own loops while the body
+       breathes, so the "money in the air" reads as ongoing rather than a
+       frozen pose. Each bill gets its own duration/delay so they never
+       synchronise into a single pulsing mass. */
+    @keyframes earn-bill-drift {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      35%      { transform: translate(1.5px, -3.5px) rotate(2.5deg); }
+      70%      { transform: translate(-1px, 1.5px) rotate(-2deg); }
+    }
+    @keyframes earn-body-breathe {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.025); }
+    }
+    .earn-bill { will-change: transform; }
+    .earn-mascot-card.state-75 .earn-bill {
+      animation: earn-bill-drift var(--bill-dur, 4s) ease-in-out var(--bill-delay, 0s) infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    /* --bill-dur / --bill-delay are set per bill in groupEarnBills(), since
+       the number of notes is discovered at runtime from the artwork. */
+    .earn-mascot-card.state-75 .earn-body {
+      animation: earn-body-breathe 3.4s ease-in-out infinite;
+      transform-box: fill-box; transform-origin: 50% 100%;
+    }
+    /* The punch owns the transform while it plays, so idle loops pause. */
+    .earn-mascot-card.is-punching .earn-bill,
+    .earn-mascot-card.is-punching .earn-body { animation-play-state: paused; }
+    @media (prefers-reduced-motion: reduce) {
+      .earn-mascot-card.state-75 .earn-bill,
+      .earn-mascot-card.state-75 .earn-body,
+      .earn-mascot-card.is-punching .earn-mascot-illustration { animation: none; }
+    }
+
     /* Supply thumb breathing glow — Figma spec note "Breathing glow (Supply
        thumb)": while nothing is supplied yet the thumb pulses so the user
        knows to drag it. Reuses Borrow's supplyBreath keyframes (DS effect
@@ -12543,6 +12585,93 @@ function earnStateFor(pct) {
   if (pct < 62.5)  return earnEmoteStates[2];
   return earnEmoteStates[3];
 }
+/* The emote exports are a flat list of paths with no ids, so the art is
+   inlined and re-grouped here to become animatable. Every export follows the
+   same order: the flying bills, then the ground-shadow <rect>, then the
+   body. So the bills are simply everything before that rect, and they're
+   clustered into individual notes by overlapping bounding boxes — paths of
+   one bill touch each other and nothing else. */
+var _earnSvgCache = {};
+var SVG_NS = 'http://www.w3.org/2000/svg';
+
+function groupEarnBills(svg, shapes) {
+  var boxes = shapes.map(function(n) {
+    try { return n.getBBox(); } catch (e) { return null; }
+  });
+  var parent = shapes.map(function(_, i) { return i; });
+  function find(i) { while (parent[i] !== i) { parent[i] = parent[parent[i]]; i = parent[i]; } return i; }
+  function hits(a, b) {
+    var pad = 2;
+    return a && b &&
+      a.x - pad < b.x + b.width  && b.x - pad < a.x + a.width &&
+      a.y - pad < b.y + b.height && b.y - pad < a.y + a.height;
+  }
+  for (var i = 0; i < shapes.length; i++) {
+    for (var j = i + 1; j < shapes.length; j++) {
+      if (hits(boxes[i], boxes[j])) parent[find(j)] = find(i);
+    }
+  }
+  var clusters = {};
+  shapes.forEach(function(n, i) { (clusters[find(i)] = clusters[find(i)] || []).push(n); });
+  // Wrap each cluster where its first path sits, preserving paint order.
+  // Durations/offsets are spread with a prime-ish step so the notes never
+  // settle into a synchronised pulse, whatever the count turns out to be.
+  var keys = Object.keys(clusters);
+  keys.forEach(function(k, i) {
+    var members = clusters[k];
+    var g = document.createElementNS(SVG_NS, 'g');
+    g.setAttribute('class', 'earn-bill');
+    g.style.setProperty('--bill-dur', (4.2 + (i % 4) * 0.47).toFixed(2) + 's');
+    g.style.setProperty('--bill-delay', '-' + ((i * 0.83) % 3.1).toFixed(2) + 's');
+    svg.insertBefore(g, members[0]);
+    members.forEach(function(n) { g.appendChild(n); });
+  });
+  return keys.length;
+}
+
+function setEarnArt(card, st) {
+  var fig = card.querySelector('.earn-mascot-figure');
+  if (!fig) return;
+  var alt = 'Purinta mascot: ' + st.lead + ' ' + st.tail;
+  function inject(markup) {
+    fig.innerHTML = markup;
+    var svg = fig.querySelector('svg');
+    if (!svg) {
+      fig.innerHTML = '<img class="earn-mascot-illustration" src="' + st.art + '" alt="' + alt + '">';
+      return;
+    }
+    svg.setAttribute('class', 'earn-mascot-illustration');
+    svg.setAttribute('role', 'img');
+    // Drop the intrinsic size so the per-state CSS width/height drives it.
+    svg.removeAttribute('width');
+    svg.removeAttribute('height');
+    var title = document.createElementNS(SVG_NS, 'title');
+    title.textContent = alt;
+    svg.insertBefore(title, svg.firstChild);
+    var shapes = Array.prototype.filter.call(svg.children, function(n) {
+      return n.tagName !== 'title' && n.tagName !== 'defs';
+    });
+    var shadowAt = shapes.findIndex(function(n) { return n.tagName === 'rect'; });
+    var bills = shadowAt > 0 ? shapes.slice(0, shadowAt) : [];
+    if (bills.length) groupEarnBills(svg, bills);
+    // Everything after the shadow breathes together as the body.
+    var rest = shapes.slice(shadowAt > -1 ? shadowAt + 1 : 0);
+    if (rest.length) {
+      var body = document.createElementNS(SVG_NS, 'g');
+      body.setAttribute('class', 'earn-body');
+      svg.appendChild(body);
+      rest.forEach(function(n) { body.appendChild(n); });
+    }
+  }
+  if (_earnSvgCache[st.art]) { inject(_earnSvgCache[st.art]); return; }
+  fetch(st.art).then(function(r) { return r.text(); }).then(function(t) {
+    _earnSvgCache[st.art] = t;
+    if (card.dataset.state === st.key) inject(t);   // ignore if we've moved on
+  }).catch(function() {
+    fig.innerHTML = '<img class="earn-mascot-illustration" src="' + st.art + '" alt="' + alt + '">';
+  });
+}
+
 function applyEarnEmote(screen, pct) {
   var card = screen.querySelector('.earn-mascot-card');
   if (!card) return;
@@ -12551,13 +12680,19 @@ function applyEarnEmote(screen, pct) {
   card.dataset.state = st.key;
   earnEmoteStates.forEach(function(s) { card.classList.remove('state-' + s.key); });
   card.classList.add('state-' + st.key);
-  var img = card.querySelector('.earn-mascot-illustration');
-  if (img) {
-    img.src = st.art;
-    img.alt = 'Purinta mascot: ' + st.lead + ' ' + st.tail;
-  }
   var txt = card.querySelector('.earn-mascot-text');
-  if (txt) txt.innerHTML = st.lead + ' <br class="earn-mascot-text-break">' + st.tail;
+  function swap() {
+    setEarnArt(card, st);
+    if (txt) txt.innerHTML = st.lead + ' <br class="earn-mascot-text-break">' + st.tail;
+  }
+  // State Punch (Figma): squash, swap mid-squash, stretch, settle — 250ms.
+  clearTimeout(card._punchSwap);
+  clearTimeout(card._punchEnd);
+  card.classList.remove('is-punching');
+  void card.offsetWidth;                        // restart the keyframe
+  card.classList.add('is-punching');
+  card._punchSwap = setTimeout(swap, 75);       // ~30% in, at peak squash
+  card._punchEnd  = setTimeout(function() { card.classList.remove('is-punching'); }, 260);
 }
 
 /* Refresh Earn's summary rows + CTA from the selected stable and slider %.
