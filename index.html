@@ -5251,27 +5251,51 @@
       35%      { transform: translate(1.5px, -3.5px) rotate(2.5deg); }
       70%      { transform: translate(-1px, 1.5px) rotate(-2deg); }
     }
-    @keyframes earn-body-breathe {
-      0%, 100% { transform: scale(1); }
-      50%      { transform: scale(1.025); }
+    /* Torso settles a hair and lifts back to its resting height — never above
+       it, so it can't visibly part from the legs. */
+    @keyframes earn-torso-bob {
+      0%, 100% { transform: translateY(1.2px); }
+      50%      { transform: translateY(0); }
+    }
+    /* Long idle, quick shut: the blink is ~6% of the cycle. */
+    @keyframes earn-eye-blink {
+      0%, 92%, 100% { transform: scaleY(1); }
+      95%           { transform: scaleY(0.08); }
+      98%           { transform: scaleY(1); }
     }
     .earn-bill { will-change: transform; }
+    /* The art scales/drifts past its viewBox, which otherwise clips the notes
+       at the left and right edges; the card's own overflow still contains it. */
+    svg.earn-mascot-illustration { overflow: visible; }
     .earn-mascot-card.state-75 .earn-bill {
       animation: earn-bill-drift var(--bill-dur, 4s) ease-in-out var(--bill-delay, 0s) infinite;
       transform-box: fill-box; transform-origin: center;
     }
     /* --bill-dur / --bill-delay are set per bill in groupEarnBills(), since
        the number of notes is discovered at runtime from the artwork. */
-    .earn-mascot-card.state-75 .earn-body {
-      animation: earn-body-breathe 3.4s ease-in-out infinite;
+    .earn-mascot-card.state-75 .earn-torso {
+      animation: earn-torso-bob 3.4s ease-in-out infinite;
       transform-box: fill-box; transform-origin: 50% 100%;
     }
+    .earn-mascot-card.state-75 .earn-eye {
+      animation: earn-eye-blink 5.5s ease-in-out infinite;
+      transform-box: fill-box; transform-origin: center;
+    }
+    /* Blob breathes in every state, matching Borrow's mascot blob. Composed
+       with the centring translate so it grows about its own middle. */
+    @keyframes earn-blob-breathe {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50%      { transform: translate(-50%, -50%) scale(1.04); }
+    }
+    .earn-mascot-blob { animation: earn-blob-breathe 4.2s ease-in-out infinite; }
     /* The punch owns the transform while it plays, so idle loops pause. */
     .earn-mascot-card.is-punching .earn-bill,
-    .earn-mascot-card.is-punching .earn-body { animation-play-state: paused; }
+    .earn-mascot-card.is-punching .earn-torso { animation-play-state: paused; }
     @media (prefers-reduced-motion: reduce) {
       .earn-mascot-card.state-75 .earn-bill,
-      .earn-mascot-card.state-75 .earn-body,
+      .earn-mascot-card.state-75 .earn-torso,
+      .earn-mascot-card.state-75 .earn-eye,
+      .earn-mascot-blob,
       .earn-mascot-card.is-punching .earn-mascot-illustration { animation: none; }
     }
 
@@ -12629,6 +12653,29 @@ function groupEarnBills(svg, shapes) {
   return keys.length;
 }
 
+/* The eyes are the one mirrored pair in the artwork: two <g> of identical
+   size sitting at the same height either side of the face. Matching on that
+   shape avoids hard-coding indices that would differ per emote. */
+function tagEarnEyes(torso) {
+  var groups = Array.prototype.filter.call(torso.children, function(n) { return n.tagName === 'g'; });
+  var boxes = groups.map(function(n) { try { return n.getBBox(); } catch (e) { return null; } });
+  for (var i = 0; i < groups.length; i++) {
+    for (var j = i + 1; j < groups.length; j++) {
+      var a = boxes[i], b = boxes[j];
+      if (!a || !b) continue;
+      var sameSize = Math.abs(a.width - b.width) < 1.5 && Math.abs(a.height - b.height) < 1.5;
+      var sameRow  = Math.abs((a.y + a.height / 2) - (b.y + b.height / 2)) < 1.5;
+      var apart    = Math.abs((a.x + a.width / 2) - (b.x + b.width / 2)) > a.width * 0.5;
+      if (sameSize && sameRow && apart) {
+        groups[i].classList.add('earn-eye');
+        groups[j].classList.add('earn-eye');
+        return 2;
+      }
+    }
+  }
+  return 0;
+}
+
 function setEarnArt(card, st) {
   var fig = card.querySelector('.earn-mascot-figure');
   if (!fig) return;
@@ -12654,14 +12701,23 @@ function setEarnArt(card, st) {
     var shadowAt = shapes.findIndex(function(n) { return n.tagName === 'rect'; });
     var bills = shadowAt > 0 ? shapes.slice(0, shadowAt) : [];
     if (bills.length) groupEarnBills(svg, bills);
-    // Everything after the shadow breathes together as the body.
+    // Everything after the shadow is the character. Its biggest shape is the
+    // torso plate, and the legs are always drawn before it — so that shape
+    // marks where the torso begins. Bobbing the torso alone (rather than the
+    // whole character) keeps the feet planted.
     var rest = shapes.slice(shadowAt > -1 ? shadowAt + 1 : 0);
-    if (rest.length) {
-      var body = document.createElementNS(SVG_NS, 'g');
-      body.setAttribute('class', 'earn-body');
-      svg.appendChild(body);
-      rest.forEach(function(n) { body.appendChild(n); });
-    }
+    if (!rest.length) return;
+    var boxes = rest.map(function(n) { try { return n.getBBox(); } catch (e) { return null; } });
+    var torsoAt = 0, biggest = -1;
+    boxes.forEach(function(b, i) {
+      var area = b ? b.width * b.height : 0;
+      if (area > biggest) { biggest = area; torsoAt = i; }
+    });
+    var torso = document.createElementNS(SVG_NS, 'g');
+    torso.setAttribute('class', 'earn-torso');
+    svg.insertBefore(torso, rest[torsoAt]);
+    rest.slice(torsoAt).forEach(function(n) { torso.appendChild(n); });
+    tagEarnEyes(torso);
   }
   if (_earnSvgCache[st.art]) { inject(_earnSvgCache[st.art]); return; }
   fetch(st.art).then(function(r) { return r.text(); }).then(function(t) {
