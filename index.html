@@ -5189,12 +5189,22 @@
       z-index: 1; line-height: 0;
     }
     .earn-mascot-illustration { display: block; }
-    /* Natural export sizes, per state */
-    .earn-mascot-card.state-0   .earn-mascot-illustration { width: 110px; height: 110px; }
-    .earn-mascot-card.state-25  .earn-mascot-illustration { width: 123px; height: 110px; }
-    .earn-mascot-card.state-50  .earn-mascot-illustration { width: 149px; height: 117px; }
-    .earn-mascot-card.state-75  .earn-mascot-illustration { width: 162px; height: 143px; }
-    .earn-mascot-card.state-100 .earn-mascot-illustration { width: 310px; height: 305px; }
+    /* Natural export sizes + face anchor, keyed to the art that is actually
+       loaded (data-art, set at swap time) rather than to the card's state
+       class. The class flips at the start of the punch but the art is swapped
+       75ms later at peak squash, so keying these to the state stretched the
+       outgoing export to the incoming one's box for those frames — barely
+       visible across 0→75, glaring on 75→100 where the box nearly doubles. */
+    .earn-mascot-figure[data-art="0"]   .earn-mascot-illustration { width: 110px; height: 110px; }
+    .earn-mascot-figure[data-art="25"]  .earn-mascot-illustration { width: 123px; height: 110px; }
+    .earn-mascot-figure[data-art="50"]  .earn-mascot-illustration { width: 149px; height: 117px; }
+    .earn-mascot-figure[data-art="75"]  .earn-mascot-illustration { width: 162px; height: 143px; }
+    .earn-mascot-figure[data-art="100"] .earn-mascot-illustration { width: 310px; height: 305px; }
+    .earn-mascot-figure[data-art="0"]   { --emote-face-x: 54px;    --emote-top: 26px; }
+    .earn-mascot-figure[data-art="25"]  { --emote-face-x: 54.5px;  --emote-top: 26px; }
+    .earn-mascot-figure[data-art="50"]  { --emote-face-x: 76.5px;  --emote-top: 19.5px; }
+    .earn-mascot-figure[data-art="75"]  { --emote-face-x: 84px;    --emote-top: -2px; }
+    .earn-mascot-figure[data-art="100"] { --emote-face-x: 165.5px; --emote-top: -82.5px; }
     .earn-mascot-text {
       font-family: var(--font-ui); font-weight: 500; font-size: var(--ds-2xs); line-height: 18px;
       color: var(--text-primary); text-align: center; letter-spacing: 0.33px;
@@ -5208,26 +5218,51 @@
     /* Every state uses the same 2-stop gradient shape so the browser can
        interpolate between them — 100% ends on a flat mint-500 expressed as a
        gradient for that reason (a solid colour can't cross-fade to one). */
-    .earn-mascot-card.state-0   { --emote-face-x: 54px;    --emote-top: 26px;    background: linear-gradient(134deg, var(--neutral-50) 5.5%, var(--cream-200) 95.9%); }
-    .earn-mascot-card.state-25  { --emote-face-x: 54.5px;  --emote-top: 26px;    background: linear-gradient(134deg, var(--cream-100) 5.5%, var(--mint-50)  95.9%); }
-    .earn-mascot-card.state-50  { --emote-face-x: 76.5px;  --emote-top: 19.5px;  background: linear-gradient(134deg, var(--mint-50)   5.5%, var(--mint-300) 95.9%); }
-    .earn-mascot-card.state-75  { --emote-face-x: 84px;    --emote-top: -2px;    background: linear-gradient(134deg, var(--mint-300)  5.5%, var(--mint-500) 95.9%); }
-    .earn-mascot-card.state-100 { --emote-face-x: 165.5px; --emote-top: -82.5px; background: linear-gradient(134deg, var(--mint-500)  5.5%, var(--mint-500) 95.9%); }
+    .earn-mascot-card.state-0   { background: linear-gradient(134deg, var(--neutral-50) 5.5%, var(--cream-200) 95.9%); }
+    .earn-mascot-card.state-25  { background: linear-gradient(134deg, var(--cream-100) 5.5%, var(--mint-50)  95.9%); }
+    .earn-mascot-card.state-50  { background: linear-gradient(134deg, var(--mint-50)   5.5%, var(--mint-300) 95.9%); }
+    .earn-mascot-card.state-75  { background: linear-gradient(134deg, var(--mint-300)  5.5%, var(--mint-500) 95.9%); }
+    .earn-mascot-card.state-100 { background: linear-gradient(134deg, var(--mint-500)  5.5%, var(--mint-500) 95.9%); }
     /* Sunburst rays behind the 100% payoff only. */
     /* Figma "radial_bg": 302x304 centred on the card. The export is 392x500,
        a different aspect, so it's stretched to that exact footprint (100% 100%)
        rather than letterboxed by `contain`, which was painting it 329x420 and
        throwing the rays out of alignment. */
+    /* Motion mirrors Borrow's ultra-safe rays: the burst springs out from the
+       centre on arrival, then rotates continuously with a shimmer on a
+       different period so the two never lock into one visible beat. Leaving
+       100% reverses the intro through the transition — no exit code needed.
+       The rays live on ::before because the outer box owns the intro
+       transform, and one element can't both transition and animate it. */
     .earn-mascot-sunburst {
       /* Centred on the card at both breakpoints (it's a backdrop, so it does
          not take the art's desktop offset). */
       position: absolute; left: 50%; top: 50%;
       width: 302px; height: 304px;
-      transform: translate(-50%, -50%); opacity: 0; pointer-events: none;
-      background: url('assets/earn-sunburst-100.svg') center/100% 100% no-repeat;
-      transition: opacity 0.35s ease;
+      transform: translate(-50%, -50%) scale(0); opacity: 0; pointer-events: none;
+      transition: transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 400ms ease;
     }
-    .earn-mascot-card.state-100 .earn-mascot-sunburst { opacity: 1; }
+    .earn-mascot-sunburst::before {
+      content: ""; position: absolute; inset: 0;
+      background: url('assets/earn-sunburst-100.svg') center/100% 100% no-repeat;
+      animation: earn-sunburst-rotate 30s linear infinite,
+                 earn-sunburst-shimmer 4.3s ease-in-out infinite;
+      animation-play-state: paused, paused;
+    }
+    @keyframes earn-sunburst-rotate {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes earn-sunburst-shimmer {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.78; }
+    }
+    .earn-mascot-card.state-100 .earn-mascot-sunburst {
+      transform: translate(-50%, -50%) scale(1); opacity: 1;
+    }
+    .earn-mascot-card.state-100 .earn-mascot-sunburst::before {
+      animation-play-state: running, running;
+    }
     /* The blob is present in 0–75%; at 100% the sunburst replaces it. */
     .earn-mascot-card.state-100 .earn-mascot-blob { opacity: 0; }
     /* Mobile: caption on ONE line, so the desktop-only break is removed. */
@@ -5257,11 +5292,24 @@
       0%, 100% { transform: translateY(1.2px); }
       50%      { transform: translateY(0); }
     }
-    /* Long idle, quick shut: the blink is ~6% of the cycle. */
+    /* Long idle, quick shut: the blink is ~6% of the cycle. The eyes and brows
+       dip as they close while the cheeks and lower-lid curves push up to meet
+       them, so the whole face squeezes rather than the pupils just vanishing.
+       All four share the cycle length and the 92-98% window to stay in step. */
     @keyframes earn-eye-blink {
-      0%, 92%, 100% { transform: scaleY(1); }
-      95%           { transform: scaleY(0.08); }
-      98%           { transform: scaleY(1); }
+      0%, 92%, 100% { transform: translateY(0) scaleY(1); }
+      95%           { transform: translateY(1.1px) scaleY(0.08); }
+      98%           { transform: translateY(0) scaleY(1); }
+    }
+    @keyframes earn-brow-blink {
+      0%, 92%, 100% { transform: translateY(0); }
+      95%           { transform: translateY(1.4px); }
+      98%           { transform: translateY(0); }
+    }
+    @keyframes earn-face-lift {
+      0%, 92%, 100% { transform: translateY(0); }
+      95%           { transform: translateY(-1.1px); }
+      98%           { transform: translateY(0); }
     }
     .earn-bill { will-change: transform; }
     /* The art scales/drifts past its viewBox, which otherwise clips the notes
@@ -5273,14 +5321,33 @@
     }
     /* --bill-dur / --bill-delay are set per bill in groupEarnBills(), since
        the number of notes is discovered at runtime from the artwork. */
+    /* Idle loop, shared by the animated states. Nothing is supplied yet at 0%,
+       so it breathes slower and blinks less often than the 75% celebration;
+       the offset cycles also keep the two from reading as the same loop. */
+    .earn-mascot-card.state-0  { --idle-bob: 4.4s; --idle-blink: 6.6s; }
+    .earn-mascot-card.state-75 { --idle-bob: 3.4s; --idle-blink: 5.5s; }
+    .earn-mascot-card.state-0 .earn-torso,
     .earn-mascot-card.state-75 .earn-torso {
-      animation: earn-torso-bob 3.4s ease-in-out infinite;
+      animation: earn-torso-bob var(--idle-bob) ease-in-out infinite;
       transform-box: fill-box; transform-origin: 50% 100%;
     }
-    .earn-mascot-card.state-75 .earn-eye {
-      animation: earn-eye-blink 5.5s ease-in-out infinite;
+    .earn-mascot-card.state-0 .earn-eye,
+    .earn-mascot-card.state-0 .earn-brow,
+    .earn-mascot-card.state-0 .earn-lid,
+    .earn-mascot-card.state-0 .earn-cheek,
+    .earn-mascot-card.state-75 .earn-eye,
+    .earn-mascot-card.state-75 .earn-brow,
+    .earn-mascot-card.state-75 .earn-lid,
+    .earn-mascot-card.state-75 .earn-cheek {
+      animation: earn-eye-blink var(--idle-blink) ease-in-out infinite;
       transform-box: fill-box; transform-origin: center;
     }
+    .earn-mascot-card.state-0 .earn-brow,
+    .earn-mascot-card.state-75 .earn-brow { animation-name: earn-brow-blink; }
+    .earn-mascot-card.state-0 .earn-lid,
+    .earn-mascot-card.state-0 .earn-cheek,
+    .earn-mascot-card.state-75 .earn-lid,
+    .earn-mascot-card.state-75 .earn-cheek { animation-name: earn-face-lift; }
     /* Blob breathes in every state, matching Borrow's mascot blob. Composed
        with the centring translate so it grows about its own middle. */
     @keyframes earn-blob-breathe {
@@ -5290,13 +5357,17 @@
     .earn-mascot-blob { animation: earn-blob-breathe 4.2s ease-in-out infinite; }
     /* The punch owns the transform while it plays, so idle loops pause. */
     .earn-mascot-card.is-punching .earn-bill,
-    .earn-mascot-card.is-punching .earn-torso { animation-play-state: paused; }
+    .earn-mascot-card.is-punching .earn-torso,
+    .earn-mascot-card.is-punching .earn-eye,
+    .earn-mascot-card.is-punching .earn-brow,
+    .earn-mascot-card.is-punching .earn-lid,
+    .earn-mascot-card.is-punching .earn-cheek { animation-play-state: paused; }
     @media (prefers-reduced-motion: reduce) {
-      .earn-mascot-card.state-75 .earn-bill,
-      .earn-mascot-card.state-75 .earn-torso,
-      .earn-mascot-card.state-75 .earn-eye,
-      .earn-mascot-blob,
+      .earn-bill, .earn-torso, .earn-eye, .earn-brow, .earn-lid, .earn-cheek,
+      .earn-mascot-blob, .earn-mascot-sunburst::before,
       .earn-mascot-card.is-punching .earn-mascot-illustration { animation: none; }
+      /* Still needs to arrive, just without the spring. */
+      .earn-mascot-sunburst { transition: opacity 400ms ease; transform: translate(-50%, -50%) scale(1); }
     }
 
     /* Supply thumb breathing glow — Figma spec note "Breathing glow (Supply
@@ -5387,7 +5458,10 @@
     /* Desktop caption: two lines breaking after "are," (Figma), 40px from
        the card bottom — mobile stays single-line at 16px. */
     .phone.desktop .earn-mascot-text-break { display: inline; }
-    .phone.desktop .earn-mascot-text { white-space: normal; bottom: 40px; }
+    /* 41px, not 40: Figma puts the two-line caption box at y 202-238 inside the
+       280px card, so 42px of clearance below it. The card's 1px border eats
+       one of those. Line height stays 18px, which is Figma's spacing exactly. */
+    .phone.desktop .earn-mascot-text { white-space: normal; bottom: 41px; }
     .phone.desktop .earn-cta { padding-top: 40px; }
 
     /* star-twinkle keyframe — used by .mascot-stars (V1 emote sparkles).
@@ -7153,6 +7227,11 @@
         <button onclick="setBorrowHealth('getting-risky')"><span class="anim-dot anim-dot-done"></span>Getting Risky<span class="anim-date">[15-05]</span></button>
         <button onclick="setBorrowHealth('danger-zone')"><span class="anim-dot anim-dot-done"></span>Danger Zone<span class="anim-date">[15-05]</span></button>
         <button onclick="setBorrowHealth('meltdown')"><span class="anim-dot anim-dot-done"></span>Meltdown<span class="anim-date">[15-05]</span></button>
+        <!-- Earn emote idle loops (live on the earn screen). Only the two
+             animated states are listed; 25/50/100 are still static, and all
+             five stay reachable from Screens › Earn. -->
+        <button onclick="devEarnState(0)"><span class="anim-dot anim-dot-done"></span>Earn · Initial 0%<span class="anim-date">[30-07]</span></button>
+        <button onclick="devEarnState(75)"><span class="anim-dot anim-dot-done"></span>Earn · 75%<span class="anim-date">[30-07]</span></button>
       </div>
     </details>
   </div>
@@ -7795,14 +7874,15 @@
             <!-- Figma keeps the emote absolutely positioned inside a shorter
                  72px layout box, so the full-body legs overflow without
                  pushing the caption down. Same structure here. -->
-            <span class="earn-mascot-figure">
+            <span class="earn-mascot-figure" data-art="0">
               <img class="earn-mascot-illustration" src="assets/mascot-earn-01.svg" alt="Purinta mascot, ready to earn">
             </span>
-            <!-- Caption wraps after "are," on desktop only; mobile keeps it on
-                 one line (per Figma). The <br> is display:none under desktop. -->
-            <span class="earn-mascot-text" id="earn-mascot-text">Ready when you are, <br class="earn-mascot-text-break">friend</span>
+            <!-- Caption breaks between lead and tail on desktop only; mobile
+                 keeps it on one line (per Figma). The <br> is display:none
+                 under mobile. -->
+            <span class="earn-mascot-text" id="earn-mascot-text">Nothing in, friend. <br class="earn-mascot-text-break">Nothing earning</span>
             <!-- Emote art / caption / gradient are swapped by applyEarnEmote()
-                 as the supply slider crosses each quarter (see earnEmoteStates). -->
+                 as the supply slider crosses each band (see earnEmoteStates). -->
           </div>
 
           <div class="earn-details">
@@ -11878,6 +11958,12 @@ function showScreen(id) {
     var targetB = document.getElementById(id + '-b');
     if (targetB) targetB.classList.add('active');
   }
+  // Arriving at Earn: refresh it now it is on screen. The mascot art is
+  // inlined and measured lazily, and measuring a hidden screen yields nothing
+  // to animate, so this is what gives the emote its idle loop on first visit.
+  if (/^earn/.test(id) && typeof updateEarnValues === 'function') {
+    document.querySelectorAll('.screen[id^="earn"].active').forEach(function(s) { updateEarnValues(s); });
+  }
   // Positions empty/disconnected mascot — at every navigation to either
   // screen, take the live .mascot-area subtree from #positions-empty and
   // deep-clone it into #positions-disconnected, replacing whatever's
@@ -12562,6 +12648,17 @@ window.addEventListener('load', function() {
   requestAnimationFrame(setupBoostAttentionObservers);
 });
 
+/* Earn's summary + emote are otherwise only recalculated from the slider and
+   the stable picker, so on load the mascot is still the static <img> from the
+   markup and its idle loop has nothing to drive. Prime every Earn screen once
+   the clones exist and layout has settled — tagEarnFace measures on screen, so
+   it needs the art visible. */
+window.addEventListener('load', function() {
+  document.querySelectorAll('.screen[id^="earn"]').forEach(function(screen) {
+    if (typeof updateEarnValues === 'function') updateEarnValues(screen);
+  });
+});
+
 // Navigate on popstate (browser back/forward)
 window.addEventListener('popstate', function(e) {
   if (e.state && e.state.screen && document.getElementById(e.state.screen)) showScreen(e.state.screen);
@@ -12592,22 +12689,26 @@ var earnStableData = {
    are verbatim from Figma; `lead`/`tail` split at the first clause because
    desktop breaks there while mobile keeps one line (see .earn-mascot-text). */
 var earnEmoteStates = [
-  { key: '0',   art: 'assets/mascot-earn-01.svg', lead: 'Ready when you are,',    tail: 'friend' },
-  { key: '25',  art: 'assets/mascot-earn-02.svg', lead: 'Nice start!',            tail: 'Already earning yield' },
-  { key: '50',  art: 'assets/mascot-earn-03.svg', lead: 'Halfway in!',            tail: 'Keep that momentum going' },
-  { key: '75',  art: 'assets/mascot-earn-04.svg', lead: 'Almost fully deployed!', tail: 'One more push' },
+/* Every line describes the position as it stands, never a direction of
+   travel. The slider moves down as well as up, so "nice start" or "one more
+   push" read wrong the moment the user pulls supply back out — at 20% on the
+   way down from 100% nothing was started and nothing needs pushing. */
+  { key: '0',   art: 'assets/mascot-earn-01.svg', lead: 'Nothing in, friend.',     tail: 'Nothing earning' },
+  { key: '25',  art: 'assets/mascot-earn-02.svg', lead: "You're in!",             tail: 'Already earning yield' },
+  { key: '50',  art: 'assets/mascot-earn-03.svg', lead: 'Good chunk in!',         tail: 'Working for you' },
+  { key: '75',  art: 'assets/mascot-earn-04.svg', lead: 'Almost fully deployed!', tail: 'Just a sliver left' },
   { key: '100', art: 'assets/mascot-earn-05.svg', lead: 'All in, all earning.',   tail: "Let's go!" }
 ];
 /* The first and last emotes are *exact* endpoints: "Ready when you are" only
    while nothing is supplied, and the 100% payoff only when the slider is
-   maxed. Everything in between flips at the quarter midpoints, so the
-   25/50/75 pills each land on their own state. */
+   maxed. The three in between split the rest into thirds, so the 25/50/75
+   pills each land on their own state. */
 function earnStateFor(pct) {
-  if (pct <= 0)    return earnEmoteStates[0];   // 0% only
-  if (pct >= 100)  return earnEmoteStates[4];   // 100% only
-  if (pct < 37.5)  return earnEmoteStates[1];
-  if (pct < 62.5)  return earnEmoteStates[2];
-  return earnEmoteStates[3];
+  if (pct <= 0)   return earnEmoteStates[0];   // 0% only
+  if (pct >= 100) return earnEmoteStates[4];   // 100% only
+  if (pct <= 33)  return earnEmoteStates[1];   // 0.01 - 33
+  if (pct <= 66)  return earnEmoteStates[2];   // 33.01 - 66
+  return earnEmoteStates[3];                   // 66.01 - 99.9
 }
 /* The emote exports are a flat list of paths with no ids, so the art is
    inlined and re-grouped here to become animatable. Every export follows the
@@ -12653,27 +12754,103 @@ function groupEarnBills(svg, shapes) {
   return keys.length;
 }
 
-/* The eyes are the one mirrored pair in the artwork: two <g> of identical
-   size sitting at the same height either side of the face. Matching on that
-   shape avoids hard-coding indices that would differ per emote. */
-function tagEarnEyes(torso) {
-  var groups = Array.prototype.filter.call(torso.children, function(n) { return n.tagName === 'g'; });
-  var boxes = groups.map(function(n) { try { return n.getBBox(); } catch (e) { return null; } });
-  for (var i = 0; i < groups.length; i++) {
-    for (var j = i + 1; j < groups.length; j++) {
+/* Parts get wrapped in a fresh <g> rather than classed directly: several of
+   them (the mirrored cheek, for one) carry their own transform attribute,
+   and a CSS transform on the same element would replace it and fling the
+   shape across the face. Animating a clean wrapper leaves those intact. */
+function wrapEarnPart(node, cls) {
+  var g = document.createElementNS(SVG_NS, 'g');
+  g.setAttribute('class', cls);
+  node.parentNode.insertBefore(g, node);
+  g.appendChild(node);
+  return g;
+}
+
+/* Finds the face by its symmetry instead of by index, so it survives the
+   differences between emotes: the eyes are the largest mirrored pair in the
+   upper half of the body, the brows are the small shapes directly above
+   them, the lids are the thin curves across their lower edge, and the cheeks
+   are the matching pair of blush shapes (a lone blush that size is the mouth).
+
+   Geometry comes from getBoundingClientRect, not getBBox: several shapes carry
+   their own transform, and getBBox reports untransformed local coordinates,
+   which would put them nowhere near the face. Tolerances are expressed as
+   fractions of the eye so they hold at any render scale. */
+function tagEarnFace(torso) {
+  var kids = Array.prototype.slice.call(torso.children);
+  var rect = function(n) {
+    var r = n.getBoundingClientRect();
+    if (!r.width && !r.height) return null;
+    return { x: r.left, y: r.top, w: r.width, h: r.height, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+  };
+  var boxes = kids.map(rect);
+  var tb = rect(torso);
+  if (!tb) return 0;
+
+  // Arms and cheeks also come in mirrored pairs, so restrict the search to the
+  // head end of the body and then take the biggest pair that qualifies.
+  var eyes = null, eyeArea = 0;
+  for (var i = 0; i < kids.length; i++) {
+    for (var j = i + 1; j < kids.length; j++) {
       var a = boxes[i], b = boxes[j];
       if (!a || !b) continue;
-      var sameSize = Math.abs(a.width - b.width) < 1.5 && Math.abs(a.height - b.height) < 1.5;
-      var sameRow  = Math.abs((a.y + a.height / 2) - (b.y + b.height / 2)) < 1.5;
-      var apart    = Math.abs((a.x + a.width / 2) - (b.x + b.width / 2)) > a.width * 0.5;
-      if (sameSize && sameRow && apart) {
-        groups[i].classList.add('earn-eye');
-        groups[j].classList.add('earn-eye');
-        return 2;
-      }
+      if (a.cy > tb.y + tb.h * 0.6) continue;
+      var span = Math.max(a.w, b.w);
+      if (Math.abs(a.w - b.w) > span * 0.08 || Math.abs(a.h - b.h) > Math.max(a.h, b.h) * 0.08) continue;
+      if (Math.abs(a.cy - b.cy) > a.h * 0.1) continue;
+      if (Math.abs(a.cx - b.cx) < a.w * 0.5) continue;
+      if (a.w * a.h > eyeArea) { eyeArea = a.w * a.h; eyes = [{ el: kids[i], b: a }, { el: kids[j], b: b }]; }
     }
   }
-  return 0;
+  if (!eyes) return 0;
+
+  var claimed = [];
+  eyes.forEach(function(e) {
+    // Flat exports draw an eye as loose siblings (white, iris, pupil,
+    // highlights) rather than a group; gather them so the eye animates as one
+    // piece. It has to be the contiguous run starting at the outline, taken
+    // while shapes still overlap it — picking members out of order would
+    // reshuffle the stack and paint the pupil over its own highlights.
+    var members = [e.el];
+    if (e.el.tagName !== 'g') {
+      var start = kids.indexOf(e.el);
+      for (var k = start + 1; k < kids.length; k++) {
+        var nb = boxes[k];
+        if (!nb || claimed.indexOf(kids[k]) > -1) break;
+        if (nb.x > e.b.x + e.b.w || nb.x + nb.w < e.b.x ||
+            nb.y > e.b.y + e.b.h || nb.y + nb.h < e.b.y) break;
+        members.push(kids[k]);
+      }
+    }
+    var g = wrapEarnPart(e.el, 'earn-eye');
+    members.forEach(function(n) { if (n !== e.el) g.appendChild(n); });
+    claimed = claimed.concat(members);
+
+    kids.forEach(function(n, k) {
+      if (claimed.indexOf(n) > -1) return;
+      if ((n.getAttribute('fill') || '').toUpperCase() === '#FEAAA4') return;  // blush, handled below
+      var nb = boxes[k];
+      if (!nb || nb.h > e.b.h * 0.4) return;
+      // Without a narrow column the sparkles floating beside and above the
+      // head get swept in as brows.
+      if (Math.abs(nb.cx - e.b.cx) > e.b.w * 0.3) return;
+      if (nb.cy < e.b.y && e.b.y - nb.cy < e.b.h * 0.6) wrapEarnPart(n, 'earn-brow');
+      else if (nb.cy > e.b.cy && nb.cy < e.b.y + e.b.h + e.b.h * 0.15) wrapEarnPart(n, 'earn-lid');
+    });
+  });
+
+  // Blush pair: same footprint twice over. A single one that size is the mouth.
+  var bySize = {};
+  kids.forEach(function(n, k) {
+    if ((n.getAttribute('fill') || '').toUpperCase() !== '#FEAAA4') return;
+    var b = boxes[k]; if (!b || claimed.indexOf(n) > -1) return;
+    var key = Math.round(b.w) + 'x' + Math.round(b.h);
+    (bySize[key] = bySize[key] || []).push(n);
+  });
+  Object.keys(bySize).forEach(function(k) {
+    if (bySize[k].length === 2) bySize[k].forEach(function(n) { wrapEarnPart(n, 'earn-cheek'); });
+  });
+  return 2;
 }
 
 function setEarnArt(card, st) {
@@ -12682,6 +12859,9 @@ function setEarnArt(card, st) {
   var alt = 'Purinta mascot: ' + st.lead + ' ' + st.tail;
   function inject(markup) {
     fig.innerHTML = markup;
+    // Size + face anchor key off this, so they change in the same frame as
+    // the art instead of at the start of the punch.
+    fig.dataset.art = st.key;
     var svg = fig.querySelector('svg');
     if (!svg) {
       fig.innerHTML = '<img class="earn-mascot-illustration" src="' + st.art + '" alt="' + alt + '">';
@@ -12717,7 +12897,7 @@ function setEarnArt(card, st) {
     torso.setAttribute('class', 'earn-torso');
     svg.insertBefore(torso, rest[torsoAt]);
     rest.slice(torsoAt).forEach(function(n) { torso.appendChild(n); });
-    tagEarnEyes(torso);
+    tagEarnFace(torso);
   }
   if (_earnSvgCache[st.art]) { inject(_earnSvgCache[st.art]); return; }
   fetch(st.art).then(function(r) { return r.text(); }).then(function(t) {
@@ -12732,7 +12912,15 @@ function applyEarnEmote(screen, pct) {
   var card = screen.querySelector('.earn-mascot-card');
   if (!card) return;
   var st = earnStateFor(pct);
-  if (card.dataset.state === st.key) return;   // already on this state
+  if (card.dataset.state === st.key) {
+    // Already on this state, but the art may still be the static <img> from
+    // the markup, or have been inlined while the screen was hidden — where
+    // everything measures zero and tagEarnFace finds no face. Either way the
+    // idle loop has nothing to drive, so redo it now that it is on screen.
+    var art = card.querySelector('svg.earn-mascot-illustration');
+    if ((!art || !card.querySelector('.earn-eye')) && card.offsetParent) setEarnArt(card, st);
+    return;
+  }
   card.dataset.state = st.key;
   earnEmoteStates.forEach(function(s) { card.classList.remove('state-' + s.key); });
   card.classList.add('state-' + st.key);
